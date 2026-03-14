@@ -1,0 +1,772 @@
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>个人中心 - 轻悦待办</title>
+    <script src="https://res.gemcoder.com/js/reload.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#4F46E5',
+              secondary: '#7C3AED',
+              success: '#10B981',
+              warning: '#F59E0B',
+              danger: '#EF4444',
+              info: '#3B82F6',
+              light: '#F3F4F6',
+              dark: '#1F2937',
+              'task-work': '#3B82F6',
+              'task-study': '#8B5CF6',
+              'task-life': '#EC4899',
+              'task-health': '#10B981'
+            },
+            fontFamily: {
+              inter: ['Inter', 'system-ui', 'sans-serif']
+            }
+          }
+        }
+      };
+    </script>
+    <style type="text/tailwindcss">
+      @layer utilities {
+          .content-auto {
+              content-visibility: auto;
+          }
+          .scrollbar-hide {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
+          }
+          .scrollbar-hide::-webkit-scrollbar {
+              display: none;
+          }
+          .card-shadow {
+              box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+          }
+          .card-hover {
+              @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5;
+          }
+          .tag-chip {
+              @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+          }
+      }
+    </style>
+  </head>
+  <body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+    <!-- 顶部导航 -->
+    <header class="bg-white shadow-sm sticky top-0 z-30">
+      <div
+        class="container mx-auto px-4 py-3 flex items-center justify-between"
+      >
+        <div class="flex items-center space-x-4">
+          <a
+            href="待办页面.html"
+            class="text-gray-600 hover:text-primary transition-colors"
+          >
+            <i class="fas fa-arrow-left text-lg"></i>
+          </a>
+          <div>
+            <h1 class="text-xl font-bold text-gray-800">个人中心</h1>
+            <p class="text-xs text-gray-500 mt-0.5">
+              管理你的账号信息、应用偏好和数据隐私
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-6">
+          <div class="hidden md:flex flex-col items-end text-xs text-gray-500">
+            <span>加入于 2023-06-01</span>
+            <span>连续打卡 <span class="text-primary font-semibold">15</span> 天</span>
+          </div>
+          <div class="relative group">
+            <button class="flex items-center space-x-2 focus:outline-none">
+              <img
+                src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
+                alt="用户头像"
+                class="w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm"
+              />
+              <span class="hidden md:inline-block font-medium">张明</span>
+              <i class="fas fa-chevron-down text-xs text-gray-500"></i>
+            </button>
+            <div
+              class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 hidden group-hover:block"
+            >
+              <a
+                href="个人中心页面.html"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                <i class="fas fa-user mr-2 text-gray-500"></i>
+                个人中心
+              </a>
+              <a
+                href="javascript:void(0);"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                <i class="fas fa-cog mr-2 text-gray-500"></i>
+                设置
+              </a>
+              <div class="border-t border-gray-100 my-1"></div>
+              <a
+                href="登录页面.html"
+                class="block px-4 py-2 text-sm text-danger hover:bg-gray-100"
+              >
+                <i class="fas fa-sign-out-alt mr-2"></i>
+                退出登录
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+      <!-- 主内容 -->
+      <main class="flex-1 overflow-y-auto content-auto p-4 md:p-6">
+        <div
+          class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[2fr,3fr] gap-6"
+        >
+          <!-- 左侧：个人信息 + 概览 -->
+          <div class="space-y-4">
+            <!-- 个人信息卡片 -->
+            <section
+              class="card-shadow card-hover bg-white rounded-2xl p-5 md:p-6"
+            >
+              <div class="flex items-start space-x-4">
+                <div class="relative">
+                  <img
+                    src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
+                    alt="头像"
+                    class="w-16 h-16 rounded-full object-cover border-2 border-primary/60"
+                  />
+                  <button
+                    class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center text-xs shadow"
+                    title="更换头像"
+                  >
+                    <i class="fas fa-camera"></i>
+                  </button>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center space-x-2 mb-1">
+                    <input
+                      type="text"
+                      value="张明"
+                      class="text-lg font-semibold bg-transparent border-b border-transparent hover:border-primary focus:border-primary focus:outline-none"
+                    />
+                    <span
+                      class="tag-chip bg-yellow-50 text-yellow-700 border border-yellow-100"
+                    >
+                      <i class="fas fa-crown mr-1"></i>
+                      LV.3 努力达人
+                    </span>
+                  </div>
+                  <p class="text-xs text-gray-500 mb-3">
+                    高效不是忙碌，而是专注于真正重要的事情。
+                  </p>
+                  <div class="grid grid-cols-2 gap-3 text-xs text-gray-600">
+                    <div class="space-y-1">
+                      <div class="flex items-center">
+                        <i class="fas fa-envelope text-gray-400 mr-2"></i>
+                        <span>邮箱：user@example.com</span>
+                        <span
+                          class="ml-2 px-1.5 py-0.5 rounded-full bg-green-50 text-green-600 text-[10px]"
+                          >已验证</span
+                        >
+                      </div>
+                      <div class="flex items-center">
+                        <i class="fas fa-mobile-alt text-gray-400 mr-2"></i>
+                        <span>手机号：188****0000</span>
+                        <button
+                          class="ml-2 text-primary text-[11px] hover:underline"
+                        >
+                          修改
+                        </button>
+                      </div>
+                    </div>
+                    <div class="space-y-1">
+                      <div class="flex items-center justify-between">
+                        <span>经验值</span>
+                        <span class="text-xs text-gray-500">720 / 1000</span>
+                      </div>
+                      <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                          class="h-full bg-primary rounded-full"
+                          style="width: 72%"
+                        ></div>
+                      </div>
+                      <p class="text-[11px] text-gray-400">
+                        再完成 8 个番茄即可升级至 LV.4
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- 数据统计概要 -->
+            <section
+              class="card-shadow card-hover bg-white rounded-2xl p-4 md:p-5"
+            >
+              <h2 class="text-sm font-semibold text-gray-800 mb-3">
+                数据概要
+              </h2>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                <div class="bg-gray-50 rounded-xl p-3">
+                  <div
+                    class="text-xs text-gray-500 flex items-center justify-center mb-1"
+                  >
+                    <i class="fas fa-check-circle text-success mr-1"></i>
+                    累计完成任务
+                  </div>
+                  <div class="text-xl font-bold text-gray-800">328</div>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-3">
+                  <div
+                    class="text-xs text-gray-500 flex items-center justify-center mb-1"
+                  >
+                    <i class="fas fa-clock text-primary mr-1"></i>
+                    累计专注时长
+                  </div>
+                  <div class="text-xl font-bold text-gray-800">142 h</div>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-3">
+                  <div
+                    class="text-xs text-gray-500 flex items-center justify-center mb-1"
+                  >
+                    <i class="fas fa-calendar-check text-warning mr-1"></i>
+                    最长连续打卡
+                  </div>
+                  <div class="text-xl font-bold text-gray-800">21 天</div>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-3">
+                  <div
+                    class="text-xs text-gray-500 flex items-center justify-center mb-1"
+                  >
+                    <i class="fas fa-fire text-danger mr-1"></i>
+                    累计番茄数
+                  </div>
+                  <div class="text-xl font-bold text-gray-800">612</div>
+                </div>
+              </div>
+            </section>
+
+            <!-- 存储管理 -->
+            <section
+              class="card-shadow card-hover bg-white rounded-2xl p-4 md:p-5"
+            >
+              <div class="flex items-center justify-between mb-3">
+                <h2 class="text-sm font-semibold text-gray-800">存储管理</h2>
+                <button
+                  class="text-xs text-danger hover:text-danger/80 flex items-center"
+                >
+                  <i class="fas fa-trash-alt mr-1"></i>
+                  清理缓存
+                </button>
+              </div>
+              <div class="space-y-3 text-xs text-gray-600">
+                <div class="flex justify-between">
+                  <span>附件总大小</span>
+                  <span class="font-medium text-gray-800">230 MB / 1 GB</span>
+                </div>
+                <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div
+                    class="h-full bg-secondary rounded-full"
+                    style="width: 23%"
+                  ></div>
+                </div>
+                <div class="flex justify-between">
+                  <span>图片</span>
+                  <span>156 张</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>文档</span>
+                  <span>42 份</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- 帮助与关于 -->
+            <section
+              class="card-shadow card-hover bg-white rounded-2xl p-4 md:p-5"
+            >
+              <h2 class="text-sm font-semibold text-gray-800 mb-3">
+                帮助与关于
+              </h2>
+              <div class="space-y-2 text-xs text-gray-700">
+                <button
+                  class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50"
+                >
+                  <span><i class="fas fa-book mr-2 text-gray-400"></i>新手指南</span>
+                  <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+                </button>
+                <button
+                  class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50"
+                >
+                  <span><i class="fas fa-question-circle mr-2 text-gray-400"></i>常见问题</span>
+                  <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+                </button>
+                <button
+                  class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50"
+                >
+                  <span><i class="fas fa-comment-dots mr-2 text-gray-400"></i>意见反馈</span>
+                  <span class="text-[11px] text-gray-400">支持截图上传</span>
+                </button>
+                <button
+                  class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50"
+                >
+                  <span><i class="fas fa-headset mr-2 text-gray-400"></i>联系客服</span>
+                  <span class="text-[11px] text-gray-400">工作日 9:00-18:00</span>
+                </button>
+                <button
+                  class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50"
+                >
+                  <span><i class="fas fa-star mr-2 text-yellow-400"></i>为应用评分</span>
+                  <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+                </button>
+                <div class="border-t border-gray-100 pt-2 mt-2 text-[11px]">
+                  <div class="flex justify-between mb-1">
+                    <span>版本号</span>
+                    <span class="font-medium">v1.0.0</span>
+                  </div>
+                  <div class="flex justify-between mb-1">
+                    <span>用户协议</span>
+                    <a href="javascript:void(0);" class="text-primary"
+                      >查看</a
+                    >
+                  </div>
+                  <div class="flex justify-between mb-1">
+                    <span>隐私政策</span>
+                    <a href="javascript:void(0);" class="text-primary"
+                      >查看</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- 右侧：设置与安全 -->
+          <div class="space-y-4">
+            <!-- 账号安全 -->
+            <section
+              class="card-shadow card-hover bg-white rounded-2xl p-4 md:p-5"
+            >
+              <div class="flex items-center justify-between mb-3">
+                <h2 class="text-sm font-semibold text-gray-800">账号安全</h2>
+                <span
+                  class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] bg-green-50 text-green-600"
+                >
+                  <i class="fas fa-shield-alt mr-1"></i>
+                  安全等级：高
+                </span>
+              </div>
+              <div class="space-y-2 text-xs text-gray-700">
+                <div class="flex items-center justify-between py-2">
+                  <div class="flex items-center space-x-2">
+                    <i class="fas fa-key text-gray-400"></i>
+                    <div>
+                      <p class="font-medium">登录密码</p>
+                      <p class="text-gray-500">建议定期更换密码，提升账号安全性</p>
+                    </div>
+                  </div>
+                  <button class="text-primary text-xs hover:underline">
+                    修改
+                  </button>
+                </div>
+                <div class="flex items-center justify-between py-2">
+                  <div class="flex items-center space-x-2">
+                    <i class="fas fa-mobile-alt text-gray-400"></i>
+                    <div>
+                      <p class="font-medium">绑定手机</p>
+                      <p class="text-gray-500">用于登录、找回密码和安全验证</p>
+                    </div>
+                  </div>
+                  <span class="text-xs text-green-600">已绑定</span>
+                </div>
+                <div class="flex items-center justify-between py-2">
+                  <div class="flex items-center space-x-2">
+                    <i class="fas fa-user-lock text-gray-400"></i>
+                    <div>
+                      <p class="font-medium">两步验证</p>
+                      <p class="text-gray-500">登录时需要额外验证码，强烈推荐开启</p>
+                    </div>
+                  </div>
+                  <button
+                    class="px-3 py-1 rounded-full border border-gray-300 text-xs text-gray-700 hover:bg-gray-50"
+                  >
+                    去开启
+                  </button>
+                </div>
+                <div class="flex items-center justify-between py-2 border-t pt-3 mt-1">
+                  <div class="flex items-center space-x-2">
+                    <i class="fas fa-link text-gray-400"></i>
+                    <div>
+                      <p class="font-medium">第三方账号绑定</p>
+                      <p class="text-gray-500">
+                        微信、苹果、谷歌等账号可快速登录
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex space-x-2 text-lg">
+                    <i
+                      class="fab fa-weixin text-green-500 cursor-pointer"
+                      title="微信已绑定"
+                    ></i>
+                    <i
+                      class="fab fa-apple text-gray-800 cursor-pointer opacity-40"
+                      title="点击绑定苹果"
+                    ></i>
+                    <i
+                      class="fab fa-google text-red-500 cursor-pointer opacity-40"
+                      title="点击绑定谷歌"
+                    ></i>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- 应用设置 -->
+            <section
+              class="card-shadow card-hover bg-white rounded-2xl p-4 md:p-5"
+            >
+              <h2 class="text-sm font-semibold text-gray-800 mb-3">
+                应用设置
+              </h2>
+              <div class="space-y-4 text-xs text-gray-700">
+                <!-- 主题设置 -->
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="font-medium">主题设置</span>
+                  </div>
+                  <div class="flex flex-wrap gap-2">
+                    <button
+                      class="px-3 py-1.5 rounded-full border border-primary bg-primary text-white text-xs"
+                    >
+                      跟随系统
+                    </button>
+                    <button
+                      class="px-3 py-1.5 rounded-full border border-gray-200 text-xs"
+                    >
+                      浅色
+                    </button>
+                    <button
+                      class="px-3 py-1.5 rounded-full border border-gray-200 text-xs"
+                    >
+                      深色
+                    </button>
+                  </div>
+                  <div class="flex items-center space-x-2 mt-3">
+                    <span class="text-gray-500">主题色</span>
+                    <div class="flex space-x-1.5">
+                      <button
+                        class="w-5 h-5 rounded-full bg-primary border-2 border-white shadow"
+                        title="蓝色"
+                      ></button>
+                      <button
+                        class="w-5 h-5 rounded-full bg-secondary/90 border-2 border-transparent hover:border-white shadow"
+                        title="紫色"
+                      ></button>
+                      <button
+                        class="w-5 h-5 rounded-full bg-success/90 border-2 border-transparent hover:border-white shadow"
+                        title="绿色"
+                      ></button>
+                      <button
+                        class="w-5 h-5 rounded-full bg-pink-500 border-2 border-transparent hover:border-white shadow"
+                        title="粉色"
+                      ></button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 通知设置 -->
+                <div class="border-t border-gray-100 pt-3">
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="font-medium">通知设置</span>
+                  </div>
+                  <div class="space-y-2">
+                    <label class="flex items-center justify-between">
+                      <span>任务提醒</span>
+                      <input type="checkbox" class="w-4 h-4 text-primary" checked />
+                    </label>
+                    <label class="flex items-center justify-between">
+                      <span>番茄结束提醒</span>
+                      <input type="checkbox" class="w-4 h-4 text-primary" checked />
+                    </label>
+                    <label class="flex items-center justify-between">
+                      <span>每日简报推送</span>
+                      <input type="checkbox" class="w-4 h-4 text-primary" />
+                    </label>
+                    <div class="flex items-center justify-between">
+                      <span>勿扰模式</span>
+                      <span class="text-gray-400 text-[11px]">22:00 - 08:00</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 专注设置 -->
+                <div class="border-t border-gray-100 pt-3">
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="font-medium">专注设置</span>
+                  </div>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <p class="text-gray-500 mb-1">默认番茄时长</p>
+                      <select
+                        class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs"
+                      >
+                        <option>25 分钟</option>
+                        <option>30 分钟</option>
+                        <option>40 分钟</option>
+                        <option>50 分钟</option>
+                      </select>
+                    </div>
+                    <div>
+                      <p class="text-gray-500 mb-1">短休息</p>
+                      <select
+                        class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs"
+                      >
+                        <option>5 分钟</option>
+                        <option>10 分钟</option>
+                      </select>
+                    </div>
+                    <div>
+                      <p class="text-gray-500 mb-1">长休息</p>
+                      <select
+                        class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs"
+                      >
+                        <option>15 分钟</option>
+                        <option>20 分钟</option>
+                        <option>30 分钟</option>
+                      </select>
+                    </div>
+                    <div>
+                      <p class="text-gray-500 mb-1">长休息触发间隔</p>
+                      <select
+                        class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs"
+                      >
+                        <option>4 个番茄</option>
+                        <option>5 个番茄</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="mt-2 space-y-1.5">
+                    <label class="flex items-center">
+                      <input
+                        type="checkbox"
+                        class="w-4 h-4 text-primary mr-2"
+                        checked
+                      />
+                      <span>自动开始休息</span>
+                    </label>
+                    <label class="flex items-center">
+                      <input type="checkbox" class="w-4 h-4 text-primary mr-2" />
+                      <span>自动开始下一个番茄</span>
+                    </label>
+                    <label class="flex items-center">
+                      <input
+                        type="checkbox"
+                        class="w-4 h-4 text-primary mr-2"
+                        checked
+                      />
+                      <span>专注时屏蔽通知</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- 日历 & 数据隐私 -->
+                <div class="border-t border-gray-100 pt-3 grid md:grid-cols-2 gap-4">
+                  <div>
+                    <p class="font-medium mb-2">日历设置</p>
+                    <div class="space-y-1.5">
+                      <div class="flex items-center justify-between text-[11px]">
+                        <span>一周开始于</span>
+                        <select
+                          class="px-2 py-1 border border-gray-300 rounded-lg text-xs"
+                        >
+                          <option>周一</option>
+                          <option>周日</option>
+                        </select>
+                      </div>
+                      <div class="flex items-center justify-between text-[11px]">
+                        <span>默认视图</span>
+                        <select
+                          class="px-2 py-1 border border-gray-300 rounded-lg text-xs"
+                        >
+                          <option>月视图</option>
+                          <option>周视图</option>
+                          <option>日视图</option>
+                        </select>
+                      </div>
+                      <label class="flex items-center text-[11px]">
+                        <input
+                          type="checkbox"
+                          class="w-4 h-4 text-primary mr-2"
+                          checked
+                        />
+                        <span>显示农历和节日</span>
+                      </label>
+                    </div>
+                  </div>
+                  <div>
+                    <p class="font-medium mb-2">数据隐私</p>
+                    <div class="space-y-1.5 text-[11px]">
+                      <button
+                        class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50"
+                      >
+                        <span>导出数据（JSON / CSV）</span>
+                        <i class="fas fa-download text-gray-400"></i>
+                      </button>
+                      <button
+                        class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50"
+                      >
+                        <span>手动备份</span>
+                        <i class="fas fa-cloud-upload-alt text-gray-400"></i>
+                      </button>
+                      <label class="flex items-center">
+                        <input
+                          type="checkbox"
+                          class="w-4 h-4 text-primary mr-2"
+                          checked
+                        />
+                        <span>允许匿名使用统计，用于产品优化</span>
+                      </label>
+                      <button
+                        class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-danger/40 text-danger hover:bg-danger/5 mt-1"
+                      >
+                        <span>清除所有数据</span>
+                        <i class="fas fa-exclamation-triangle text-danger"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 退出登录 / 注销账号 -->
+                <div class="border-t border-gray-100 pt-3 flex flex-wrap gap-2">
+                  <button
+                    onclick="window.location.href='登录页面.html'"
+                    class="px-3 py-1.5 rounded-lg border border-gray-300 text-xs text-gray-700 hover:bg-gray-50"
+                  >
+                    退出登录
+                  </button>
+                  <button
+                    class="px-3 py-1.5 rounded-lg border border-danger text-xs text-danger hover:bg-danger/5"
+                  >
+                    注销账号
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <!-- 成就徽章墙 -->
+            <section
+              class="card-shadow card-hover bg-white rounded-2xl p-4 md:p-5"
+            >
+              <div class="flex items-center justify-between mb-3">
+                <h2 class="text-sm font-semibold text-gray-800">
+                  成就徽章墙
+                </h2>
+                <select
+                  class="px-2 py-1 rounded-lg border border-gray-200 text-xs text-gray-600"
+                >
+                  <option>全部分类</option>
+                  <option>新手</option>
+                  <option>效率</option>
+                  <option>专注</option>
+                  <option>坚持</option>
+                </select>
+              </div>
+              <div class="grid grid-cols-3 sm:grid-cols-4 gap-3 text-center">
+                <div class="rounded-xl bg-primary/5 p-3">
+                  <div class="text-2xl mb-1">🌱</div>
+                  <div class="text-xs font-medium text-gray-800">新手上路</div>
+                  <div class="text-[10px] text-gray-500 mt-0.5">
+                    完成第 1 个任务
+                  </div>
+                </div>
+                <div class="rounded-xl bg-success/5 p-3">
+                  <div class="text-2xl mb-1">🔥</div>
+                  <div class="text-xs font-medium text-gray-800">
+                    番茄小能手
+                  </div>
+                  <div class="text-[10px] text-gray-500 mt-0.5">
+                    累计完成 100 个番茄
+                  </div>
+                </div>
+                <div class="rounded-xl bg-warning/5 p-3 opacity-40">
+                  <div class="text-2xl mb-1">⏰</div>
+                  <div class="text-xs font-medium text-gray-800">早起打卡王</div>
+                  <div class="text-[10px] text-gray-500 mt-0.5">
+                    连续 30 天早起打卡
+                  </div>
+                </div>
+                <div class="rounded-xl bg-gray-100 p-3 opacity-40">
+                  <div class="text-2xl mb-1">💎</div>
+                  <div class="text-xs font-medium text-gray-800">效率大师</div>
+                  <div class="text-[10px] text-gray-500 mt-0.5">
+                    综合效率评分达到 A+
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- 底部 Tab 栏 -->
+    <footer
+      class="bg-white border-t border-gray-200 py-2 px-4 sticky bottom-0 z-20"
+    >
+      <div class="container mx-auto flex justify-around items-center">
+        <a
+          href="待办页面.html"
+          class="flex flex-col items-center text-gray-500 hover:text-primary"
+        >
+          <i class="fas fa-list-alt text-xl"></i>
+          <span class="text-xs mt-1">待办</span>
+        </a>
+        <a
+          href="日历页面.html"
+          class="flex flex-col items-center text-gray-500 hover:text-primary"
+        >
+          <i class="fas fa-calendar text-xl"></i>
+          <span class="text-xs mt-1">日历</span>
+        </a>
+        <a
+          href="番茄钟页面.html"
+          class="flex flex-col items-center text-gray-500 hover:text-primary"
+        >
+          <i class="fas fa-clock text-xl"></i>
+          <span class="text-xs mt-1">番茄钟</span>
+        </a>
+        <a
+          href="数据周报页面.html"
+          class="flex flex-col items-center text-gray-500 hover:text-primary"
+        >
+          <i class="fas fa-chart-line text-xl"></i>
+          <span class="text-xs mt-1">数据周报</span>
+        </a>
+        <a
+          href="打卡页面.html"
+          class="flex flex-col items-center text-gray-500 hover:text-primary"
+        >
+          <i class="fas fa-check-circle text-xl"></i>
+          <span class="text-xs mt-1">打卡</span>
+        </a>
+        <!-- 当前页：个人中心 -->
+        <a
+          href="个人中心页面.html"
+          class="flex flex-col items-center text-primary"
+        >
+          <i class="fas fa-user text-xl"></i>
+          <span class="text-xs mt-1">个人中心</span>
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
+
