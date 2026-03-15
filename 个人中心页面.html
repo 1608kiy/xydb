@@ -142,16 +142,19 @@
               <div class="flex items-start space-x-4">
                 <div class="relative">
                   <img
+                    id="profile-avatar"
                     src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
                     alt="头像"
                     class="w-16 h-16 rounded-full object-cover border-2 border-primary/60"
                   />
                   <button
+                    id="change-avatar-btn"
                     class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center text-xs shadow"
                     title="更换头像"
                   >
                     <i class="fas fa-camera"></i>
                   </button>
+                  <input id="avatar-file-input" type="file" accept="image/*" class="hidden" />
                 </div>
                 <div class="flex-1">
                   <div class="flex items-center space-x-2 mb-1">
@@ -162,6 +165,7 @@
                       class="text-lg font-semibold bg-transparent border-b border-transparent hover:border-primary focus:border-primary focus:outline-none"
                     />
                     <span
+                      id="user-level-tag"
                       class="tag-chip bg-yellow-50 text-yellow-700 border border-yellow-100"
                     >
                       <i class="fas fa-crown mr-1"></i>
@@ -185,6 +189,7 @@
                         <i class="fas fa-mobile-alt text-gray-400 mr-2"></i>
                         <span id="user-phone">手机号：188****0000</span>
                         <button
+                          id="edit-phone-btn"
                           class="ml-2 text-primary text-[11px] hover:underline"
                         >
                           修改
@@ -194,15 +199,16 @@
                     <div class="space-y-1">
                       <div class="flex items-center justify-between">
                         <span>经验值</span>
-                        <span class="text-xs text-gray-500">720 / 1000</span>
+                        <span id="exp-text" class="text-xs text-gray-500">0 / 1000</span>
                       </div>
                       <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div
+                          id="exp-bar"
                           class="h-full bg-primary rounded-full"
-                          style="width: 72%"
+                          style="width: 0%"
                         ></div>
                       </div>
-                      <p class="text-[11px] text-gray-400">
+                      <p id="exp-next-text" class="text-[11px] text-gray-400">
                         再完成 8 个番茄即可升级至 LV.4
                       </p>
                     </div>
@@ -302,25 +308,25 @@
                 帮助与关于
               </h2>
               <div class="space-y-2 text-xs text-gray-700">
-                <button
+                <button id="help-guide-btn"
                   class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50"
                 >
                   <span><i class="fas fa-book mr-2 text-gray-400"></i>新手指南</span>
                   <i class="fas fa-chevron-right text-xs text-gray-400"></i>
                 </button>
-                <button
+                <button id="help-faq-btn"
                   class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50"
                 >
                   <span><i class="fas fa-question-circle mr-2 text-gray-400"></i>常见问题</span>
                   <i class="fas fa-chevron-right text-xs text-gray-400"></i>
                 </button>
-                <button
+                <button id="feedback-btn"
                   class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50"
                 >
                   <span><i class="fas fa-comment-dots mr-2 text-gray-400"></i>意见反馈</span>
                   <span class="text-[11px] text-gray-400">支持截图上传</span>
                 </button>
-                <button
+                <button id="contact-support-btn"
                   class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50"
                 >
                   <span><i class="fas fa-headset mr-2 text-gray-400"></i>联系客服</span>
@@ -378,7 +384,7 @@
                       <p class="text-gray-500">建议定期更换密码，提升账号安全性</p>
                     </div>
                   </div>
-                  <button class="text-primary text-xs hover:underline">
+                  <button id="change-password-btn" class="text-primary text-xs hover:underline">
                     修改
                   </button>
                 </div>
@@ -390,7 +396,7 @@
                       <p class="text-gray-500">用于登录、找回密码和安全验证</p>
                     </div>
                   </div>
-                  <span class="text-xs text-green-600">已绑定</span>
+                  <button id="bind-phone-btn" class="text-primary text-xs hover:underline">修改</button>
                 </div>
                 <div class="flex items-center justify-between py-2">
                   <div class="flex items-center space-x-2">
@@ -401,6 +407,7 @@
                     </div>
                   </div>
                   <button
+                    id="two-step-btn"
                     class="px-3 py-1 rounded-full border border-gray-300 text-xs text-gray-700 hover:bg-gray-50"
                   >
                     去开启
@@ -643,12 +650,14 @@
                     <p class="font-medium mb-2">数据隐私</p>
                     <div class="space-y-1.5 text-[11px]">
                       <button
+                        id="export-data-btn"
                         class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50"
                       >
                         <span>导出数据（JSON / CSV）</span>
                         <i class="fas fa-download text-gray-400"></i>
                       </button>
                       <button
+                        id="manual-backup-btn"
                         class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50"
                       >
                         <span>手动备份</span>
@@ -663,6 +672,7 @@
                         <span>允许匿名使用统计，用于产品优化</span>
                       </label>
                       <button
+                        id="clear-all-data-btn"
                         class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-danger/40 text-danger hover:bg-danger/5 mt-1"
                       >
                         <span>清除所有数据</span>
@@ -806,10 +816,118 @@
         var userName = document.getElementById('user-name');
         var userEmail = document.getElementById('user-email');
         var userPhone = document.getElementById('user-phone');
+        var profileAvatar = document.getElementById('profile-avatar');
+        var changeAvatarBtn = document.getElementById('change-avatar-btn');
+        var avatarFileInput = document.getElementById('avatar-file-input');
+        var editPhoneBtn = document.getElementById('edit-phone-btn');
+        var changePasswordBtn = document.getElementById('change-password-btn');
+        var bindPhoneBtn = document.getElementById('bind-phone-btn');
+        var twoStepBtn = document.getElementById('two-step-btn');
+        var exportDataBtn = document.getElementById('export-data-btn');
+        var manualBackupBtn = document.getElementById('manual-backup-btn');
+        var clearAllDataBtn = document.getElementById('clear-all-data-btn');
+        var helpGuideBtn = document.getElementById('help-guide-btn');
+        var helpFaqBtn = document.getElementById('help-faq-btn');
+        var feedbackBtn = document.getElementById('feedback-btn');
+        var contactSupportBtn = document.getElementById('contact-support-btn');
+        var expText = document.getElementById('exp-text');
+        var expBar = document.getElementById('exp-bar');
+        var expNextText = document.getElementById('exp-next-text');
+        var userLevelTag = document.getElementById('user-level-tag');
 
+        if (profileAvatar) profileAvatar.src = AppState.user?.avatar || profileAvatar.src;
         if (userName) userName.value = AppState.user?.name || '轻悦用户';
         if (userEmail) userEmail.textContent = '邮箱：' + (AppState.user?.email || 'demo@qingyue.com');
         if (userPhone) userPhone.textContent = '手机号：' + (AppState.user?.phone || '13800000000');
+
+        var exp = Number(AppState.user?.exp || 0);
+        var level = Number(AppState.user?.level || 1);
+        var maxExp = 1000;
+        var expPct = Math.min(100, Math.round((exp / maxExp) * 100));
+        if (expText) expText.textContent = exp + ' / ' + maxExp;
+        if (expBar) expBar.style.width = expPct + '%';
+        if (expNextText) expNextText.textContent = '再完成 ' + Math.max(1, 10 - Math.floor(exp / 100)) + ' 个番茄即可升级至 LV.' + (level + 1);
+        if (userLevelTag) userLevelTag.innerHTML = '<i class="fas fa-crown mr-1"></i>LV.' + level + ' 努力达人';
+
+        if (changeAvatarBtn && avatarFileInput && profileAvatar) {
+          changeAvatarBtn.addEventListener('click', function () {
+            avatarFileInput.click();
+          });
+          avatarFileInput.addEventListener('change', function () {
+            var file = this.files && this.files[0];
+            if (!file) return;
+            var reader = new FileReader();
+            reader.onload = function (e) {
+              var base64 = e.target.result;
+              AppState.user.avatar = base64;
+              AppState.save();
+              profileAvatar.src = base64;
+              showToast('头像已更新');
+            };
+            reader.readAsDataURL(file);
+          });
+        }
+
+        if (editPhoneBtn) {
+          editPhoneBtn.addEventListener('click', function () {
+            var phone = prompt('请输入手机号', AppState.user?.phone || '');
+            if (!phone) {
+              showToast('手机号不能为空');
+              return;
+            }
+            AppState.user.phone = phone;
+            AppState.save();
+            if (userPhone) userPhone.textContent = '手机号：' + phone;
+            showToast('手机号已更新');
+          });
+        }
+
+        var showFeatureSoon = function () {
+          showToast('该功能需要后端支持，即将上线');
+        };
+        if (changePasswordBtn) changePasswordBtn.addEventListener('click', showFeatureSoon);
+        if (bindPhoneBtn) bindPhoneBtn.addEventListener('click', showFeatureSoon);
+        if (twoStepBtn) twoStepBtn.addEventListener('click', showFeatureSoon);
+
+        var exportState = function () {
+          var data = localStorage.getItem('qingyue_todo_app_state_v1') || JSON.stringify(defaultState);
+          var blob = new Blob([data], { type: 'application/json;charset=utf-8' });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = 'qingyue_backup.json';
+          a.click();
+          URL.revokeObjectURL(url);
+        };
+        if (exportDataBtn) {
+          exportDataBtn.addEventListener('click', function () {
+            exportState();
+            showToast('导出已完成');
+          });
+        }
+        if (manualBackupBtn) {
+          manualBackupBtn.addEventListener('click', function () {
+            exportState();
+            showToast('备份已保存至本地');
+          });
+        }
+
+        if (clearAllDataBtn) {
+          clearAllDataBtn.addEventListener('click', function () {
+            if (!confirm('此操作将永久删除所有任务、打卡和专注记录，且无法恢复。确定继续？')) return;
+            localStorage.removeItem('qingyue_todo_app_state_v1');
+            AppState.reset();
+            showToast('所有数据已清除');
+            updateDataStatistics();
+            window.location.reload();
+          });
+        }
+
+        var soonToast = function () { showToast('功能即将上线，感谢您的耐心'); };
+        if (helpGuideBtn) helpGuideBtn.addEventListener('click', soonToast);
+        if (helpFaqBtn) helpFaqBtn.addEventListener('click', soonToast);
+        if (feedbackBtn) feedbackBtn.addEventListener('click', soonToast);
+        if (contactSupportBtn) contactSupportBtn.addEventListener('click', soonToast);
 
         // ========== BUG-27: 用户名保存 ==========
         if (userName) {
@@ -818,7 +936,6 @@
               AppState.user.name = userName.value.trim();
               AppState.save();
               showToast('昵称已保存');
-              // 更新头部用户名显示
               var headerUserName = document.querySelector('.header-user-name');
               if (headerUserName) headerUserName.textContent = userName.value.trim();
             } else {
@@ -832,19 +949,37 @@
         // 初始化设置值
         initializeSettings();
 
+        function applyTheme(mode) {
+          var body = document.body;
+          body.classList.remove('theme-light', 'theme-dark');
+          if (mode === 'dark') {
+            body.classList.add('theme-dark');
+          } else if (mode === 'light') {
+            body.classList.add('theme-light');
+          }
+        }
+
         // 主题模式按钮
         var themeBtns = document.querySelectorAll('.theme-btn');
+        var setThemeMode = function (mode) {
+          themeBtns.forEach(function (b) {
+            b.classList.remove('bg-primary', 'text-white');
+            b.classList.add('border-gray-200');
+          });
+          var activeBtn = document.querySelector('.theme-btn[data-theme="' + mode + '"]');
+          if (activeBtn) {
+            activeBtn.classList.add('bg-primary', 'text-white');
+            activeBtn.classList.remove('border-gray-200');
+          }
+          AppState.settings.theme = mode;
+          AppState.save();
+          applyTheme(mode);
+          showToast('主题已设置');
+        };
+
         themeBtns.forEach(function (btn) {
           btn.addEventListener('click', function () {
-            themeBtns.forEach(function (b) {
-              b.classList.remove('bg-primary', 'text-white');
-              b.classList.add('border-gray-200');
-            });
-            this.classList.add('bg-primary', 'text-white');
-            this.classList.remove('border-gray-200');
-            AppState.settings.theme = this.dataset.theme;
-            AppState.save();
-            showToast('主题已设置');
+            setThemeMode(this.dataset.theme);
           });
         });
 
@@ -863,6 +998,14 @@
             showToast('主题色已设置');
           });
         });
+
+        // 立即应用当前主题
+        if (AppState.settings?.theme) {
+          applyTheme(AppState.settings.theme);
+          setThemeMode(AppState.settings.theme);
+        } else {
+          setThemeMode('system');
+        }
 
         // 通知设置
         var notifyTaskReminder = document.getElementById('notify-task-reminder');

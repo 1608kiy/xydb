@@ -281,7 +281,7 @@
             <h3 class="text-sm font-medium text-gray-500 mb-2">
               本周完成任务总数
             </h3>
-            <div class="text-2xl font-bold text-gray-800">28项</div>
+            <div class="text-2xl font-bold text-gray-800" id="completed-tasks">28项</div>
             <div class="text-xs text-green-600 mt-1">
               <i class="fas fa-arrow-up mr-1"> </i>
               12% 较上周
@@ -291,23 +291,23 @@
             <h3 class="text-sm font-medium text-gray-500 mb-2">
               本周专注总时长
             </h3>
-            <div class="text-2xl font-bold text-gray-800">14小时</div>
+            <div class="text-2xl font-bold text-gray-800" id="focus-hours">14小时</div>
           </div>
           <div class="bg-white rounded-xl shadow-sm p-4">
             <h3 class="text-sm font-medium text-gray-500 mb-2">
               本周完成番茄总数
             </h3>
-            <div class="text-2xl font-bold text-gray-800">32个</div>
+            <div class="text-2xl font-bold text-gray-800" id="pomodoro-count">32个</div>
           </div>
           <div class="bg-white rounded-xl shadow-sm p-4">
             <h3 class="text-sm font-medium text-gray-500 mb-2">
               本周最长连续专注
             </h3>
-            <div class="text-2xl font-bold text-gray-800">4个番茄</div>
+            <div class="text-2xl font-bold text-gray-800" id="max-continuous-pomodoros">4个番茄</div>
           </div>
           <div class="bg-white rounded-xl shadow-sm p-4">
             <h3 class="text-sm font-medium text-gray-500 mb-2">综合效率评分</h3>
-            <div class="text-2xl font-bold text-primary">85分</div>
+            <div class="text-2xl font-bold text-primary" id="effectiveness-score">85分</div>
             <div class="text-xs text-gray-500 mt-1">A级</div>
           </div>
         </div>
@@ -341,38 +341,38 @@
         <!-- 效率时段分析 -->
         <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
           <h2 class="text-lg font-semibold text-gray-800 mb-4">效率时段分析</h2>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="bg-blue-50 rounded-lg p-3">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="time-slots-container">
+            <div class="bg-blue-50 rounded-lg p-3" data-slot="early_morning">
               <div class="text-sm font-medium text-gray-700">清晨 (6-8点)</div>
               <div class="text-xl font-bold text-primary">3项</div>
             </div>
-            <div class="bg-blue-50 rounded-lg p-3">
+            <div class="bg-blue-50 rounded-lg p-3" data-slot="morning">
               <div class="text-sm font-medium text-gray-700">上午 (9-11点)</div>
               <div class="text-xl font-bold text-primary">8项</div>
-              <div class="text-xs text-yellow-500 mt-1">
+              <div class="text-xs text-yellow-500 mt-1 hidden">
                 <i class="fas fa-star"> </i>
                 最佳效率时段
               </div>
             </div>
-            <div class="bg-blue-50 rounded-lg p-3">
+            <div class="bg-blue-50 rounded-lg p-3" data-slot="noon">
               <div class="text-sm font-medium text-gray-700">
                 中午 (12-14点)
               </div>
               <div class="text-xl font-bold text-primary">2项</div>
             </div>
-            <div class="bg-blue-50 rounded-lg p-3">
+            <div class="bg-blue-50 rounded-lg p-3" data-slot="afternoon">
               <div class="text-sm font-medium text-gray-700">
                 下午 (15-17点)
               </div>
               <div class="text-xl font-bold text-primary">7项</div>
             </div>
-            <div class="bg-blue-50 rounded-lg p-3">
+            <div class="bg-blue-50 rounded-lg p-3" data-slot="evening">
               <div class="text-sm font-medium text-gray-700">
                 晚上 (18-21点)
               </div>
               <div class="text-xl font-bold text-primary">6项</div>
             </div>
-            <div class="bg-blue-50 rounded-lg p-3">
+            <div class="bg-blue-50 rounded-lg p-3" data-slot="late_night">
               <div class="text-sm font-medium text-gray-700">
                 深夜 (22-24点)
               </div>
@@ -1222,26 +1222,148 @@
         var now = new Date();
         document.getElementById('current-date').textContent = now.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'short' });
         
-        // BUG-20: 计算并更新周报统计数据
+        // 更新周报统计数据
+        updateWeeklyStats();
+        
+        // 初始化图表数据
+        updateChartsData();
+        
+        // 更新效率时段分析
+        updateTimeSlots();
+        
+        // 绑定时间范围选择器事件
+        bindTimeRangeSelector();
+        
+        // 绑定导出和分享按钮事件
+        bindExportShareButtons();
+      });
+      
+      function updateWeeklyStats() {
         const weekStats = getWeeklyStats();
         if (weekStats) {
           // 更新完成任务数
           const taskCountEl = document.querySelector('#completed-tasks');
-          if (taskCountEl) taskCountEl.textContent = weekStats.completedTasks;
+          if (taskCountEl) taskCountEl.textContent = weekStats.completedTasks + '项';
           
           // 更新专注时长（转换为小时）
           const focusTimeEl = document.querySelector('#focus-hours');
-          if (focusTimeEl) focusTimeEl.textContent = (weekStats.totalFocusMinutes / 60).toFixed(1);
+          if (focusTimeEl) {
+            const hours = (weekStats.totalFocusMinutes / 60).toFixed(1);
+            focusTimeEl.textContent = hours + '小时';
+          }
           
           // 更新番茄总数
           const pomodoroEl = document.querySelector('#pomodoro-count');
-          if (pomodoroEl) pomodoroEl.textContent = weekStats.totalPomodoros;
+          if (pomodoroEl) pomodoroEl.textContent = weekStats.totalPomodoros + '个';
+          
+          // 更新最长连续专注番茄数
+          const maxContinuousEl = document.querySelector('#max-continuous-pomodoros');
+          if (maxContinuousEl) maxContinuousEl.textContent = weekStats.maxContinuousPomodoros + '个番茄';
           
           // 更新效率评分
           const scoreEl = document.querySelector('#effectiveness-score');
-          if (scoreEl) scoreEl.textContent = weekStats.effectivenessScore;
+          if (scoreEl) scoreEl.textContent = weekStats.effectivenessScore + '分';
         }
-      });
+      }
+      
+      function updateChartsData() {
+        // 这里可以添加从实际数据源获取图表数据的逻辑
+        // 目前使用静态数据，但结构已准备好支持动态数据
+        console.log('图表数据更新功能已准备就绪');
+      }
+      
+      function updateTimeSlots() {
+        // 计算效率时段数据
+        const timeSlotsData = calculateTimeSlotsData();
+        const container = document.getElementById('time-slots-container');
+        
+        if (!container || !timeSlotsData) return;
+        
+        // 找到最佳效率时段
+        let bestSlot = null;
+        let maxTasks = 0;
+        
+        timeSlotsData.forEach(slot => {
+          if (slot.tasksCompleted > maxTasks) {
+            maxTasks = slot.tasksCompleted;
+            bestSlot = slot.slot;
+          }
+        });
+        
+        // 更新每个时段的数据
+        timeSlotsData.forEach(slot => {
+          const slotElement = container.querySelector(`[data-slot="${slot.slot}"]`);
+          if (slotElement) {
+            const countElement = slotElement.querySelector('.text-xl');
+            if (countElement) {
+              countElement.textContent = slot.tasksCompleted + '项';
+            }
+            
+            // 更新最佳效率时段标记
+            const bestMarker = slotElement.querySelector('.text-yellow-500');
+            if (bestMarker) {
+              if (slot.slot === bestSlot && slot.tasksCompleted > 0) {
+                bestMarker.classList.remove('hidden');
+              } else {
+                bestMarker.classList.add('hidden');
+              }
+            }
+          }
+        });
+      }
+      
+      function calculateTimeSlotsData() {
+        // 这里可以添加从实际数据源计算效率时段数据的逻辑
+        // 目前返回示例数据
+        return [
+          { slot: 'early_morning', label: '清晨 (6-8点)', tasksCompleted: 3 },
+          { slot: 'morning', label: '上午 (9-11点)', tasksCompleted: 8 },
+          { slot: 'noon', label: '中午 (12-14点)', tasksCompleted: 2 },
+          { slot: 'afternoon', label: '下午 (15-17点)', tasksCompleted: 7 },
+          { slot: 'evening', label: '晚上 (18-21点)', tasksCompleted: 6 },
+          { slot: 'late_night', label: '深夜 (22-24点)', tasksCompleted: 2 }
+        ];
+      }
+      
+      function bindTimeRangeSelector() {
+        const timeRangeSelect = document.querySelector('select');
+        if (timeRangeSelect) {
+          timeRangeSelect.addEventListener('change', function() {
+            const selectedRange = this.value;
+            showToast('已切换到' + selectedRange + '数据视图');
+            // 这里可以添加根据时间范围更新数据的逻辑
+            updateWeeklyStats();
+          });
+        }
+      }
+      
+      function bindExportShareButtons() {
+        // 导出报告按钮
+        const exportBtn = document.querySelector('button:has(.fa-download)');
+        if (exportBtn) {
+          exportBtn.addEventListener('click', function() {
+            showToast('报告导出功能正在开发中');
+          });
+        }
+        
+        // 分享按钮
+        const shareBtn = document.querySelector('button:has(.fa-share-alt)');
+        if (shareBtn) {
+          shareBtn.addEventListener('click', function() {
+            if (navigator.share) {
+              navigator.share({
+                title: '我的数据周报',
+                text: '查看我的本周效率数据',
+                url: window.location.href,
+              })
+              .then(() => console.log('分享成功'))
+              .catch((error) => console.log('分享失败:', error));
+            } else {
+              showToast('分享功能在当前浏览器中不可用');
+            }
+          });
+        }
+      }
     </script>
   </body>
 </html>

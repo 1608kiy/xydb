@@ -85,20 +85,67 @@ function getWeeklyStats() {
   const weekStart = getWeekStart();
   const weekEnd = getWeekEnd();
   
+  // 计算本周完成的任务数
   const completedTasks = (AppState.tasks || []).filter(t => 
     t.status === 'completed'
   ).length;
   
-  const totalSessions = (AppState.pomodoroSessions || []).length;
-  const totalMinutes = (AppState.pomodoroSessions || []).reduce((sum, s) => 
+  // 计算本周的番茄记录
+  const weekSessions = (AppState.pomodoroSessions || []).filter(session => {
+    if (!session.startedAt) return false;
+    const sessionDate = new Date(session.startedAt);
+    return isDateInRange(sessionDate, weekStart, weekEnd);
+  });
+  
+  const totalSessions = weekSessions.length;
+  const totalMinutes = weekSessions.reduce((sum, s) => 
     sum + (s.actualMinutes || (s.plannedMinutes || 25)), 0
   );
+  
+  // 计算最长连续专注番茄数
+  let maxContinuousPomodoros = 0;
+  let currentStreak = 0;
+  let lastSessionTime = null;
+  
+  // 按开始时间排序
+  const sortedSessions = [...weekSessions].sort((a, b) => 
+    new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime()
+  );
+  
+  for (const session of sortedSessions) {
+    if (session.mode === 'focus' && session.completed) {
+      const sessionTime = new Date(session.startedAt).getTime();
+      
+      if (lastSessionTime === null) {
+        currentStreak = 1;
+      } else {
+        // 如果两个番茄之间间隔小于30分钟，认为是连续的
+        const timeDiff = (sessionTime - lastSessionTime) / (1000 * 60); // 分钟
+        if (timeDiff <= 30) {
+          currentStreak++;
+        } else {
+          maxContinuousPomodoros = Math.max(maxContinuousPomodoros, currentStreak);
+          currentStreak = 1;
+        }
+      }
+      
+      lastSessionTime = sessionTime;
+      maxContinuousPomodoros = Math.max(maxContinuousPomodoros, currentStreak);
+    }
+  }
+  
+  // 计算效率评分（基于完成任务数和番茄数）
+  const taskScore = Math.min(completedTasks * 3, 50);
+  const pomodoroScore = Math.min(totalSessions * 2, 30);
+  const continuityBonus = Math.min(maxContinuousPomodoros * 5, 20);
+  const effectivenessScore = Math.floor(taskScore + pomodoroScore + continuityBonus);
   
   return {
     completedTasks: completedTasks,
     totalFocusMinutes: totalMinutes,
     totalPomodoros: totalSessions,
-    effectivenessScore: Math.floor(Math.min(completedTasks * 10, 100))
+    maxContinuousPomodoros: maxContinuousPomodoros,
+    effectivenessScore: Math.min(effectivenessScore, 100)
   };
 }
 

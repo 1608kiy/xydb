@@ -112,7 +112,7 @@
         </div>
         <!-- 日期显示和视图切换 -->
         <div class="flex items-center space-x-4">
-          <button
+          <button id="today-btn"
             class="bg-primary text-white px-3 py-1 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
           >
             今天
@@ -143,7 +143,7 @@
         </div>
         <!-- 右侧操作区 -->
         <div class="flex items-center space-x-4">
-          <button
+          <button id="add-task-btn"
             class="bg-primary text-white px-3 py-1 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
           >
             <i class="fas fa-plus mr-1"> </i>
@@ -214,13 +214,13 @@
             </div>
             <!-- 批量操作按钮 -->
             <div class="flex flex-wrap gap-2">
-              <button
+              <button id="batch-complete-btn"
                 class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
               >
                 <i class="fas fa-check-square mr-2"> </i>
                 批量完成
               </button>
-              <button
+              <button id="batch-delete-btn"
                 class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
               >
                 <i class="fas fa-trash-alt mr-2"> </i>
@@ -271,12 +271,12 @@
               <div
                 class="flex border border-gray-300 rounded-lg overflow-hidden"
               >
-                <button
+                <button id="view-list-btn"
                   class="px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50"
                 >
                   <i class="fas fa-list"> </i>
                 </button>
-                <button
+                <button id="view-grid-btn"
                   class="px-4 py-2 text-sm font-medium text-primary bg-primary/5"
                 >
                   <i class="fas fa-th-large"> </i>
@@ -291,13 +291,13 @@
           <!-- 月视图 -->
           <div class="calendar-view active" id="month-view">
             <div class="flex justify-between items-center mb-4">
-              <button
+              <button id="month-prev-btn"
                 class="text-gray-600 hover:text-primary transition-colors"
               >
                 <i class="fas fa-chevron-left text-xl"> </i>
               </button>
-              <h2 class="text-xl font-bold text-gray-800">2024年11月</h2>
-              <button
+              <h2 id="month-title" class="text-xl font-bold text-gray-800">2024年11月</h2>
+              <button id="month-next-btn"
                 class="text-gray-600 hover:text-primary transition-colors"
               >
                 <i class="fas fa-chevron-right text-xl"> </i>
@@ -328,11 +328,8 @@
               </div>
             </div>
             <!-- 日期格子 -->
-            <div class="grid grid-cols-7 gap-1">
-              <!-- 上月日期 -->
-              <div class="bg-gray-100 rounded-lg p-2 text-gray-400">
-                <div class="text-right text-sm">28</div>
-              </div>
+            <div class="grid grid-cols-7 gap-1" id="month-grid">
+              <!-- 动态渲染每日格子 -->
               <div class="bg-gray-100 rounded-lg p-2 text-gray-400">
                 <div class="text-right text-sm">29</div>
               </div>
@@ -539,18 +536,24 @@
           <div class="space-y-3">
             <div
               class="bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-colors cursor-move task-draggable"
+              draggable="true"
+              data-task-id="t1"
             >
               <div class="font-medium">完成项目文档</div>
               <div class="text-xs text-gray-500 mt-1">#工作</div>
             </div>
             <div
               class="bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-colors cursor-move task-draggable"
+              draggable="true"
+              data-task-id="t2"
             >
               <div class="font-medium">阅读技术书籍</div>
               <div class="text-xs text-gray-500 mt-1">#学习</div>
             </div>
             <div
               class="bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-colors cursor-move task-draggable"
+              draggable="true"
+              data-task-id="t3"
             >
               <div class="font-medium">购买生活用品</div>
               <div class="text-xs text-gray-500 mt-1">#生活</div>
@@ -608,7 +611,7 @@
             <label class="block text-sm font-medium text-gray-700 mb-1">
               任务标题
             </label>
-            <input
+            <input id="detail-title"
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
               type="text"
               value="完成项目提案PPT"
@@ -619,7 +622,7 @@
             <label class="block text-sm font-medium text-gray-700 mb-1">
               描述
             </label>
-            <textarea
+            <textarea id="detail-description"
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
               placeholder="添加描述..."
               rows="4"
@@ -633,7 +636,7 @@
             <label class="block text-sm font-medium text-gray-700 mb-1">
               截止日期和时间
             </label>
-            <input
+            <input id="detail-dueAt"
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
               type="datetime-local"
               value="2023-06-05T14:00"
@@ -1179,58 +1182,253 @@
     <!-- [/JSMOD] p9q_ECharts图表初始化 -- 初始化所有ECharts图表并设置数据 -->
     <!-- [JSMOD] p9q_日历视图交互功能 -->
     <script id="calendar-script">
-      // 视图切换功能
-      document.querySelectorAll('.view-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          // 移除所有按钮的激活状态
+      document.addEventListener('DOMContentLoaded', function () {
+        var monthDate = new Date();
+        monthDate.setDate(1);
+
+        var monthTitle = document.getElementById('month-title');
+        var monthGrid = document.getElementById('month-grid');
+        var dayNames = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+        var detailPanel = document.getElementById('task-detail-panel');
+        var closeDetailBtn = document.getElementById('close-detail-btn');
+        var detailTitle = document.getElementById('detail-title');
+        var detailDescription = document.getElementById('detail-description');
+        var detailDueAt = document.getElementById('detail-dueAt');
+        var selectedTaskId = null;
+
+        function getDateKey(date) {
+          var d = new Date(date);
+          return [d.getFullYear(), (d.getMonth() + 1).toString().padStart(2, '0'), d.getDate().toString().padStart(2, '0')].join('-');
+        }
+
+        function formatMonthTitle(date) {
+          return ''.concat(date.getFullYear(), '年', date.getMonth() + 1, '月');
+        }
+
+        function getDayColor(task) {
+          if (!task || !task.labels) return 'bg-gray-400';
+          if (task.labels.includes('工作')) return 'bg-task-work';
+          if (task.labels.includes('学习')) return 'bg-task-study';
+          if (task.labels.includes('生活')) return 'bg-task-life';
+          if (task.labels.includes('健康')) return 'bg-task-health';
+          return 'bg-gray-400';
+        }
+
+        function renderMonthGrid() {
+          if (!monthGrid) return;
+          monthGrid.innerHTML = '';
+
+          var year = monthDate.getFullYear();
+          var month = monthDate.getMonth();
+          monthTitle.textContent = formatMonthTitle(monthDate);
+
+          var first = new Date(year, month, 1);
+          var firstWeekday = first.getDay();
+          var startOffset = firstWeekday === 0 ? 6 : firstWeekday - 1;
+          var startDate = new Date(year, month, 1 - startOffset);
+
+          for (var i = 0; i < 42; i++) {
+            var date = new Date(startDate);
+            date.setDate(startDate.getDate() + i);
+            var day = date.getDate();
+            var isCurrentMonth = date.getMonth() === month;
+            var dateKey = getDateKey(date);
+            var dayTasks = AppState.tasks.filter(function (t) {
+              return t.dueAt && getDateKey(t.dueAt) === dateKey;
+            });
+
+            var cell = document.createElement('div');
+            cell.className = 'rounded-lg p-2 text-right text-sm transition-all border';
+            if (isCurrentMonth) {
+              cell.classList.add('bg-white', 'border-gray-200');
+            } else {
+              cell.classList.add('bg-gray-50', 'text-gray-400', 'border-gray-100');
+            }
+            if (isSameDay(date, new Date())) {
+              cell.classList.add('ring-2', 'ring-primary/60');
+            }
+            cell.dataset.date = dateKey;
+            cell.innerHTML = "<div class='flex justify-between items-start'><span class='font-medium'>" + day + "</span><span class='text-xs text-gray-400'></span></div>";
+
+            var dotContainer = document.createElement('div');
+            dotContainer.className = 'mt-1 flex flex-wrap gap-1';
+
+            dayTasks.slice(0, 3).forEach(function (task) {
+              var dot = document.createElement('span');
+              dot.className = 'w-2 h-2 rounded-full ' + getDayColor(task) + ' cursor-pointer';
+              dot.title = task.title;
+              dot.dataset.taskId = task.id;
+              dot.addEventListener('click', function (e) {
+                e.stopPropagation();
+                openTaskDetail(task);
+                showToast('任务详情已打开');
+              });
+              dotContainer.appendChild(dot);
+            });
+
+            if (dayTasks.length > 3) {
+              var more = document.createElement('span');
+              more.className = 'text-xs text-gray-400';
+              more.textContent = '...' + (dayTasks.length - 3);
+              dotContainer.appendChild(more);
+            }
+
+            cell.appendChild(dotContainer);
+            cell.addEventListener('dragover', function (e) {
+              e.preventDefault();
+            });
+            cell.addEventListener('drop', function (e) {
+              e.preventDefault();
+              var taskId = e.dataTransfer.getData('task-id');
+              if (!taskId) return;
+              var task = AppState.tasks.find(function (t) {
+                return t.id === taskId;
+              });
+              if (!task) return;
+              task.dueAt = new Date(this.dataset.date + 'T00:00:00').toISOString();
+              AppState.save();
+              showToast('任务已安排到该日');
+              renderMonthGrid();
+            });
+            cell.addEventListener('click', function () {
+              var dateStr = this.dataset.date;
+              var dayTasks2 = AppState.tasks.filter(function (t) {
+                return t.dueAt && getDateKey(t.dueAt) === dateStr;
+              });
+              if (dayTasks2.length > 0) {
+                openTaskDetail(dayTasks2[0]);
+                showToast('已打开当日首个任务详情');
+              }
+            });
+
+            monthGrid.appendChild(cell);
+          }
+        }
+
+        function openTaskDetail(task) {
+          selectedTaskId = task.id;
+          if (detailTitle) detailTitle.value = task.title || '';
+          if (detailDescription) detailDescription.value = task.description || '';
+          if (detailDueAt) {
+            var d = task.dueAt ? new Date(task.dueAt) : new Date();
+            var offset = d.getTimezoneOffset();
+            var local = new Date(d.getTime() - offset * 60 * 1000);
+            detailDueAt.value = local.toISOString().slice(0, 16);
+          }
+          if (detailPanel) detailPanel.classList.remove('hidden');
+        }
+
+        function switchToView(view) {
           document.querySelectorAll('.view-btn').forEach(function (b) {
             b.classList.remove('active', 'bg-primary', 'text-white');
             b.classList.add('bg-gray-200', 'text-gray-700');
           });
-          // 添加当前按钮的激活状态
-          this.classList.add('active', 'bg-primary', 'text-white');
-          this.classList.remove('bg-gray-200', 'text-gray-700');
-
-          // 隐藏所有视图
-          document.querySelectorAll('.calendar-view').forEach(function (view) {
-            view.classList.add('hidden');
+          var activeBtn = document.querySelector('.view-btn[data-view="' + view + '"]');
+          if (activeBtn) {
+            activeBtn.classList.add('active', 'bg-primary', 'text-white');
+            activeBtn.classList.remove('bg-gray-200', 'text-gray-700');
+          }
+          document.querySelectorAll('.calendar-view').forEach(function (v) {
+            v.classList.add('hidden');
           });
+          var viewEl = document.getElementById(view + '-view');
+          if (viewEl) viewEl.classList.remove('hidden');
+        }
 
-          // 显示当前视图
-          var viewId = this.getAttribute('data-view') + '-view';
-          document.getElementById(viewId).classList.remove('hidden');
+        document.querySelectorAll('.view-btn').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            switchToView(btn.dataset.view);
+          });
         });
-      });
 
-      // 任务拖动功能
-      document.querySelectorAll('.task-draggable').forEach(function (task) {
-        task.addEventListener('dragstart', function (e) {
-          e.dataTransfer.setData('text/plain', this.textContent);
-        });
-      });
+        var todayBtn = document.getElementById('today-btn');
+        if (todayBtn) {
+          todayBtn.addEventListener('click', function () {
+            monthDate = new Date();
+            monthDate.setDate(1);
+            switchToView('month');
+            renderMonthGrid();
+            showToast('已回到今天');
+          });
+        }
 
-      // 日期格子拖放功能
-      document.querySelectorAll('.calendar-view .bg-white.rounded-lg').forEach(function (cell) {
-        cell.addEventListener('dragover', function (e) {
-          e.preventDefault();
-        });
-        cell.addEventListener('drop', function (e) {
-          e.preventDefault();
-          var taskText = e.dataTransfer.getData('text/plain');
-          // 这里可以添加任务到日历的逻辑
-          console.log('任务添加到日历:', taskText);
-        });
-      });
+        var prevBtn = document.getElementById('month-prev-btn');
+        var nextBtn = document.getElementById('month-next-btn');
+        if (prevBtn) {
+          prevBtn.addEventListener('click', function () {
+            monthDate.setMonth(monthDate.getMonth() - 1);
+            renderMonthGrid();
+          });
+        }
+        if (nextBtn) {
+          nextBtn.addEventListener('click', function () {
+            monthDate.setMonth(monthDate.getMonth() + 1);
+            renderMonthGrid();
+          });
+        }
 
-      // 任务详情卡片功能
-      document.querySelectorAll('.calendar-view .bg-task-work, .calendar-view .bg-task-study, .calendar-view .bg-task-life').forEach(function (task) {
-        task.addEventListener('click', function () {
-          // 这里可以打开任务详情卡片
-          console.log('打开任务详情:', this.textContent);
+        var addTaskBtn = document.getElementById('add-task-btn');
+        if (addTaskBtn) {
+          addTaskBtn.addEventListener('click', function () {
+            var title = prompt('请输入任务标题');
+            if (!title) {
+              showToast('任务标题不能为空');
+              return;
+            }
+            var dateStr = prompt('请输入截止日期 (YYYY-MM-DD)', getDateKey(new Date()));
+            if (!dateStr) {
+              showToast('请填写有效日期');
+              return;
+            }
+            var due = new Date(dateStr + 'T09:00:00');
+            if (isNaN(due.getTime())) {
+              showToast('日期格式不正确');
+              return;
+            }
+            var task = {
+              id: generateId('t'),
+              title: title,
+              description: '',
+              dueAt: due.toISOString(),
+              status: 'pending',
+              priority: 'medium',
+              labels: ['工作'],
+              estimate: 1,
+              createdAt: new Date().toISOString(),
+              subTasks: []
+            };
+            AppState.tasks.push(task);
+            AppState.save();
+            renderMonthGrid();
+            showToast('任务已创建并加入日历');
+          });
+        }
+
+        document.querySelectorAll('.task-draggable').forEach(function (task) {
+          task.addEventListener('dragstart', function (e) {
+            var taskId = this.dataset.taskId;
+            if (!taskId) {
+              var title = this.textContent.trim();
+              var found = AppState.tasks.find(function (t) { return t.title && title.includes(t.title); });
+              taskId = found ? found.id : '';
+            }
+            if (taskId) {
+              e.dataTransfer.setData('task-id', taskId);
+            }
+          });
         });
+
+        if (closeDetailBtn) {
+          closeDetailBtn.addEventListener('click', function () {
+            detailPanel.classList.add('hidden');
+          });
+        }
+
+        window.renderMonthGrid = renderMonthGrid;
+        renderMonthGrid();
       });
     </script>
-    <!-- [/JSMOD] p9q_日历视图交互功能 -- 实现视图切换、任务拖动和任务详情功能 -->
+    <!-- [/JSMOD] p9q_日历视图交互功能 -- 实现视图切换、今日、月导航、任务拖拽持久化和日历渲染 -->
     <!-- [JSMOD] p9q_任务卡片交互 -->
     <script id="task-card-script">
       // 任务卡片点击事件 - 显示详情面板
@@ -1251,8 +1449,8 @@
               // 滚动到顶部
               detailPanel.scrollTop = 0;
             } else {
-              // 移动端逻辑，这里简化处理
-              alert('在移动设备上点击任务将打开详情页面');
+              // 移动端逻辑：使用底部提示代替阻断性弹窗
+              showToast('移动端已打开任务详情');
             }
           });
         });
@@ -1321,11 +1519,94 @@
             sortFilterMenu.classList.toggle('hidden');
           });
 
+          // 排序选项
+          sortFilterMenu.querySelectorAll('a').forEach(function (item) {
+            item.addEventListener('click', function () {
+              var text = this.textContent.trim();
+              if (text.includes('按时间')) {
+                AppState.tasks.sort(function (a, b) {
+                  if (!a.dueAt) return 1;
+                  if (!b.dueAt) return -1;
+                  return new Date(a.dueAt) - new Date(b.dueAt);
+                });
+                showToast('已按时间排序');
+              } else if (text.includes('按优先级')) {
+                var order = { high: 1, medium: 2, low: 3, undefined: 4 };
+                AppState.tasks.sort(function (a, b) {
+                  return (order[a.priority] || 4) - (order[b.priority] || 4);
+                });
+                showToast('已按优先级排序');
+              } else if (text.includes('按标签')) {
+                AppState.tasks.sort(function (a, b) {
+                  var la = (a.labels || [])[0] || '';
+                  var lb = (b.labels || [])[0] || '';
+                  return la.localeCompare(lb);
+                });
+                showToast('已按标签排序');
+              }
+              AppState.save();
+              sortFilterMenu.classList.add('hidden');
+              renderMonthGrid && renderMonthGrid();
+            });
+          });
+
           // 点击其他区域关闭下拉菜单
           document.addEventListener('click', function (e) {
             if (!sortFilterBtn.contains(e.target) && !sortFilterMenu.contains(e.target)) {
               sortFilterMenu.classList.add('hidden');
             }
+          });
+        }
+
+        var batchCompleteBtn = document.getElementById('batch-complete-btn');
+        var batchDeleteBtn = document.getElementById('batch-delete-btn');
+        var viewListBtn = document.getElementById('view-list-btn');
+        var viewGridBtn = document.getElementById('view-grid-btn');
+
+        if (batchCompleteBtn) {
+          batchCompleteBtn.addEventListener('click', function () {
+            var tasks = AppState.tasks || [];
+            if (tasks.length === 0) {
+              showToast('当前无任务');
+              return;
+            }
+            tasks.forEach(function (t) {
+              t.status = 'completed';
+            });
+            AppState.save();
+            showToast('已批量标记为完成');
+            renderMonthGrid && renderMonthGrid();
+          });
+        }
+
+        if (batchDeleteBtn) {
+          batchDeleteBtn.addEventListener('click', function () {
+            var before = AppState.tasks.length;
+            AppState.tasks = (AppState.tasks || []).filter(function (t) {
+              return t.status !== 'completed';
+            });
+            var after = AppState.tasks.length;
+            AppState.save();
+            showToast('已删除' + (before - after) + '个已完成任务');
+            renderMonthGrid && renderMonthGrid();
+          });
+        }
+
+        if (viewListBtn) {
+          viewListBtn.addEventListener('click', function () {
+            showToast('切换到列表视图');
+            viewListBtn.classList.add('bg-primary', 'text-white');
+            viewGridBtn.classList.remove('bg-primary', 'text-white');
+            viewGridBtn.classList.add('text-gray-500', 'hover:bg-gray-50');
+          });
+        }
+
+        if (viewGridBtn) {
+          viewGridBtn.addEventListener('click', function () {
+            showToast('切换到卡片视图');
+            viewGridBtn.classList.add('bg-primary', 'text-white');
+            viewListBtn.classList.remove('bg-primary', 'text-white');
+            viewListBtn.classList.add('text-gray-500', 'hover:bg-gray-50');
           });
         }
       });
