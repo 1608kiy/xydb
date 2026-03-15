@@ -49,28 +49,244 @@
           .scrollbar-hide::-webkit-scrollbar {
               display: none;
           }
-          .card-shadow {
-              box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+          .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+          .scrollbar-thin::-webkit-scrollbar-track { background: rgba(243, 244, 246, 0.5); border-radius: 3px; }
+          .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(79, 70, 229, 0.3); border-radius: 3px; }
+          .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(79, 70, 229, 0.5); }
+          
+          /* ✅ 毛玻璃效果增强 */
+          .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.3); }
+          .glass-strong { background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(36px); -webkit-backdrop-filter: blur(36px); border: 1px solid rgba(255, 255, 255, 0.4); }
+          .glass-max { background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(48px); -webkit-backdrop-filter: blur(48px); border: 1px solid rgba(255, 255, 255, 0.5); }
+          .glass-input { background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(209, 213, 219, 0.5); transition: all 0.3s ease; }
+          .glass-input:focus { background: rgba(255, 255, 255, 0.95); border-color: rgba(79, 70, 229, 0.5); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12); }
+          .glass-tab { 
+            background: rgba(255, 255, 255, 0.5); 
+            backdrop-filter: blur(80px); 
+            -webkit-backdrop-filter: blur(80px); 
+            border-top: 1px solid rgba(255, 255, 255, 0.5); 
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.3);
           }
-          .card-hover {
-              @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5;
+          .glass-header { 
+            background: rgba(255, 255, 255, 0.5); 
+            backdrop-filter: blur(60px); 
+            -webkit-backdrop-filter: blur(60px); 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
           }
-          .tag-chip {
-              @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+          .glass-card { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px); border: 1px solid rgba(255, 255, 255, 0.35); }
+          
+          /* ✅ 背景装饰光斑 */
+          .bg-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.15; pointer-events: none; z-index: 0; animation: orbFloat 20s ease-in-out infinite; }
+          @keyframes orbFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -30px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.95); } }
+          
+          /* ✅ 动画效果 */
+          .fade-in { animation: fadeIn 0.4s ease-out; }
+          @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+          .float { animation: float 3s ease-in-out infinite; }
+          @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+          .slide-up { animation: slideUp 0.5s ease-out; }
+          @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+          .bounce-in { animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+          @keyframes bounceIn { 0% { opacity: 0; transform: scale(0.8); } 50% { transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); } }
+          .wiggle { animation: wiggle 0.4s ease-in-out; }
+          @keyframes wiggle { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-5deg); } 75% { transform: rotate(5deg); } }
+          .slide-in-right { animation: slideInRight 0.35s ease-out; }
+          @keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+          
+          /* ✅ 用户卡片特殊样式 */
+          .user-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(249, 250, 251, 0.85) 100%);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 24px rgba(79, 70, 229, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+          }
+          .user-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #4F46E5, #7C3AED, #EC4899);
+            border-radius: 12px 12px 0 0;
+          }
+          
+          /* ✅ 统计卡片样式 */
+          .stat-card { 
+            @apply bg-white/70 backdrop-blur-sm rounded-xl p-3 transition-all duration-300;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+          }
+          .stat-card:hover {
+            @apply bg-white/80 shadow-lg;
+            transform: translateY(-2px);
+          }
+          
+          /* ✅ 设置项样式 */
+          .setting-item { @apply flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-gray-50/50 transition-all duration-200; }
+          
+          /* ✅ 徽章样式 */
+          .badge-level { 
+            @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            color: #92400E;
+            border: 1px solid #FCD34D;
+            box-shadow: 0 1px 3px rgba(245, 158, 11, 0.2);
+          }
+          
+          /* ✅ 进度条样式 */
+          .progress-bar { transition: width 0.5s ease-out; position: relative; overflow: hidden; }
+          .progress-bar::after { content: ''; position: absolute; top: 0; left: 0; height: 100%; width: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: progressShine 2s ease-in-out infinite; }
+          @keyframes progressShine { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+          
+          /* ✅ 成就徽章样式 */
+          .achievement-badge { @apply rounded-2xl p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-[2px]; }
+          .achievement-badge.locked { @apply opacity-40 grayscale; }
+          .achievement-badge.unlocked { @apply bg-gradient-to-br from-primary/5 to-secondary/5; }
+          
+          /* ✅ Tab 指示器 */
+          .tab-item { @apply relative transition-all duration-300; }
+          .tab-item:hover { @apply scale-105; }
+          .tab-item.active .tab-indicator { @apply opacity-100 scale-100; }
+          .tab-indicator { @apply absolute -top-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary rounded-full opacity-0 scale-0 transition-all duration-300; }
+          
+          /* ✅ 第三方图标统一样式 */
+          .social-icon {
+            @apply w-9 h-9 rounded-full flex items-center justify-center text-lg transition-all duration-300;
+            background: rgba(243, 244, 246, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+          }
+          .social-icon:hover {
+            @apply scale-110 shadow-md;
+            background: rgba(255, 255, 255, 0.9);
+          }
+          .social-icon.weixin { color: #10B981; }
+          .social-icon.apple { color: #1F2937; }
+          .social-icon.google { color: #EF4444; }
+          
+          /* ✅ 自定义复选框样式 */
+          .custom-checkbox {
+            @apply relative w-5 h-5 cursor-pointer appearance-none;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(209, 213, 219, 0.8);
+            border-radius: 6px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(4px);
+          }
+          .custom-checkbox:hover {
+            border-color: rgba(79, 70, 229, 0.6);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+          }
+          .custom-checkbox:checked {
+            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+            border-color: transparent;
+            animation: checkPop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+          }
+          .custom-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+          }
+          @keyframes checkPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+          }
+          
+          /* ✅ 自定义下拉列表样式 */
+          .custom-select-wrapper {
+            @apply relative inline-block;
+          }
+          .custom-select-trigger {
+            @apply flex items-center justify-between w-full px-4 py-2.5 bg-white/85 backdrop-blur-md border border-gray-200/60 rounded-xl text-xs font-medium text-gray-700 cursor-pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+          }
+          .custom-select-trigger:hover {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(79, 70, 229, 0.4);
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.12);
+            transform: translateY(-1px);
+          }
+          .custom-select-trigger.active {
+            background: rgba(255, 255, 255, 0.98);
+            border-color: rgba(79, 70, 229, 0.6);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15), 0 4px 12px rgba(79, 70, 229, 0.2);
+          }
+          .custom-select-arrow {
+            @apply ml-2 text-gray-400 transition-transform duration-300;
+          }
+          .custom-select-arrow.rotate {
+            transform: rotate(180deg);
+          }
+          .custom-select-dropdown {
+            @apply absolute left-0 mt-2 w-full glass-max rounded-xl shadow-2xl py-1.5 z-50;
+            display: none;
+            animation: dropdownSlide 0.2s ease-out;
+          }
+          .custom-select-dropdown.show {
+            display: block;
+          }
+          @keyframes dropdownSlide {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          .custom-select-option {
+            @apply px-4 py-2.5 text-xs text-gray-700 cursor-pointer transition-all duration-200;
+          }
+          .custom-select-option:hover {
+            @apply bg-primary/10 text-primary;
+          }
+          .custom-select-option.selected {
+            @apply bg-primary/15 text-primary font-semibold;
+          }
+          .custom-select-option.selected::after {
+            content: '✓';
+            float: right;
+            margin-left: 8px;
+          }
+          
+          /* ✅ 模态框样式 */
+          .modal-overlay { 
+            @apply fixed inset-0 bg-black/40 backdrop-blur-sm z-[999] flex items-center justify-center;
+            display: none;
+          }
+          .modal-overlay.hidden { display: none !important; }
+          .modal-overlay:not(.hidden) { display: flex !important; }
+          .modal-content { 
+            @apply glass-max rounded-3xl shadow-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto slide-in-right;
+          }
+          .modal-input {
+            @apply w-full px-4 py-2.5 rounded-xl glass-input focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary transition-all duration-300 text-sm;
           }
       }
     </style>
   </head>
-  <body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+  <body class="font-inter bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden">
+    <!-- ✅ 背景装饰光斑 -->
+    <div class="bg-orb w-[500px] h-[500px] bg-primary top-0 left-0"></div>
+    <div class="bg-orb w-[400px] h-[400px] bg-secondary bottom-0 right-0" style="animation-delay: -5s;"></div>
+    <div class="bg-orb w-[350px] h-[350px] bg-info top-1/2 left-1/2" style="animation-delay: -10s;"></div>
+    <div class="bg-orb w-[300px] h-[300px] bg-warning top-0 right-0" style="animation-delay: -15s;"></div>
+    <div class="bg-orb w-[250px] h-[250px] bg-success bottom-0 left-0" style="animation-delay: -20s;"></div>
+    
     <!-- 顶部导航 -->
-    <header class="bg-white shadow-sm sticky top-0 z-30">
+    <header class="glass-header sticky top-0 z-30">
       <div
         class="container mx-auto px-4 py-3 flex items-center justify-between"
       >
         <div class="flex items-center space-x-4">
           <a
             href="待办页面.html"
-            class="text-gray-600 hover:text-primary transition-colors"
+            class="text-gray-600 hover:text-primary transition-all duration-300 p-2.5 rounded-xl hover:bg-primary/10 hover:scale-110"
           >
             <i class="fas fa-arrow-left text-lg"></i>
           </a>
@@ -87,28 +303,31 @@
             <span>连续打卡 <span class="text-primary font-semibold">15</span> 天</span>
           </div>
           <div class="relative group">
-            <button class="flex items-center space-x-2 focus:outline-none">
+            <button class="flex items-center space-x-2 focus:outline-none cursor-pointer">
               <img
                 src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
                 alt="用户头像"
-                class="w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm"
+                class="w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300"
               />
               <span class="hidden md:inline-block font-medium">张明</span>
-              <i class="fas fa-chevron-down text-xs text-gray-500"></i>
+              <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform duration-300"></i>
             </button>
             <div
-              class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 hidden group-hover:block"
+              class="absolute right-0 mt-2 w-48 glass-max rounded-lg shadow-xl py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
+              style="pointer-events: none;"
             >
               <a
                 href="个人中心页面.html"
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors"
+                style="pointer-events: auto;"
               >
                 <i class="fas fa-user mr-2 text-gray-500"></i>
                 个人中心
               </a>
               <a
                 href="javascript:void(0);"
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors"
+                style="pointer-events: auto;"
               >
                 <i class="fas fa-cog mr-2 text-gray-500"></i>
                 设置
@@ -116,7 +335,8 @@
               <div class="border-t border-gray-100 my-1"></div>
               <a
                 href="登录页面.html"
-                class="block px-4 py-2 text-sm text-danger hover:bg-gray-100"
+                class="block px-4 py-2 text-sm text-danger hover:bg-danger/10 transition-colors"
+                style="pointer-events: auto;"
               >
                 <i class="fas fa-sign-out-alt mr-2"></i>
                 退出登录
@@ -129,89 +349,122 @@
 
     <div class="flex flex-1 overflow-hidden">
       <!-- 主内容 -->
-      <main class="flex-1 overflow-y-auto content-auto p-4 md:p-6">
+      <main class="flex-1 overflow-y-auto content-auto p-4 md:p-6 scrollbar-thin">
         <div
           class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[2fr,3fr] gap-6"
         >
           <!-- 左侧：个人信息 + 概览 -->
           <div class="space-y-4">
-            <!-- 个人信息卡片 -->
-            <section
-              class="card-shadow card-hover bg-white rounded-2xl p-5 md:p-6"
-            >
-              <div class="flex items-start space-x-4">
-                <div class="relative">
-                  <img
-                    id="profile-avatar"
-                    src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
-                    alt="头像"
-                    class="w-16 h-16 rounded-full object-cover border-2 border-primary/60"
-                  />
-                  <button
-                    id="change-avatar-btn"
-                    class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center text-xs shadow"
-                    title="更换头像"
-                  >
-                    <i class="fas fa-camera"></i>
-                  </button>
-                  <input id="avatar-file-input" type="file" accept="image/*" class="hidden" />
-                </div>
-                <div class="flex-1">
-                  <div class="flex items-center space-x-2 mb-1">
-                    <input
-                      id="user-name"
-                      type="text"
-                      value="张明"
-                      class="text-lg font-semibold bg-transparent border-b border-transparent hover:border-primary focus:border-primary focus:outline-none"
+            <!-- 用户信息卡片 - 重新设计 -->
+            <section class="user-card rounded-2xl p-0 fade-in relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-bl-full"></div>
+              
+              <!-- 头部区域 -->
+              <div class="relative p-6 pb-4">
+                <div class="flex items-start space-x-5">
+                  <!-- 头像区域 -->
+                  <div class="relative group flex-shrink-0">
+                    <div class="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-lg group-hover:blur-xl transition-all duration-300"></div>
+                    <img
+                      id="profile-avatar"
+                      src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
+                      alt="头像"
+                      class="relative w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg transition-transform duration-300 group-hover:scale-105"
                     />
-                    <span
-                      id="user-level-tag"
-                      class="tag-chip bg-yellow-50 text-yellow-700 border border-yellow-100"
+                    <button
+                      id="change-avatar-btn"
+                      class="absolute -bottom-2 -right-2 w-9 h-9 rounded-full bg-gradient-to-r from-primary to-secondary text-white flex items-center justify-center text-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-10"
+                      title="更换头像"
                     >
-                      <i class="fas fa-crown mr-1"></i>
-                      LV.3 努力达人
-                    </span>
+                      <i class="fas fa-camera"></i>
+                    </button>
+                    <input id="avatar-file-input" type="file" accept="image/*" class="hidden" />
                   </div>
-                  <p class="text-xs text-gray-500 mb-3">
-                    高效不是忙碌，而是专注于真正重要的事情。
-                  </p>
-                  <div class="grid grid-cols-2 gap-3 text-xs text-gray-600">
-                    <div class="space-y-1">
-                      <div class="flex items-center">
-                        <i class="fas fa-envelope text-gray-400 mr-2"></i>
-                        <span id="user-email">邮箱：user@example.com</span>
-                        <span
-                          class="ml-2 px-1.5 py-0.5 rounded-full bg-green-50 text-green-600 text-[10px]"
-                          >已验证</span
-                        >
-                      </div>
-                      <div class="flex items-center">
-                        <i class="fas fa-mobile-alt text-gray-400 mr-2"></i>
-                        <span id="user-phone">手机号：188****0000</span>
-                        <button
-                          id="edit-phone-btn"
-                          class="ml-2 text-primary text-[11px] hover:underline"
-                        >
-                          修改
-                        </button>
-                      </div>
+                  
+                  <!-- 用户名和等级 -->
+                  <div class="flex-1 pt-1">
+                    <div class="flex items-center space-x-3 mb-2">
+                      <input
+                        id="user-name"
+                        type="text"
+                        value="张明"
+                        class="text-2xl font-bold bg-transparent border-b-2 border-transparent hover:border-primary/30 focus:border-primary focus:outline-none transition-all duration-300 flex-1"
+                      />
+                      <span
+                        id="user-level-tag"
+                        class="badge-level float flex-shrink-0"
+                      >
+                        <i class="fas fa-crown mr-1"></i>
+                        LV.3
+                      </span>
                     </div>
-                    <div class="space-y-1">
-                      <div class="flex items-center justify-between">
-                        <span>经验值</span>
-                        <span id="exp-text" class="text-xs text-gray-500">0 / 1000</span>
+                    <p class="text-sm text-gray-600 italic">
+                      高效不是忙碌，而是专注于真正重要的事情。
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 分隔线 -->
+              <div class="mx-6 border-t border-gray-200/60"></div>
+              
+              <!-- 联系信息区域 -->
+              <div class="p-6 pt-4">
+                <div class="grid grid-cols-1 gap-4">
+                  <!-- 联系方式 -->
+                  <div class="space-y-3">
+                    <div class="flex items-center group">
+                      <div class="w-9 h-9 rounded-full bg-blue-50/80 flex items-center justify-center mr-3 group-hover:bg-blue-100 transition-colors">
+                        <i class="fas fa-envelope text-blue-500"></i>
                       </div>
-                      <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <div
-                          id="exp-bar"
-                          class="h-full bg-primary rounded-full"
-                          style="width: 0%"
-                        ></div>
+                      <div class="flex-1">
+                        <p class="text-xs text-gray-500 mb-0.5">邮箱地址</p>
+                        <p id="user-email" class="text-sm font-medium text-gray-800">user@example.com</p>
                       </div>
-                      <p id="exp-next-text" class="text-[11px] text-gray-400">
-                        再完成 8 个番茄即可升级至 LV.4
-                      </p>
+                      <span class="px-2.5 py-1 rounded-full bg-green-50 text-green-600 text-[10px] font-medium border border-green-100 flex items-center">
+                        <i class="fas fa-check-circle mr-1"></i>
+                        已验证
+                      </span>
                     </div>
+                    
+                    <div class="flex items-center group">
+                      <div class="w-9 h-9 rounded-full bg-purple-50/80 flex items-center justify-center mr-3 group-hover:bg-purple-100 transition-colors">
+                        <i class="fas fa-mobile-alt text-purple-500"></i>
+                      </div>
+                      <div class="flex-1">
+                        <p class="text-xs text-gray-500 mb-0.5">手机号码</p>
+                        <p id="user-phone" class="text-sm font-medium text-gray-800">188****0000</p>
+                      </div>
+                      <button
+                        id="edit-phone-btn"
+                        class="px-3 py-1.5 rounded-lg border border-gray-200 text-xs text-gray-600 hover:border-primary hover:text-primary transition-all duration-200"
+                      >
+                        修改
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <!-- 经验值进度 -->
+                  <div class="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-white/40">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 flex items-center justify-center mr-2">
+                          <i class="fas fa-star text-primary text-xs"></i>
+                        </div>
+                        <span class="text-sm font-semibold text-gray-700">经验值</span>
+                      </div>
+                      <span id="exp-text" class="text-xs font-medium text-gray-600">0 / 1000</span>
+                    </div>
+                    <div class="w-full h-3 bg-gray-100/80 rounded-full overflow-hidden shadow-inner">
+                      <div
+                        id="exp-bar"
+                        class="h-full bg-gradient-to-r from-primary via-secondary to-primary rounded-full progress-bar"
+                        style="width: 0%"
+                      ></div>
+                    </div>
+                    <p id="exp-next-text" class="text-xs text-gray-500 mt-2 text-center">
+                      再完成 8 个番茄即可升级至 LV.4
+                    </p>
                   </div>
                 </div>
               </div>
@@ -219,139 +472,146 @@
 
             <!-- 数据统计概要 -->
             <section
-              class="card-shadow card-hover bg-white rounded-2xl p-4 md:p-5"
+              class="card-shadow card-hover glass-strong rounded-2xl p-4 md:p-5 fade-in"
             >
-              <h2 class="text-sm font-semibold text-gray-800 mb-3">
+              <h2 class="text-sm font-semibold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-chart-bar text-primary mr-2"></i>
                 数据概要
               </h2>
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                <div class="bg-gray-50 rounded-xl p-3">
+                <div class="stat-card group">
                   <div
-                    class="text-xs text-gray-500 flex items-center justify-center mb-1"
+                    class="text-xs text-gray-500 flex items-center justify-center mb-2"
                   >
-                    <i class="fas fa-check-circle text-success mr-1"></i>
+                    <i class="fas fa-check-circle text-success mr-1.5 group-hover:scale-110 transition-transform duration-300"></i>
                     累计完成任务
                   </div>
-                  <div id="stat-completed-tasks" class="text-xl font-bold text-gray-800">328</div>
+                  <div id="stat-completed-tasks" class="text-2xl font-bold bg-gradient-to-r from-success to-emerald-500 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300">328</div>
                 </div>
-                <div class="bg-gray-50 rounded-xl p-3">
+                <div class="stat-card group">
                   <div
-                    class="text-xs text-gray-500 flex items-center justify-center mb-1"
+                    class="text-xs text-gray-500 flex items-center justify-center mb-2"
                   >
-                    <i class="fas fa-clock text-primary mr-1"></i>
+                    <i class="fas fa-clock text-primary mr-1.5 group-hover:scale-110 transition-transform duration-300"></i>
                     累计专注时长
                   </div>
-                  <div id="stat-focus-hours" class="text-xl font-bold text-gray-800">142 h</div>
+                  <div id="stat-focus-hours" class="text-2xl font-bold bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300">142 h</div>
                 </div>
-                <div class="bg-gray-50 rounded-xl p-3">
+                <div class="stat-card group">
                   <div
-                    class="text-xs text-gray-500 flex items-center justify-center mb-1"
+                    class="text-xs text-gray-500 flex items-center justify-center mb-2"
                   >
-                    <i class="fas fa-calendar-check text-warning mr-1"></i>
+                    <i class="fas fa-calendar-check text-warning mr-1.5 group-hover:scale-110 transition-transform duration-300"></i>
                     最长连续打卡
                   </div>
-                  <div id="stat-max-streak" class="text-xl font-bold text-gray-800">21 天</div>
+                  <div id="stat-max-streak" class="text-2xl font-bold bg-gradient-to-r from-warning to-orange-500 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300">21 天</div>
                 </div>
-                <div class="bg-gray-50 rounded-xl p-3">
+                <div class="stat-card group">
                   <div
-                    class="text-xs text-gray-500 flex items-center justify-center mb-1"
+                    class="text-xs text-gray-500 flex items-center justify-center mb-2"
                   >
-                    <i class="fas fa-fire text-danger mr-1"></i>
+                    <i class="fas fa-fire text-danger mr-1.5 group-hover:scale-110 transition-transform duration-300"></i>
                     累计番茄数
                   </div>
-                  <div id="stat-total-pomodoros" class="text-xl font-bold text-gray-800">612</div>
+                  <div id="stat-total-pomodoros" class="text-2xl font-bold bg-gradient-to-r from-danger to-red-500 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300">612</div>
                 </div>
               </div>
             </section>
 
             <!-- 存储管理 -->
             <section
-              class="card-shadow card-hover bg-white rounded-2xl p-4 md:p-5"
+              class="card-shadow card-hover glass-strong rounded-2xl p-4 md:p-5 fade-in"
             >
-              <div class="flex items-center justify-between mb-3">
-                <h2 class="text-sm font-semibold text-gray-800">存储管理</h2>
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-sm font-semibold text-gray-800 flex items-center">
+                  <i class="fas fa-database text-info mr-2"></i>
+                  存储管理
+                </h2>
                 <button
                   id="clear-cache-btn"
-                  class="text-xs text-danger hover:text-danger/80 flex items-center"
+                  class="text-xs text-danger hover:text-danger/80 flex items-center px-3 py-1.5 rounded-lg hover:bg-danger/10 transition-all duration-200 hover:scale-105"
                 >
                   <i class="fas fa-trash-alt mr-1"></i>
                   清理缓存
                 </button>
               </div>
-              <div class="space-y-3 text-xs text-gray-600">
+              <div class="space-y-3 text-sm text-gray-600">
                 <div class="flex justify-between">
                   <span>附件总大小</span>
                   <span class="font-medium text-gray-800">230 MB / 1 GB</span>
                 </div>
-                <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div class="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden shadow-inner">
                   <div
-                    class="h-full bg-secondary rounded-full"
+                    class="h-full bg-gradient-to-r from-secondary to-purple-500 rounded-full progress-bar"
                     style="width: 23%"
                   ></div>
                 </div>
-                <div class="flex justify-between">
-                  <span>图片</span>
-                  <span>156 张</span>
-                </div>
-                <div class="flex justify-between">
-                  <span>文档</span>
-                  <span>42 份</span>
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="flex justify-between bg-white/50 rounded-lg px-3 py-2 hover:bg-white/70 transition-colors">
+                    <span>图片</span>
+                    <span>156 张</span>
+                  </div>
+                  <div class="flex justify-between bg-white/50 rounded-lg px-3 py-2 hover:bg-white/70 transition-colors">
+                    <span>文档</span>
+                    <span>42 份</span>
+                  </div>
                 </div>
               </div>
             </section>
 
             <!-- 帮助与关于 -->
             <section
-              class="card-shadow card-hover bg-white rounded-2xl p-4 md:p-5"
+              class="card-shadow card-hover glass-strong rounded-2xl p-4 md:p-5 fade-in"
             >
-              <h2 class="text-sm font-semibold text-gray-800 mb-3">
+              <h2 class="text-sm font-semibold text-gray-800 mb-3 flex items-center">
+                <i class="fas fa-question-circle text-primary mr-2"></i>
                 帮助与关于
               </h2>
-              <div class="space-y-2 text-xs text-gray-700">
+              <div class="space-y-1.5 text-sm text-gray-700">
                 <button id="help-guide-btn"
-                  class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50"
+                  class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-gray-50/50 transition-all duration-200 hover:pl-5"
                 >
-                  <span><i class="fas fa-book mr-2 text-gray-400"></i>新手指南</span>
-                  <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+                  <span><i class="fas fa-book mr-2.5 text-gray-400"></i>新手指南</span>
+                  <i class="fas fa-chevron-right text-xs text-gray-400 group-hover:translate-x-1 transition-transform"></i>
                 </button>
                 <button id="help-faq-btn"
-                  class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50"
+                  class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-gray-50/50 transition-all duration-200 hover:pl-5"
                 >
-                  <span><i class="fas fa-question-circle mr-2 text-gray-400"></i>常见问题</span>
-                  <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+                  <span><i class="fas fa-question-circle mr-2.5 text-gray-400"></i>常见问题</span>
+                  <i class="fas fa-chevron-right text-xs text-gray-400 group-hover:translate-x-1 transition-transform"></i>
                 </button>
                 <button id="feedback-btn"
-                  class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50"
+                  class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-gray-50/50 transition-all duration-200 hover:pl-5"
                 >
-                  <span><i class="fas fa-comment-dots mr-2 text-gray-400"></i>意见反馈</span>
+                  <span><i class="fas fa-comment-dots mr-2.5 text-gray-400"></i>意见反馈</span>
                   <span class="text-[11px] text-gray-400">支持截图上传</span>
                 </button>
                 <button id="contact-support-btn"
-                  class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50"
+                  class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-gray-50/50 transition-all duration-200 hover:pl-5"
                 >
-                  <span><i class="fas fa-headset mr-2 text-gray-400"></i>联系客服</span>
+                  <span><i class="fas fa-headset mr-2.5 text-gray-400"></i>联系客服</span>
                   <span class="text-[11px] text-gray-400">工作日 9:00-18:00</span>
                 </button>
                 <button
-                  class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50"
+                  class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-gray-50/50 transition-all duration-200 hover:pl-5"
                 >
-                  <span><i class="fas fa-star mr-2 text-yellow-400"></i>为应用评分</span>
-                  <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+                  <span><i class="fas fa-star mr-2.5 text-yellow-400"></i>为应用评分</span>
+                  <i class="fas fa-chevron-right text-xs text-gray-400 group-hover:translate-x-1 transition-transform"></i>
                 </button>
                 <div class="border-t border-gray-100 pt-2 mt-2 text-[11px]">
-                  <div class="flex justify-between mb-1">
+                  <div class="flex justify-between mb-1.5">
                     <span>版本号</span>
-                    <span class="font-medium">v1.0.0</span>
+                    <span class="font-medium bg-primary/10 text-primary px-2 py-0.5 rounded-full">v1.0.0</span>
                   </div>
-                  <div class="flex justify-between mb-1">
+                  <div class="flex justify-between mb-1.5">
                     <span>用户协议</span>
-                    <a href="javascript:void(0);" class="text-primary"
+                    <a href="javascript:void(0);" class="text-primary hover:underline"
                       >查看</a
                     >
                   </div>
-                  <div class="flex justify-between mb-1">
+                  <div class="flex justify-between mb-1.5">
                     <span>隐私政策</span>
-                    <a href="javascript:void(0);" class="text-primary"
+                    <a href="javascript:void(0);" class="text-primary hover:underline"
                       >查看</a
                     >
                   </div>
@@ -364,77 +624,88 @@
           <div class="space-y-4">
             <!-- 账号安全 -->
             <section
-              class="card-shadow card-hover bg-white rounded-2xl p-4 md:p-5"
+              class="card-shadow card-hover glass-strong rounded-2xl p-4 md:p-5 fade-in"
             >
-              <div class="flex items-center justify-between mb-3">
-                <h2 class="text-sm font-semibold text-gray-800">账号安全</h2>
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-sm font-semibold text-gray-800 flex items-center">
+                  <i class="fas fa-shield-alt text-primary mr-2"></i>
+                  账号安全
+                </h2>
                 <span
-                  class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] bg-green-50 text-green-600"
+                  class="inline-flex items-center px-3 py-1 rounded-full text-[11px] bg-gradient-to-r from-green-50 to-emerald-50 text-green-600 border border-green-100 font-medium"
                 >
-                  <i class="fas fa-shield-alt mr-1"></i>
+                  <i class="fas fa-check-circle mr-1"></i>
                   安全等级：高
                 </span>
               </div>
-              <div class="space-y-2 text-xs text-gray-700">
-                <div class="flex items-center justify-between py-2">
-                  <div class="flex items-center space-x-2">
-                    <i class="fas fa-key text-gray-400"></i>
+              <div class="space-y-1.5 text-sm text-gray-700">
+                <div class="setting-item">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <i class="fas fa-key text-primary"></i>
+                    </div>
                     <div>
-                      <p class="font-medium">登录密码</p>
-                      <p class="text-gray-500">建议定期更换密码，提升账号安全性</p>
+                      <p class="font-medium text-gray-800">登录密码</p>
+                      <p class="text-xs text-gray-500">建议定期更换密码，提升账号安全性</p>
                     </div>
                   </div>
-                  <button id="change-password-btn" class="text-primary text-xs hover:underline">
+                  <button id="change-password-btn" class="text-primary text-xs hover:underline font-medium px-3 py-1.5 rounded-lg hover:bg-primary/10 transition-all duration-200 hover:scale-105">
                     修改
                   </button>
                 </div>
-                <div class="flex items-center justify-between py-2">
-                  <div class="flex items-center space-x-2">
-                    <i class="fas fa-mobile-alt text-gray-400"></i>
+                <div class="setting-item">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center">
+                      <i class="fas fa-mobile-alt text-secondary"></i>
+                    </div>
                     <div>
-                      <p class="font-medium">绑定手机</p>
-                      <p class="text-gray-500">用于登录、找回密码和安全验证</p>
+                      <p class="font-medium text-gray-800">绑定手机</p>
+                      <p class="text-xs text-gray-500">用于登录、找回密码和安全验证</p>
                     </div>
                   </div>
-                  <button id="bind-phone-btn" class="text-primary text-xs hover:underline">修改</button>
+                  <button id="bind-phone-btn" class="text-primary text-xs hover:underline font-medium px-3 py-1.5 rounded-lg hover:bg-primary/10 transition-all duration-200 hover:scale-105">修改</button>
                 </div>
-                <div class="flex items-center justify-between py-2">
-                  <div class="flex items-center space-x-2">
-                    <i class="fas fa-user-lock text-gray-400"></i>
+                <div class="setting-item">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-lg bg-warning/10 flex items-center justify-center">
+                      <i class="fas fa-user-lock text-warning"></i>
+                    </div>
                     <div>
-                      <p class="font-medium">两步验证</p>
-                      <p class="text-gray-500">登录时需要额外验证码，强烈推荐开启</p>
+                      <p class="font-medium text-gray-800">两步验证</p>
+                      <p class="text-xs text-gray-500">登录时需要额外验证码，强烈推荐开启</p>
                     </div>
                   </div>
                   <button
                     id="two-step-btn"
-                    class="px-3 py-1 rounded-full border border-gray-300 text-xs text-gray-700 hover:bg-gray-50"
+                    class="px-3 py-1.5 rounded-full border border-gray-200 text-xs text-gray-700 hover:bg-gray-50 font-medium transition-all duration-200 hover:scale-105"
                   >
                     去开启
                   </button>
                 </div>
-                <div class="flex items-center justify-between py-2 border-t pt-3 mt-1">
-                  <div class="flex items-center space-x-2">
-                    <i class="fas fa-link text-gray-400"></i>
+                <div class="setting-item border-t border-gray-100 pt-3 mt-1">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-lg bg-info/10 flex items-center justify-center">
+                      <i class="fas fa-link text-info"></i>
+                    </div>
                     <div>
-                      <p class="font-medium">第三方账号绑定</p>
-                      <p class="text-gray-500">
+                      <p class="font-medium text-gray-800">第三方账号绑定</p>
+                      <p class="text-xs text-gray-500">
                         微信、苹果、谷歌等账号可快速登录
                       </p>
                     </div>
                   </div>
-                  <div class="flex space-x-2 text-lg">
+                  <div class="flex space-x-3">
                     <i
-                      class="fab fa-weixin text-green-500 cursor-pointer"
+                      class="fab fa-weixin social-icon weixin"
                       title="微信已绑定"
                     ></i>
                     <i
-                      class="fab fa-apple text-gray-800 cursor-pointer opacity-40"
-                      title="点击绑定苹果"
+                      class="fab fa-apple social-icon apple"
+                      title="点击绑苹果"
                     ></i>
                     <i
-                      class="fab fa-google text-red-500 cursor-pointer opacity-40"
-                      title="点击绑定谷歌"
+                      class="fab fa-google social-icon google"
+                      title="点击绑谷歌"
                     ></i>
                   </div>
                 </div>
@@ -443,7 +714,7 @@
 
             <!-- 应用设置 -->
             <section
-              class="card-shadow card-hover bg-white rounded-2xl p-4 md:p-5"
+              class="card-shadow card-hover glass-strong rounded-2xl p-4 md:p-5 fade-in"
             >
               <h2 class="text-sm font-semibold text-gray-800 mb-3">
                 应用设置
@@ -458,21 +729,21 @@
                     <button
                       id="theme-system-btn"
                       data-theme="system"
-                      class="px-3 py-1.5 rounded-full border border-primary bg-primary text-white text-xs theme-btn"
+                      class="px-3 py-1.5 rounded-full border border-primary bg-primary text-white text-xs theme-btn transition-all duration-300 hover:scale-105"
                     >
                       跟随系统
                     </button>
                     <button
                       id="theme-light-btn"
                       data-theme="light"
-                      class="px-3 py-1.5 rounded-full border border-gray-200 text-xs theme-btn"
+                      class="px-3 py-1.5 rounded-full border border-gray-200 text-xs theme-btn transition-all duration-300 hover:scale-105"
                     >
                       浅色
                     </button>
                     <button
                       id="theme-dark-btn"
                       data-theme="dark"
-                      class="px-3 py-1.5 rounded-full border border-gray-200 text-xs theme-btn"
+                      class="px-3 py-1.5 rounded-full border border-gray-200 text-xs theme-btn transition-all duration-300 hover:scale-105"
                     >
                       深色
                     </button>
@@ -483,25 +754,25 @@
                       <button
                         id="color-blue-btn"
                         data-color="blue"
-                        class="color-btn w-5 h-5 rounded-full bg-primary border-2 border-white shadow"
+                        class="color-btn w-5 h-5 rounded-full bg-primary border-2 border-white shadow transition-transform duration-300 hover:scale-125"
                         title="蓝色"
                       ></button>
                       <button
                         id="color-purple-btn"
                         data-color="purple"
-                        class="color-btn w-5 h-5 rounded-full bg-secondary/90 border-2 border-transparent hover:border-white shadow"
+                        class="color-btn w-5 h-5 rounded-full bg-secondary/90 border-2 border-transparent hover:border-white shadow transition-transform duration-300 hover:scale-125"
                         title="紫色"
                       ></button>
                       <button
                         id="color-green-btn"
                         data-color="green"
-                        class="color-btn w-5 h-5 rounded-full bg-success/90 border-2 border-transparent hover:border-white shadow"
+                        class="color-btn w-5 h-5 rounded-full bg-success/90 border-2 border-transparent hover:border-white shadow transition-transform duration-300 hover:scale-125"
                         title="绿色"
                       ></button>
                       <button
                         id="color-pink-btn"
                         data-color="pink"
-                        class="color-btn w-5 h-5 rounded-full bg-pink-500 border-2 border-transparent hover:border-white shadow"
+                        class="color-btn w-5 h-5 rounded-full bg-pink-500 border-2 border-transparent hover:border-white shadow transition-transform duration-300 hover:scale-125"
                         title="粉色"
                       ></button>
                     </div>
@@ -513,22 +784,27 @@
                   <div class="flex items-center justify-between mb-2">
                     <span class="font-medium">通知设置</span>
                   </div>
-                  <div class="space-y-2">
-                    <label class="flex items-center justify-between">
-                      <span>任务提醒</span>
-                      <input id="notify-task-reminder" type="checkbox" class="w-4 h-4 text-primary" checked />
+                  <div class="space-y-2.5">
+                    <label class="flex items-center justify-between group cursor-pointer">
+                      <span class="group-hover:text-primary transition-colors">任务提醒</span>
+                      <input id="notify-task-reminder" type="checkbox" class="custom-checkbox" checked />
                     </label>
-                    <label class="flex items-center justify-between">
-                      <span>番茄结束提醒</span>
-                      <input id="notify-pomodoro-end" type="checkbox" class="w-4 h-4 text-primary" checked />
+                    <label class="flex items-center justify-between group cursor-pointer">
+                      <span class="group-hover:text-primary transition-colors">番茄结束提醒</span>
+                      <input id="notify-pomodoro-end" type="checkbox" class="custom-checkbox" checked />
                     </label>
-                    <label class="flex items-center justify-between">
-                      <span>每日简报推送</span>
-                      <input id="notify-daily-report" type="checkbox" class="w-4 h-4 text-primary" />
+                    <label class="flex items-center justify-between group cursor-pointer">
+                      <span class="group-hover:text-primary transition-colors">每日简报推送</span>
+                      <input id="notify-daily-report" type="checkbox" class="custom-checkbox" />
                     </label>
-                    <div class="flex items-center justify-between">
-                      <span>勿扰模式</span>
-                      <span class="text-gray-400 text-[11px]">22:00 - 08:00</span>
+                    <div class="flex items-center justify-between group cursor-pointer" onclick="openDndModal()">
+                      <span class="group-hover:text-primary transition-colors">勿扰模式</span>
+                      <div class="flex items-center space-x-2">
+                        <span class="text-gray-500 text-[11px]" id="dnd-display-time">22:00 - 08:00</span>
+                        <button class="px-3 py-1.5 rounded-lg border border-gray-200 text-xs text-gray-600 hover:border-primary hover:text-primary transition-all duration-200">
+                          设置
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -543,7 +819,7 @@
                       <p class="text-gray-500 mb-1">默认番茄时长</p>
                       <select
                         id="focus-duration-select"
-                        class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs"
+                        class="custom-select w-full"
                       >
                         <option value="25">25 分钟</option>
                         <option value="30">30 分钟</option>
@@ -555,7 +831,7 @@
                       <p class="text-gray-500 mb-1">短休息</p>
                       <select
                         id="short-break-select"
-                        class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs"
+                        class="custom-select w-full"
                       >
                         <option value="5">5 分钟</option>
                         <option value="10">10 分钟</option>
@@ -565,7 +841,7 @@
                       <p class="text-gray-500 mb-1">长休息</p>
                       <select
                         id="long-break-select"
-                        class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs"
+                        class="custom-select w-full"
                       >
                         <option value="15">15 分钟</option>
                         <option value="20">20 分钟</option>
@@ -576,35 +852,35 @@
                       <p class="text-gray-500 mb-1">长休息触发间隔</p>
                       <select
                         id="long-break-interval-select"
-                        class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs"
+                        class="custom-select w-full"
                       >
                         <option value="4">4 个番茄</option>
                         <option value="5">5 个番茄</option>
                       </select>
                     </div>
                   </div>
-                  <div class="mt-2 space-y-1.5">
-                    <label class="flex items-center">
+                  <div class="mt-2 space-y-2.5">
+                    <label class="flex items-center group cursor-pointer">
                       <input
                         id="auto-start-break"
                         type="checkbox"
-                        class="w-4 h-4 text-primary mr-2"
+                        class="custom-checkbox mr-2"
                         checked
                       />
-                      <span>自动开始休息</span>
+                      <span class="group-hover:text-primary transition-colors">自动开始休息</span>
                     </label>
-                    <label class="flex items-center">
-                      <input id="auto-start-pomodoro" type="checkbox" class="w-4 h-4 text-primary mr-2" />
-                      <span>自动开始下一个番茄</span>
+                    <label class="flex items-center group cursor-pointer">
+                      <input id="auto-start-pomodoro" type="checkbox" class="custom-checkbox mr-2" />
+                      <span class="group-hover:text-primary transition-colors">自动开始下一个番茄</span>
                     </label>
-                    <label class="flex items-center">
+                    <label class="flex items-center group cursor-pointer">
                       <input
                         id="focus-mode-mute"
                         type="checkbox"
-                        class="w-4 h-4 text-primary mr-2"
+                        class="custom-checkbox mr-2"
                         checked
                       />
-                      <span>专注时屏蔽通知</span>
+                      <span class="group-hover:text-primary transition-colors">专注时屏蔽通知</span>
                     </label>
                   </div>
                 </div>
@@ -618,7 +894,7 @@
                         <span>一周开始于</span>
                         <select
                           id="calendar-week-start"
-                          class="px-2 py-1 border border-gray-300 rounded-lg text-xs"
+                          class="custom-select w-auto px-2 py-1"
                         >
                           <option value="monday">周一</option>
                           <option value="sunday">周日</option>
@@ -628,21 +904,21 @@
                         <span>默认视图</span>
                         <select
                           id="calendar-default-view"
-                          class="px-2 py-1 border border-gray-300 rounded-lg text-xs"
+                          class="custom-select w-auto px-2 py-1"
                         >
                           <option value="month">月视图</option>
                           <option value="week">周视图</option>
                           <option value="day">日视图</option>
                         </select>
                       </div>
-                      <label class="flex items-center text-[11px]">
+                      <label class="flex items-center text-[11px] cursor-pointer group">
                         <input
                           id="calendar-show-lunar"
                           type="checkbox"
-                          class="w-4 h-4 text-primary mr-2"
+                          class="custom-checkbox mr-2"
                           checked
                         />
-                        <span>显示农历和节日</span>
+                        <span class="group-hover:text-primary transition-colors">显示农历和节日</span>
                       </label>
                     </div>
                   </div>
@@ -651,29 +927,29 @@
                     <div class="space-y-1.5 text-[11px]">
                       <button
                         id="export-data-btn"
-                        class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50"
+                        class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all duration-200 hover:scale-[1.02]"
                       >
                         <span>导出数据（JSON / CSV）</span>
-                        <i class="fas fa-download text-gray-400"></i>
+                        <i class="fas fa-download text-gray-400 group-hover:text-primary transition-colors"></i>
                       </button>
                       <button
                         id="manual-backup-btn"
-                        class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50"
+                        class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all duration-200 hover:scale-[1.02]"
                       >
                         <span>手动备份</span>
-                        <i class="fas fa-cloud-upload-alt text-gray-400"></i>
+                        <i class="fas fa-cloud-upload-alt text-gray-400 group-hover:text-primary transition-colors"></i>
                       </button>
-                      <label class="flex items-center">
+                      <label class="flex items-center cursor-pointer group">
                         <input
                           type="checkbox"
-                          class="w-4 h-4 text-primary mr-2"
+                          class="custom-checkbox mr-2"
                           checked
                         />
-                        <span>允许匿名使用统计，用于产品优化</span>
+                        <span class="group-hover:text-primary transition-colors">允许匿名使用统计，用于产品优化</span>
                       </label>
                       <button
                         id="clear-all-data-btn"
-                        class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-danger/40 text-danger hover:bg-danger/5 mt-1"
+                        class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-danger/40 text-danger hover:bg-danger/5 mt-1 transition-all duration-200 hover:scale-[1.02]"
                       >
                         <span>清除所有数据</span>
                         <i class="fas fa-exclamation-triangle text-danger"></i>
@@ -686,13 +962,13 @@
                 <div class="border-t border-gray-100 pt-3 flex flex-wrap gap-2">
                   <button
                     id="logout-btn"
-                    class="px-3 py-1.5 rounded-lg border border-gray-300 text-xs text-gray-700 hover:bg-gray-50"
+                    class="px-3 py-1.5 rounded-lg border border-gray-300 text-xs text-gray-700 hover:bg-gray-50 transition-all duration-200 hover:scale-105"
                   >
                     退出登录
                   </button>
                   <button
                     id="delete-account-btn"
-                    class="px-3 py-1.5 rounded-lg border border-danger text-xs text-danger hover:bg-danger/5"
+                    class="px-3 py-1.5 rounded-lg border border-danger text-xs text-danger hover:bg-danger/5 transition-all duration-200 hover:scale-105"
                   >
                     注销账号
                   </button>
@@ -702,32 +978,36 @@
 
             <!-- 成就徽章墙 -->
             <section
-              class="card-shadow card-hover bg-white rounded-2xl p-4 md:p-5"
+              class="card-shadow card-hover glass-strong rounded-2xl p-4 md:p-5 fade-in"
             >
               <div class="flex items-center justify-between mb-3">
                 <h2 class="text-sm font-semibold text-gray-800">
                   成就徽章墙
                 </h2>
-                <select
-                  class="px-2 py-1 rounded-lg border border-gray-200 text-xs text-gray-600"
-                >
-                  <option>全部分类</option>
-                  <option>新手</option>
-                  <option>效率</option>
-                  <option>专注</option>
-                  <option>坚持</option>
-                </select>
+                <div class="custom-select-wrapper w-32">
+                  <div class="custom-select-trigger" onclick="toggleAchievementFilter()">
+                    <span id="achievement-filter-text">全部分类</span>
+                    <i class="fas fa-chevron-down custom-select-arrow" id="achievement-filter-arrow"></i>
+                  </div>
+                  <div class="custom-select-dropdown" id="achievement-filter-dropdown">
+                    <div class="custom-select-option selected" onclick="selectAchievementFilter('all', this)">全部分类</div>
+                    <div class="custom-select-option" onclick="selectAchievementFilter('newbie', this)">新手</div>
+                    <div class="custom-select-option" onclick="selectAchievementFilter('efficiency', this)">效率</div>
+                    <div class="custom-select-option" onclick="selectAchievementFilter('focus', this)">专注</div>
+                    <div class="custom-select-option" onclick="selectAchievementFilter('persistence', this)">坚持</div>
+                  </div>
+                </div>
               </div>
               <div class="grid grid-cols-3 sm:grid-cols-4 gap-3 text-center">
-                <div class="rounded-xl bg-primary/5 p-3">
-                  <div class="text-2xl mb-1">🌱</div>
+                <div class="achievement-badge unlocked group">
+                  <div class="text-2xl mb-1 group-hover:scale-110 transition-transform duration-300">🌱</div>
                   <div class="text-xs font-medium text-gray-800">新手上路</div>
                   <div class="text-[10px] text-gray-500 mt-0.5">
                     完成第 1 个任务
                   </div>
                 </div>
-                <div class="rounded-xl bg-success/5 p-3">
-                  <div class="text-2xl mb-1">🔥</div>
+                <div class="achievement-badge unlocked group">
+                  <div class="text-2xl mb-1 group-hover:scale-110 transition-transform duration-300">🔥</div>
                   <div class="text-xs font-medium text-gray-800">
                     番茄小能手
                   </div>
@@ -735,15 +1015,15 @@
                     累计完成 100 个番茄
                   </div>
                 </div>
-                <div class="rounded-xl bg-warning/5 p-3 opacity-40">
-                  <div class="text-2xl mb-1">⏰</div>
+                <div class="achievement-badge locked group">
+                  <div class="text-2xl mb-1 group-hover:scale-110 transition-transform duration-300">⏰</div>
                   <div class="text-xs font-medium text-gray-800">早起打卡王</div>
                   <div class="text-[10px] text-gray-500 mt-0.5">
                     连续 30 天早起打卡
                   </div>
                 </div>
-                <div class="rounded-xl bg-gray-100 p-3 opacity-40">
-                  <div class="text-2xl mb-1">💎</div>
+                <div class="achievement-badge locked group">
+                  <div class="text-2xl mb-1 group-hover:scale-110 transition-transform duration-300">💎</div>
                   <div class="text-xs font-medium text-gray-800">效率大师</div>
                   <div class="text-[10px] text-gray-500 mt-0.5">
                     综合效率评分达到 A+
@@ -758,55 +1038,258 @@
 
     <!-- 底部 Tab 栏 -->
     <footer
-      class="bg-white border-t border-gray-200 py-2 px-4 sticky bottom-0 z-20"
+      class="glass-tab py-2 px-3 sticky bottom-0 z-40"
     >
       <div class="container mx-auto flex justify-around items-center">
         <a
           href="待办页面.html"
-          class="flex flex-col items-center text-gray-500 hover:text-primary"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-3 py-1.5 rounded-xl hover:bg-primary/10 transition-all duration-300"
         >
-          <i class="fas fa-list-alt text-xl"></i>
-          <span class="text-xs mt-1">待办</span>
+          <i class="fas fa-list-alt text-lg"></i>
+          <span class="text-[11px] mt-1">待办</span>
+          <span class="tab-indicator"></span>
         </a>
         <a
           href="日历页面.html"
-          class="flex flex-col items-center text-gray-500 hover:text-primary"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-3 py-1.5 rounded-xl hover:bg-primary/10 transition-all duration-300"
         >
-          <i class="fas fa-calendar text-xl"></i>
-          <span class="text-xs mt-1">日历</span>
+          <i class="fas fa-calendar text-lg"></i>
+          <span class="text-[11px] mt-1">日历</span>
+          <span class="tab-indicator"></span>
         </a>
         <a
           href="番茄钟页面.html"
-          class="flex flex-col items-center text-gray-500 hover:text-primary"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-3 py-1.5 rounded-xl hover:bg-primary/10 transition-all duration-300"
         >
-          <i class="fas fa-clock text-xl"></i>
-          <span class="text-xs mt-1">番茄钟</span>
+          <i class="fas fa-clock text-lg"></i>
+          <span class="text-[11px] mt-1">番茄钟</span>
+          <span class="tab-indicator"></span>
         </a>
         <a
           href="数据周报页面.html"
-          class="flex flex-col items-center text-gray-500 hover:text-primary"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-3 py-1.5 rounded-xl hover:bg-primary/10 transition-all duration-300"
         >
-          <i class="fas fa-chart-line text-xl"></i>
-          <span class="text-xs mt-1">数据周报</span>
+          <i class="fas fa-chart-line text-lg"></i>
+          <span class="text-[11px] mt-1">数据周报</span>
+          <span class="tab-indicator"></span>
         </a>
         <a
           href="打卡页面.html"
-          class="flex flex-col items-center text-gray-500 hover:text-primary"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-3 py-1.5 rounded-xl hover:bg-primary/10 transition-all duration-300"
         >
-          <i class="fas fa-check-circle text-xl"></i>
-          <span class="text-xs mt-1">打卡</span>
+          <i class="fas fa-check-circle text-lg"></i>
+          <span class="text-[11px] mt-1">打卡</span>
+          <span class="tab-indicator"></span>
         </a>
         <!-- 当前页：个人中心 -->
         <a
           href="个人中心页面.html"
-          class="flex flex-col items-center text-primary"
+          class="tab-item active flex flex-col items-center text-primary px-3 py-1.5 rounded-xl bg-primary/10"
         >
-          <i class="fas fa-user text-xl"></i>
-          <span class="text-xs mt-1">个人中心</span>
+          <i class="fas fa-user text-lg"></i>
+          <span class="text-[11px] mt-1 font-semibold">个人中心</span>
+          <span class="tab-indicator"></span>
         </a>
       </div>
     </footer>
+
+    <!-- ✅ 勿扰模式设置模态框 -->
+    <div id="dnd-modal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-xl font-bold text-gray-800">
+            <i class="fas fa-moon text-primary mr-2"></i>勿扰模式设置
+          </h2>
+          <button class="text-gray-500 hover:text-gray-700 p-2.5 rounded-xl hover:bg-gray-100" type="button" onclick="closeDndModal()">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+        <div class="space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">开始时间</label>
+            <input class="modal-input" id="dnd-start-time" type="time" value="22:00" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">结束时间</label>
+            <input class="modal-input" id="dnd-end-time" type="time" value="08:00" />
+          </div>
+          <div class="bg-primary/5 rounded-xl p-4 border border-primary/20">
+            <p class="text-xs text-gray-600">
+              <i class="fas fa-info-circle text-primary mr-1.5"></i>
+              在勿扰模式期间，将不会收到任何通知提醒。
+            </p>
+          </div>
+          <div class="flex space-x-3 pt-2">
+            <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200" type="button" onclick="closeDndModal()">
+              取消
+            </button>
+            <button class="flex-1 py-2.5 btn-primary-glass" type="button" onclick="saveDndSettings()">
+              <i class="fas fa-save mr-2"></i>保存设置
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script>
+      var hasShownThemeToast = false;
+      
+      function showToast(message, type) {
+        type = type || 'success';
+        var toast = document.createElement('div');
+        var icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+        var color = type === 'success' ? 'text-primary' : 'text-danger';
+        var bgColor = type === 'success' ? 'bg-primary/10' : 'bg-danger/10';
+        toast.className = 'fixed top-20 right-4 z-[1001] glass-max rounded-2xl shadow-2xl p-4 flex items-center space-x-3 min-w-[300px] bounce-in';
+        toast.innerHTML = '<div class="w-10 h-10 rounded-full ' + bgColor + ' flex items-center justify-center"><i class="fas ' + icon + ' ' + color + '"></i></div>' +
+          '<div class="flex-1"><p class="font-medium text-gray-800 text-sm">提示</p><p class="text-xs text-gray-500">' + message + '</p></div>' +
+          '<button class="text-gray-400 hover:text-gray-600" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>';
+        document.body.appendChild(toast);
+        setTimeout(function() { toast.remove(); }, 3000);
+      }
+
+      // ✅ 自定义下拉列表通用函数
+      function initCustomSelect(selectElement) {
+        if (!selectElement) return;
+        
+        const wrapper = document.createElement('div');
+        wrapper.className = 'custom-select-wrapper';
+        
+        const trigger = document.createElement('div');
+        trigger.className = 'custom-select-trigger';
+        trigger.innerHTML = '<span>' + selectElement.options[selectElement.selectedIndex].text + '</span><i class="fas fa-chevron-down custom-select-arrow"></i>';
+        
+        const dropdown = document.createElement('div');
+        dropdown.className = 'custom-select-dropdown';
+        
+        for (let i = 0; i < selectElement.options.length; i++) {
+          const option = document.createElement('div');
+          option.className = 'custom-select-option' + (i === selectElement.selectedIndex ? ' selected' : '');
+          option.textContent = selectElement.options[i].text;
+          option.onclick = (function(idx) {
+            return function() {
+              selectElement.selectedIndex = idx;
+              trigger.querySelector('span').textContent = selectElement.options[idx].text;
+              dropdown.classList.remove('show');
+              trigger.classList.remove('active');
+              trigger.querySelector('.custom-select-arrow').classList.remove('rotate');
+              selectElement.dispatchEvent(new Event('change'));
+            };
+          })(i);
+          dropdown.appendChild(option);
+        }
+        
+        trigger.onclick = function(e) {
+          e.stopPropagation();
+          const isActive = dropdown.classList.contains('show');
+          document.querySelectorAll('.custom-select-dropdown').forEach(d => d.classList.remove('show'));
+          document.querySelectorAll('.custom-select-trigger').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.custom-select-arrow').forEach(a => a.classList.remove('rotate'));
+          if (!isActive) {
+            dropdown.classList.add('show');
+            trigger.classList.add('active');
+            trigger.querySelector('.custom-select-arrow').classList.add('rotate');
+          }
+        };
+        
+        wrapper.appendChild(trigger);
+        wrapper.appendChild(dropdown);
+        selectElement.parentNode.replaceChild(wrapper, selectElement);
+      }
+
+      // ✅ 成就徽章筛选下拉
+      function toggleAchievementFilter() {
+        const dropdown = document.getElementById('achievement-filter-dropdown');
+        const arrow = document.getElementById('achievement-filter-arrow');
+        const trigger = dropdown.previousElementSibling;
+        const isActive = dropdown.classList.contains('show');
+        
+        document.querySelectorAll('.custom-select-dropdown').forEach(d => d.classList.remove('show'));
+        document.querySelectorAll('.custom-select-trigger').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.custom-select-arrow').forEach(a => a.classList.remove('rotate'));
+        
+        if (!isActive) {
+          dropdown.classList.add('show');
+          trigger.classList.add('active');
+          arrow.classList.add('rotate');
+        }
+      }
+
+      function selectAchievementFilter(value, element) {
+        const textMap = {
+          'all': '全部分类',
+          'newbie': '新手',
+          'efficiency': '效率',
+          'focus': '专注',
+          'persistence': '坚持'
+        };
+        
+        document.getElementById('achievement-filter-text').textContent = textMap[value];
+        document.querySelectorAll('#achievement-filter-dropdown .custom-select-option').forEach(opt => opt.classList.remove('selected'));
+        element.classList.add('selected');
+        
+        const dropdown = document.getElementById('achievement-filter-dropdown');
+        const arrow = document.getElementById('achievement-filter-arrow');
+        const trigger = dropdown.previousElementSibling;
+        
+        dropdown.classList.remove('show');
+        trigger.classList.remove('active');
+        arrow.classList.remove('rotate');
+        
+        showToast('已筛选：' + textMap[value]);
+      }
+
+      // ✅ 勿扰模式模态框函数
+      function openDndModal() {
+        const modal = document.getElementById('dnd-modal');
+        if (modal) {
+          modal.classList.remove('hidden');
+        }
+      }
+
+      function closeDndModal() {
+        const modal = document.getElementById('dnd-modal');
+        if (modal) {
+          modal.classList.add('hidden');
+        }
+      }
+
+      function saveDndSettings() {
+        const startTime = document.getElementById('dnd-start-time').value;
+        const endTime = document.getElementById('dnd-end-time').value;
+        
+        if (!startTime || !endTime) {
+          showToast('⚠️ 请选择完整的时间范围', 'error');
+          return;
+        }
+        
+        localStorage.setItem('dndStartTime', startTime);
+        localStorage.setItem('dndEndTime', endTime);
+        
+        document.getElementById('dnd-display-time').textContent = startTime + ' - ' + endTime;
+        
+        closeDndModal();
+        showToast('✅ 勿扰时间已设置：' + startTime + ' - ' + endTime);
+      }
+
+      function loadDndSettings() {
+        const savedStart = localStorage.getItem('dndStartTime') || '22:00';
+        const savedEnd = localStorage.getItem('dndEndTime') || '08:00';
+        
+        document.getElementById('dnd-display-time').textContent = savedStart + ' - ' + savedEnd;
+        document.getElementById('dnd-start-time').value = savedStart;
+        document.getElementById('dnd-end-time').value = savedEnd;
+      }
+
+      // 点击其他地方关闭下拉
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-select-wrapper')) {
+          document.querySelectorAll('.custom-select-dropdown').forEach(d => d.classList.remove('show'));
+          document.querySelectorAll('.custom-select-trigger').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.custom-select-arrow').forEach(a => a.classList.remove('rotate'));
+        }
+      });
+
       document.addEventListener('DOMContentLoaded', function () {
         AppState.init();
         renderHeader('profile');
@@ -837,8 +1320,8 @@
 
         if (profileAvatar) profileAvatar.src = AppState.user?.avatar || profileAvatar.src;
         if (userName) userName.value = AppState.user?.name || '轻悦用户';
-        if (userEmail) userEmail.textContent = '邮箱：' + (AppState.user?.email || 'demo@qingyue.com');
-        if (userPhone) userPhone.textContent = '手机号：' + (AppState.user?.phone || '13800000000');
+        if (userEmail) userEmail.textContent = AppState.user?.email || 'demo@qingyue.com';
+        if (userPhone) userPhone.textContent = AppState.user?.phone || '13800000000';
 
         var exp = Number(AppState.user?.exp || 0);
         var level = Number(AppState.user?.level || 1);
@@ -847,7 +1330,7 @@
         if (expText) expText.textContent = exp + ' / ' + maxExp;
         if (expBar) expBar.style.width = expPct + '%';
         if (expNextText) expNextText.textContent = '再完成 ' + Math.max(1, 10 - Math.floor(exp / 100)) + ' 个番茄即可升级至 LV.' + (level + 1);
-        if (userLevelTag) userLevelTag.innerHTML = '<i class="fas fa-crown mr-1"></i>LV.' + level + ' 努力达人';
+        if (userLevelTag) userLevelTag.innerHTML = '<i class="fas fa-crown mr-1"></i>LV.' + level;
 
         if (changeAvatarBtn && avatarFileInput && profileAvatar) {
           changeAvatarBtn.addEventListener('click', function () {
@@ -877,7 +1360,7 @@
             }
             AppState.user.phone = phone;
             AppState.save();
-            if (userPhone) userPhone.textContent = '手机号：' + phone;
+            if (userPhone) userPhone.textContent = phone;
             showToast('手机号已更新');
           });
         }
@@ -929,7 +1412,6 @@
         if (feedbackBtn) feedbackBtn.addEventListener('click', soonToast);
         if (contactSupportBtn) contactSupportBtn.addEventListener('click', soonToast);
 
-        // ========== BUG-27: 用户名保存 ==========
         if (userName) {
           userName.addEventListener('blur', function () {
             if (userName.value.trim()) {
@@ -945,8 +1427,6 @@
           });
         }
 
-        // ========== BUG-28: 应用设置持久化 ==========
-        // 初始化设置值
         initializeSettings();
 
         function applyTheme(mode) {
@@ -959,7 +1439,6 @@
           }
         }
 
-        // 主题模式按钮
         var themeBtns = document.querySelectorAll('.theme-btn');
         var setThemeMode = function (mode) {
           themeBtns.forEach(function (b) {
@@ -974,16 +1453,18 @@
           AppState.settings.theme = mode;
           AppState.save();
           applyTheme(mode);
-          showToast('主题已设置');
+          if (hasShownThemeToast) {
+            showToast('主题已设置');
+          }
         };
 
         themeBtns.forEach(function (btn) {
           btn.addEventListener('click', function () {
+            hasShownThemeToast = true;
             setThemeMode(this.dataset.theme);
           });
         });
 
-        // 主题色按钮
         var colorBtns = document.querySelectorAll('.color-btn');
         colorBtns.forEach(function (btn) {
           btn.addEventListener('click', function () {
@@ -999,7 +1480,6 @@
           });
         });
 
-        // 立即应用当前主题
         if (AppState.settings?.theme) {
           applyTheme(AppState.settings.theme);
           setThemeMode(AppState.settings.theme);
@@ -1007,7 +1487,6 @@
           setThemeMode('system');
         }
 
-        // 通知设置
         var notifyTaskReminder = document.getElementById('notify-task-reminder');
         var notifyPomodoroEnd = document.getElementById('notify-pomodoro-end');
         var notifyDailyReport = document.getElementById('notify-daily-report');
@@ -1036,7 +1515,6 @@
           });
         }
 
-        // 专注设置
         var focusDurationSelect = document.getElementById('focus-duration-select');
         var shortBreakSelect = document.getElementById('short-break-select');
         var longBreakSelect = document.getElementById('long-break-select');
@@ -1074,7 +1552,6 @@
           });
         }
 
-        // 专注模式复选框
         var autoStartBreak = document.getElementById('auto-start-break');
         var autoStartPomodoro = document.getElementById('auto-start-pomodoro');
         var focusModeMute = document.getElementById('focus-mode-mute');
@@ -1103,7 +1580,6 @@
           });
         }
 
-        // 日历设置
         var calendarWeekStart = document.getElementById('calendar-week-start');
         var calendarDefaultView = document.getElementById('calendar-default-view');
         var calendarShowLunar = document.getElementById('calendar-show-lunar');
@@ -1132,7 +1608,6 @@
           });
         }
 
-        // ========== BUG-29: 数据概要卡片显示真实数据 ==========
         updateDataStatistics();
 
         var clearCacheBtn = document.getElementById('clear-cache-btn');
@@ -1169,12 +1644,20 @@
             }
           });
         }
+        
+        // ✅ 初始化自定义下拉列表
+        initCustomSelect(document.getElementById('focus-duration-select'));
+        initCustomSelect(document.getElementById('short-break-select'));
+        initCustomSelect(document.getElementById('long-break-select'));
+        initCustomSelect(document.getElementById('long-break-interval-select'));
+        initCustomSelect(document.getElementById('calendar-week-start'));
+        initCustomSelect(document.getElementById('calendar-default-view'));
+        
+        // ✅ 加载勿扰设置
+        loadDndSettings();
       });
 
-      // ========== 辅助函数 ==========
-
       function initializeSettings() {
-        // 初始化主题按钮状态
         var currentTheme = AppState.settings?.theme || 'system';
         var currentColor = AppState.settings?.themeColor || 'blue';
 
@@ -1189,7 +1672,6 @@
           }
         });
 
-        // 初始化颜色按钮状态
         var colorBtns = document.querySelectorAll('.color-btn');
         colorBtns.forEach(function (btn) {
           if (btn.dataset.color === currentColor) {
@@ -1201,7 +1683,6 @@
           }
         });
 
-        // 初始化通知设置
         var notifyTaskReminder = document.getElementById('notify-task-reminder');
         var notifyPomodoroEnd = document.getElementById('notify-pomodoro-end');
         var notifyDailyReport = document.getElementById('notify-daily-report');
@@ -1210,7 +1691,6 @@
         if (notifyPomodoroEnd) notifyPomodoroEnd.checked = AppState.settings?.notifications?.pomodoroEnd !== false;
         if (notifyDailyReport) notifyDailyReport.checked = AppState.settings?.notifications?.dailyReport === true;
 
-        // 初始化专注设置
         var focusDurationSelect = document.getElementById('focus-duration-select');
         var shortBreakSelect = document.getElementById('short-break-select');
         var longBreakSelect = document.getElementById('long-break-select');
@@ -1221,7 +1701,6 @@
         if (longBreakSelect) longBreakSelect.value = AppState.settings?.pomodoro?.longBreak || 15;
         if (longBreakIntervalSelect) longBreakIntervalSelect.value = AppState.settings?.pomodoro?.longBreakInterval || 4;
 
-        // 初始化专注模式复选框
         var autoStartBreak = document.getElementById('auto-start-break');
         var autoStartPomodoro = document.getElementById('auto-start-pomodoro');
         var focusModeMute = document.getElementById('focus-mode-mute');
@@ -1230,7 +1709,6 @@
         if (autoStartPomodoro) autoStartPomodoro.checked = AppState.settings?.pomodoro?.autoStartNext === true;
         if (focusModeMute) focusModeMute.checked = AppState.settings?.pomodoro?.focusModeMute !== false;
 
-        // 初始化日历设置
         var calendarWeekStart = document.getElementById('calendar-week-start');
         var calendarDefaultView = document.getElementById('calendar-default-view');
         var calendarShowLunar = document.getElementById('calendar-show-lunar');
@@ -1241,13 +1719,11 @@
       }
 
       function updateDataStatistics() {
-        // 获取数据统计
         var stats = getCheckinStats();
         var completedTasks = (AppState.tasks || []).filter(function(t) { return t.status === 'completed'; }).length;
         var totalFocusMinutes = (AppState.pomodoroSessions || []).reduce(function(sum, s) { return sum + (s.actualMinutes || 0); }, 0);
         var totalPomodoros = (AppState.pomodoroSessions || []).filter(function(s) { return s.completed; }).length;
 
-        // 更新统计卡片
         var completedTasksEl = document.getElementById('stat-completed-tasks');
         var focusHoursEl = document.getElementById('stat-focus-hours');
         var maxStreakEl = document.getElementById('stat-max-streak');
@@ -1264,4 +1740,3 @@
     </script>
   </body>
 </html>
-
