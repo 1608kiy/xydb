@@ -5,6 +5,9 @@
     <title>待办清单</title>
     <script src="https://res.gemcoder.com/js/reload.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="data.js"></script>
+    <script src="common.js"></script>
+    <script src="components.js"></script>
     <link
       href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
@@ -1172,7 +1175,7 @@
         });
 
         function showCompletionModal() {
-          alert('恭喜完成一个番茄！休息一下吧');
+          showToast('恭喜完成一个番茄！休息一下吧');
         }
       });
     </script>
@@ -1192,7 +1195,7 @@
           btn.addEventListener('click', function () {
             var taskTitle = this.closest('.task-card').querySelector('h3').textContent;
             navigator.clipboard.writeText(taskTitle).then(function () {
-              alert('任务标题已复制到剪贴板');
+              showToast('任务标题已复制到剪贴板');
             });
           });
         });
@@ -1203,11 +1206,42 @@
             var taskCard = this.closest('.task-card');
             if (confirm('确定要删除这个任务吗？')) {
               taskCard.remove();
+              showToast('任务已删除');
             }
           });
         });
       });
     </script>
     <!-- [/JSMOD] r8s_分享和复制功能 -- 处理分享、复制和删除待办功能 -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        AppState.init();
+        renderHeader('report');
+        renderFooter('report');
+        bindGlobalLogout();
+        var now = new Date();
+        document.getElementById('current-date').textContent = now.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'short' });
+        
+        // BUG-20: 计算并更新周报统计数据
+        const weekStats = getWeeklyStats();
+        if (weekStats) {
+          // 更新完成任务数
+          const taskCountEl = document.querySelector('#completed-tasks');
+          if (taskCountEl) taskCountEl.textContent = weekStats.completedTasks;
+          
+          // 更新专注时长（转换为小时）
+          const focusTimeEl = document.querySelector('#focus-hours');
+          if (focusTimeEl) focusTimeEl.textContent = (weekStats.totalFocusMinutes / 60).toFixed(1);
+          
+          // 更新番茄总数
+          const pomodoroEl = document.querySelector('#pomodoro-count');
+          if (pomodoroEl) pomodoroEl.textContent = weekStats.totalPomodoros;
+          
+          // 更新效率评分
+          const scoreEl = document.querySelector('#effectiveness-score');
+          if (scoreEl) scoreEl.textContent = weekStats.effectivenessScore;
+        }
+      });
+    </script>
   </body>
 </html>

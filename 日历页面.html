@@ -5,6 +5,9 @@
     <title>待办清单</title>
     <script src="https://res.gemcoder.com/js/reload.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="data.js"></script>
+    <script src="common.js"></script>
+    <script src="components.js"></script>
     <link
       href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
@@ -1420,7 +1423,7 @@
           btn.addEventListener('click', function () {
             var taskTitle = this.closest('.task-card').querySelector('h3').textContent;
             navigator.clipboard.writeText(taskTitle).then(function () {
-              alert('任务标题已复制到剪贴板');
+              showToast('任务标题已复制到剪贴板');
             });
           });
         });
@@ -1431,12 +1434,21 @@
             var taskCard = this.closest('.task-card');
             if (confirm('确定要删除这个任务吗？')) {
               taskCard.remove();
+              showToast('任务已删除');
             }
           });
         });
       });
     </script>
     <!-- [/JSMOD] r8s_分享和复制功能 -- 处理分享、复制和删除待办功能 -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        AppState.init();
+        renderHeader('calendar');
+        renderFooter('calendar');
+        bindGlobalLogout();
+      });
+    </script>
   </body>
 </html>
 

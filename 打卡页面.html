@@ -5,6 +5,9 @@
     <title>打卡 - 轻悦待办</title>
     <script src="https://res.gemcoder.com/js/reload.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="data.js"></script>
+    <script src="common.js"></script>
+    <script src="components.js"></script>
     <link
       href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
@@ -315,11 +318,12 @@
                 <div>
                   <div class="flex justify-between mb-1">
                     <span>学习</span>
-                    <span>40%</span>
+                    <span data-type="study-percent">40%</span>
                   </div>
                   <div class="w-full h-1.5 bg-gray-100 rounded-full">
                     <div
                       class="h-full bg-task-study rounded-full"
+                      data-type="study-bar"
                       style="width: 40%"
                     ></div>
                   </div>
@@ -327,11 +331,12 @@
                 <div>
                   <div class="flex justify-between mb-1">
                     <span>运动</span>
-                    <span>30%</span>
+                    <span data-type="sport-percent">30%</span>
                   </div>
                   <div class="w-full h-1.5 bg-gray-100 rounded-full">
                     <div
                       class="h-full bg-task-health rounded-full"
+                      data-type="sport-bar"
                       style="width: 30%"
                     ></div>
                   </div>
@@ -339,11 +344,12 @@
                 <div>
                   <div class="flex justify-between mb-1">
                     <span>早起</span>
-                    <span>20%</span>
+                    <span data-type="wake-percent">20%</span>
                   </div>
                   <div class="w-full h-1.5 bg-gray-100 rounded-full">
                     <div
                       class="h-full bg-warning rounded-full"
+                      data-type="wake-bar"
                       style="width: 20%"
                     ></div>
                   </div>
@@ -351,10 +357,12 @@
                 <div>
                   <div class="flex justify-between mb-1">
                     <span>阅读</span>
-                    <span>10%</span>
+                    <span data-type="read-percent">10%</span>
                   </div>
                   <div class="w-full h-1.5 bg-gray-100 rounded-full">
                     <div
+                      class="h-full bg-info rounded-full"
+                      data-type="read-bar"
                       class="h-full bg-task-life rounded-full"
                       style="width: 10%"
                     ></div>
@@ -529,33 +537,139 @@
         container.innerHTML = html;
       })();
 
-      // 简单的本次会话打卡记录（存内存，刷新后清空）
+      AppState.init();
+      renderHeader('checkin');
+      renderFooter('checkin');
+      bindGlobalLogout();
+
+      // 简单的本次会话打卡记录
       (function () {
         var btn = document.getElementById('checkin-btn');
         var status = document.getElementById('checkin-status');
         var list = document.getElementById('checkin-list');
         var noteInput = document.getElementById('checkin-note');
         var clearBtn = document.getElementById('clear-history');
+        var selectedType = '学习';
+
+        var typeButtons = document.querySelectorAll('[data-type]');
+        typeButtons.forEach(function (b) {
+          b.addEventListener('click', function () {
+            typeButtons.forEach(function (x) { x.classList.remove('bg-primary','text-white'); x.classList.add('border-gray-200','text-gray-700'); });
+            this.classList.add('bg-primary','text-white');
+            selectedType = this.getAttribute('data-type') || '学习';
+          });
+        });
+
+        function renderCheckins() {
+          list.innerHTML = '';
+          AppState.checkins.slice().reverse().forEach(function (item) {
+            var li = document.createElement('li');
+            li.className = 'flex items-start justify-between px-3 py-2 rounded-lg bg-gray-50';
+            li.innerHTML = '<div><div class="text-gray-800 mb-0.5">' + item.time + '</div><div class="text-gray-600">' + item.type + ' · ' + item.note + '</div></div><span class="text-[11px] text-primary mt-0.5">' + item.status + '</span>';
+            list.appendChild(li);
+          });
+        }
+
+        function updateStreak() {
+          var streakEl = document.getElementById('streak-days');
+          if (!streakEl) return;
+          var today = new Date();
+          var streak = 0;
+          var date = new Date(today);
+          while (true) {
+            var key = date.toISOString().slice(0, 10);
+            if (AppState.checkins.some((c) => c.date === key)) {
+              streak += 1;
+              date.setDate(date.getDate() - 1);
+            } else {
+              break;
+            }
+          }
+          streakEl.textContent = String(streak);
+        }
+
+        // BUG-23: 添加更新打卡统计概要的函数
+        function updateCheckinStatistics() {
+          var stats = getCheckinStats();
+          
+          // 更新本月打卡天数
+          var monthEl = document.getElementById('month-days');
+          if (monthEl) monthEl.textContent = stats.monthCheckins;
+          
+          // 更新最长连续打卡
+          var maxEl = document.getElementById('max-streak');
+          if (maxEl) maxEl.textContent = stats.maxStreak;
+          
+          // 更新当前连续打卡
+          var currentEl = document.getElementById('current-streak');
+          if (currentEl) currentEl.textContent = stats.currentStreak;
+          
+          // 更新本周打卡次数
+          var weekEl = document.getElementById('week-count');
+          if (weekEl) weekEl.textContent = stats.weekCheckins;
+          
+          // 更新顶部连续天数
+          var streakDaysEl = document.getElementById('streak-days');
+          if (streakDaysEl) streakDaysEl.textContent = stats.currentStreak;
+          
+          // 更新打卡类型分布
+          updateTypeDistribution(stats.typeDistribution, stats.totalCheckins);
+        }
+        
+        function updateTypeDistribution(distribution, total) {
+          if (total === 0) return;
+          
+          var types = {
+            '学习': 'study',
+            '运动': 'sport',
+            '早起': 'wake',
+            '阅读': 'read'
+          };
+          
+          Object.keys(types).forEach(function(typeName) {
+            var count = distribution[typeName] || 0;
+            var percent = Math.round((count / total) * 100);
+            
+            // 更新百分比显示
+            var percentEl = document.querySelector('[data-type="' + types[typeName] + '-percent"]');
+            if (percentEl) percentEl.textContent = percent + '%';
+            
+            // 更新进度条宽度
+            var barEl = document.querySelector('[data-type="' + types[typeName] + '-bar"]');
+            if (barEl) barEl.style.width = percent + '%';
+          });
+        }
+
+        function updateTodayDateLabel() {
+          var todayText = document.getElementById('today-date-text');
+          if (todayText) {
+            var now = new Date();
+            todayText.textContent = now.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'long' });
+          }
+        }
 
         if (!btn || !status || !list) return;
 
         btn.addEventListener('click', function () {
           var note = (noteInput && noteInput.value.trim()) || '今日已坚持打卡一次';
           var now = new Date();
-          var timeStr = now.toLocaleTimeString('zh-CN', {
-            hour: '2-digit',
-            minute: '2-digit'
+          var dateStr = now.toISOString().slice(0, 10);
+          var timeStr = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+
+          AppState.checkins.push({
+            id: generateId('c'),
+            date: dateStr,
+            time: timeStr,
+            type: selectedType,
+            note: note,
+            status: '今日'
           });
-          var li = document.createElement('li');
-          li.className =
-            'flex items-start justify-between px-3 py-2 rounded-lg bg-gray-50';
-          li.innerHTML =
-            '<div><div class="text-gray-800 mb-0.5">' +
-            timeStr +
-            '</div><div class="text-gray-600">' +
-            note +
-            '</div></div><span class="text-[11px] text-primary mt-0.5">今日</span>';
-          list.prepend(li);
+          AppState.save();
+
+          showToast('打卡成功');
+          renderCheckins();
+          updateStreak();
+
           status.textContent = '今日已打卡 ✔';
           status.className = 'text-[11px] text-success text-center';
           if (noteInput) noteInput.value = '';
@@ -564,10 +678,18 @@
         if (clearBtn) {
           clearBtn.addEventListener('click', function () {
             if (confirm('确定要清空本次会话的打卡记录吗？')) {
-              list.innerHTML = '';
+              AppState.checkins = [];
+              AppState.save();
+              renderCheckins();
+              showToast('打卡记录已清空');
             }
           });
         }
+
+        renderCheckins();
+        updateStreak();
+        updateTodayDateLabel();
+        updateCheckinStatistics();  // BUG-23: 初始化时更新统计数据
       })();
     </script>
   </body>

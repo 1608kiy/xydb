@@ -270,6 +270,7 @@
                     <i class="fas fa-eye-slash"> </i>
                   </button>
                 </div>
+                <div class="mt-2 text-xs" id="password-strength" aria-live="polite"></div>
               </div>
               <div>
                 <label for="register-confirm" class="block text-sm font-medium text-gray-700 mb-2">确认密码</label>
@@ -327,42 +328,95 @@
         </div>
       </div>
     </div>
+    <script src="data.js"></script>
+    <script src="common.js"></script>
+    <script src="components.js"></script>
     <script>
-      // 密码显示/隐藏切换
-      var registerPassword = document.getElementById('register-password');
-      var toggleRegisterPassword = document.getElementById('toggle-register-password');
-      toggleRegisterPassword.addEventListener('click', function () {
-        var type = registerPassword.getAttribute('type') === 'password' ? 'text' : 'password';
-        registerPassword.setAttribute('type', type);
-        var icon = this.querySelector('i');
-        icon.classList.toggle('fa-eye');
-        icon.classList.toggle('fa-eye-slash');
-      });
-      
-      // 表单提交处理
-      var registerForm = document.getElementById('register-form');
-      registerForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        var account = document.getElementById('register-account').value;
-        var password = document.getElementById('register-password').value;
-        var confirm = document.getElementById('register-confirm').value;
-        if (!account || !password || !confirm) {
-          alert('请完整填写所有信息');
-          return;
+      document.addEventListener('DOMContentLoaded', function () {
+        AppState.init();
+
+        var registerPassword = document.getElementById('register-password');
+        var toggleRegisterPassword = document.getElementById('toggle-register-password');
+        var passwordStrength = document.getElementById('password-strength');
+
+        function updateStrength() {
+          var pwd = registerPassword.value;
+          var score = 0;
+          if (pwd.length >= 6) score++;
+          if (/[0-9]/.test(pwd) && /[a-zA-Z]/.test(pwd)) score++;
+          if (pwd.length >= 10 && /[^a-zA-Z0-9]/.test(pwd)) score++;
+          if (!pwd) {
+            passwordStrength.textContent = '';
+            return;
+          }
+          var text = score <= 1 ? '弱' : score === 2 ? '中' : '强';
+          passwordStrength.textContent = '密码强度：' + text;
+          passwordStrength.className = score <= 1 ? 'text-red-500' : score === 2 ? 'text-yellow-500' : 'text-green-500';
         }
-        if (password !== confirm) {
-          alert('两次输入的密码不一致');
-          return;
-        }
-        window.location.href = '待办页面.html';
-      });
-      
-      // 社交注册按钮
-      var socialButtons = document.querySelectorAll('.btn-social');
-      socialButtons.forEach(function (button) {
-        button.addEventListener('click', function () {
-          var type = this.getAttribute('title').replace('注册', '');
-          alert("您选择了".concat(type, "注册方式"));
+
+        registerPassword.addEventListener('input', updateStrength);
+
+        toggleRegisterPassword.addEventListener('click', function () {
+          var type = registerPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+          registerPassword.setAttribute('type', type);
+          var icon = this.querySelector('i');
+          icon.classList.toggle('fa-eye');
+          icon.classList.toggle('fa-eye-slash');
+        });
+
+        var registerForm = document.getElementById('register-form');
+        registerForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var account = document.getElementById('register-account').value.trim();
+          var password = registerPassword.value;
+          var confirm = document.getElementById('register-confirm').value;
+
+          var emailMobileRegex = /^(\S+@\S+\.\S+|1\d{10})$/;
+          if (!account || !password || !confirm) {
+            showToast('请完整填写所有信息');
+            return;
+          }
+          if (!emailMobileRegex.test(account)) {
+            showToast('请输入有效的邮箱或手机号');
+            return;
+          }
+          if (password !== confirm) {
+            showToast('两次输入的密码不一致');
+            return;
+          }
+          showToast('注册成功，正在登录...');
+          AppState.user = {
+            id: generateId('u'),
+            name: '新用户',
+            email: account.includes('@') ? account : 'demo@qingyue.com',
+            phone: account.match(/^1\d{10}$/) ? account : '13800000001',
+            level: 1,
+            exp: 20,
+            avatar: AppState.user?.avatar || 'https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png'
+          };
+          AppState.save();
+          setTimeout(function () {
+            window.location.href = '待办页面.html';
+          }, 600);
+        });
+
+        document.querySelectorAll('.btn-social').forEach(function (button) {
+          button.addEventListener('click', function () {
+            showToast('当前为演示模式，模拟注册成功');
+            AppState.user = {
+              id: generateId('u'),
+              name: '社交注册用户',
+              email: 'social@qingyue.com',
+              phone: '13800000002',
+              level: 1,
+              exp: 20,
+              avatar: 'https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png'
+            };
+            AppState.save();
+            setTimeout(function () {
+              window.location.href = '待办页面.html';
+            }, 500);
+          });
         });
       });
     </script>

@@ -347,42 +347,81 @@
     </div>
     
     <!-- JavaScript -->
+    <script src="data.js"></script>
+    <script src="common.js"></script>
+    <script src="components.js"></script>
     <script>
-      // 密码显示/隐藏切换
-      var loginPassword = document.getElementById('login-password');
-      var togglePassword = document.getElementById('toggle-password');
-      
-      togglePassword.addEventListener('click', function () {
-        var type = loginPassword.getAttribute('type') === 'password' ? 'text' : 'password';
-        loginPassword.setAttribute('type', type);
-        var icon = this.querySelector('i');
-        icon.classList.toggle('fa-eye');
-        icon.classList.toggle('fa-eye-slash');
-      });
-      
-      // 表单提交处理
-      var loginForm = document.getElementById('login-form');
-      loginForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        var account = document.getElementById('login-account').value;
-        var password = document.getElementById('login-password').value;
+      document.addEventListener('DOMContentLoaded', function () {
+        AppState.init();
 
-        if (!account || !password) {
-          alert('请输入账号和密码');
-          return;
-        }
+        var loginPassword = document.getElementById('login-password');
+        var togglePassword = document.getElementById('toggle-password');
 
-        // 模拟登录成功
-        window.location.href = '待办页面.html';
-      });
-      
-      // 社交登录按钮
-      var socialButtons = document.querySelectorAll('.btn-social');
-      socialButtons.forEach(function (button) {
-        button.addEventListener('click', function () {
-          var type = this.getAttribute('title').replace('登录', '');
-          alert("您选择了".concat(type, "登录方式"));
+        togglePassword.addEventListener('click', function () {
+          var type = loginPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+          loginPassword.setAttribute('type', type);
+          var icon = this.querySelector('i');
+          icon.classList.toggle('fa-eye');
+          icon.classList.toggle('fa-eye-slash');
         });
+
+        var loginForm = document.getElementById('login-form');
+        loginForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var account = document.getElementById('login-account').value.trim();
+          var password = document.getElementById('login-password').value;
+
+          var emailMobileRegex = /^(\S+@\S+\.\S+|1\d{10})$/;
+          if (!account || !password) {
+            showToast('请输入账号和密码');
+            return;
+          }
+          if (!emailMobileRegex.test(account)) {
+            showToast('请输入有效的邮箱或手机号');
+            return;
+          }
+
+          AppState.user = {
+            id: 'u_' + Date.now(),
+            name: '轻悦用户',
+            email: account.includes('@') ? account : 'demo@qingyue.com',
+            phone: account.match(/^1\d{10}$/) ? account : '13800000000',
+            level: 3,
+            exp: 900,
+            avatar: AppState.user?.avatar || 'https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png'
+          };
+          AppState.save();
+          showToast('登录成功，正在跳转...');
+          setTimeout(function () {
+            window.location.href = '待办页面.html';
+          }, 600);
+        });
+
+        document.querySelectorAll('.btn-social').forEach(function (button) {
+          button.addEventListener('click', function () {
+            showToast('当前为演示模式，模拟登录成功');
+            AppState.user = {
+              id: 'u_' + Date.now(),
+              name: '社交用户',
+              email: 'social@qingyue.com',
+              phone: '13800000001',
+              level: 2,
+              exp: 120,
+              avatar: 'https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png'
+            };
+            AppState.save();
+            setTimeout(function () {
+              window.location.href = '待办页面.html';
+            }, 500);
+          });
+        });
+
+        var forget = document.querySelector('a[href="javascript:void(0);"]');
+        if (forget) {
+          forget.addEventListener('click', function () {
+            showToast('请联系管理员或使用注册功能');
+          });
+        }
       });
     </script>
   </body>

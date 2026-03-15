@@ -5,6 +5,9 @@
     <title>个人中心 - 轻悦待办</title>
     <script src="https://res.gemcoder.com/js/reload.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="data.js"></script>
+    <script src="common.js"></script>
+    <script src="components.js"></script>
     <link
       href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
@@ -153,6 +156,7 @@
                 <div class="flex-1">
                   <div class="flex items-center space-x-2 mb-1">
                     <input
+                      id="user-name"
                       type="text"
                       value="张明"
                       class="text-lg font-semibold bg-transparent border-b border-transparent hover:border-primary focus:border-primary focus:outline-none"
@@ -171,7 +175,7 @@
                     <div class="space-y-1">
                       <div class="flex items-center">
                         <i class="fas fa-envelope text-gray-400 mr-2"></i>
-                        <span>邮箱：user@example.com</span>
+                        <span id="user-email">邮箱：user@example.com</span>
                         <span
                           class="ml-2 px-1.5 py-0.5 rounded-full bg-green-50 text-green-600 text-[10px]"
                           >已验证</span
@@ -179,7 +183,7 @@
                       </div>
                       <div class="flex items-center">
                         <i class="fas fa-mobile-alt text-gray-400 mr-2"></i>
-                        <span>手机号：188****0000</span>
+                        <span id="user-phone">手机号：188****0000</span>
                         <button
                           class="ml-2 text-primary text-[11px] hover:underline"
                         >
@@ -222,7 +226,7 @@
                     <i class="fas fa-check-circle text-success mr-1"></i>
                     累计完成任务
                   </div>
-                  <div class="text-xl font-bold text-gray-800">328</div>
+                  <div id="stat-completed-tasks" class="text-xl font-bold text-gray-800">328</div>
                 </div>
                 <div class="bg-gray-50 rounded-xl p-3">
                   <div
@@ -231,7 +235,7 @@
                     <i class="fas fa-clock text-primary mr-1"></i>
                     累计专注时长
                   </div>
-                  <div class="text-xl font-bold text-gray-800">142 h</div>
+                  <div id="stat-focus-hours" class="text-xl font-bold text-gray-800">142 h</div>
                 </div>
                 <div class="bg-gray-50 rounded-xl p-3">
                   <div
@@ -240,7 +244,7 @@
                     <i class="fas fa-calendar-check text-warning mr-1"></i>
                     最长连续打卡
                   </div>
-                  <div class="text-xl font-bold text-gray-800">21 天</div>
+                  <div id="stat-max-streak" class="text-xl font-bold text-gray-800">21 天</div>
                 </div>
                 <div class="bg-gray-50 rounded-xl p-3">
                   <div
@@ -249,7 +253,7 @@
                     <i class="fas fa-fire text-danger mr-1"></i>
                     累计番茄数
                   </div>
-                  <div class="text-xl font-bold text-gray-800">612</div>
+                  <div id="stat-total-pomodoros" class="text-xl font-bold text-gray-800">612</div>
                 </div>
               </div>
             </section>
@@ -261,6 +265,7 @@
               <div class="flex items-center justify-between mb-3">
                 <h2 class="text-sm font-semibold text-gray-800">存储管理</h2>
                 <button
+                  id="clear-cache-btn"
                   class="text-xs text-danger hover:text-danger/80 flex items-center"
                 >
                   <i class="fas fa-trash-alt mr-1"></i>
@@ -444,17 +449,23 @@
                   </div>
                   <div class="flex flex-wrap gap-2">
                     <button
-                      class="px-3 py-1.5 rounded-full border border-primary bg-primary text-white text-xs"
+                      id="theme-system-btn"
+                      data-theme="system"
+                      class="px-3 py-1.5 rounded-full border border-primary bg-primary text-white text-xs theme-btn"
                     >
                       跟随系统
                     </button>
                     <button
-                      class="px-3 py-1.5 rounded-full border border-gray-200 text-xs"
+                      id="theme-light-btn"
+                      data-theme="light"
+                      class="px-3 py-1.5 rounded-full border border-gray-200 text-xs theme-btn"
                     >
                       浅色
                     </button>
                     <button
-                      class="px-3 py-1.5 rounded-full border border-gray-200 text-xs"
+                      id="theme-dark-btn"
+                      data-theme="dark"
+                      class="px-3 py-1.5 rounded-full border border-gray-200 text-xs theme-btn"
                     >
                       深色
                     </button>
@@ -463,19 +474,27 @@
                     <span class="text-gray-500">主题色</span>
                     <div class="flex space-x-1.5">
                       <button
-                        class="w-5 h-5 rounded-full bg-primary border-2 border-white shadow"
+                        id="color-blue-btn"
+                        data-color="blue"
+                        class="color-btn w-5 h-5 rounded-full bg-primary border-2 border-white shadow"
                         title="蓝色"
                       ></button>
                       <button
-                        class="w-5 h-5 rounded-full bg-secondary/90 border-2 border-transparent hover:border-white shadow"
+                        id="color-purple-btn"
+                        data-color="purple"
+                        class="color-btn w-5 h-5 rounded-full bg-secondary/90 border-2 border-transparent hover:border-white shadow"
                         title="紫色"
                       ></button>
                       <button
-                        class="w-5 h-5 rounded-full bg-success/90 border-2 border-transparent hover:border-white shadow"
+                        id="color-green-btn"
+                        data-color="green"
+                        class="color-btn w-5 h-5 rounded-full bg-success/90 border-2 border-transparent hover:border-white shadow"
                         title="绿色"
                       ></button>
                       <button
-                        class="w-5 h-5 rounded-full bg-pink-500 border-2 border-transparent hover:border-white shadow"
+                        id="color-pink-btn"
+                        data-color="pink"
+                        class="color-btn w-5 h-5 rounded-full bg-pink-500 border-2 border-transparent hover:border-white shadow"
                         title="粉色"
                       ></button>
                     </div>
@@ -490,15 +509,15 @@
                   <div class="space-y-2">
                     <label class="flex items-center justify-between">
                       <span>任务提醒</span>
-                      <input type="checkbox" class="w-4 h-4 text-primary" checked />
+                      <input id="notify-task-reminder" type="checkbox" class="w-4 h-4 text-primary" checked />
                     </label>
                     <label class="flex items-center justify-between">
                       <span>番茄结束提醒</span>
-                      <input type="checkbox" class="w-4 h-4 text-primary" checked />
+                      <input id="notify-pomodoro-end" type="checkbox" class="w-4 h-4 text-primary" checked />
                     </label>
                     <label class="flex items-center justify-between">
                       <span>每日简报推送</span>
-                      <input type="checkbox" class="w-4 h-4 text-primary" />
+                      <input id="notify-daily-report" type="checkbox" class="w-4 h-4 text-primary" />
                     </label>
                     <div class="flex items-center justify-between">
                       <span>勿扰模式</span>
@@ -516,46 +535,51 @@
                     <div>
                       <p class="text-gray-500 mb-1">默认番茄时长</p>
                       <select
+                        id="focus-duration-select"
                         class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs"
                       >
-                        <option>25 分钟</option>
-                        <option>30 分钟</option>
-                        <option>40 分钟</option>
-                        <option>50 分钟</option>
+                        <option value="25">25 分钟</option>
+                        <option value="30">30 分钟</option>
+                        <option value="40">40 分钟</option>
+                        <option value="50">50 分钟</option>
                       </select>
                     </div>
                     <div>
                       <p class="text-gray-500 mb-1">短休息</p>
                       <select
+                        id="short-break-select"
                         class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs"
                       >
-                        <option>5 分钟</option>
-                        <option>10 分钟</option>
+                        <option value="5">5 分钟</option>
+                        <option value="10">10 分钟</option>
                       </select>
                     </div>
                     <div>
                       <p class="text-gray-500 mb-1">长休息</p>
                       <select
+                        id="long-break-select"
                         class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs"
                       >
-                        <option>15 分钟</option>
-                        <option>20 分钟</option>
-                        <option>30 分钟</option>
+                        <option value="15">15 分钟</option>
+                        <option value="20">20 分钟</option>
+                        <option value="30">30 分钟</option>
                       </select>
                     </div>
                     <div>
                       <p class="text-gray-500 mb-1">长休息触发间隔</p>
                       <select
+                        id="long-break-interval-select"
                         class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-xs"
                       >
-                        <option>4 个番茄</option>
-                        <option>5 个番茄</option>
+                        <option value="4">4 个番茄</option>
+                        <option value="5">5 个番茄</option>
                       </select>
                     </div>
                   </div>
                   <div class="mt-2 space-y-1.5">
                     <label class="flex items-center">
                       <input
+                        id="auto-start-break"
                         type="checkbox"
                         class="w-4 h-4 text-primary mr-2"
                         checked
@@ -563,11 +587,12 @@
                       <span>自动开始休息</span>
                     </label>
                     <label class="flex items-center">
-                      <input type="checkbox" class="w-4 h-4 text-primary mr-2" />
+                      <input id="auto-start-pomodoro" type="checkbox" class="w-4 h-4 text-primary mr-2" />
                       <span>自动开始下一个番茄</span>
                     </label>
                     <label class="flex items-center">
                       <input
+                        id="focus-mode-mute"
                         type="checkbox"
                         class="w-4 h-4 text-primary mr-2"
                         checked
@@ -585,24 +610,27 @@
                       <div class="flex items-center justify-between text-[11px]">
                         <span>一周开始于</span>
                         <select
+                          id="calendar-week-start"
                           class="px-2 py-1 border border-gray-300 rounded-lg text-xs"
                         >
-                          <option>周一</option>
-                          <option>周日</option>
+                          <option value="monday">周一</option>
+                          <option value="sunday">周日</option>
                         </select>
                       </div>
                       <div class="flex items-center justify-between text-[11px]">
                         <span>默认视图</span>
                         <select
+                          id="calendar-default-view"
                           class="px-2 py-1 border border-gray-300 rounded-lg text-xs"
                         >
-                          <option>月视图</option>
-                          <option>周视图</option>
-                          <option>日视图</option>
+                          <option value="month">月视图</option>
+                          <option value="week">周视图</option>
+                          <option value="day">日视图</option>
                         </select>
                       </div>
                       <label class="flex items-center text-[11px]">
                         <input
+                          id="calendar-show-lunar"
                           type="checkbox"
                           class="w-4 h-4 text-primary mr-2"
                           checked
@@ -647,12 +675,13 @@
                 <!-- 退出登录 / 注销账号 -->
                 <div class="border-t border-gray-100 pt-3 flex flex-wrap gap-2">
                   <button
-                    onclick="window.location.href='登录页面.html'"
+                    id="logout-btn"
                     class="px-3 py-1.5 rounded-lg border border-gray-300 text-xs text-gray-700 hover:bg-gray-50"
                   >
                     退出登录
                   </button>
                   <button
+                    id="delete-account-btn"
                     class="px-3 py-1.5 rounded-lg border border-danger text-xs text-danger hover:bg-danger/5"
                   >
                     注销账号
@@ -767,6 +796,329 @@
         </a>
       </div>
     </footer>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        AppState.init();
+        renderHeader('profile');
+        renderFooter('profile');
+        bindGlobalLogout();
+
+        var userName = document.getElementById('user-name');
+        var userEmail = document.getElementById('user-email');
+        var userPhone = document.getElementById('user-phone');
+
+        if (userName) userName.value = AppState.user?.name || '轻悦用户';
+        if (userEmail) userEmail.textContent = '邮箱：' + (AppState.user?.email || 'demo@qingyue.com');
+        if (userPhone) userPhone.textContent = '手机号：' + (AppState.user?.phone || '13800000000');
+
+        // ========== BUG-27: 用户名保存 ==========
+        if (userName) {
+          userName.addEventListener('blur', function () {
+            if (userName.value.trim()) {
+              AppState.user.name = userName.value.trim();
+              AppState.save();
+              showToast('昵称已保存');
+              // 更新头部用户名显示
+              var headerUserName = document.querySelector('.header-user-name');
+              if (headerUserName) headerUserName.textContent = userName.value.trim();
+            } else {
+              showToast('昵称不能为空');
+              userName.value = AppState.user.name;
+            }
+          });
+        }
+
+        // ========== BUG-28: 应用设置持久化 ==========
+        // 初始化设置值
+        initializeSettings();
+
+        // 主题模式按钮
+        var themeBtns = document.querySelectorAll('.theme-btn');
+        themeBtns.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            themeBtns.forEach(function (b) {
+              b.classList.remove('bg-primary', 'text-white');
+              b.classList.add('border-gray-200');
+            });
+            this.classList.add('bg-primary', 'text-white');
+            this.classList.remove('border-gray-200');
+            AppState.settings.theme = this.dataset.theme;
+            AppState.save();
+            showToast('主题已设置');
+          });
+        });
+
+        // 主题色按钮
+        var colorBtns = document.querySelectorAll('.color-btn');
+        colorBtns.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            colorBtns.forEach(function (b) {
+              b.classList.remove('border-white');
+              b.classList.add('border-transparent');
+            });
+            this.classList.add('border-white');
+            this.classList.remove('border-transparent');
+            AppState.settings.themeColor = this.dataset.color;
+            AppState.save();
+            showToast('主题色已设置');
+          });
+        });
+
+        // 通知设置
+        var notifyTaskReminder = document.getElementById('notify-task-reminder');
+        var notifyPomodoroEnd = document.getElementById('notify-pomodoro-end');
+        var notifyDailyReport = document.getElementById('notify-daily-report');
+
+        if (notifyTaskReminder) {
+          notifyTaskReminder.addEventListener('change', function () {
+            AppState.settings.notifications.taskReminder = this.checked;
+            AppState.save();
+            showToast('任务提醒已' + (this.checked ? '开启' : '关闭'));
+          });
+        }
+
+        if (notifyPomodoroEnd) {
+          notifyPomodoroEnd.addEventListener('change', function () {
+            AppState.settings.notifications.pomodoroEnd = this.checked;
+            AppState.save();
+            showToast('番茄结束提醒已' + (this.checked ? '开启' : '关闭'));
+          });
+        }
+
+        if (notifyDailyReport) {
+          notifyDailyReport.addEventListener('change', function () {
+            AppState.settings.notifications.dailyReport = this.checked;
+            AppState.save();
+            showToast('每日简报推送已' + (this.checked ? '开启' : '关闭'));
+          });
+        }
+
+        // 专注设置
+        var focusDurationSelect = document.getElementById('focus-duration-select');
+        var shortBreakSelect = document.getElementById('short-break-select');
+        var longBreakSelect = document.getElementById('long-break-select');
+        var longBreakIntervalSelect = document.getElementById('long-break-interval-select');
+
+        if (focusDurationSelect) {
+          focusDurationSelect.addEventListener('change', function () {
+            AppState.settings.pomodoro.focus = parseInt(this.value);
+            AppState.save();
+            showToast('默认番茄时长已设置为 ' + this.value + ' 分钟');
+          });
+        }
+
+        if (shortBreakSelect) {
+          shortBreakSelect.addEventListener('change', function () {
+            AppState.settings.pomodoro.shortBreak = parseInt(this.value);
+            AppState.save();
+            showToast('短休息时长已设置为 ' + this.value + ' 分钟');
+          });
+        }
+
+        if (longBreakSelect) {
+          longBreakSelect.addEventListener('change', function () {
+            AppState.settings.pomodoro.longBreak = parseInt(this.value);
+            AppState.save();
+            showToast('长休息时长已设置为 ' + this.value + ' 分钟');
+          });
+        }
+
+        if (longBreakIntervalSelect) {
+          longBreakIntervalSelect.addEventListener('change', function () {
+            AppState.settings.pomodoro.longBreakInterval = parseInt(this.value);
+            AppState.save();
+            showToast('长休息触发间隔已设置为 ' + this.value + ' 个番茄');
+          });
+        }
+
+        // 专注模式复选框
+        var autoStartBreak = document.getElementById('auto-start-break');
+        var autoStartPomodoro = document.getElementById('auto-start-pomodoro');
+        var focusModeMute = document.getElementById('focus-mode-mute');
+
+        if (autoStartBreak) {
+          autoStartBreak.addEventListener('change', function () {
+            AppState.settings.pomodoro.autoStartBreak = this.checked;
+            AppState.save();
+            showToast('自动开始休息已' + (this.checked ? '开启' : '关闭'));
+          });
+        }
+
+        if (autoStartPomodoro) {
+          autoStartPomodoro.addEventListener('change', function () {
+            AppState.settings.pomodoro.autoStartNext = this.checked;
+            AppState.save();
+            showToast('自动开始下一个番茄已' + (this.checked ? '开启' : '关闭'));
+          });
+        }
+
+        if (focusModeMute) {
+          focusModeMute.addEventListener('change', function () {
+            AppState.settings.pomodoro.focusModeMute = this.checked;
+            AppState.save();
+            showToast('专注时屏蔽通知已' + (this.checked ? '开启' : '关闭'));
+          });
+        }
+
+        // 日历设置
+        var calendarWeekStart = document.getElementById('calendar-week-start');
+        var calendarDefaultView = document.getElementById('calendar-default-view');
+        var calendarShowLunar = document.getElementById('calendar-show-lunar');
+
+        if (calendarWeekStart) {
+          calendarWeekStart.addEventListener('change', function () {
+            AppState.settings.calendar.weekStart = this.value;
+            AppState.save();
+            showToast('一周开始日已设置');
+          });
+        }
+
+        if (calendarDefaultView) {
+          calendarDefaultView.addEventListener('change', function () {
+            AppState.settings.calendar.defaultView = this.value;
+            AppState.save();
+            showToast('默认视图已设置');
+          });
+        }
+
+        if (calendarShowLunar) {
+          calendarShowLunar.addEventListener('change', function () {
+            AppState.settings.calendar.showLunar = this.checked;
+            AppState.save();
+            showToast('农历显示已' + (this.checked ? '开启' : '关闭'));
+          });
+        }
+
+        // ========== BUG-29: 数据概要卡片显示真实数据 ==========
+        updateDataStatistics();
+
+        var clearCacheBtn = document.getElementById('clear-cache-btn');
+        if (clearCacheBtn) {
+          clearCacheBtn.addEventListener('click', function () {
+            if (!confirm('确认清理本地缓存吗？')) return;
+            AppState.tasks = [];
+            AppState.pomodoroSessions = [];
+            AppState.checkins = [];
+            AppState.save();
+            showToast('缓存已清理');
+          });
+        }
+
+        var logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', function () {
+            AppState.logout();
+            showToast('已退出登录');
+            setTimeout(function () { window.location.href = '登录页面.html'; }, 300);
+          });
+        }
+
+        var deleteBtn = document.getElementById('delete-account-btn');
+        if (deleteBtn) {
+          deleteBtn.addEventListener('click', function () {
+            var confirmText = prompt('输入【注销】以确认注销账号');
+            if (confirmText === '注销') {
+              localStorage.clear();
+              showToast('账号已注销');
+              setTimeout(function () { window.location.href = '注册页面.html'; }, 400);
+            } else {
+              showToast('已取消注销');
+            }
+          });
+        }
+      });
+
+      // ========== 辅助函数 ==========
+
+      function initializeSettings() {
+        // 初始化主题按钮状态
+        var currentTheme = AppState.settings?.theme || 'system';
+        var currentColor = AppState.settings?.themeColor || 'blue';
+
+        var themeBtns = document.querySelectorAll('.theme-btn');
+        themeBtns.forEach(function (btn) {
+          if (btn.dataset.theme === currentTheme) {
+            btn.classList.add('bg-primary', 'text-white');
+            btn.classList.remove('border-gray-200');
+          } else {
+            btn.classList.remove('bg-primary', 'text-white');
+            btn.classList.add('border-gray-200');
+          }
+        });
+
+        // 初始化颜色按钮状态
+        var colorBtns = document.querySelectorAll('.color-btn');
+        colorBtns.forEach(function (btn) {
+          if (btn.dataset.color === currentColor) {
+            btn.classList.add('border-white');
+            btn.classList.remove('border-transparent');
+          } else {
+            btn.classList.remove('border-white');
+            btn.classList.add('border-transparent');
+          }
+        });
+
+        // 初始化通知设置
+        var notifyTaskReminder = document.getElementById('notify-task-reminder');
+        var notifyPomodoroEnd = document.getElementById('notify-pomodoro-end');
+        var notifyDailyReport = document.getElementById('notify-daily-report');
+
+        if (notifyTaskReminder) notifyTaskReminder.checked = AppState.settings?.notifications?.taskReminder !== false;
+        if (notifyPomodoroEnd) notifyPomodoroEnd.checked = AppState.settings?.notifications?.pomodoroEnd !== false;
+        if (notifyDailyReport) notifyDailyReport.checked = AppState.settings?.notifications?.dailyReport === true;
+
+        // 初始化专注设置
+        var focusDurationSelect = document.getElementById('focus-duration-select');
+        var shortBreakSelect = document.getElementById('short-break-select');
+        var longBreakSelect = document.getElementById('long-break-select');
+        var longBreakIntervalSelect = document.getElementById('long-break-interval-select');
+
+        if (focusDurationSelect) focusDurationSelect.value = AppState.settings?.pomodoro?.focus || 25;
+        if (shortBreakSelect) shortBreakSelect.value = AppState.settings?.pomodoro?.shortBreak || 5;
+        if (longBreakSelect) longBreakSelect.value = AppState.settings?.pomodoro?.longBreak || 15;
+        if (longBreakIntervalSelect) longBreakIntervalSelect.value = AppState.settings?.pomodoro?.longBreakInterval || 4;
+
+        // 初始化专注模式复选框
+        var autoStartBreak = document.getElementById('auto-start-break');
+        var autoStartPomodoro = document.getElementById('auto-start-pomodoro');
+        var focusModeMute = document.getElementById('focus-mode-mute');
+
+        if (autoStartBreak) autoStartBreak.checked = AppState.settings?.pomodoro?.autoStartBreak !== false;
+        if (autoStartPomodoro) autoStartPomodoro.checked = AppState.settings?.pomodoro?.autoStartNext === true;
+        if (focusModeMute) focusModeMute.checked = AppState.settings?.pomodoro?.focusModeMute !== false;
+
+        // 初始化日历设置
+        var calendarWeekStart = document.getElementById('calendar-week-start');
+        var calendarDefaultView = document.getElementById('calendar-default-view');
+        var calendarShowLunar = document.getElementById('calendar-show-lunar');
+
+        if (calendarWeekStart) calendarWeekStart.value = AppState.settings?.calendar?.weekStart || 'monday';
+        if (calendarDefaultView) calendarDefaultView.value = AppState.settings?.calendar?.defaultView || 'month';
+        if (calendarShowLunar) calendarShowLunar.checked = AppState.settings?.calendar?.showLunar !== false;
+      }
+
+      function updateDataStatistics() {
+        // 获取数据统计
+        var stats = getCheckinStats();
+        var completedTasks = (AppState.tasks || []).filter(function(t) { return t.status === 'completed'; }).length;
+        var totalFocusMinutes = (AppState.pomodoroSessions || []).reduce(function(sum, s) { return sum + (s.actualMinutes || 0); }, 0);
+        var totalPomodoros = (AppState.pomodoroSessions || []).filter(function(s) { return s.completed; }).length;
+
+        // 更新统计卡片
+        var completedTasksEl = document.getElementById('stat-completed-tasks');
+        var focusHoursEl = document.getElementById('stat-focus-hours');
+        var maxStreakEl = document.getElementById('stat-max-streak');
+        var totalPomodorosEl = document.getElementById('stat-total-pomodoros');
+
+        if (completedTasksEl) completedTasksEl.textContent = completedTasks;
+        if (focusHoursEl) {
+          var hours = Math.round(totalFocusMinutes / 60 * 10) / 10;
+          focusHoursEl.textContent = hours + ' h';
+        }
+        if (maxStreakEl) maxStreakEl.textContent = (stats?.maxStreak || 0) + ' 天';
+        if (totalPomodorosEl) totalPomodorosEl.textContent = totalPomodoros;
+      }
+    </script>
   </body>
 </html>
 
