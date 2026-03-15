@@ -35,7 +35,7 @@
           .card-hover { @apply transition-all duration-500 hover:shadow-2xl hover:-translate-y-1; }
           .input-focus { @apply focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all duration-300; }
           .btn-primary { @apply bg-primary text-white font-medium py-3 px-4 rounded-xl transition-all duration-300 hover:bg-primary/90 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]; }
-          .btn-social { @apply flex flex-col items-center justify-center py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-300 hover:scale-105 active:scale-95; }
+          .btn-social { @apply flex flex-col items-center justify-center py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-300 hover:scale-105 active:scale-95; }
           .form-enter { animation: formSlideIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
           @keyframes formSlideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
           .icon-bounce { animation: iconBounce 2s ease-in-out infinite; }
@@ -79,29 +79,25 @@
               50% { box-shadow: 0 0 50px rgba(124, 58, 237, 0.5); } 
           }
           
-          .input-glow { animation: inputGlow 2s ease-in-out infinite; }
-          @keyframes inputGlow { 
-              0%, 100% { border-color: rgba(79, 70, 229, 0.3); } 
-              50% { border-color: rgba(124, 58, 237, 0.6); } 
-          }
-          
-          /* ===== 标题渐变 - 暖色调 ===== */
-          .text-gradient-warm { 
-              background: linear-gradient(90deg, #fef3c7, #fcd34d, #fef3c7, #fde68a, #fef3c7); 
+          /* ===== 标题渐变 - 柔和色调 ===== */
+          .text-gradient-soft { 
+              background: linear-gradient(90deg, #e0e7ff, #c4b5fd, #e0e7ff, #a5f3fc, #e0e7ff); 
               background-size: 300% auto; 
               -webkit-background-clip: text; 
               -webkit-text-fill-color: transparent; 
               animation: gradientFlow 5s linear infinite; 
           }
           
-          /* ===== 图片呼吸浮动 ===== */
-          .image-breathe-float { animation: imageBreatheFloat 5s ease-in-out infinite; }
-          @keyframes imageBreatheFloat { 
-              0%, 100% { transform: scale(1) translateY(0); } 
-              50% { transform: scale(1.02) translateY(-6px); } 
+          /* ===== 图片轻微倾斜浮动 ===== */
+          .image-tilt-float { animation: imageTiltFloat 6s ease-in-out infinite; }
+          @keyframes imageTiltFloat { 
+              0%, 100% { transform: rotate(-2deg) translateY(0); } 
+              25% { transform: rotate(-1deg) translateY(-8px); } 
+              50% { transform: rotate(0deg) translateY(-5px); } 
+              75% { transform: rotate(1deg) translateY(-8px); } 
           }
           
-          /* ===== 毛玻璃增强 ===== */
+          /* ===== 毛玻璃增强 - 卡片透明度优化 ===== */
           .glass-strong { 
               background: rgba(255, 255, 255, 0.15); 
               backdrop-filter: blur(20px); 
@@ -110,15 +106,15 @@
           }
           
           .glass-card { 
-              background: rgba(255, 255, 255, 0.95); 
+              background: rgba(255, 255, 255, 0.85); 
               backdrop-filter: blur(40px); 
               -webkit-backdrop-filter: blur(40px); 
-              border: 1px solid rgba(255, 255, 255, 0.4); 
+              border: 1px solid rgba(255, 255, 255, 0.3); 
               box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 0 30px rgba(255, 255, 255, 0.1); 
           }
           
           .glass-input {
-              background: rgba(249, 250, 251, 0.8);
+              background: rgba(249, 250, 251, 0.6);
               backdrop-filter: blur(10px);
               -webkit-backdrop-filter: blur(10px);
           }
@@ -146,13 +142,32 @@
               content: '';
               position: absolute;
               inset: -2px;
-              background: linear-gradient(45deg, #4F46E5, #7C3AED, #fcd34d, #4F46E5);
+              background: linear-gradient(45deg, #4F46E5, #7C3AED, #a5f3fc, #4F46E5);
               background-size: 400% 400%;
               border-radius: inherit;
               z-index: -1;
               animation: gradientFlow 3s ease infinite;
               filter: blur(10px);
               opacity: 0.5;
+          }
+          
+          /* ===== 输入框图标样式 - 更明显 ===== */
+          .input-icon {
+              @apply text-gray-500 text-lg transition-all duration-300;
+          }
+          .group:focus-within .input-icon {
+              @apply text-primary text-xl;
+          }
+          
+          /* ===== 社交按钮优化 - 图标 + 文字 ===== */
+          .btn-social {
+              @apply flex flex-col items-center justify-center py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-300 hover:scale-105 active:scale-95;
+          }
+          .btn-social .social-icon {
+              @apply text-xl mb-1 transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-lg;
+          }
+          .btn-social .social-text {
+              @apply text-xs text-gray-600 font-medium;
           }
           
       }
@@ -162,17 +177,17 @@
     <!-- 全屏渐变背景 -->
     <div class="bg-gradient-full"></div>
     
-    <!-- ===== 装饰性光斑 - 暖色调 ===== -->
+    <!-- ===== 装饰性光斑 - 柔和色调 ===== -->
     <div class="fixed top-20 left-10 w-72 h-72 bg-white/5 rounded-full blur-3xl pointer-events-none orb-float"></div>
     <div class="fixed bottom-20 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none orb-float" style="animation-delay: -2s;"></div>
     <div class="fixed top-1/2 left-1/2 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none pulse-glow"></div>
-    <div class="fixed top-40 right-20 w-48 h-48 bg-accent/15 rounded-full blur-3xl pointer-events-none orb-float" style="animation-delay: -4s;"></div>
+    <div class="fixed top-40 right-20 w-48 h-48 bg-secondary/10 rounded-full blur-3xl pointer-events-none orb-float" style="animation-delay: -4s;"></div>
     <div class="fixed bottom-40 left-20 w-56 h-56 bg-secondary/10 rounded-full blur-3xl pointer-events-none orb-float" style="animation-delay: -6s;"></div>
-    <div class="fixed top-1/3 left-1/4 w-40 h-40 bg-yellow-400/8 rounded-full blur-2xl pointer-events-none orb-float" style="animation-delay: -8s;"></div>
+    <div class="fixed top-1/3 left-1/4 w-40 h-40 bg-white/8 rounded-full blur-2xl pointer-events-none orb-float" style="animation-delay: -8s;"></div>
     <div class="fixed bottom-1/3 right-1/4 w-32 h-32 bg-primary/15 rounded-full blur-2xl pointer-events-none pulse-glow" style="animation-delay: -1s;"></div>
     <!-- 新增背景光斑 -->
     <div class="fixed top-0 left-1/2 w-80 h-80 bg-primary/5 rounded-full blur-3xl pointer-events-none orb-float" style="animation-delay: -3s;"></div>
-    <div class="fixed bottom-0 left-1/3 w-60 h-60 bg-accent/10 rounded-full blur-3xl pointer-events-none pulse-glow" style="animation-delay: -5s;"></div>
+    <div class="fixed bottom-0 left-1/3 w-60 h-60 bg-secondary/8 rounded-full blur-3xl pointer-events-none pulse-glow" style="animation-delay: -5s;"></div>
     
     <!-- ===== 网格背景纹理 ===== -->
     <div class="fixed inset-0 pointer-events-none opacity-5" style="background-image: radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px); background-size: 30px 30px;"></div>
@@ -191,33 +206,33 @@
     
     <div class="flex-1 flex flex-col md:flex-row relative z-10">
       <!-- 左侧欢迎区域 -->
-      <div class="hidden md:flex md:w-1/2 lg:w-5/12 p-8 lg:p-12 pt-6 lg:pt-8 flex-col justify-center items-center text-white">
+      <div class="hidden md:flex md:w-1/2 lg:w-5/12 p-8 lg:p-12 pt-14 lg:pt-18 flex-col justify-start items-center text-white">
         <!-- 光晕背景 -->
         <div class="absolute inset-0 glass-strong rounded-3xl -z-10"></div>
         
-        <!-- 太阳图标 - 温暖光晕 -->
-        <div class="text-6xl mb-6 icon-bounce sun-glow">☀️</div>
+        <!-- 太阳图标 - 保留弹跳动画 -->
+        <div class="text-6xl mb-6 icon-bounce">☀️</div>
         
-        <!-- 标题 - 暖色调渐变 -->
-        <h1 class="text-[clamp(2rem,4vw,3.5rem)] font-bold mb-4 tracking-tight text-gradient-warm">轻悦待办</h1>
-        <p class="text-lg lg:text-xl text-center mb-8 max-w-md text-white/90" style="text-shadow: 0 0 15px rgba(255,255,255,0.2);">专注每一天，高效每一刻</p>
+        <!-- 标题 - 取消渐变动画，使用纯色 -->
+        <h1 class="text-[clamp(2rem,4vw,3.5rem)] font-bold mb-4 tracking-tight text-white">轻悦待办</h1>
+        <p class="text-lg lg:text-xl text-center mb-8 max-w-md text-white/90">专注每一天，高效每一刻</p>
         
-        <!-- 应用界面展示 - 呼吸浮动动画 -->
+        <!-- 应用界面展示 - 轻微倾斜浮动动画 -->
         <div class="relative w-full max-w-md mb-8 group">
           <div class="absolute inset-0 bg-white/10 rounded-2xl blur-xl transform rotate-3 scale-105 group-hover:blur-2xl transition-all duration-500"></div>
-          <div class="absolute inset-0 bg-gradient-to-r from-accent/20 to-primary/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <img src="https://design.gemcoder.com/staticResource/echoAiSystemImages/73a4ff2b7f782ef88489e4337041db67.png" alt="轻悦待办应用界面" class="w-full rounded-2xl shadow-2xl transform hover:scale-[1.02] transition-transform duration-500 relative z-10 image-breathe-float glow-border" />
+          <div class="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <img src="https://design.gemcoder.com/staticResource/echoAiSystemImages/73a4ff2b7f782ef88489e4337041db67.png" alt="轻悦待办应用界面" class="w-full rounded-2xl shadow-2xl transform hover:scale-[1.02] transition-transform duration-500 relative z-10 image-tilt-float glow-border" />
         </div>
         
         <!-- 用户统计 -->
         <div class="text-center">
-          <p class="mb-4 text-sm lg:text-base text-white/80" style="text-shadow: 0 0 10px rgba(255,255,255,0.2);">已有超过 100 万人使用轻悦待办提升效率</p>
+          <p class="mb-4 text-sm lg:text-base text-white/80">已有超过 100 万人使用轻悦待办提升效率</p>
           <div class="flex justify-center">
             <div class="flex -space-x-3">
-              <img src="https://design.gemcoder.com/staticResource/echoAiSystemImages/5789ae6a9dfaeb368ba279d92fd58c77.png" alt="用户头像" class="w-10 h-10 rounded-full border-2 border-white/50 avatar-float" style="animation-delay: 0s; box-shadow: 0 0 10px rgba(255,255,255,0.3);" />
-              <img src="https://design.gemcoder.com/staticResource/echoAiSystemImages/d27cfa0599490bdc19cd197ce549a2cd.png" alt="用户头像" class="w-10 h-10 rounded-full border-2 border-white/50 avatar-float" style="animation-delay: 0.2s; box-shadow: 0 0 10px rgba(255,255,255,0.3);" />
-              <img src="https://design.gemcoder.com/staticResource/echoAiSystemImages/ab41ca8361c02f52ff523a0ebeff3591.png" alt="用户头像" class="w-10 h-10 rounded-full border-2 border-white/50 avatar-float" style="animation-delay: 0.4s; box-shadow: 0 0 10px rgba(255,255,255,0.3);" />
-              <div class="w-10 h-10 rounded-full border-2 border-white/50 bg-white/20 flex items-center justify-center text-xs font-medium backdrop-blur-sm pulse-glow" style="box-shadow: 0 0 15px rgba(255,255,255,0.4);">+10k</div>
+              <img src="https://design.gemcoder.com/staticResource/echoAiSystemImages/5789ae6a9dfaeb368ba279d92fd58c77.png" alt="用户头像" class="w-10 h-10 rounded-full border-2 border-white/50 avatar-float" style="animation-delay: 0s;" />
+              <img src="https://design.gemcoder.com/staticResource/echoAiSystemImages/d27cfa0599490bdc19cd197ce549a2cd.png" alt="用户头像" class="w-10 h-10 rounded-full border-2 border-white/50 avatar-float" style="animation-delay: 0.2s;" />
+              <img src="https://design.gemcoder.com/staticResource/echoAiSystemImages/ab41ca8361c02f52ff523a0ebeff3591.png" alt="用户头像" class="w-10 h-10 rounded-full border-2 border-white/50 avatar-float" style="animation-delay: 0.4s;" />
+              <div class="w-10 h-10 rounded-full border-2 border-white/50 bg-white/20 flex items-center justify-center text-xs font-medium backdrop-blur-sm pulse-glow">+10k</div>
             </div>
           </div>
         </div>
@@ -226,19 +241,19 @@
       <!-- 右侧登录表单区域 -->
       <div class="w-full md:w-1/2 lg:w-7/12 flex items-center justify-center p-6 lg:p-12">
         <div class="w-full max-w-md">
-          <!-- 登录卡片 - 增强毛玻璃效果 -->
-          <div class="glass-card rounded-3xl shadow-2xl card-hover card-glow p-8 lg:p-10 form-enter">
+          <!-- 登录卡片 - 优化透明度 -->
+          <div class="glass-card rounded-3xl shadow-2xl card-hover p-8 lg:p-10 form-enter">
             <!-- Logo 和标题 (移动端显示) -->
             <div class="md:hidden text-center mb-6">
               <div class="text-4xl mb-3 icon-bounce">☀️</div>
-              <h2 class="text-2xl font-bold text-dark mb-1 text-gradient-warm">轻悦待办</h2>
+              <h2 class="text-2xl font-bold text-dark mb-1">轻悦待办</h2>
               <p class="text-gray-500 text-sm">专注每一天，高效每一刻</p>
             </div>
             
-            <!-- 标题 -->
+            <!-- 标题 - 优化层次 -->
             <div class="mb-8 hidden md:block">
-              <h2 class="text-3xl font-bold text-dark mb-2 text-gradient-warm">欢迎回来 👋</h2>
-              <p class="text-gray-500">登录后开启高效的一天</p>
+              <h2 class="text-3xl font-bold text-gray-800 mb-2">欢迎回来 👋</h2>
+              <p class="text-gray-500 text-sm">登录后开启高效的一天</p>
             </div>
             
             <!-- 登录表单 -->
@@ -247,10 +262,10 @@
               <div>
                 <label for="login-account" class="block text-sm font-medium text-gray-700 mb-2">手机号/邮箱</label>
                 <div class="relative group">
-                  <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-primary transition-colors duration-300">
+                  <span class="absolute inset-y-0 left-0 flex items-center pl-4 input-icon">
                     <i class="fas fa-user"> </i>
                   </span>
-                  <input type="text" id="login-account" class="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl input-focus input-glow glass-input hover:border-gray-300" placeholder="请输入手机号或邮箱" required />
+                  <input type="text" id="login-account" class="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl input-focus glass-input hover:border-gray-300" placeholder="请输入手机号或邮箱" required />
                 </div>
               </div>
               
@@ -258,11 +273,11 @@
               <div>
                 <label for="login-password" class="block text-sm font-medium text-gray-700 mb-2">密码</label>
                 <div class="relative group">
-                  <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-primary transition-colors duration-300">
+                  <span class="absolute inset-y-0 left-0 flex items-center pl-4 input-icon">
                     <i class="fas fa-lock"> </i>
                   </span>
-                  <input type="password" id="login-password" class="w-full pl-12 pr-12 py-3.5 border-2 border-gray-200 rounded-xl input-focus input-glow glass-input hover:border-gray-300" placeholder="请输入密码" required />
-                  <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600 transition-colors duration-300" id="toggle-password">
+                  <input type="password" id="login-password" class="w-full pl-12 pr-12 py-3.5 border-2 border-gray-200 rounded-xl input-focus glass-input hover:border-gray-300" placeholder="请输入密码" required />
+                  <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-primary transition-colors duration-300" id="toggle-password">
                     <i class="fas fa-eye-slash"> </i>
                   </button>
                 </div>
@@ -272,9 +287,9 @@
               <div class="flex items-center justify-between">
                 <div class="flex items-center group">
                   <input type="checkbox" id="remember-me" class="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary cursor-pointer" />
-                  <label for="remember-me" class="ml-2 text-sm text-gray-600 cursor-pointer group-hover:text-dark transition-colors duration-300">记住我</label>
+                  <label for="remember-me" class="ml-2 text-sm text-gray-600 cursor-pointer group-hover:text-gray-800 transition-colors duration-300">记住我</label>
                 </div>
-                <a href="javascript:void(0);" class="text-sm text-primary font-medium hover:text-primary/80 transition-colors duration-300">忘记密码？</a>
+                <a href="javascript:void(0);" class="text-sm text-primary font-medium hover:text-primary/70 transition-colors duration-300">忘记密码？</a>
               </div>
               
               <!-- 登录按钮 -->
@@ -290,23 +305,23 @@
                 </div>
               </div>
               
-              <!-- 社交登录 - 增强光效 -->
+              <!-- 社交登录 - 图标 + 文字 -->
               <div class="grid grid-cols-4 gap-3">
-                <button type="button" class="btn-social group glass-strong hover:border-green-400/50">
-                  <i class="fab fa-weixin text-green-500 text-xl mb-1.5 group-hover:scale-110 group-hover:drop-shadow-lg transition-all duration-300"> </i>
-                  <span class="text-xs text-gray-600"> 微信 </span>
+                <button type="button" class="btn-social group glass-strong hover:border-green-400/50" title="微信登录">
+                  <i class="fab fa-weixin text-green-500 social-icon"> </i>
+                  <span class="social-text">微信</span>
                 </button>
-                <button type="button" class="btn-social group glass-strong hover:border-gray-400/50">
-                  <i class="fab fa-apple text-gray-800 text-xl mb-1.5 group-hover:scale-110 group-hover:drop-shadow-lg transition-all duration-300"> </i>
-                  <span class="text-xs text-gray-600"> 苹果 </span>
+                <button type="button" class="btn-social group glass-strong hover:border-gray-400/50" title="苹果登录">
+                  <i class="fab fa-apple text-gray-800 social-icon"> </i>
+                  <span class="social-text">苹果</span>
                 </button>
-                <button type="button" class="btn-social group glass-strong hover:border-red-400/50">
-                  <i class="fab fa-google text-red-500 text-xl mb-1.5 group-hover:scale-110 group-hover:drop-shadow-lg transition-all duration-300"> </i>
-                  <span class="text-xs text-gray-600"> 谷歌 </span>
+                <button type="button" class="btn-social group glass-strong hover:border-red-400/50" title="谷歌登录">
+                  <i class="fab fa-google text-red-500 social-icon"> </i>
+                  <span class="social-text">谷歌</span>
                 </button>
-                <button type="button" class="btn-social group glass-strong hover:border-purple-400/50">
-                  <i class="fas fa-user-secret text-purple-500 text-xl mb-1.5 group-hover:scale-110 group-hover:drop-shadow-lg transition-all duration-300"> </i>
-                  <span class="text-xs text-gray-600"> 访客 </span>
+                <button type="button" class="btn-social group glass-strong hover:border-purple-400/50" title="访客登录">
+                  <i class="fas fa-user-secret text-purple-500 social-icon"> </i>
+                  <span class="social-text">访客</span>
                 </button>
               </div>
               
@@ -314,14 +329,14 @@
               <div class="text-center mt-6 pt-6 border-t border-gray-100">
                 <p class="text-sm text-gray-600">
                   还没有账号？
-                  <a href="注册页面.html" class="text-primary font-semibold hover:text-primary/80 transition-colors duration-300 inline-block hover:scale-105 transform">立即注册</a>
+                  <a href="注册页面.html" class="text-primary font-semibold hover:text-primary/70 transition-colors duration-300 inline-block hover:scale-105 transform">立即注册</a>
                 </p>
               </div>
             </form>
           </div>
           
-          <!-- 底部提示 -->
-          <p class="text-center text-xs text-white/80 mt-6 px-4 leading-relaxed">
+          <!-- 底部提示 - 提高对比度 -->
+          <p class="text-center text-xs text-white/90 mt-6 px-4 leading-relaxed">
             登录即代表您同意我们的
             <a href="javascript:void(0);" class="underline hover:text-white font-medium transition-colors duration-300">用户协议</a>
             和
@@ -365,19 +380,8 @@
       var socialButtons = document.querySelectorAll('.btn-social');
       socialButtons.forEach(function (button) {
         button.addEventListener('click', function () {
-          var type = this.querySelector('span').textContent.trim();
+          var type = this.getAttribute('title').replace('登录', '');
           alert("您选择了".concat(type, "登录方式"));
-        });
-      });
-      
-      // 输入框动画增强
-      var inputs = document.querySelectorAll('.input-focus');
-      inputs.forEach(function (input) {
-        input.addEventListener('focus', function () {
-          this.parentElement.querySelector('span').classList.add('text-primary');
-        });
-        input.addEventListener('blur', function () {
-          this.parentElement.querySelector('span').classList.remove('text-primary');
         });
       });
     </script>

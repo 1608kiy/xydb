@@ -32,7 +32,7 @@
           .card-hover { @apply transition-all duration-500 hover:shadow-2xl hover:-translate-y-1; }
           .input-focus { @apply focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all duration-300; }
           .btn-primary { @apply bg-primary text-white font-medium py-3 px-4 rounded-xl transition-all duration-300 hover:bg-primary/90 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]; }
-          .btn-social { @apply flex flex-col items-center justify-center py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-300 hover:scale-105 active:scale-95; }
+          .btn-social { @apply flex flex-col items-center justify-center py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-300 hover:scale-105 active:scale-95; }
           .form-enter { animation: formSlideIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
           @keyframes formSlideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
           .icon-bounce { animation: iconBounce 2s ease-in-out infinite; }
@@ -76,12 +76,6 @@
               50% { box-shadow: 0 0 50px rgba(124, 58, 237, 0.5); } 
           }
           
-          .input-glow { animation: inputGlow 2s ease-in-out infinite; }
-          @keyframes inputGlow { 
-              0%, 100% { border-color: rgba(79, 70, 229, 0.3); } 
-              50% { border-color: rgba(124, 58, 237, 0.6); } 
-          }
-          
           /* ===== 标题渐变 - 柔和色调 ===== */
           .text-gradient-soft { 
               background: linear-gradient(90deg, #e0e7ff, #c4b5fd, #e0e7ff, #a5f3fc, #e0e7ff); 
@@ -100,7 +94,7 @@
               75% { transform: rotate(1deg) translateY(-8px); } 
           }
           
-          /* ===== 毛玻璃增强 ===== */
+          /* ===== 毛玻璃增强 - 卡片透明度优化 ===== */
           .glass-strong { 
               background: rgba(255, 255, 255, 0.15); 
               backdrop-filter: blur(20px); 
@@ -109,15 +103,15 @@
           }
           
           .glass-card { 
-              background: rgba(255, 255, 255, 0.95); 
+              background: rgba(255, 255, 255, 0.85); 
               backdrop-filter: blur(40px); 
               -webkit-backdrop-filter: blur(40px); 
-              border: 1px solid rgba(255, 255, 255, 0.4); 
+              border: 1px solid rgba(255, 255, 255, 0.3); 
               box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 0 30px rgba(255, 255, 255, 0.1); 
           }
           
           .glass-input {
-              background: rgba(249, 250, 251, 0.8);
+              background: rgba(249, 250, 251, 0.6);
               backdrop-filter: blur(10px);
               -webkit-backdrop-filter: blur(10px);
           }
@@ -153,6 +147,26 @@
               filter: blur(10px);
               opacity: 0.5;
           }
+          
+          /* ===== 输入框图标样式 - 更明显 ===== */
+          .input-icon {
+              @apply text-gray-500 text-lg transition-all duration-300;
+          }
+          .group:focus-within .input-icon {
+              @apply text-primary text-xl;
+          }
+          
+          /* ===== 社交按钮优化 - 图标 + 文字 ===== */
+          .btn-social {
+              @apply flex flex-col items-center justify-center py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-300 hover:scale-105 active:scale-95;
+          }
+          .btn-social .social-icon {
+              @apply text-xl mb-1 transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-lg;
+          }
+          .btn-social .social-text {
+              @apply text-xs text-gray-600 font-medium;
+          }
+          
       }
     </style>
   </head>
@@ -160,18 +174,17 @@
     <!-- 全屏渐变背景 -->
     <div class="bg-gradient-full"></div>
     
-    <!-- ===== 装饰性光斑 - 增强背景特性 ===== -->
+    <!-- ===== 装饰性光斑 - 柔和色调 ===== -->
     <div class="fixed top-20 left-10 w-72 h-72 bg-white/5 rounded-full blur-3xl pointer-events-none orb-float"></div>
     <div class="fixed bottom-20 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none orb-float" style="animation-delay: -2s;"></div>
     <div class="fixed top-1/2 left-1/2 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none pulse-glow"></div>
     <div class="fixed top-40 right-20 w-48 h-48 bg-secondary/10 rounded-full blur-3xl pointer-events-none orb-float" style="animation-delay: -4s;"></div>
-    <div class="fixed bottom-40 left-20 w-56 h-56 bg-accent/10 rounded-full blur-3xl pointer-events-none orb-float" style="animation-delay: -6s;"></div>
+    <div class="fixed bottom-40 left-20 w-56 h-56 bg-secondary/10 rounded-full blur-3xl pointer-events-none orb-float" style="animation-delay: -6s;"></div>
     <div class="fixed top-1/3 left-1/4 w-40 h-40 bg-white/8 rounded-full blur-2xl pointer-events-none orb-float" style="animation-delay: -8s;"></div>
     <div class="fixed bottom-1/3 right-1/4 w-32 h-32 bg-primary/15 rounded-full blur-2xl pointer-events-none pulse-glow" style="animation-delay: -1s;"></div>
     <!-- 新增背景光斑 -->
     <div class="fixed top-0 left-1/2 w-80 h-80 bg-primary/5 rounded-full blur-3xl pointer-events-none orb-float" style="animation-delay: -3s;"></div>
     <div class="fixed bottom-0 left-1/3 w-60 h-60 bg-secondary/8 rounded-full blur-3xl pointer-events-none pulse-glow" style="animation-delay: -5s;"></div>
-    <div class="fixed top-1/4 right-0 w-50 h-50 bg-accent/10 rounded-full blur-2xl pointer-events-none orb-float" style="animation-delay: -7s;"></div>
     
     <!-- ===== 网格背景纹理 ===== -->
     <div class="fixed inset-0 pointer-events-none opacity-5" style="background-image: radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px); background-size: 30px 30px;"></div>
@@ -190,15 +203,15 @@
     
     <div class="flex-1 flex flex-col md:flex-row relative z-10">
       <!-- 左侧欢迎区域 -->
-      <div class="hidden md:flex md:w-1/2 lg:w-5/12 p-8 lg:p-12 pt-4 lg:pt-7 flex-col justify-center items-center text-white">
+      <div class="hidden md:flex md:w-1/2 lg:w-5/12 p-8 lg:p-12 pt-14 lg:pt-18 flex-col justify-start items-center text-white">
         <!-- 光晕背景 -->
         <div class="absolute inset-0 glass-strong rounded-3xl -z-10"></div>
         
-        <!-- 太阳图标 - 移除光晕 -->
+        <!-- 太阳图标 - 保留弹跳动画 -->
         <div class="text-6xl mb-6 icon-bounce">☀️</div>
         
-        <!-- 标题 - 柔和色调 -->
-        <h1 class="text-[clamp(2rem,4vw,3.5rem)] font-bold mb-4 tracking-tight text-gradient-soft">轻悦待办</h1>
+        <!-- 标题 - 取消渐变动画，使用纯色 -->
+        <h1 class="text-[clamp(2rem,4vw,3.5rem)] font-bold mb-4 tracking-tight text-white">轻悦待办</h1>
         <p class="text-lg lg:text-xl text-center mb-8 max-w-md text-white/90">专注每一天，高效每一刻</p>
         
         <!-- 应用界面展示 - 轻微倾斜浮动动画 -->
@@ -225,35 +238,35 @@
       <!-- 右侧注册表单区域 -->
       <div class="w-full md:w-1/2 lg:w-7/12 flex items-start justify-center p-6 lg:p-8">
         <div class="w-full max-w-md">
-          <!-- 卡片 - 增强毛玻璃效果 -->
-          <div class="glass-card rounded-3xl shadow-2xl card-hover card-glow px-8 lg:px-10 pb-4 lg:pb-6 pt-8 form-enter">
+          <!-- 卡片 - 优化透明度，移除 card-glow 动画 -->
+          <div class="glass-card rounded-3xl shadow-2xl card-hover px-8 lg:px-10 pb-4 lg:pb-6 pt-8 form-enter">
             <div class="md:hidden text-center mb-6">
               <div class="text-4xl mb-3 icon-bounce">☀️</div>
-              <h2 class="text-2xl font-bold text-dark mb-1 text-gradient-soft">轻悦待办</h2>
+              <h2 class="text-2xl font-bold text-dark mb-1">轻悦待办</h2>
               <p class="text-gray-500 text-sm">专注每一天，高效每一刻</p>
             </div>
             <div class="mb-8 hidden md:block">
-              <h2 class="text-3xl font-bold text-dark mb-2 text-gradient-soft">欢迎注册 👋</h2>
-              <p class="text-gray-500">填写信息，加入轻悦待办</p>
+              <h2 class="text-3xl font-bold text-gray-800 mb-2">欢迎注册 👋</h2>
+              <p class="text-gray-500 text-sm">填写信息，加入轻悦待办</p>
             </div>
             <form id="register-form" class="space-y-5" action="待办页面.html" method="GET">
               <div>
                 <label for="register-account" class="block text-sm font-medium text-gray-700 mb-2">手机号/邮箱</label>
                 <div class="relative group">
-                  <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-primary transition-colors duration-300">
+                  <span class="absolute inset-y-0 left-0 flex items-center pl-4 input-icon">
                     <i class="fas fa-user"> </i>
                   </span>
-                  <input type="text" id="register-account" class="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl input-focus input-glow glass-input hover:border-gray-300" placeholder="请输入手机号或邮箱" required />
+                  <input type="text" id="register-account" class="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl input-focus glass-input hover:border-gray-300" placeholder="请输入手机号或邮箱" required />
                 </div>
               </div>
               <div>
                 <label for="register-password" class="block text-sm font-medium text-gray-700 mb-2">设置密码</label>
                 <div class="relative group">
-                  <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-primary transition-colors duration-300">
+                  <span class="absolute inset-y-0 left-0 flex items-center pl-4 input-icon">
                     <i class="fas fa-lock"> </i>
                   </span>
-                  <input type="password" id="register-password" class="w-full pl-12 pr-12 py-3.5 border-2 border-gray-200 rounded-xl input-focus input-glow glass-input hover:border-gray-300" placeholder="请输入密码" required />
-                  <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600 transition-colors duration-300" id="toggle-register-password">
+                  <input type="password" id="register-password" class="w-full pl-12 pr-12 py-3.5 border-2 border-gray-200 rounded-xl input-focus glass-input hover:border-gray-300" placeholder="请输入密码" required />
+                  <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-primary transition-colors duration-300" id="toggle-register-password">
                     <i class="fas fa-eye-slash"> </i>
                   </button>
                 </div>
@@ -261,10 +274,10 @@
               <div>
                 <label for="register-confirm" class="block text-sm font-medium text-gray-700 mb-2">确认密码</label>
                 <div class="relative group">
-                  <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 group-focus-within:text-primary transition-colors duration-300">
+                  <span class="absolute inset-y-0 left-0 flex items-center pl-4 input-icon">
                     <i class="fas fa-check"> </i>
                   </span>
-                  <input type="password" id="register-confirm" class="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl input-focus input-glow glass-input hover:border-gray-300" placeholder="请再次输入密码" required />
+                  <input type="password" id="register-confirm" class="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl input-focus glass-input hover:border-gray-300" placeholder="请再次输入密码" required />
                 </div>
               </div>
               <button type="submit" class="w-full btn-primary text-base shadow-lg shadow-primary/30 btn-glow">注 册</button>
@@ -279,33 +292,33 @@
                 </div>
               </div>
               
-              <!-- 社交注册按钮 - 增强光效 -->
+              <!-- 社交注册按钮 - 图标 + 文字 -->
               <div class="grid grid-cols-3 gap-3">
-                <button type="button" class="btn-social group glass-strong hover:border-green-400/50">
-                  <i class="fab fa-weixin text-green-500 text-xl mb-1.5 group-hover:scale-110 group-hover:drop-shadow-lg transition-all duration-300"> </i>
-                  <span class="text-xs text-gray-600"> 微信 </span>
+                <button type="button" class="btn-social group glass-strong hover:border-green-400/50" title="微信注册">
+                  <i class="fab fa-weixin text-green-500 social-icon"> </i>
+                  <span class="social-text">微信</span>
                 </button>
-                <button type="button" class="btn-social group glass-strong hover:border-gray-400/50">
-                  <i class="fab fa-apple text-gray-800 text-xl mb-1.5 group-hover:scale-110 group-hover:drop-shadow-lg transition-all duration-300"> </i>
-                  <span class="text-xs text-gray-600"> 苹果 </span>
+                <button type="button" class="btn-social group glass-strong hover:border-gray-400/50" title="苹果注册">
+                  <i class="fab fa-apple text-gray-800 social-icon"> </i>
+                  <span class="social-text">苹果</span>
                 </button>
-                <button type="button" class="btn-social group glass-strong hover:border-red-400/50">
-                  <i class="fab fa-google text-red-500 text-xl mb-1.5 group-hover:scale-110 group-hover:drop-shadow-lg transition-all duration-300"> </i>
-                  <span class="text-xs text-gray-600"> 谷歌 </span>
+                <button type="button" class="btn-social group glass-strong hover:border-red-400/50" title="谷歌注册">
+                  <i class="fab fa-google text-red-500 social-icon"> </i>
+                  <span class="social-text">谷歌</span>
                 </button>
               </div>
               
               <div class="text-center mt-6 pt-6 border-t border-gray-100">
                 <p class="text-sm text-gray-600">
                   已有账号？
-                  <a href="登录页面.html" class="text-primary font-semibold hover:text-primary/80 transition-colors duration-300 inline-block hover:scale-105 transform">立即登录</a>
+                  <a href="登录页面.html" class="text-primary font-semibold hover:text-primary/70 transition-colors duration-300 inline-block hover:scale-105 transform">立即登录</a>
                 </p>
               </div>
             </form>
           </div>
           
-          <!-- 底部协议提示 -->
-          <p class="text-center text-xs text-white/80 mt-6 px-4 leading-relaxed">
+          <!-- 底部协议提示 - 提高对比度 -->
+          <p class="text-center text-xs text-white/90 mt-6 px-4 leading-relaxed">
             注册即代表您同意我们的
             <a href="javascript:void(0);" class="underline hover:text-white font-medium transition-colors duration-300">用户协议</a>
             和
@@ -348,19 +361,8 @@
       var socialButtons = document.querySelectorAll('.btn-social');
       socialButtons.forEach(function (button) {
         button.addEventListener('click', function () {
-          var type = this.querySelector('span').textContent.trim();
+          var type = this.getAttribute('title').replace('注册', '');
           alert("您选择了".concat(type, "注册方式"));
-        });
-      });
-      
-      // 输入框动画增强
-      var inputs = document.querySelectorAll('.input-focus');
-      inputs.forEach(function (input) {
-        input.addEventListener('focus', function () {
-          this.parentElement.querySelector('span').classList.add('text-primary');
-        });
-        input.addEventListener('blur', function () {
-          this.parentElement.querySelector('span').classList.remove('text-primary');
         });
       });
     </script>
