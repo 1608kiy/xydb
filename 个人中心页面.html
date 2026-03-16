@@ -61,21 +61,26 @@
           .glass-input { background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(209, 213, 219, 0.5); transition: all 0.3s ease; }
           .glass-input:focus { background: rgba(255, 255, 255, 0.95); border-color: rgba(79, 70, 229, 0.5); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12); }
           .glass-tab { 
-            background: rgba(255, 255, 255, 0.5); 
-            backdrop-filter: blur(80px); 
-            -webkit-backdrop-filter: blur(80px); 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
             border-top: 1px solid rgba(255, 255, 255, 0.5); 
             box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.3);
           }
           .glass-header { 
-            background: rgba(255, 255, 255, 0.5); 
-            backdrop-filter: blur(60px); 
-            -webkit-backdrop-filter: blur(60px); 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
             border-bottom: 1px solid rgba(255, 255, 255, 0.4);
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
             transition: all 0.3s ease;
           }
           .glass-card { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px); border: 1px solid rgba(255, 255, 255, 0.35); }
+          
+          /* ✅ 卡片阴影样式 */
+          .card-shadow { box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08); }
+          .card-hover { transition: all 0.3s ease; }
+          .card-hover:hover { box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12); transform: translateY(-2px); }
           
           /* ✅ 背景装饰光斑 */
           .bg-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.15; pointer-events: none; z-index: 0; animation: orbFloat 20s ease-in-out infinite; }
@@ -228,19 +233,19 @@
             transform: rotate(180deg);
           }
           .custom-select-dropdown {
-            @apply absolute left-0 mt-2 w-full glass-max rounded-xl shadow-2xl py-1.5 z-50;
+            @apply absolute left-0 mt-2 w-full glass-max rounded-xl shadow-2xl py-1.5 z-[100];
             display: none;
-            animation: dropdownSlide 0.2s ease-out;
+            animation: dropdownSlide 0.25s ease-out;
           }
           .custom-select-dropdown.show {
             display: block;
           }
           @keyframes dropdownSlide {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(-8px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
           }
           .custom-select-option {
-            @apply px-4 py-2.5 text-xs text-gray-700 cursor-pointer transition-all duration-200;
+            @apply px-4 py-2.5 text-xs text-gray-700 cursor-pointer transition-all duration-200 rounded-md;
           }
           .custom-select-option:hover {
             @apply bg-primary/10 text-primary;
@@ -267,10 +272,18 @@
           .modal-input {
             @apply w-full px-4 py-2.5 rounded-xl glass-input focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary transition-all duration-300 text-sm;
           }
+          
+          /* ✅ 手机号修改模态框样式 */
+          .phone-modal-overlay { 
+            @apply fixed inset-0 bg-black/40 backdrop-blur-sm z-[1000] flex items-center justify-center;
+            display: none;
+          }
+          .phone-modal-overlay.hidden { display: none !important; }
+          .phone-modal-overlay:not(.hidden) { display: flex !important; }
       }
     </style>
   </head>
-  <body class="font-inter bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden">
+  <body class="font-inter bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden fade-in scroll-smooth">
     <!-- ✅ 背景装饰光斑 -->
     <div class="bg-orb w-[500px] h-[500px] bg-primary top-0 left-0"></div>
     <div class="bg-orb w-[400px] h-[400px] bg-secondary bottom-0 right-0" style="animation-delay: -5s;"></div>
@@ -369,7 +382,7 @@
                       id="profile-avatar"
                       src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
                       alt="头像"
-                      class="relative w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg transition-transform duration-300 group-hover:scale-105"
+                      class="relative w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg transition-all duration-300 group-hover:shadow-xl"
                     />
                     <button
                       id="change-avatar-btn"
@@ -393,7 +406,7 @@
                       <span
                         id="user-level-tag"
                         class="badge-level float flex-shrink-0"
-                      >
+                      > 
                         <i class="fas fa-crown mr-1"></i>
                         LV.3
                       </span>
@@ -437,7 +450,7 @@
                       </div>
                       <button
                         id="edit-phone-btn"
-                        class="px-3 py-1.5 rounded-lg border border-gray-200 text-xs text-gray-600 hover:border-primary hover:text-primary transition-all duration-200"
+                        class="px-3 py-1.5 rounded-lg border border-gray-200 text-xs text-gray-600 hover:border-primary hover:bg-gray-50 transition-all duration-200"
                       >
                         修改
                       </button>
@@ -483,37 +496,37 @@
                   <div
                     class="text-xs text-gray-500 flex items-center justify-center mb-2"
                   >
-                    <i class="fas fa-check-circle text-success mr-1.5 group-hover:scale-110 transition-transform duration-300"></i>
+                    <i class="fas fa-check-circle text-success mr-1.5 transition-all duration-300 group-hover:text-green-600"></i>
                     累计完成任务
                   </div>
-                  <div id="stat-completed-tasks" class="text-2xl font-bold bg-gradient-to-r from-success to-emerald-500 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300">328</div>
+                  <div id="stat-completed-tasks" class="text-2xl font-bold bg-gradient-to-r from-success to-emerald-500 bg-clip-text text-transparent transition-all duration-300 group-hover:brightness-110">328</div>
                 </div>
                 <div class="stat-card group">
                   <div
                     class="text-xs text-gray-500 flex items-center justify-center mb-2"
                   >
-                    <i class="fas fa-clock text-primary mr-1.5 group-hover:scale-110 transition-transform duration-300"></i>
+                    <i class="fas fa-clock text-primary mr-1.5 transition-all duration-300 group-hover:text-blue-600"></i>
                     累计专注时长
                   </div>
-                  <div id="stat-focus-hours" class="text-2xl font-bold bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300">142 h</div>
+                  <div id="stat-focus-hours" class="text-2xl font-bold bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent transition-all duration-300 group-hover:brightness-110">142 h</div>
                 </div>
                 <div class="stat-card group">
                   <div
                     class="text-xs text-gray-500 flex items-center justify-center mb-2"
                   >
-                    <i class="fas fa-calendar-check text-warning mr-1.5 group-hover:scale-110 transition-transform duration-300"></i>
+                    <i class="fas fa-calendar-check text-warning mr-1.5 transition-all duration-300 group-hover:text-orange-600"></i>
                     最长连续打卡
                   </div>
-                  <div id="stat-max-streak" class="text-2xl font-bold bg-gradient-to-r from-warning to-orange-500 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300">21 天</div>
+                  <div id="stat-max-streak" class="text-2xl font-bold bg-gradient-to-r from-warning to-orange-500 bg-clip-text text-transparent transition-all duration-300 group-hover:brightness-110">21 天</div>
                 </div>
                 <div class="stat-card group">
                   <div
                     class="text-xs text-gray-500 flex items-center justify-center mb-2"
                   >
-                    <i class="fas fa-fire text-danger mr-1.5 group-hover:scale-110 transition-transform duration-300"></i>
+                    <i class="fas fa-fire text-danger mr-1.5 transition-all duration-300 group-hover:text-red-600"></i>
                     累计番茄数
                   </div>
-                  <div id="stat-total-pomodoros" class="text-2xl font-bold bg-gradient-to-r from-danger to-red-500 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300">612</div>
+                  <div id="stat-total-pomodoros" class="text-2xl font-bold bg-gradient-to-r from-danger to-red-500 bg-clip-text text-transparent transition-all duration-300 group-hover:brightness-110">612</div>
                 </div>
               </div>
             </section>
@@ -529,7 +542,7 @@
                 </h2>
                 <button
                   id="clear-cache-btn"
-                  class="text-xs text-danger hover:text-danger/80 flex items-center px-3 py-1.5 rounded-lg hover:bg-danger/10 transition-all duration-200 hover:scale-105"
+                  class="text-xs text-danger hover:text-danger/80 flex items-center px-3 py-1.5 rounded-lg hover:bg-danger/10 transition-all duration-200"
                 >
                   <i class="fas fa-trash-alt mr-1"></i>
                   清理缓存
@@ -649,7 +662,7 @@
                       <p class="text-xs text-gray-500">建议定期更换密码，提升账号安全性</p>
                     </div>
                   </div>
-                  <button id="change-password-btn" class="text-primary text-xs hover:underline font-medium px-3 py-1.5 rounded-lg hover:bg-primary/10 transition-all duration-200 hover:scale-105">
+                  <button id="change-password-btn" class="text-primary text-xs font-medium px-3 py-1.5 rounded-lg hover:bg-primary/10 transition-all duration-200">
                     修改
                   </button>
                 </div>
@@ -663,7 +676,7 @@
                       <p class="text-xs text-gray-500">用于登录、找回密码和安全验证</p>
                     </div>
                   </div>
-                  <button id="bind-phone-btn" class="text-primary text-xs hover:underline font-medium px-3 py-1.5 rounded-lg hover:bg-primary/10 transition-all duration-200 hover:scale-105">修改</button>
+                  <button id="bind-phone-btn" class="text-primary text-xs font-medium px-3 py-1.5 rounded-lg hover:bg-primary/10 transition-all duration-200">修改</button>
                 </div>
                 <div class="setting-item">
                   <div class="flex items-center space-x-3">
@@ -677,7 +690,7 @@
                   </div>
                   <button
                     id="two-step-btn"
-                    class="px-3 py-1.5 rounded-full border border-gray-200 text-xs text-gray-700 hover:bg-gray-50 font-medium transition-all duration-200 hover:scale-105"
+                    class="px-3 py-1.5 rounded-lg border border-gray-200 text-xs text-gray-600 hover:border-primary hover:bg-gray-50 transition-all duration-200"
                   >
                     去开启
                   </button>
@@ -716,7 +729,8 @@
             <section
               class="card-shadow card-hover glass-strong rounded-2xl p-4 md:p-5 fade-in"
             >
-              <h2 class="text-sm font-semibold text-gray-800 mb-3">
+              <h2 class="text-sm font-semibold text-gray-800 mb-3 flex items-center">
+                <i class="fas fa-cog text-primary mr-2"></i>
                 应用设置
               </h2>
               <div class="space-y-4 text-xs text-gray-700">
@@ -729,21 +743,21 @@
                     <button
                       id="theme-system-btn"
                       data-theme="system"
-                      class="px-3 py-1.5 rounded-full border border-primary bg-primary text-white text-xs theme-btn transition-all duration-300 hover:scale-105"
+                      class="px-3 py-1.5 rounded-full border border-primary bg-primary text-white text-xs theme-btn transition-all duration-300 hover:shadow-lg"
                     >
                       跟随系统
                     </button>
                     <button
                       id="theme-light-btn"
                       data-theme="light"
-                      class="px-3 py-1.5 rounded-full border border-gray-200 text-xs theme-btn transition-all duration-300 hover:scale-105"
+                      class="px-3 py-1.5 rounded-full border border-gray-200 text-xs theme-btn transition-all duration-300 hover:bg-primary/10 hover:text-primary hover:shadow-md"
                     >
                       浅色
                     </button>
                     <button
                       id="theme-dark-btn"
                       data-theme="dark"
-                      class="px-3 py-1.5 rounded-full border border-gray-200 text-xs theme-btn transition-all duration-300 hover:scale-105"
+                      class="px-3 py-1.5 rounded-full border border-gray-200 text-xs theme-btn transition-all duration-300 hover:bg-primary/10 hover:text-primary hover:shadow-md"
                     >
                       深色
                     </button>
@@ -754,25 +768,25 @@
                       <button
                         id="color-blue-btn"
                         data-color="blue"
-                        class="color-btn w-5 h-5 rounded-full bg-primary border-2 border-white shadow transition-transform duration-300 hover:scale-125"
+                        class="color-btn w-5 h-5 rounded-full bg-primary border-2 border-white shadow transition-all duration-300 hover:shadow-lg hover:scale-105"
                         title="蓝色"
                       ></button>
                       <button
                         id="color-purple-btn"
                         data-color="purple"
-                        class="color-btn w-5 h-5 rounded-full bg-secondary/90 border-2 border-transparent hover:border-white shadow transition-transform duration-300 hover:scale-125"
+                        class="color-btn w-5 h-5 rounded-full bg-secondary/90 border-2 border-transparent hover:border-white shadow transition-all duration-300 hover:shadow-lg hover:scale-105"
                         title="紫色"
                       ></button>
                       <button
                         id="color-green-btn"
                         data-color="green"
-                        class="color-btn w-5 h-5 rounded-full bg-success/90 border-2 border-transparent hover:border-white shadow transition-transform duration-300 hover:scale-125"
+                        class="color-btn w-5 h-5 rounded-full bg-success/90 border-2 border-transparent hover:border-white shadow transition-all duration-300 hover:shadow-lg hover:scale-105"
                         title="绿色"
                       ></button>
                       <button
                         id="color-pink-btn"
                         data-color="pink"
-                        class="color-btn w-5 h-5 rounded-full bg-pink-500 border-2 border-transparent hover:border-white shadow transition-transform duration-300 hover:scale-125"
+                        class="color-btn w-5 h-5 rounded-full bg-pink-500 border-2 border-transparent hover:border-white shadow transition-all duration-300 hover:shadow-lg hover:scale-105"
                         title="粉色"
                       ></button>
                     </div>
@@ -786,22 +800,22 @@
                   </div>
                   <div class="space-y-2.5">
                     <label class="flex items-center justify-between group cursor-pointer">
-                      <span class="group-hover:text-primary transition-colors">任务提醒</span>
+                      <span class="transition-colors">任务提醒</span>
                       <input id="notify-task-reminder" type="checkbox" class="custom-checkbox" checked />
                     </label>
                     <label class="flex items-center justify-between group cursor-pointer">
-                      <span class="group-hover:text-primary transition-colors">番茄结束提醒</span>
+                      <span class="transition-colors">番茄结束提醒</span>
                       <input id="notify-pomodoro-end" type="checkbox" class="custom-checkbox" checked />
                     </label>
                     <label class="flex items-center justify-between group cursor-pointer">
-                      <span class="group-hover:text-primary transition-colors">每日简报推送</span>
+                      <span class="transition-colors">每日简报推送</span>
                       <input id="notify-daily-report" type="checkbox" class="custom-checkbox" />
                     </label>
                     <div class="flex items-center justify-between group cursor-pointer" onclick="openDndModal()">
-                      <span class="group-hover:text-primary transition-colors">勿扰模式</span>
+                      <span class="transition-colors">勿扰模式</span>
                       <div class="flex items-center space-x-2">
                         <span class="text-gray-500 text-[11px]" id="dnd-display-time">22:00 - 08:00</span>
-                        <button class="px-3 py-1.5 rounded-lg border border-gray-200 text-xs text-gray-600 hover:border-primary hover:text-primary transition-all duration-200">
+                        <button class="px-3 py-1.5 rounded-lg border border-gray-200 text-xs text-gray-600 hover:border-primary hover:bg-gray-50 transition-all duration-200">
                           设置
                         </button>
                       </div>
@@ -867,11 +881,11 @@
                         class="custom-checkbox mr-2"
                         checked
                       />
-                      <span class="group-hover:text-primary transition-colors">自动开始休息</span>
+                      <span class="transition-colors">自动开始休息</span>
                     </label>
                     <label class="flex items-center group cursor-pointer">
                       <input id="auto-start-pomodoro" type="checkbox" class="custom-checkbox mr-2" />
-                      <span class="group-hover:text-primary transition-colors">自动开始下一个番茄</span>
+                      <span class="transition-colors">自动开始下一个番茄</span>
                     </label>
                     <label class="flex items-center group cursor-pointer">
                       <input
@@ -880,7 +894,7 @@
                         class="custom-checkbox mr-2"
                         checked
                       />
-                      <span class="group-hover:text-primary transition-colors">专注时屏蔽通知</span>
+                      <span class="transition-colors">专注时屏蔽通知</span>
                     </label>
                   </div>
                 </div>
@@ -918,7 +932,7 @@
                           class="custom-checkbox mr-2"
                           checked
                         />
-                        <span class="group-hover:text-primary transition-colors">显示农历和节日</span>
+                        <span class="transition-colors">显示农历和节日</span>
                       </label>
                     </div>
                   </div>
@@ -927,14 +941,14 @@
                     <div class="space-y-1.5 text-[11px]">
                       <button
                         id="export-data-btn"
-                        class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all duration-200 hover:scale-[1.02]"
+                        class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all duration-200"
                       >
                         <span>导出数据（JSON / CSV）</span>
                         <i class="fas fa-download text-gray-400 group-hover:text-primary transition-colors"></i>
                       </button>
                       <button
                         id="manual-backup-btn"
-                        class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all duration-200 hover:scale-[1.02]"
+                        class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all duration-200"
                       >
                         <span>手动备份</span>
                         <i class="fas fa-cloud-upload-alt text-gray-400 group-hover:text-primary transition-colors"></i>
@@ -945,11 +959,11 @@
                           class="custom-checkbox mr-2"
                           checked
                         />
-                        <span class="group-hover:text-primary transition-colors">允许匿名使用统计，用于产品优化</span>
+                        <span class="transition-colors">允许匿名使用统计，用于产品优化</span>
                       </label>
                       <button
                         id="clear-all-data-btn"
-                        class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-danger/40 text-danger hover:bg-danger/5 mt-1 transition-all duration-200 hover:scale-[1.02]"
+                        class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-danger/40 text-danger hover:bg-danger/5 mt-1 transition-all duration-200"
                       >
                         <span>清除所有数据</span>
                         <i class="fas fa-exclamation-triangle text-danger"></i>
@@ -962,13 +976,13 @@
                 <div class="border-t border-gray-100 pt-3 flex flex-wrap gap-2">
                   <button
                     id="logout-btn"
-                    class="px-3 py-1.5 rounded-lg border border-gray-300 text-xs text-gray-700 hover:bg-gray-50 transition-all duration-200 hover:scale-105"
+                    class="px-3 py-1.5 rounded-lg border border-gray-300 text-xs text-gray-700 hover:bg-gray-50 transition-all duration-200"
                   >
                     退出登录
                   </button>
                   <button
                     id="delete-account-btn"
-                    class="px-3 py-1.5 rounded-lg border border-danger text-xs text-danger hover:bg-danger/5 transition-all duration-200 hover:scale-105"
+                    class="px-3 py-1.5 rounded-lg border border-danger text-xs text-danger hover:bg-danger/5 transition-all duration-200"
                   >
                     注销账号
                   </button>
@@ -981,7 +995,8 @@
               class="card-shadow card-hover glass-strong rounded-2xl p-4 md:p-5 fade-in"
             >
               <div class="flex items-center justify-between mb-3">
-                <h2 class="text-sm font-semibold text-gray-800">
+                <h2 class="text-sm font-semibold text-gray-800 flex items-center">
+                  <i class="fas fa-trophy text-primary mr-2"></i>
                   成就徽章墙
                 </h2>
                 <div class="custom-select-wrapper w-32">
@@ -999,15 +1014,15 @@
                 </div>
               </div>
               <div class="grid grid-cols-3 sm:grid-cols-4 gap-3 text-center">
-                <div class="achievement-badge unlocked group">
-                  <div class="text-2xl mb-1 group-hover:scale-110 transition-transform duration-300">🌱</div>
+                <div class="achievement-badge unlocked group" data-category="newbie">
+                  <div class="text-2xl mb-1 transition-all duration-300 group-hover:drop-shadow-lg">🌱</div>
                   <div class="text-xs font-medium text-gray-800">新手上路</div>
                   <div class="text-[10px] text-gray-500 mt-0.5">
                     完成第 1 个任务
                   </div>
                 </div>
-                <div class="achievement-badge unlocked group">
-                  <div class="text-2xl mb-1 group-hover:scale-110 transition-transform duration-300">🔥</div>
+                <div class="achievement-badge unlocked group" data-category="focus">
+                  <div class="text-2xl mb-1 transition-all duration-300 group-hover:drop-shadow-lg">🔥</div>
                   <div class="text-xs font-medium text-gray-800">
                     番茄小能手
                   </div>
@@ -1015,15 +1030,15 @@
                     累计完成 100 个番茄
                   </div>
                 </div>
-                <div class="achievement-badge locked group">
-                  <div class="text-2xl mb-1 group-hover:scale-110 transition-transform duration-300">⏰</div>
+                <div class="achievement-badge locked group" data-category="persistence">
+                  <div class="text-2xl mb-1 transition-all duration-300 group-hover:drop-shadow-lg">⏰</div>
                   <div class="text-xs font-medium text-gray-800">早起打卡王</div>
                   <div class="text-[10px] text-gray-500 mt-0.5">
                     连续 30 天早起打卡
                   </div>
                 </div>
-                <div class="achievement-badge locked group">
-                  <div class="text-2xl mb-1 group-hover:scale-110 transition-transform duration-300">💎</div>
+                <div class="achievement-badge locked group" data-category="efficiency">
+                  <div class="text-2xl mb-1 transition-all duration-300 group-hover:drop-shadow-lg">💎</div>
                   <div class="text-xs font-medium text-gray-800">效率大师</div>
                   <div class="text-[10px] text-gray-500 mt-0.5">
                     综合效率评分达到 A+
@@ -1038,56 +1053,56 @@
 
     <!-- 底部 Tab 栏 -->
     <footer
-      class="glass-tab py-2 px-3 sticky bottom-0 z-40"
+      class="glass-tab py-1.5 px-2 sticky bottom-0 z-40"
     >
       <div class="container mx-auto flex justify-around items-center">
         <a
           href="待办页面.html"
-          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-3 py-1.5 rounded-xl hover:bg-primary/10 transition-all duration-300"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
         >
-          <i class="fas fa-list-alt text-lg"></i>
-          <span class="text-[11px] mt-1">待办</span>
+          <i class="fas fa-list-alt text-base"></i>
+          <span class="text-[10px] mt-0.5">待办</span>
           <span class="tab-indicator"></span>
         </a>
         <a
           href="日历页面.html"
-          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-3 py-1.5 rounded-xl hover:bg-primary/10 transition-all duration-300"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
         >
-          <i class="fas fa-calendar text-lg"></i>
-          <span class="text-[11px] mt-1">日历</span>
+          <i class="fas fa-calendar text-base"></i>
+          <span class="text-[10px] mt-0.5">日历</span>
           <span class="tab-indicator"></span>
         </a>
         <a
           href="番茄钟页面.html"
-          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-3 py-1.5 rounded-xl hover:bg-primary/10 transition-all duration-300"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
         >
-          <i class="fas fa-clock text-lg"></i>
-          <span class="text-[11px] mt-1">番茄钟</span>
+          <i class="fas fa-clock text-base"></i>
+          <span class="text-[10px] mt-0.5">番茄钟</span>
           <span class="tab-indicator"></span>
         </a>
         <a
           href="数据周报页面.html"
-          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-3 py-1.5 rounded-xl hover:bg-primary/10 transition-all duration-300"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
         >
-          <i class="fas fa-chart-line text-lg"></i>
-          <span class="text-[11px] mt-1">数据周报</span>
+          <i class="fas fa-chart-line text-base"></i>
+          <span class="text-[10px] mt-0.5">数据周报</span>
           <span class="tab-indicator"></span>
         </a>
         <a
           href="打卡页面.html"
-          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-3 py-1.5 rounded-xl hover:bg-primary/10 transition-all duration-300"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
         >
-          <i class="fas fa-check-circle text-lg"></i>
-          <span class="text-[11px] mt-1">打卡</span>
+          <i class="fas fa-check-circle text-base"></i>
+          <span class="text-[10px] mt-0.5">打卡</span>
           <span class="tab-indicator"></span>
         </a>
         <!-- 当前页：个人中心 -->
         <a
           href="个人中心页面.html"
-          class="tab-item active flex flex-col items-center text-primary px-3 py-1.5 rounded-xl bg-primary/10"
+          class="tab-item active flex flex-col items-center text-primary px-2 py-1 rounded-lg bg-primary/10"
         >
-          <i class="fas fa-user text-lg"></i>
-          <span class="text-[11px] mt-1 font-semibold">个人中心</span>
+          <i class="fas fa-user text-base"></i>
+          <span class="text-[10px] mt-0.5 font-semibold">个人中心</span>
           <span class="tab-indicator"></span>
         </a>
       </div>
@@ -1123,8 +1138,46 @@
             <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200" type="button" onclick="closeDndModal()">
               取消
             </button>
-            <button class="flex-1 py-2.5 btn-primary-glass" type="button" onclick="saveDndSettings()">
+            <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200" type="button" onclick="saveDndSettings()">
               <i class="fas fa-save mr-2"></i>保存设置
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ 手机号修改模态框 -->
+    <div id="phone-modal" class="phone-modal-overlay hidden">
+      <div class="modal-content">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-xl font-bold text-gray-800">
+            <i class="fas fa-mobile-alt text-primary mr-2"></i>修改手机号码
+          </h2>
+          <button class="text-gray-500 hover:text-gray-700 p-2.5 rounded-xl hover:bg-gray-100" type="button" onclick="closePhoneModal()">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+        <div class="space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">当前手机号</label>
+            <input class="modal-input" id="current-phone-display" type="text" readonly disabled />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">新手机号</label>
+            <input class="modal-input" id="new-phone-input" type="tel" placeholder="请输入新的手机号码" maxlength="11" />
+          </div>
+          <div class="bg-primary/5 rounded-xl p-4 border border-primary/20">
+            <p class="text-xs text-gray-600">
+              <i class="fas fa-info-circle text-primary mr-1.5"></i>
+              请确保输入的手机号码真实有效，后续可用于账号找回和安全验证。
+            </p>
+          </div>
+          <div class="flex space-x-3 pt-2">
+            <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200" type="button" onclick="closePhoneModal()">
+              取消
+            </button>
+            <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200" type="button" onclick="savePhoneNumber()">
+              确认修改
             </button>
           </div>
         </div>
@@ -1133,6 +1186,11 @@
 
     <script>
       var hasShownThemeToast = false;
+      
+      function maskPhoneNumber(phone) {
+        if (!phone || phone.length !== 11) return phone;
+        return phone.substring(0, 3) + '****' + phone.substring(7);
+      }
       
       function showToast(message, type) {
         type = type || 'success';
@@ -1228,6 +1286,15 @@
         document.querySelectorAll('#achievement-filter-dropdown .custom-select-option').forEach(opt => opt.classList.remove('selected'));
         element.classList.add('selected');
         
+        const achievements = document.querySelectorAll('.achievement-badge');
+        achievements.forEach(achievement => {
+          if (value === 'all' || achievement.getAttribute('data-category') === value) {
+            achievement.style.display = 'block';
+          } else {
+            achievement.style.display = 'none';
+          }
+        });
+        
         const dropdown = document.getElementById('achievement-filter-dropdown');
         const arrow = document.getElementById('achievement-filter-arrow');
         const trigger = dropdown.previousElementSibling;
@@ -1281,6 +1348,61 @@
         document.getElementById('dnd-end-time').value = savedEnd;
       }
 
+      // ✅ 手机号模态框函数
+      function openPhoneModal() {
+        const modal = document.getElementById('phone-modal');
+        const currentPhoneInput = document.getElementById('current-phone-display');
+        const newPhoneInput = document.getElementById('new-phone-input');
+        
+        if (modal && currentPhoneInput && newPhoneInput) {
+          currentPhoneInput.value = AppState.user?.phone || '';
+          newPhoneInput.value = '';
+          modal.classList.remove('hidden');
+          newPhoneInput.focus();
+        }
+      }
+
+      function closePhoneModal() {
+        const modal = document.getElementById('phone-modal');
+        if (modal) {
+          modal.classList.add('hidden');
+        }
+      }
+
+      function savePhoneNumber() {
+        const newPhoneInput = document.getElementById('new-phone-input');
+        const newPhone = newPhoneInput.value.trim();
+        
+        if (!newPhone) {
+          showToast('⚠️ 手机号不能为空', 'error');
+          newPhoneInput.focus();
+          return;
+        }
+        
+        const phoneRegex = /^1[3-9]\d{9}$/;
+        if (!phoneRegex.test(newPhone)) {
+          showToast('⚠️ 请输入有效的 11 位手机号码', 'error');
+          newPhoneInput.focus();
+          return;
+        }
+        
+        if (newPhone === AppState.user?.phone) {
+          showToast('新手机号与当前相同，无需修改');
+          return;
+        }
+        
+        AppState.user.phone = newPhone;
+        AppState.save();
+        
+        const userPhoneEl = document.getElementById('user-phone');
+        if (userPhoneEl) {
+          userPhoneEl.textContent = maskPhoneNumber(newPhone);
+        }
+        
+        closePhoneModal();
+        showToast('✅ 手机号已更新');
+      }
+
       // 点击其他地方关闭下拉
       document.addEventListener('click', function(e) {
         if (!e.target.closest('.custom-select-wrapper')) {
@@ -1321,7 +1443,7 @@
         if (profileAvatar) profileAvatar.src = AppState.user?.avatar || profileAvatar.src;
         if (userName) userName.value = AppState.user?.name || '轻悦用户';
         if (userEmail) userEmail.textContent = AppState.user?.email || 'demo@qingyue.com';
-        if (userPhone) userPhone.textContent = AppState.user?.phone || '13800000000';
+        if (userPhone) userPhone.textContent = maskPhoneNumber(AppState.user?.phone || '13800000000');
 
         var exp = Number(AppState.user?.exp || 0);
         var level = Number(AppState.user?.level || 1);
@@ -1353,15 +1475,7 @@
 
         if (editPhoneBtn) {
           editPhoneBtn.addEventListener('click', function () {
-            var phone = prompt('请输入手机号', AppState.user?.phone || '');
-            if (!phone) {
-              showToast('手机号不能为空');
-              return;
-            }
-            AppState.user.phone = phone;
-            AppState.save();
-            if (userPhone) userPhone.textContent = phone;
-            showToast('手机号已更新');
+            openPhoneModal();
           });
         }
 
@@ -1718,6 +1832,29 @@
         if (calendarShowLunar) calendarShowLunar.checked = AppState.settings?.calendar?.showLunar !== false;
       }
 
+      function animateNumber(element, targetValue, suffix = '', duration = 1000) {
+        if (!element || element.textContent === undefined) return;
+        var startValue = parseFloat(element.textContent.replace(/[^\d.]/g, '')) || 0;
+        var startTime = null;
+        var isFloat = typeof targetValue === 'number' && targetValue % 1 !== 0;
+        
+        function animate(currentTime) {
+          if (!startTime) startTime = currentTime;
+          var progress = Math.min((currentTime - startTime) / duration, 1);
+          var currentValue = startValue + (targetValue - startValue) * progress;
+          if (isFloat) {
+            currentValue = Math.round(currentValue * 10) / 10;
+          } else {
+            currentValue = Math.floor(currentValue);
+          }
+          element.textContent = currentValue + suffix;
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          }
+        }
+        requestAnimationFrame(animate);
+      }
+
       function updateDataStatistics() {
         var stats = getCheckinStats();
         var completedTasks = (AppState.tasks || []).filter(function(t) { return t.status === 'completed'; }).length;
@@ -1729,13 +1866,13 @@
         var maxStreakEl = document.getElementById('stat-max-streak');
         var totalPomodorosEl = document.getElementById('stat-total-pomodoros');
 
-        if (completedTasksEl) completedTasksEl.textContent = completedTasks;
+        if (completedTasksEl) animateNumber(completedTasksEl, completedTasks);
         if (focusHoursEl) {
           var hours = Math.round(totalFocusMinutes / 60 * 10) / 10;
-          focusHoursEl.textContent = hours + ' h';
+          animateNumber(focusHoursEl, hours, ' h');
         }
-        if (maxStreakEl) maxStreakEl.textContent = (stats?.maxStreak || 0) + ' 天';
-        if (totalPomodorosEl) totalPomodorosEl.textContent = totalPomodoros;
+        if (maxStreakEl) animateNumber(maxStreakEl, stats?.maxStreak || 0, ' 天');
+        if (totalPomodorosEl) animateNumber(totalPomodorosEl, totalPomodoros);
       }
     </script>
   </body>
