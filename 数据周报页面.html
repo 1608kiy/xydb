@@ -116,6 +116,7 @@
             <span class="font-medium" id="current-date"> </span>
           </div>
           <select
+            id="time-range-select"
             class="border border-gray-300 rounded-lg px-3 py-1 text-sm focus:ring-primary focus:border-primary"
           >
             <option>本周</option>
@@ -1143,9 +1144,9 @@
         }
 
         // 控制按钮事件（仅当按钮存在时才绑定）
-        var startBtn = document.querySelector('button:has(.fa-play)');
-        var resetBtn = document.querySelector('button:has(.fa-redo)');
-        if (startBtn && resetBtn) {
+        var startBtn = document.querySelector('button i.fa-play')?.closest('button');
+        var resetBtn = document.querySelector('button i.fa-redo')?.closest('button');
+        if (startBtn) {
           startBtn.addEventListener('click', function () {
             if (isRunning) {
               clearInterval(timerInterval);
@@ -1156,6 +1157,8 @@
               startBtn.innerHTML = '<i class="fas fa-pause mr-2"></i> 暂停';
             }
           });
+        }
+        if (resetBtn) {
           resetBtn.addEventListener('click', resetTimer);
         }
 
@@ -1239,31 +1242,31 @@
       });
       
       function updateWeeklyStats() {
-        const weekStats = getWeeklyStats();
-        if (weekStats) {
-          // 更新完成任务数
-          const taskCountEl = document.querySelector('#completed-tasks');
-          if (taskCountEl) taskCountEl.textContent = weekStats.completedTasks + '项';
-          
-          // 更新专注时长（转换为小时）
-          const focusTimeEl = document.querySelector('#focus-hours');
-          if (focusTimeEl) {
-            const hours = (weekStats.totalFocusMinutes / 60).toFixed(1);
-            focusTimeEl.textContent = hours + '小时';
-          }
-          
-          // 更新番茄总数
-          const pomodoroEl = document.querySelector('#pomodoro-count');
-          if (pomodoroEl) pomodoroEl.textContent = weekStats.totalPomodoros + '个';
-          
-          // 更新最长连续专注番茄数
-          const maxContinuousEl = document.querySelector('#max-continuous-pomodoros');
-          if (maxContinuousEl) maxContinuousEl.textContent = weekStats.maxContinuousPomodoros + '个番茄';
-          
-          // 更新效率评分
-          const scoreEl = document.querySelector('#effectiveness-score');
-          if (scoreEl) scoreEl.textContent = weekStats.effectivenessScore + '分';
+        if (typeof getWeeklyStats !== 'function') {
+          console.warn('getWeeklyStats 函数未定义，跳过更新周报统计');
+          return;
         }
+
+        const weekStats = getWeeklyStats();
+        if (!weekStats) return;
+
+        const taskCountEl = document.querySelector('#completed-tasks');
+        if (taskCountEl) taskCountEl.textContent = Number(weekStats.completedTasks || 0) + '项';
+
+        const focusTimeEl = document.querySelector('#focus-hours');
+        if (focusTimeEl) {
+          const hours = (Number(weekStats.totalFocusMinutes) || 0) / 60;
+          focusTimeEl.textContent = hours.toFixed(1) + '小时';
+        }
+
+        const pomodoroEl = document.querySelector('#pomodoro-count');
+        if (pomodoroEl) pomodoroEl.textContent = Number(weekStats.totalPomodoros || 0) + '个';
+
+        const maxContinuousEl = document.querySelector('#max-continuous-pomodoros');
+        if (maxContinuousEl) maxContinuousEl.textContent = Number(weekStats.maxContinuousPomodoros || 0) + '个番茄';
+
+        const scoreEl = document.querySelector('#effectiveness-score');
+        if (scoreEl) scoreEl.textContent = Number(weekStats.effectivenessScore || 0) + '分';
       }
       
       function updateChartsData() {
@@ -1326,12 +1329,11 @@
       }
       
       function bindTimeRangeSelector() {
-        const timeRangeSelect = document.querySelector('select');
+        const timeRangeSelect = document.getElementById('time-range-select');
         if (timeRangeSelect) {
           timeRangeSelect.addEventListener('change', function() {
             const selectedRange = this.value;
-            showToast('已切换到' + selectedRange + '数据视图');
-            // 这里可以添加根据时间范围更新数据的逻辑
+            showToast('已切换到' + selectedRange + ' 数据视图');
             updateWeeklyStats();
           });
         }
@@ -1339,7 +1341,7 @@
       
       function bindExportShareButtons() {
         // 导出报告按钮
-        const exportBtn = document.querySelector('button:has(.fa-download)');
+        const exportBtn = document.querySelector('button i.fa-download')?.closest('button');
         if (exportBtn) {
           exportBtn.addEventListener('click', function() {
             showToast('报告导出功能正在开发中');
@@ -1347,7 +1349,7 @@
         }
         
         // 分享按钮
-        const shareBtn = document.querySelector('button:has(.fa-share-alt)');
+        const shareBtn = document.querySelector('button i.fa-share-alt')?.closest('button');
         if (shareBtn) {
           shareBtn.addEventListener('click', function() {
             if (navigator.share) {

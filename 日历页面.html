@@ -288,6 +288,16 @@
         <!-- [/MODULE] g4h_快捷操作栏 -- 包含批量操作按钮、排序/筛选下拉菜单和视图切换按钮 -->
         <!-- 日历主区域 -->
         <div class="calendar-container">
+          <div class="bg-white rounded-xl shadow-sm p-4 mb-4">
+            <div class="flex items-center justify-between mb-2">
+              <div>
+                <h2 class="text-lg font-semibold text-gray-800">已排任务</h2>
+                <p class="text-xs text-gray-500">点击任务可快速定位到对应日期</p>
+              </div>
+              <button id="refresh-scheduled-btn" class="text-xs text-primary hover:text-primary/80">刷新</button>
+            </div>
+            <div id="scheduled-task-list" class="space-y-2 max-h-44 overflow-auto"></div>
+          </div>
           <!-- 月视图 -->
           <div class="calendar-view active" id="month-view">
             <div class="flex justify-between items-center mb-4">
@@ -405,7 +415,7 @@
           <!-- 周视图 -->
           <div class="calendar-view hidden" id="week-view">
             <div class="flex justify-between items-center mb-4">
-              <button
+              <button id="week-prev-btn"
                 class="text-gray-600 hover:text-primary transition-colors"
               >
                 <i class="fas fa-chevron-left text-xl"> </i>
@@ -413,7 +423,7 @@
               <h2 class="text-xl font-bold text-gray-800">
                 2024年11月1日-11月7日
               </h2>
-              <button
+              <button id="week-next-btn"
                 class="text-gray-600 hover:text-primary transition-colors"
               >
                 <i class="fas fa-chevron-right text-xl"> </i>
@@ -468,7 +478,7 @@
           <!-- 日视图 -->
           <div class="calendar-view hidden" id="day-view">
             <div class="flex justify-between items-center mb-4">
-              <button
+              <button id="day-prev-btn"
                 class="text-gray-600 hover:text-primary transition-colors"
               >
                 <i class="fas fa-chevron-left text-xl"> </i>
@@ -476,7 +486,7 @@
               <h2 class="text-xl font-bold text-gray-800">
                 2024年11月1日 周一
               </h2>
-              <button
+              <button id="day-next-btn"
                 class="text-gray-600 hover:text-primary transition-colors"
               >
                 <i class="fas fa-chevron-right text-xl"> </i>
@@ -1186,9 +1196,15 @@
         var monthDate = new Date();
         monthDate.setDate(1);
 
+        var calendarState = {
+          view: 'month',
+          selectedDate: new Date()
+        };
+
         var monthTitle = document.getElementById('month-title');
         var monthGrid = document.getElementById('month-grid');
-        var dayNames = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+        var weekTitle = document.querySelector('#week-view h2');
+        var dayTitle = document.querySelector('#day-view h2');
         var detailPanel = document.getElementById('task-detail-panel');
         var closeDetailBtn = document.getElementById('close-detail-btn');
         var detailTitle = document.getElementById('detail-title');
@@ -1205,6 +1221,22 @@
           return ''.concat(date.getFullYear(), '年', date.getMonth() + 1, '月');
         }
 
+        function formatWeekRange(date) {
+          var d = new Date(date);
+          var day = d.getDay();
+          var monday = new Date(d);
+          monday.setDate(monday.getDate() - ((day + 6) % 7));
+          var sunday = new Date(monday);
+          sunday.setDate(monday.getDate() + 6);
+          return ''.concat(monday.getFullYear(), '年', monday.getMonth() + 1, '月', monday.getDate(), '日 - ', sunday.getFullYear(), '年', sunday.getMonth() + 1, '月', sunday.getDate(), '日');
+        }
+
+        function formatDayTitle(date) {
+          var d = new Date(date);
+          var dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+          return ''.concat(d.getFullYear(), '年', d.getMonth() + 1, '月', d.getDate(), '日 ', dayNames[d.getDay()]);
+        }
+
         function getDayColor(task) {
           if (!task || !task.labels) return 'bg-gray-400';
           if (task.labels.includes('工作')) return 'bg-task-work';
@@ -1214,13 +1246,44 @@
           return 'bg-gray-400';
         }
 
+        function renderScheduledTaskList() {
+          var list = document.getElementById('scheduled-task-list');
+          if (!list) return;
+          var tasks = (AppState.tasks || []).filter(function (t) {
+            return t.dueAt;
+          }).sort(function (a, b) {
+            return new Date(a.dueAt) - new Date(b.dueAt);
+          }).slice(0, 10);
+
+          if (tasks.length === 0) {
+            list.innerHTML = '<div class="text-xs text-gray-500">暂无已排任务</div>';
+            return;
+          }
+
+          list.innerHTML = '';
+          tasks.forEach(function (task) {
+            var item = document.createElement('div');
+            item.className = 'p-2 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary/5 cursor-pointer';
+            item.innerHTML = '<div class="flex justify-between items-center"><div class="text-sm font-medium text-gray-700">' + (task.title || '未命名任务') + '</div><div class="text-xs text-gray-500">' + getDateKey(task.dueAt) + '</div></div><div class="text-xs text-gray-500">' + (task.labels && task.labels.length ? '#' + task.labels[0] : '无标签') + '</div>';
+            item.addEventListener('click', function () {
+              var due = new Date(task.dueAt || new Date());
+              monthDate = new Date(due.getFullYear(), due.getMonth(), 1);
+              calendarState.selectedDate = due;
+              switchToView('month');
+              renderMonthGrid();
+              showToast('已定位到 ' + getDateKey(due));
+            });
+            list.appendChild(item);
+          });
+        }
+
         function renderMonthGrid() {
           if (!monthGrid) return;
           monthGrid.innerHTML = '';
 
           var year = monthDate.getFullYear();
           var month = monthDate.getMonth();
-          monthTitle.textContent = formatMonthTitle(monthDate);
+          if (monthTitle) monthTitle.textContent = formatMonthTitle(monthDate);
 
           var first = new Date(year, month, 1);
           var firstWeekday = first.getDay();
@@ -1311,14 +1374,25 @@
           if (detailDescription) detailDescription.value = task.description || '';
           if (detailDueAt) {
             var d = task.dueAt ? new Date(task.dueAt) : new Date();
-            var offset = d.getTimezoneOffset();
-            var local = new Date(d.getTime() - offset * 60 * 1000);
-            detailDueAt.value = local.toISOString().slice(0, 16);
+            detailDueAt.value = d.toISOString().slice(0, 16);
           }
           if (detailPanel) detailPanel.classList.remove('hidden');
         }
 
+        function renderWeekView(date) {
+          if (weekTitle) {
+            weekTitle.textContent = formatWeekRange(date);
+          }
+        }
+
+        function renderDayView(date) {
+          if (dayTitle) {
+            dayTitle.textContent = formatDayTitle(date);
+          }
+        }
+
         function switchToView(view) {
+          calendarState.view = view;
           document.querySelectorAll('.view-btn').forEach(function (b) {
             b.classList.remove('active', 'bg-primary', 'text-white');
             b.classList.add('bg-gray-200', 'text-gray-700');
@@ -1333,6 +1407,11 @@
           });
           var viewEl = document.getElementById(view + '-view');
           if (viewEl) viewEl.classList.remove('hidden');
+          if (view === 'week') {
+            renderWeekView(calendarState.selectedDate);
+          } else if (view === 'day') {
+            renderDayView(calendarState.selectedDate);
+          }
         }
 
         document.querySelectorAll('.view-btn').forEach(function (btn) {
@@ -1340,6 +1419,17 @@
             switchToView(btn.dataset.view);
           });
         });
+
+        function updateCurrentDateLabel() {
+          var now = new Date();
+          var options = { month: 'long', day: 'numeric', weekday: 'long' };
+          var currentDate = document.getElementById('current-date');
+          if (currentDate) {
+            currentDate.textContent = '今天' + now.toLocaleDateString('zh-CN', options);
+          }
+        }
+
+        updateCurrentDateLabel();
 
         var todayBtn = document.getElementById('today-btn');
         if (todayBtn) {
@@ -1364,6 +1454,48 @@
           nextBtn.addEventListener('click', function () {
             monthDate.setMonth(monthDate.getMonth() + 1);
             renderMonthGrid();
+          });
+        }
+
+        var weekPrevBtn = document.getElementById('week-prev-btn');
+        var weekNextBtn = document.getElementById('week-next-btn');
+        if (weekPrevBtn) {
+          weekPrevBtn.addEventListener('click', function () {
+            calendarState.selectedDate.setDate(calendarState.selectedDate.getDate() - 7);
+            renderWeekView(calendarState.selectedDate);
+            showToast('已切换到上一周');
+          });
+        }
+        if (weekNextBtn) {
+          weekNextBtn.addEventListener('click', function () {
+            calendarState.selectedDate.setDate(calendarState.selectedDate.getDate() + 7);
+            renderWeekView(calendarState.selectedDate);
+            showToast('已切换到下一周');
+          });
+        }
+
+        var dayPrevBtn = document.getElementById('day-prev-btn');
+        var dayNextBtn = document.getElementById('day-next-btn');
+        if (dayPrevBtn) {
+          dayPrevBtn.addEventListener('click', function () {
+            calendarState.selectedDate.setDate(calendarState.selectedDate.getDate() - 1);
+            renderDayView(calendarState.selectedDate);
+            showToast('已切换到上一天');
+          });
+        }
+        if (dayNextBtn) {
+          dayNextBtn.addEventListener('click', function () {
+            calendarState.selectedDate.setDate(calendarState.selectedDate.getDate() + 1);
+            renderDayView(calendarState.selectedDate);
+            showToast('已切换到下一天');
+          });
+        }
+
+        var scheduledRefresh = document.getElementById('refresh-scheduled-btn');
+        if (scheduledRefresh) {
+          scheduledRefresh.addEventListener('click', function() {
+            renderScheduledTaskList();
+            showToast('已刷新已排任务列表');
           });
         }
 
@@ -1400,6 +1532,7 @@
             AppState.tasks.push(task);
             AppState.save();
             renderMonthGrid();
+            renderScheduledTaskList();
             showToast('任务已创建并加入日历');
           });
         }
@@ -1426,6 +1559,9 @@
 
         window.renderMonthGrid = renderMonthGrid;
         renderMonthGrid();
+        renderScheduledTaskList();
+        renderWeekView(calendarState.selectedDate);
+        renderDayView(calendarState.selectedDate);
       });
     </script>
     <!-- [/JSMOD] p9q_日历视图交互功能 -- 实现视图切换、今日、月导航、任务拖拽持久化和日历渲染 -->
@@ -1595,20 +1731,81 @@
         if (viewListBtn) {
           viewListBtn.addEventListener('click', function () {
             showToast('切换到列表视图');
-            viewListBtn.classList.add('bg-primary', 'text-white');
-            viewGridBtn.classList.remove('bg-primary', 'text-white');
+            viewListBtn.classList.add('text-primary', 'bg-primary/5');
+            viewListBtn.classList.remove('text-gray-500', 'hover:bg-gray-50');
+            viewGridBtn.classList.remove('text-primary', 'bg-primary/5');
             viewGridBtn.classList.add('text-gray-500', 'hover:bg-gray-50');
+            
+            // 切换到列表视图显示
+            var calendarContainer = document.querySelector('.calendar-container');
+            if (calendarContainer) {
+              calendarContainer.style.display = 'none';
+            }
+            var listView = document.getElementById('list-view-container');
+            if (!listView) {
+              // 创建列表视图容器
+              listView = document.createElement('div');
+              listView.id = 'list-view-container';
+              listView.className = 'space-y-3';
+              calendarContainer.parentNode.insertBefore(listView, calendarContainer.nextSibling);
+            }
+            listView.classList.remove('hidden');
+            renderListView();
           });
         }
 
         if (viewGridBtn) {
           viewGridBtn.addEventListener('click', function () {
             showToast('切换到卡片视图');
-            viewGridBtn.classList.add('bg-primary', 'text-white');
-            viewListBtn.classList.remove('bg-primary', 'text-white');
+            viewGridBtn.classList.add('text-primary', 'bg-primary/5');
+            viewGridBtn.classList.remove('text-gray-500', 'hover:bg-gray-50');
+            viewListBtn.classList.remove('text-primary', 'bg-primary/5');
             viewListBtn.classList.add('text-gray-500', 'hover:bg-gray-50');
+            
+            // 切换到网格视图显示
+            var calendarContainer = document.querySelector('.calendar-container');
+            if (calendarContainer) {
+              calendarContainer.style.display = 'block';
+            }
+            var listView = document.getElementById('list-view-container');
+            if (listView) {
+              listView.classList.add('hidden');
+            }
           });
         }
+        
+        // 渲染列表视图
+        function renderListView() {
+          var listView = document.getElementById('list-view-container');
+          if (!listView) return;
+          
+          var tasks = AppState.tasks || [];
+          if (tasks.length === 0) {
+            listView.innerHTML = '<div class="text-center text-gray-500 py-8">暂无任务</div>';
+            return;
+          }
+          
+          var html = '';
+          tasks.forEach(function(task) {
+            var dateStr = task.dueAt ? getDateKey(new Date(task.dueAt)) : '未设置日期';
+            var priorityClass = 'priority-' + (task.priority || 'medium');
+            var tagColor = task.labels && task.labels[0] ? 'tag-' + task.labels[0].toLowerCase() : 'tag-work';
+            
+            html += '<div class="task-card bg-white rounded-xl p-4 shadow-sm border-l-4 ' + priorityClass + ' card-hover">' +
+              '<div class="flex items-start justify-between">' +
+              '<div class="flex-1">' +
+              '<h3 class="font-medium text-gray-800">' + (task.title || '未命名任务') + '</h3>' +
+              '<p class="text-sm text-gray-500 mt-1"><i class="fas fa-calendar mr-2"></i>' + dateStr + '</p>' +
+              '</div>' +
+              '<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ' + tagColor + '">' +
+              (task.labels && task.labels[0] ? '#' + task.labels[0] : '#工作') +
+              '</span>' +
+              '</div></div>';
+          });
+          
+          listView.innerHTML = html;
+        }
+
       });
     </script>
     <!-- [/JSMOD] r0s_快捷操作功能 -- 处理排序筛选下拉菜单功能 -->

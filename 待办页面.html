@@ -85,19 +85,22 @@
           @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
           
           /* ✅ 任务卡片组样式 */
-          .task-card { @apply relative overflow-hidden group; }
-          .task-card.completed { @apply opacity-50; }
+          .task-card { @apply relative overflow-hidden group border border-gray-200/50; }
+          .task-card.completed { @apply opacity-60; }
           .task-card.completed h3 { @apply line-through text-gray-500; }
           .task-card.dragging { @apply opacity-50 scale-105; }
           .task-card.drag-over { @apply border-2 border-primary border-dashed; }
           .task-card.selected { @apply ring-2 ring-primary bg-primary/5; }
+          .task-card:hover { @apply border-primary/30 shadow-md; }
+          .task-card:nth-child(odd) { @apply bg-white/90; }
+          .task-card:nth-child(even) { @apply bg-gray-50/90; }
           
           /* ✅ 任务操作按钮 - 悬停显示 */
           .task-actions { @apply flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200; }
-          .task-action-btn { @apply p-1.5 rounded-lg transition-all duration-200 hover:scale-110; }
-          .task-action-btn.share { @apply text-gray-500 hover:bg-primary/10 hover:text-primary; }
-          .task-action-btn.copy { @apply text-gray-500 hover:bg-primary/10 hover:text-primary; }
-          .task-action-btn.delete { @apply text-gray-500 hover:bg-danger/10 hover:text-danger; }
+          .task-action-btn { @apply p-2 rounded-lg transition-all duration-200 hover:scale-110; }
+          .task-action-btn.share { @apply text-blue-500 hover:bg-blue-100 hover:text-blue-600; }
+          .task-action-btn.copy { @apply text-green-500 hover:bg-green-100 hover:text-green-600; }
+          .task-action-btn.delete { @apply text-red-500 hover:bg-red-100 hover:text-red-600; }
           
           .btn-primary-glass { @apply bg-primary/90 text-white font-medium py-2.5 px-5 rounded-xl transition-all duration-300 hover:bg-primary hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02] active:scale-[0.98]; }
           .btn-secondary-glass { @apply bg-white/65 text-gray-700 font-medium py-2.5 px-5 rounded-xl border border-gray-200/50 transition-all duration-300 hover:bg-white hover:shadow-md hover:scale-[1.02] active:scale-[0.98]; }
@@ -112,7 +115,16 @@
           .badge-count { animation: badgePulse 2s ease-in-out infinite; }
           @keyframes badgePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
           
-          .dropdown-menu { z-index: 1000 !important; }
+          .dropdown-menu { 
+            z-index: 1000 !important; 
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+          }
+          .dropdown-menu:not(.hidden) {
+            opacity: 1;
+            transform: translateY(0);
+          }
           
           .notification-slide { animation: notificationSlide 0.4s ease-out; }
           @keyframes notificationSlide { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
@@ -141,7 +153,7 @@
       }
     </style>
   </head>
-  <body class="font-inter bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 text-gray-800 min-h-screen flex flex-col text-[13px] md:text-[14px] relative overflow-x-hidden">
+  <body class="font-inter bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 text-gray-800 min-h-screen flex flex-col text-[13px] md:text-[14px] relative overflow-x-hidden">
     <!-- ===== 背景装饰光斑 ===== -->
     <div class="bg-orb w-[500px] h-[500px] bg-primary top-0 left-0"></div>
     <div class="bg-orb w-[400px] h-[400px] bg-secondary bottom-0 right-0" style="animation-delay: -5s;"></div>
@@ -595,6 +607,56 @@
       </div>
     </div>
     
+    <!-- ✅ 批量操作模态框 -->
+    <div id="batch-action-modal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-xl font-bold text-gray-800">
+            <i class="fas fa-tasks text-primary mr-2"></i>批量操作
+          </h2>
+          <button class="text-gray-500 hover:text-gray-700 p-2.5 rounded-xl hover:bg-gray-100" type="button" onclick="window.closeBatchModalFunc()">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+        <div class="space-y-5">
+          <div>
+            <p class="text-sm text-gray-600 mb-4">当前已选择 <span id="batch-selected-count" class="font-bold text-primary">0</span> 个任务</p>
+            <div class="flex flex-col gap-3">
+              <button class="w-full py-3 px-4 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl border border-green-200 flex items-center justify-center gap-2 transition-all hover:scale-[1.02]" onclick="window.confirmBatchComplete()">
+                <i class="fas fa-check-circle text-lg"></i>
+                <span class="font-medium">批量完成选中任务</span>
+              </button>
+              <button class="w-full py-3 px-4 bg-red-50 hover:bg-red-100 text-red-700 rounded-xl border border-red-200 flex items-center justify-center gap-2 transition-all hover:scale-[1.02]" onclick="window.confirmBatchDelete()">
+                <i class="fas fa-trash-alt text-lg"></i>
+                <span class="font-medium">批量删除选中任务</span>
+              </button>
+              <button class="w-full py-3 px-4 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl border border-blue-200 flex items-center justify-center gap-2 transition-all hover:scale-[1.02]" onclick="window.completeAllTasks()">
+                <i class="fas fa-check-double text-lg"></i>
+                <span class="font-medium">完成所有任务</span>
+              </button>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-gray-200/50">
+            <p class="text-xs text-gray-500 mb-3">操作说明：</p>
+            <ul class="text-xs text-gray-500 space-y-1">
+              <li class="flex items-start gap-2"><i class="fas fa-circle text-[6px] mt-1.5"></i>点击任务卡片可以选中/取消选中</li>
+              <li class="flex items-start gap-2"><i class="fas fa-circle text-[6px] mt-1.5"></i>批量完成：将选中的任务标记为已完成</li>
+              <li class="flex items-start gap-2"><i class="fas fa-circle text-[6px] mt-1.5"></i>批量删除：永久删除选中的任务</li>
+              <li class="flex items-start gap-2"><i class="fas fa-circle text-[6px] mt-1.5"></i>完成所有：将所有任务标记为已完成</li>
+            </ul>
+          </div>
+          <div class="flex space-x-3 pt-4">
+            <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white" type="button" onclick="window.closeBatchModalFunc()">
+              取消
+            </button>
+            <button class="flex-1 py-2.5 btn-secondary-glass" type="button" onclick="window.clearBatchSelection()">
+              <i class="fas fa-times mr-2"></i>清空选择
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <!-- ✅ 底部 Tab 栏 - 优化尺寸和毛玻璃效果 -->
     <footer class="glass-tab border-t border-gray-200/50 py-2 px-3 sticky bottom-0 z-40">
       <div class="container mx-auto flex justify-around items-center">
@@ -880,6 +942,97 @@
         saveToLocalStorage();
         window.closeModalFunc();
         showToast('✅ 任务创建成功！');
+      };
+      
+      // ==================== 批量操作模态框函数 ====================
+      window.openBatchModalFunc = function() {
+        var modal = document.getElementById('batch-action-modal');
+        if (modal) {
+          modal.classList.remove('hidden');
+          updateBatchSelectedCount();
+        }
+      };
+      
+      window.closeBatchModalFunc = function() {
+        var modal = document.getElementById('batch-action-modal');
+        if (modal) modal.classList.add('hidden');
+      };
+      
+      window.updateBatchSelectedCount = function() {
+        var countEl = document.getElementById('batch-selected-count');
+        if (countEl) {
+          countEl.textContent = selectedBatchTasks.length;
+        }
+      };
+      
+      window.confirmBatchComplete = function() {
+        if (selectedBatchTasks.length === 0) {
+          showToast('⚠️ 请先选择要完成的任务', 'error');
+          return;
+        }
+        
+        if (confirm('确定要完成选中的 ' + selectedBatchTasks.length + ' 个任务吗？')) {
+          selectedBatchTasks.forEach(function(item) {
+            var list = item.isToday ? tasks.today : tasks.tomorrow;
+            var task = list.find(function(t) { return t.id === item.id; });
+            if (task) task.completed = true;
+          });
+          var count = selectedBatchTasks.length;
+          selectedBatchTasks = [];
+          renderTaskLists();
+          updateCountStats();
+          saveToLocalStorage();
+          window.closeBatchModalFunc();
+          showToast('✅ 已批量完成 ' + count + ' 个任务');
+        }
+      };
+      
+      window.confirmBatchDelete = function() {
+        if (selectedBatchTasks.length === 0) {
+          showToast('⚠️ 请先选择要删除的任务', 'error');
+          return;
+        }
+        
+        if (confirm('确定要删除选中的 ' + selectedBatchTasks.length + ' 个任务吗？')) {
+          selectedBatchTasks.forEach(function(item) {
+            var list = item.isToday ? tasks.today : tasks.tomorrow;
+            var index = list.findIndex(function(t) { return t.id === item.id; });
+            if (index > -1) list.splice(index, 1);
+          });
+          var count = selectedBatchTasks.length;
+          selectedBatchTasks = [];
+          renderTaskLists();
+          updateCountStats();
+          saveToLocalStorage();
+          window.closeBatchModalFunc();
+          showToast('🗑️ 已批量删除 ' + count + ' 个任务');
+        }
+      };
+      
+      window.completeAllTasks = function() {
+        var count = tasks.today.length + tasks.tomorrow.length;
+        if (count === 0) {
+          showToast('⚠️ 暂无任务可完成', 'error');
+          return;
+        }
+        
+        if (confirm('确定要完成所有 ' + count + ' 个任务吗？')) {
+          tasks.today.forEach(function(t) { t.completed = true; });
+          tasks.tomorrow.forEach(function(t) { t.completed = true; });
+          selectedBatchTasks = [];
+          renderTaskLists();
+          updateCountStats();
+          saveToLocalStorage();
+          window.closeBatchModalFunc();
+          showToast('✅ 已完成全部 ' + count + ' 个任务');
+        }
+      };
+      
+      window.clearBatchSelection = function() {
+        selectedBatchTasks = [];
+        renderTaskLists();
+        updateBatchSelectedCount();
+        showToast('✅ 已清空选择');
       };
       
       // ==================== 任务卡片生成 ====================
