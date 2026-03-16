@@ -226,18 +226,20 @@
       </div>
     </header>
     
+    <header class="bg-white shadow-md">
+      <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+        <h1 class="text-2xl font-bold">任务管理器</h1>
+        <div class="flex items-center space-x-4">
+          <button class="btn btn-primary">添加任务</button>
+          <button class="btn btn-secondary">设置</button>
+        </div>
+      </div>
+    </header>
+    
     <div class="flex flex-1 overflow-hidden relative z-10">
       <!-- 侧边栏 -->
       <aside class="w-64 glass-strong border-r border-gray-200/50 hidden md:block overflow-y-auto scrollbar-thin z-20">
         <div class="p-4">
-          <!-- 快速添加任务 -->
-          <div class="relative mb-6">
-            <input class="input-glass pr-11" id="quick-add-task" placeholder="快速添加任务..." type="text" />
-            <button class="absolute right-2.5 top-1/2 transform -translate-y-1/2 text-white bg-primary hover:bg-primary/90 transition-all p-2 rounded-lg hover:scale-110" id="add-task-btn" title="添加任务">
-              <i class="fas fa-plus"></i>
-            </button>
-          </div>
-          
           <!-- 主要分类 -->
           <nav>
             <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-3">主要分类</h2>
@@ -268,6 +270,7 @@
                   </div>
                   <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-important">0</span>
                 </a>
+              </li>
               </li>
               <li>
                 <a class="sidebar-item" href="javascript:void(0);">
@@ -1367,7 +1370,6 @@
         // 绑定所有新建任务按钮
         var addTaskButtons = [
           'add-task-header-btn',
-          'add-task-btn',
           'add-today-task-btn',
           'add-tomorrow-task-btn'
         ];
@@ -1413,10 +1415,7 @@
           });
         }
         
-        // 保存任务
-        var saveTaskBtn = document.getElementById('save-task-btn');
-        if (saveTaskBtn) {
-          saveTaskBtn.addEventListener('click', function() {
+        // 新建任务按钮
             if (currentEditingTask) {
               currentEditingTask.title = document.getElementById('detail-title').value;
               currentEditingTask.description = document.getElementById('detail-description').value;
@@ -1571,6 +1570,9 @@
           });
         }
         
+        // 视图切换
+        var listViewBtn = document.getElementById('list-view-btn');
+        var cardViewBtn = document.getElementById('card-view-btn');
         // 视图切换
         var listViewBtn = document.getElementById('list-view-btn');
         var cardViewBtn = document.getElementById('card-view-btn');

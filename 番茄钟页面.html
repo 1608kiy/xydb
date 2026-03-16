@@ -145,14 +145,14 @@
                 href="个人中心页面.html"
                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >
-                <i class="fas fa-user mr-2 text-gray-500"></i>
+                <i class="fas fa-user mr-2"></i>
                 个人中心
               </a>
               <a
                 href="javascript:void(0);"
                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >
-                <i class="fas fa-cog mr-2 text-gray-500"></i>
+                <i class="fas fa-cog mr-2"></i>
                 设置
               </a>
               <div class="border-t border-gray-100 my-1"></div>
@@ -563,6 +563,7 @@
             this.renderTasks();
             this.renderTaskOptions();
             this.bindEvents();
+            this.updateModeButtons(); // ✅ 新增：更新模式按钮显示的时间
             this.setMode(this.state.currentMode, false);
             this.updateTimerUI();
             this.updateSummary();
@@ -735,6 +736,27 @@
             this.dom.summaryToday.textContent = `${this.state.todayPomodoro} 个`;
             this.dom.summaryCycle.textContent = `第 ${this.state.cycle + 1} 轮`;
             this.dom.summarySuggest.textContent = this.state.currentMode === 'focus' ? '完成后休息' : '继续保持';
+          }
+
+          // ✅ 新增方法：更新模式按钮上的时间显示
+          updateModeButtons() {
+            const focusBtn = document.querySelector('.mode-btn[data-mode="focus"]');
+            const shortBtn = document.querySelector('.mode-btn[data-mode="short"]');
+            const longBtn = document.querySelector('.mode-btn[data-mode="long"]');
+            
+            const focusMinutes = this.config.modes.focus.seconds / 60;
+            const shortMinutes = this.config.modes.short.seconds / 60;
+            const longMinutes = this.config.modes.long.seconds / 60;
+            
+            if (focusBtn) {
+              focusBtn.innerHTML = `<i class="fas fa-fire mr-1"></i>专注 ${focusMinutes}'`;
+            }
+            if (shortBtn) {
+              shortBtn.textContent = `短休 ${shortMinutes}'`;
+            }
+            if (longBtn) {
+              longBtn.textContent = `长休 ${longMinutes}'`;
+            }
           }
 
           setMode(mode, keepTime = false) {
