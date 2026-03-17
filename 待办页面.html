@@ -35,131 +35,554 @@
         }
       };
     </script>
-    <style type="text/tailwindcss">
-      @layer utilities {
-          .content-auto { content-visibility: auto; }
-          .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-          .scrollbar-hide::-webkit-scrollbar { display: none; }
-          .scrollbar-thin::-webkit-scrollbar { width: 6px; }
-          .scrollbar-thin::-webkit-scrollbar-track { background: rgba(243, 244, 246, 0.5); border-radius: 3px; }
-          .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(79, 70, 229, 0.3); border-radius: 3px; }
-          .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(79, 70, 229, 0.5); }
-          .task-card-shadow { box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.08); }
-          .task-card-shadow-hover { box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.15); }
-          .card-shadow { box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08); }
-          .card-hover { @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5; }
-          .sidebar-item-active { @apply bg-primary/10 text-primary border-l-4 border-primary; }
-          .sidebar-item { @apply flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100/80 transition-all duration-200; }
-          .tag-work { @apply bg-task-work/10 text-task-work; }
-          .tag-study { @apply bg-task-study/10 text-task-study; }
-          .tag-life { @apply bg-task-life/10 text-task-life; }
-          .tag-health { @apply bg-task-health/10 text-task-health; }
-          .priority-high { @apply border-l-4 border-danger; }
-          .priority-medium { @apply border-l-4 border-warning; }
-          .priority-low { @apply border-l-4 border-success; }
-          .task-detail-panel.hidden { display: none; }
-          
-          .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.3); }
-          .glass-strong { background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(36px); -webkit-backdrop-filter: blur(36px); border: 1px solid rgba(255, 255, 255, 0.4); }
-          .glass-max { background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(48px); -webkit-backdrop-filter: blur(48px); border: 1px solid rgba(255, 255, 255, 0.5); }
-          .glass-input { background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(209, 213, 219, 0.5); transition: all 0.3s ease; }
-          .glass-input:focus { background: rgba(255, 255, 255, 0.95); border-color: rgba(79, 70, 229, 0.5); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12); }
-          /* ✅ 优化底部 Tab 毛玻璃效果 - 更透明，滑动时可见背后内容 */
-          .glass-tab { 
-            background: rgba(255, 255, 255, 0.65); 
-            backdrop-filter: blur(60px); 
-            -webkit-backdrop-filter: blur(60px); 
-            border: 1px solid rgba(255, 255, 255, 0.4); 
-            border-top: 1px solid rgba(255, 255, 255, 0.6); 
-            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05);
-          }
-          
-          .bg-orb { position: fixed; border-radius: 50%; filter: blur(100px); opacity: 0.1; pointer-events: none; z-index: 0; animation: orbFloat 20s ease-in-out infinite; }
-          @keyframes orbFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -30px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.95); } }
-          
-          .fade-in { animation: fadeIn 0.4s ease-out; }
-          @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-          .slide-in-right { animation: slideInRight 0.35s ease-out; }
-          @keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
-          .float { animation: float 3s ease-in-out infinite; }
-          @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-          
-          /* ✅ 任务卡片组样式 */
-          .task-card { @apply relative overflow-hidden group border border-gray-200/50; }
-          .task-card.completed { @apply opacity-60; }
-          .task-card.completed h3 { @apply line-through text-gray-500; }
-          .task-card.dragging { @apply opacity-50 scale-105; }
-          .task-card.drag-over { @apply border-2 border-primary border-dashed; }
-          .task-card.selected { @apply ring-2 ring-primary bg-primary/5; }
-          .task-card:hover { @apply border-primary/30 shadow-md; }
-          .task-card:nth-child(odd) { @apply bg-white/90; }
-          .task-card:nth-child(even) { @apply bg-gray-50/90; }
-          
-          /* ✅ 任务操作按钮 - 悬停显示 */
-          .task-actions { @apply flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200; }
-          .task-action-btn { @apply p-2 rounded-lg transition-all duration-200 hover:scale-110; }
-          .task-action-btn.share { @apply text-blue-500 hover:bg-blue-100 hover:text-blue-600; }
-          .task-action-btn.copy { @apply text-green-500 hover:bg-green-100 hover:text-green-600; }
-          .task-action-btn.delete { @apply text-red-500 hover:bg-red-100 hover:text-red-600; }
-          
-          .btn-primary-glass { @apply bg-primary/90 text-white font-medium py-2.5 px-5 rounded-xl transition-all duration-300 hover:bg-primary hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02] active:scale-[0.98]; }
-          .btn-secondary-glass { @apply bg-white/65 text-gray-700 font-medium py-2.5 px-5 rounded-xl border border-gray-200/50 transition-all duration-300 hover:bg-white hover:shadow-md hover:scale-[1.02] active:scale-[0.98]; }
-          
-          .input-glass { @apply w-full px-4 py-2.5 rounded-xl glass-input focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary transition-all duration-300; }
-          .input-glass-search { @apply w-full pl-12 pr-10 py-2.5 rounded-xl glass-input focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary transition-all duration-300; }
-          
-          .progress-bar { transition: width 0.5s ease-out; }
-          .progress-bar::after { content: ''; position: absolute; top: 0; left: 0; height: 100%; width: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); animation: progressShine 2s ease-in-out infinite; }
-          @keyframes progressShine { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-          
-          .badge-count { animation: badgePulse 2s ease-in-out infinite; }
-          @keyframes badgePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-          
-          .dropdown-menu { 
-            z-index: 1000 !important; 
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-          }
-          .dropdown-menu:not(.hidden) {
-            opacity: 1;
-            transform: translateY(0);
-          }
-          
-          .notification-slide { animation: notificationSlide 0.4s ease-out; }
-          @keyframes notificationSlide { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-          
-          .modal-overlay { 
-            @apply fixed inset-0 bg-black/40 backdrop-blur-sm z-[999] flex items-center justify-center;
-            display: none;
-          }
-          .modal-overlay.hidden { display: none !important; }
-          .modal-overlay:not(.hidden) { display: flex !important; }
-          .modal-content { @apply glass-max rounded-3xl shadow-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto slide-in-right; }
-          
-          .tab-item { @apply relative transition-all duration-300; }
-          .tab-item:hover { @apply scale-110; }
-          .tab-item.active .tab-indicator { @apply opacity-100 scale-100; }
-          .tab-indicator { @apply absolute -top-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary rounded-full opacity-0 scale-0 transition-all duration-300; }
-          
-          .priority-btn.active { @apply border-2 border-danger bg-danger/10 text-danger; }
-          .priority-btn { @apply border border-gray-200 text-gray-600; }
-          
-          .modal-tag-btn.active { @apply opacity-100 scale-105; }
-          .modal-tag-btn { @apply opacity-70 scale-100; }
-          
-          .modal-tag-color-btn { @apply transition-all duration-200; }
-          .modal-tag-color-btn.active { @apply scale-110; }
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      
+      body {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        background: linear-gradient(135deg, #EFF6FF 0%, #F5F3FF 50%, #FDF4FF 100%);
+        color: #1F2937;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        font-size: 14px;
+        overflow-x: hidden;
+      }
+      
+      .glass {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+      
+      .glass-strong {
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(36px);
+        -webkit-backdrop-filter: blur(36px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+      }
+      
+      .glass-max {
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(48px);
+        -webkit-backdrop-filter: blur(48px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+      }
+      
+      .glass-input {
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(209, 213, 219, 0.5);
+        transition: all 0.3s ease;
+      }
+      
+      .glass-input:focus {
+        background: rgba(255, 255, 255, 0.95);
+        border-color: rgba(79, 70, 229, 0.5);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+        outline: none;
+      }
+      
+      .glass-tab {
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(60px);
+        -webkit-backdrop-filter: blur(60px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-top: 1px solid rgba(255, 255, 255, 0.6);
+        box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+      
+      .bg-orb {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(100px);
+        opacity: 0.1;
+        pointer-events: none;
+        z-index: 0;
+        animation: orbFloat 20s ease-in-out infinite;
+      }
+      
+      @keyframes orbFloat {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(30px, -30px) scale(1.1); }
+        66% { transform: translate(-20px, 20px) scale(0.95); }
+      }
+      
+      .fade-in {
+        animation: fadeIn 0.4s ease-out;
+      }
+      
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      .slide-in-right {
+        animation: slideInRight 0.35s ease-out;
+      }
+      
+      @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(30px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+      
+      .float {
+        animation: float 3s ease-in-out infinite;
+      }
+      
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
+      }
+      
+      .task-card {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(229, 231, 235, 0.5);
+        transition: all 0.3s ease;
+      }
+      
+      .task-card:hover {
+        border-color: rgba(79, 70, 229, 0.3);
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+        transform: translateY(-2px);
+      }
+      
+      .task-card.completed {
+        opacity: 0.6;
+      }
+      
+      .task-card.completed h3 {
+        text-decoration: line-through;
+        color: #6B7280;
+      }
+      
+      .task-card.selected {
+        ring: 2px solid #4F46E5;
+        background-color: rgba(79, 70, 229, 0.05);
+      }
+      
+      .task-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+      
+      .task-card:hover .task-actions {
+        opacity: 1;
+      }
+      
+      .task-action-btn {
+        padding: 8px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+      }
+      
+      .task-action-btn:hover {
+        transform: scale(1.1);
+      }
+      
+      .task-action-btn.share {
+        color: #3B82F6;
+      }
+      
+      .task-action-btn.share:hover {
+        background-color: rgba(59, 130, 246, 0.1);
+        color: #2563EB;
+      }
+      
+      .task-action-btn.copy {
+        color: #10B981;
+      }
+      
+      .task-action-btn.copy:hover {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: #059669;
+      }
+      
+      .task-action-btn.delete {
+        color: #EF4444;
+      }
+      
+      .task-action-btn.delete:hover {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: #DC2626;
+      }
+      
+      .btn-primary-glass {
+        background: rgba(79, 70, 229, 0.9);
+        color: white;
+        font-weight: 500;
+        padding: 10px 20px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+      }
+      
+      .btn-primary-glass:hover {
+        background: #4F46E5;
+        box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+      }
+      
+      .btn-primary-glass:active {
+        background: #4338CA;
+      }
+      
+      .btn-secondary-glass {
+        background: rgba(255, 255, 255, 0.65);
+        color: #374151;
+        font-weight: 500;
+        padding: 10px 20px;
+        border-radius: 12px;
+        border: 1px solid rgba(229, 231, 235, 0.5);
+        transition: all 0.3s ease;
+      }
+      
+      .btn-secondary-glass:hover {
+        background: rgba(255, 255, 255, 0.85);
+        border-color: rgba(79, 70, 229, 0.3);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+      
+      .btn-secondary-glass:active {
+        background: rgba(255, 255, 255, 0.95);
+      }
+      
+      .input-glass {
+        width: 100%;
+        padding: 10px 16px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(209, 213, 219, 0.5);
+        transition: all 0.3s ease;
+      }
+      
+      .input-glass:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.95);
+        border-color: rgba(79, 70, 229, 0.5);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+      }
+      
+      .tag-work {
+        background-color: rgba(59, 130, 246, 0.1);
+        color: #3B82F6;
+      }
+      
+      .tag-study {
+        background-color: rgba(139, 92, 246, 0.1);
+        color: #8B5CF6;
+      }
+      
+      .tag-life {
+        background-color: rgba(236, 72, 153, 0.1);
+        color: #EC4899;
+      }
+      
+      .tag-health {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: #10B981;
+      }
+      
+      .priority-high {
+        border-left: 4px solid #EF4444;
+      }
+      
+      .priority-medium {
+        border-left: 4px solid #F59E0B;
+      }
+      
+      .priority-low {
+        border-left: 4px solid #10B981;
+      }
+      
+      .sidebar-item-active {
+        background-color: rgba(79, 70, 229, 0.1);
+        color: #4F46E5;
+        border-left: 4px solid #4F46E5;
+      }
+      
+      .sidebar-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #374151;
+        transition: all 0.2s ease;
+      }
+      
+      .sidebar-item:hover {
+        background-color: rgba(243, 244, 246, 0.8);
+      }
+      
+      .dropdown-menu {
+        z-index: 9999 !important;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        pointer-events: none;
+      }
+      
+      .dropdown-menu:not(.hidden) {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+      
+      .notification-toast {
+        position: fixed;
+        top: 100px;
+        right: 24px;
+        z-index: 10000;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+        padding: 16px;
+        min-width: 320px;
+        max-width: 400px;
+        animation: toastSlideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      
+      @keyframes toastSlideIn {
+        from { transform: translateX(400px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      
+      .notification-toast.toastOut {
+        animation: toastSlideOut 0.3s ease-in forwards;
+      }
+      
+      @keyframes toastSlideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(400px); opacity: 0; }
+      }
+      
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(4px);
+        z-index: 999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .modal-overlay:not(.hidden) {
+        display: flex !important;
+      }
+      
+      .modal-content {
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(48px);
+        -webkit-backdrop-filter: blur(48px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 24px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        padding: 24px;
+        width: 100%;
+        max-width: 512px;
+        max-height: 90vh;
+        overflow-y: auto;
+        animation: slideInRight 0.35s ease-out;
+      }
+      
+      .tab-item {
+        position: relative;
+        transition: all 0.3s ease;
+      }
+      
+      .tab-item:hover {
+        transform: scale(1.1);
+      }
+      
+      .tab-item.active .tab-indicator {
+        opacity: 1;
+        transform: scale(1);
+      }
+      
+      .tab-indicator {
+        position: absolute;
+        top: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 4px;
+        height: 4px;
+        background: #4F46E5;
+        border-radius: 50%;
+        opacity: 0;
+        transform: scale(0);
+        transition: all 0.3s ease;
+      }
+      
+      .priority-btn {
+        border: 1px solid #E5E7EB;
+        color: #6B7280;
+        padding: 10px 12px;
+        border-radius: 12px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+      }
+      
+      .priority-btn.active {
+        border: 2px solid #EF4444;
+        background-color: rgba(239, 68, 68, 0.1);
+        color: #EF4444;
+      }
+      
+      .modal-tag-btn {
+        opacity: 0.7;
+        transform: scale(1);
+        transition: all 0.2s ease;
+      }
+      
+      .modal-tag-btn.active {
+        opacity: 1;
+        transform: scale(1.05);
+      }
+      
+      .modal-tag-color-btn {
+        transition: all 0.2s ease;
+      }
+      
+      .modal-tag-color-btn.active {
+        transform: scale(1.1);
+        border-color: #4F46E5 !important;
+      }
+      
+      .custom-checkbox {
+        position: relative;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        background: rgba(255, 255, 255, 0.8);
+        border: 2px solid rgba(209, 213, 219, 0.8);
+        border-radius: 6px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        backdrop-filter: blur(4px);
+      }
+      
+      .custom-checkbox:hover {
+        border-color: rgba(79, 70, 229, 0.6);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+      }
+      
+      .custom-checkbox:checked {
+        background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+        border-color: transparent;
+        animation: checkPop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      }
+      
+      .custom-checkbox:checked::after {
+        content: '✓';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+      }
+      
+      @keyframes checkPop {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+      }
+      
+      .user-dropdown {
+        position: absolute;
+        right: 0;
+        margin-top: 8px;
+        width: 200px;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(48px);
+        -webkit-backdrop-filter: blur(48px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        padding: 8px 0;
+        z-index: 50;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.2s ease;
+        pointer-events: none;
+      }
+      
+      .group:hover .user-dropdown {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+      }
+      
+      .user-dropdown a {
+        display: block;
+        padding: 8px 16px;
+        font-size: 14px;
+        color: #374151;
+        transition: all 0.2s ease;
+        pointer-events: auto;
+      }
+      
+      .user-dropdown a:hover {
+        background-color: rgba(79, 70, 229, 0.1);
+        color: #4F46E5;
+      }
+      
+      .card-shadow {
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+      }
+      
+      .card-hover {
+        transition: all 0.3s ease;
+      }
+      
+      .card-hover:hover {
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+        transform: translateY(-2px);
+      }
+      
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      
+      ::-webkit-scrollbar-track {
+        background: rgba(243, 244, 246, 0.5);
+        border-radius: 3px;
+      }
+      
+      ::-webkit-scrollbar-thumb {
+        background: rgba(79, 70, 229, 0.3);
+        border-radius: 3px;
+      }
+      
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(79, 70, 229, 0.5);
       }
     </style>
   </head>
-  <body class="font-inter bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 text-gray-800 min-h-screen flex flex-col text-[13px] md:text-[14px] relative overflow-x-hidden">
+  <body>
     <!-- ===== 背景装饰光斑 ===== -->
-    <div class="bg-orb w-[500px] h-[500px] bg-primary top-0 left-0"></div>
-    <div class="bg-orb w-[400px] h-[400px] bg-secondary bottom-0 right-0" style="animation-delay: -5s;"></div>
-    <div class="bg-orb w-[350px] h-[350px] bg-info top-1/2 left-1/2" style="animation-delay: -10s;"></div>
-    <div class="bg-orb w-[300px] h-[300px] bg-warning top-0 right-0" style="animation-delay: -15s;"></div>
-    <div class="bg-orb w-[250px] h-[250px] bg-success bottom-0 left-0" style="animation-delay: -20s;"></div>
+    <div class="bg-orb" style="width: 500px; height: 500px; background: #4F46E5; top: 0; left: 0;"></div>
+    <div class="bg-orb" style="width: 400px; height: 400px; background: #7C3AED; bottom: 0; right: 0; animation-delay: -5s;"></div>
+    <div class="bg-orb" style="width: 350px; height: 350px; background: #3B82F6; top: 50%; left: 50%; animation-delay: -10s;"></div>
+    <div class="bg-orb" style="width: 300px; height: 300px; background: #F59E0B; top: 0; right: 0; animation-delay: -15s;"></div>
+    <div class="bg-orb" style="width: 250px; height: 250px; background: #10B981; bottom: 0; left: 0; animation-delay: -20s;"></div>
     
     <!-- 顶部导航 -->
     <header class="glass-max shadow-lg sticky top-0 z-40 transition-all duration-300" id="main-header">
@@ -181,7 +604,7 @@
           <span class="font-medium" id="current-date"></span>
         </div>
         <div class="relative hidden md:block flex-1 max-w-md mx-8">
-          <input class="input-glass-search" id="search-input" placeholder="搜索任务..." type="text" />
+          <input class="input-glass pl-12 pr-10" id="search-input" placeholder="搜索任务..." type="text" />
           <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" id="search-icon"></i>
           <button class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-primary opacity-0 transition-all" id="clear-search" title="清除搜索">
             <i class="fas fa-times-circle"></i>
@@ -193,7 +616,7 @@
           </button>
           <button class="relative text-gray-600 hover:text-primary transition-all duration-300 p-2.5 rounded-xl hover:bg-primary/10" id="notification-btn" title="通知">
             <i class="fas fa-bell text-lg"></i>
-            <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-danger rounded-full animate-pulse badge-count"></span>
+            <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-danger rounded-full animate-pulse badge-count" style="animation: badgePulse 2s ease-in-out infinite;"></span>
           </button>
           <button class="hidden md:flex btn-primary-glass items-center" id="add-task-header-btn">
             <i class="fas fa-plus mr-2"></i>
@@ -205,19 +628,19 @@
               <span class="hidden lg:inline-block font-medium text-gray-700">张明</span>
               <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform"></i>
             </button>
-            <div class="absolute right-0 mt-2 w-52 glass-max rounded-2xl shadow-2xl py-2 z-50 hidden group-hover:block fade-in">
+            <div class="user-dropdown">
               <div class="px-4 py-3 border-b border-gray-100">
                 <p class="font-medium text-gray-800">张明</p>
                 <p class="text-xs text-gray-500">zhangming@example.com</p>
               </div>
-              <a class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary" href="个人中心页面.html">
+              <a href="个人中心页面.html">
                 <i class="fas fa-user mr-2.5 text-gray-500"></i>个人中心
               </a>
-              <a class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary" href="javascript:void(0);">
+              <a href="javascript:void(0);">
                 <i class="fas fa-cog mr-2.5 text-gray-500"></i>设置
               </a>
               <div class="border-t border-gray-100 my-1.5"></div>
-              <a class="block px-4 py-2.5 text-sm text-danger hover:bg-danger/10" href="登录页面.html">
+              <a href="登录页面.html">
                 <i class="fas fa-sign-out-alt mr-2.5"></i>退出登录
               </a>
             </div>
@@ -226,19 +649,9 @@
       </div>
     </header>
     
-    <header class="bg-white shadow-md">
-      <div class="container mx-auto px-4 py-3 flex items-center justify-between">
-        <h1 class="text-2xl font-bold">任务管理器</h1>
-        <div class="flex items-center space-x-4">
-          <button class="btn btn-primary">添加任务</button>
-          <button class="btn btn-secondary">设置</button>
-        </div>
-      </div>
-    </header>
-    
     <div class="flex flex-1 overflow-hidden relative z-10">
       <!-- 侧边栏 -->
-      <aside class="w-64 glass-strong border-r border-gray-200/50 hidden md:block overflow-y-auto scrollbar-thin z-20">
+      <aside class="w-64 glass-strong border-r border-gray-200/50 hidden md:block overflow-y-auto z-20" style="width: 256px;">
         <div class="p-4">
           <!-- 主要分类 -->
           <nav>
@@ -270,7 +683,6 @@
                   </div>
                   <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-important">0</span>
                 </a>
-              </li>
               </li>
               <li>
                 <a class="sidebar-item" href="javascript:void(0);">
@@ -341,7 +753,7 @@
       </aside>
       
       <!-- 主内容区域 -->
-      <main class="flex-1 overflow-y-auto bg-transparent p-4 md:p-6 scrollbar-thin">
+      <main class="flex-1 overflow-y-auto bg-transparent p-4 md:p-6" style="overflow-y: auto;">
         <!-- 快捷操作栏 -->
         <div class="glass-max rounded-2xl shadow-lg p-5 mb-6 card-hover">
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -359,7 +771,7 @@
                   <i class="fas fa-sort mr-2"></i>排序
                   <i class="fas fa-chevron-down ml-2 text-xs" id="sort-icon"></i>
                 </button>
-                <div class="absolute right-0 mt-2 w-48 glass-max rounded-xl shadow-2xl py-2 hidden dropdown-menu" id="sort-filter-menu">
+                <div class="absolute right-0 mt-2 w-48 glass-max rounded-xl shadow-2xl py-2 hidden dropdown-menu" id="sort-filter-menu" style="z-index: 9999;">
                   <a class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10" href="javascript:void(0);" data-sort="time">
                     <i class="fas fa-clock mr-2.5 text-gray-500"></i>按时间
                   </a>
@@ -421,7 +833,7 @@
       </main>
       
       <!-- 任务详情面板 -->
-      <aside class="task-detail-panel hidden w-80 md:w-96 glass-max border-l border-gray-200/50 overflow-y-auto scrollbar-thin z-30 slide-in-right" id="task-detail-panel">
+      <aside class="task-detail-panel hidden w-80 md:w-96 glass-max border-l border-gray-200/50 overflow-y-auto z-30 slide-in-right" id="task-detail-panel" style="width: 320px;">
         <div class="p-4 border-b border-gray-200/50 flex justify-between items-center sticky top-0 glass-strong z-10">
           <h2 class="text-lg font-semibold text-gray-800">任务详情</h2>
           <button class="text-gray-500 hover:text-gray-700 p-2.5 rounded-xl hover:bg-gray-100" id="close-detail-btn">
@@ -571,7 +983,7 @@
       </div>
     </div>
     
-    <!-- ✅ 添加标签模态框 -->
+    <!-- 添加标签模态框 -->
     <div id="new-tag-modal" class="modal-overlay hidden">
       <div class="modal-content">
         <div class="flex justify-between items-center mb-6">
@@ -610,7 +1022,486 @@
       </div>
     </div>
     
-    <!-- ✅ 批量操作模态框 -->
+    <!-- 批量操作模态框 -->
+    <div id="batch-action-modal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-xl font-bold text-gray-800">
+            <i class="fas fa-tasks text-primary mr-2"></i>批量操作
+          </h2>
+          <button class="text-gray-500 hover:text-gray-700 p-2.5 rounded-xl hover:bg-gray-100" type="button" onclick="window.closeBatchModalFunc()">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+        <div class="space-y-5">
+          <div>
+            <p class="text-sm text-gray-600 mb-4">当前已选择 <span id="batch-selected-count" class="font-bold text-primary">0</span> 个任务</p>
+            <div class="flex flex-col gap-3">
+              <button class="w-full py-3 px-4 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl border border-green-200 flex items-center justify-center gap-2 transition-all hover:scale-[1.02]" onclick="window.confirmBatchComplete()">
+                <i class="fas fa-check-circle text-lg"></i>
+                <span class="font-medium">批量完成选中任务</span>
+              </button>
+              <button class="w-full py-3 px-4 bg-red-50 hover:bg-red-100 text-red-700 rounded-xl border border-red-200 flex items-center justify-center gap-2 transition-all hover:scale-[1.02]" onclick="window.confirmBatchDelete()">
+                <i class="fas fa-trash-alt text-lg"></i>
+                <span class="font-medium">批量删除选中任务</span>
+              </button>
+              <button class="w-full py-3 px-4 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl border border-blue-200 flex items-center justify-center gap-2 transition-all hover:scale-[1.02]" onclick="window.completeAllTasks()">
+                <i class="fas fa-check-double text-lg"></i>
+                <span class="font-medium">完成所有任务</span>
+              </button>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-gray-200/50">
+            <p class="text-xs text-gray-500 mb-3">操作说明：</p>
+            <ul class="text-xs text-gray-500 space-y-1">
+              <li class="flex items-start gap-2"><i class="fas fa-circle text-[6px] mt-1.5"></i>点击任务卡片可以选中/发生异常，可以输入更多信息再让我来回答或重试
+  <body>
+    <!-- ===== 背景装饰光斑 ===== -->
+    <div class="bg-orb" style="width: 500px; height: 500px; background: #4F46E5; top: 0; left: 0;"></div>
+    <div class="bg-orb" style="width: 400px; height: 400px; background: #7C3AED; bottom: 0; right: 0; animation-delay: -5s;"></div>
+    <div class="bg-orb" style="width: 350px; height: 350px; background: #3B82F6; top: 50%; left: 50%; animation-delay: -10s;"></div>
+    <div class="bg-orb" style="width: 300px; height: 300px; background: #F59E0B; top: 0; right: 0; animation-delay: -15s;"></div>
+    <div class="bg-orb" style="width: 250px; height: 250px; background: #10B981; bottom: 0; left: 0; animation-delay: -20s;"></div>
+    
+    <!-- 顶部导航 -->
+    <header class="glass-max shadow-lg sticky top-0 z-40 transition-all duration-300" id="main-header">
+      <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <a class="text-gray-600 hover:text-primary transition-all duration-300 p-2.5 rounded-xl hover:bg-primary/10" href="登录页面.html" title="返回首页">
+            <i class="fas fa-arrow-left text-lg"></i>
+          </a>
+          <div class="flex items-center space-x-2.5">
+            <span class="text-2xl float">☀️</span>
+            <div>
+              <h1 class="text-lg md:text-xl font-bold text-gray-800">待办清单</h1>
+              <p class="text-xs text-gray-500 hidden md:block">轻悦待办 · 高效每一天</p>
+            </div>
+          </div>
+        </div>
+        <div class="hidden md:flex items-center text-gray-600 glass-input px-5 py-2.5 rounded-xl">
+          <i class="fas fa-calendar-alt mr-2.5 text-primary"></i>
+          <span class="font-medium" id="current-date"></span>
+        </div>
+        <div class="relative hidden md:block flex-1 max-w-md mx-8">
+          <input class="input-glass pl-12 pr-10" id="search-input" placeholder="搜索任务..." type="text" />
+          <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" id="search-icon"></i>
+          <button class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-primary opacity-0 transition-all" id="clear-search" title="清除搜索">
+            <i class="fas fa-times-circle"></i>
+          </button>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button class="md:hidden text-gray-600 hover:text-primary transition-colors p-2.5 rounded-xl hover:bg-primary/10" id="mobile-search-btn" title="搜索">
+            <i class="fas fa-search text-lg"></i>
+          </button>
+          <button class="relative text-gray-600 hover:text-primary transition-all duration-300 p-2.5 rounded-xl hover:bg-primary/10" id="notification-btn" title="通知">
+            <i class="fas fa-bell text-lg"></i>
+            <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-danger rounded-full animate-pulse badge-count" style="animation: badgePulse 2s ease-in-out infinite;"></span>
+          </button>
+          <button class="hidden md:flex btn-primary-glass items-center" id="add-task-header-btn">
+            <i class="fas fa-plus mr-2"></i>
+            新建任务
+          </button>
+          <div class="relative group">
+            <button class="flex items-center space-x-2 p-1.5 rounded-xl hover:bg-primary/10">
+              <img alt="用户头像" class="w-10 h-10 rounded-full object-cover border-2 border-primary/40" src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png" />
+              <span class="hidden lg:inline-block font-medium text-gray-700">张明</span>
+              <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform"></i>
+            </button>
+            <div class="user-dropdown">
+              <div class="px-4 py-3 border-b border-gray-100">
+                <p class="font-medium text-gray-800">张明</p>
+                <p class="text-xs text-gray-500">zhangming@example.com</p>
+              </div>
+              <a href="个人中心页面.html">
+                <i class="fas fa-user mr-2.5 text-gray-500"></i>个人中心
+              </a>
+              <a href="javascript:void(0);">
+                <i class="fas fa-cog mr-2.5 text-gray-500"></i>设置
+              </a>
+              <div class="border-t border-gray-100 my-1.5"></div>
+              <a href="登录页面.html">
+                <i class="fas fa-sign-out-alt mr-2.5"></i>退出登录
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+    <div class="flex flex-1 overflow-hidden relative z-10">
+      <!-- 侧边栏 -->
+      <aside class="w-64 glass-strong border-r border-gray-200/50 hidden md:block overflow-y-auto z-20" style="width: 256px;">
+        <div class="p-4">
+          <!-- 主要分类 -->
+          <nav>
+            <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-3">主要分类</h2>
+            <ul class="space-y-1">
+              <li>
+                <a class="sidebar-item-active sidebar-item" href="javascript:void(0);">
+                  <div class="flex items-center">
+                    <i class="fas fa-tasks w-5 h-5 mr-3 text-primary"></i>
+                    <span>所有任务</span>
+                  </div>
+                  <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-all">0</span>
+                </a>
+              </li>
+              <li>
+                <a class="sidebar-item" href="javascript:void(0);">
+                  <div class="flex items-center">
+                    <i class="fas fa-sun w-5 h-5 mr-3 text-warning"></i>
+                    <span>我的一天</span>
+                  </div>
+                  <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-today">0</span>
+                </a>
+              </li>
+              <li>
+                <a class="sidebar-item" href="javascript:void(0);">
+                  <div class="flex items-center">
+                    <i class="fas fa-star w-5 h-5 mr-3 text-warning"></i>
+                    <span>重要任务</span>
+                  </div>
+                  <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-important">0</span>
+                </a>
+              </li>
+              <li>
+                <a class="sidebar-item" href="javascript:void(0);">
+                  <div class="flex items-center">
+                    <i class="fas fa-calendar w-5 h-5 mr-3 text-info"></i>
+                    <span>已计划</span>
+                  </div>
+                  <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-planned">0</span>
+                </a>
+              </li>
+              <li>
+                <a class="sidebar-item" href="javascript:void(0);">
+                  <div class="flex items-center">
+                    <i class="fas fa-user w-5 h-5 mr-3 text-secondary"></i>
+                    <span>已分配给我</span>
+                  </div>
+                  <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full">3</span>
+                </a>
+              </li>
+            </ul>
+            
+            <!-- 标签列表 -->
+            <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mt-6 mb-3 px-3">标签</h2>
+            <ul class="space-y-1" id="sidebar-tag-list">
+              <li>
+                <a class="sidebar-item" href="javascript:void(0);" data-tag="work">
+                  <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full bg-task-work mr-3"></span>
+                    <span>#工作</span>
+                  </div>
+                  <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-work">0</span>
+                </a>
+              </li>
+              <li>
+                <a class="sidebar-item" href="javascript:void(0);" data-tag="study">
+                  <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full bg-task-study mr-3"></span>
+                    <span>#学习</span>
+                  </div>
+                  <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-study">0</span>
+                </a>
+              </li>
+              <li>
+                <a class="sidebar-item" href="javascript:void(0);" data-tag="life">
+                  <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full bg-task-life mr-3"></span>
+                    <span>#生活</span>
+                  </div>
+                  <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-life">0</span>
+                </a>
+              </li>
+              <li>
+                <a class="sidebar-item" href="javascript:void(0);" data-tag="health">
+                  <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full bg-task-health mr-3"></span>
+                    <span>#健康</span>
+                  </div>
+                  <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-health">0</span>
+                </a>
+              </li>
+            </ul>
+            
+            <button class="mt-6 w-full flex items-center justify-center px-3 py-2.5 rounded-xl border border-dashed border-gray-300 text-sm text-gray-500 hover:border-primary hover:text-primary hover:bg-primary/5" id="add-tag-btn">
+              <i class="fas fa-plus-circle mr-2"></i>添加新标签
+            </button>
+          </nav>
+        </div>
+      </aside>
+      
+      <!-- 主内容区域 -->
+      <main class="flex-1 overflow-y-auto bg-transparent p-4 md:p-6" style="overflow-y: auto;">
+        <!-- 快捷操作栏 -->
+        <div class="glass-max rounded-2xl shadow-lg p-5 mb-6 card-hover">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex flex-wrap gap-2">
+              <button class="btn-secondary-glass inline-flex items-center" id="batch-complete-btn">
+                <i class="fas fa-check-square mr-2"></i>批量完成
+              </button>
+              <button class="btn-secondary-glass inline-flex items-center text-danger" id="batch-delete-btn">
+                <i class="fas fa-trash-alt mr-2"></i>批量删除
+              </button>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="relative">
+                <button class="btn-secondary-glass inline-flex items-center" id="sort-filter-btn">
+                  <i class="fas fa-sort mr-2"></i>排序
+                  <i class="fas fa-chevron-down ml-2 text-xs" id="sort-icon"></i>
+                </button>
+                <div class="absolute right-0 mt-2 w-48 glass-max rounded-xl shadow-2xl py-2 hidden dropdown-menu" id="sort-filter-menu" style="z-index: 9999;">
+                  <a class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10" href="javascript:void(0);" data-sort="time">
+                    <i class="fas fa-clock mr-2.5 text-gray-500"></i>按时间
+                  </a>
+                  <a class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10" href="javascript:void(0);" data-sort="priority">
+                    <i class="fas fa-flag mr-2.5 text-gray-500"></i>按优先级
+                  </a>
+                  <a class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10" href="javascript:void(0);" data-sort="tag">
+                    <i class="fas fa-tags mr-2.5 text-gray-500"></i>按标签
+                  </a>
+                  <div class="border-t border-gray-100 my-1"></div>
+                  <a class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10" href="javascript:void(0);" data-sort="status">
+                    <i class="fas fa-check-circle mr-2.5 text-gray-500"></i>按完成状态
+                  </a>
+                </div>
+              </div>
+              <div class="flex border border-gray-200/50 rounded-xl overflow-hidden glass">
+                <button class="px-4 py-2.5 text-sm text-gray-500 hover:bg-gray-100/50" id="list-view-btn" title="列表视图">
+                  <i class="fas fa-list"></i>
+                </button>
+                <button class="px-4 py-2.5 text-sm text-primary bg-primary/10" id="card-view-btn" title="卡片视图">
+                  <i class="fas fa-th-large"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 任务列表 -->
+        <div class="space-y-6" id="task-list-container">
+          <!-- 今日待办 -->
+          <div class="fade-in">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center">
+                <div class="w-1.5 h-7 bg-primary rounded-full mr-3"></div>
+                <h2 class="text-lg font-semibold text-gray-800">今日待办</h2>
+                <button class="ml-3 text-primary hover:text-primary/80 p-2 rounded-xl hover:bg-primary/10" id="add-today-task-btn" title="添加任务">
+                  <i class="fas fa-plus-circle"></i>
+                </button>
+              </div>
+              <span class="text-sm text-gray-500 bg-white/70 px-3 py-1.5 rounded-full"><span id="today-task-count">0</span> 个任务</span>
+            </div>
+            <div class="space-y-3" id="today-task-list"></div>
+          </div>
+          <!-- 明日待办 -->
+          <div class="fade-in">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center">
+                <div class="w-1.5 h-7 bg-warning rounded-full mr-3"></div>
+                <h2 class="text-lg font-semibold text-gray-800">明日待办</h2>
+                <button class="ml-3 text-primary hover:text-primary/80 p-2 rounded-xl hover:bg-primary/10" id="add-tomorrow-task-btn" title="添加任务">
+                  <i class="fas fa-plus-circle"></i>
+                </button>
+              </div>
+              <span class="text-sm text-gray-500 bg-white/70 px-3 py-1.5 rounded-full"><span id="tomorrow-task-count">0</span> 个任务</span>
+            </div>
+            <div class="space-y-3" id="tomorrow-task-list"></div>
+          </div>
+        </div>
+      </main>
+      
+      <!-- 任务详情面板 -->
+      <aside class="task-detail-panel hidden w-80 md:w-96 glass-max border-l border-gray-200/50 overflow-y-auto z-30 slide-in-right" id="task-detail-panel" style="width: 320px;">
+        <div class="p-4 border-b border-gray-200/50 flex justify-between items-center sticky top-0 glass-strong z-10">
+          <h2 class="text-lg font-semibold text-gray-800">任务详情</h2>
+          <button class="text-gray-500 hover:text-gray-700 p-2.5 rounded-xl hover:bg-gray-100" id="close-detail-btn">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="p-5 space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">任务标题</label>
+            <input class="input-glass" id="detail-title" type="text" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">描述</label>
+            <textarea class="input-glass resize-none" id="detail-description" placeholder="添加描述..." rows="4"></textarea>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">截止日期和时间</label>
+            <input class="input-glass" id="detail-datetime" type="datetime-local" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">优先级</label>
+            <div class="flex gap-2">
+              <button class="flex-1 py-2.5 px-3 rounded-xl text-sm priority-btn" data-priority="high" onclick="window.selectDetailPriority('high')">
+                <i class="fas fa-flag mr-1"></i>高
+              </button>
+              <button class="flex-1 py-2.5 px-3 rounded-xl text-sm priority-btn" data-priority="medium" onclick="window.selectDetailPriority('medium')">
+                <i class="fas fa-flag mr-1"></i>中
+              </button>
+              <button class="flex-1 py-2.5 px-3 rounded-xl text-sm priority-btn" data-priority="low" onclick="window.selectDetailPriority('low')">
+                <i class="fas fa-flag mr-1"></i>低
+              </button>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between items-center mb-3">
+              <label class="block text-sm font-medium text-gray-700">子任务</label>
+              <button class="text-sm text-primary hover:text-primary/80" id="complete-all-subtasks">
+                <i class="fas fa-check-square mr-1"></i>全部完成
+              </button>
+            </div>
+            <div class="space-y-2 mb-3" id="subtask-list"></div>
+            <div class="flex">
+              <input class="flex-1 px-3 py-2.5 border border-gray-200 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-primary/30" id="new-subtask-input" placeholder="添加子任务..." type="text" />
+              <button class="px-4 py-2.5 bg-primary text-white rounded-r-xl hover:bg-primary/90" id="add-subtask-btn">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">标签</label>
+            <div class="flex flex-wrap gap-2 mb-3" id="tag-list"></div>
+            <button class="text-sm text-primary hover:text-primary/80" id="add-tag-inline">
+              <i class="fas fa-plus mr-1"></i>添加标签
+            </button>
+          </div>
+          <div class="flex space-x-3 pt-4 border-t border-gray-200/50">
+            <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white" id="cancel-edit-btn">取消</button>
+            <button class="flex-1 py-2.5 btn-primary-glass" id="save-task-btn">
+              <i class="fas fa-save mr-2"></i>保存任务
+            </button>
+          </div>
+          <div class="flex space-x-3 pt-2 border-t border-gray-200/50">
+            <button class="flex-1 py-2.5 btn-secondary-glass text-primary" id="share-task-btn">
+              <i class="fas fa-share-alt mr-2"></i>分享
+            </button>
+            <button class="flex-1 py-2.5 btn-secondary-glass" id="copy-task-btn">
+              <i class="fas fa-copy mr-2"></i>复制
+            </button>
+            <button class="flex-1 py-2.5 btn-secondary-glass text-danger" id="delete-task-btn">
+              <i class="fas fa-trash-alt mr-2"></i>删除
+            </button>
+          </div>
+        </div>
+      </aside>
+    </div>
+    
+    <!-- 新建任务模态框 -->
+    <div id="new-task-modal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-xl font-bold text-gray-800">
+            <i class="fas fa-plus-circle text-primary mr-2"></i>新建任务
+          </h2>
+          <button class="text-gray-500 hover:text-gray-700 p-2.5 rounded-xl hover:bg-gray-100" type="button" onclick="window.closeModalFunc()">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+        <div class="space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">任务标题 <span class="text-danger">*</span></label>
+            <input class="input-glass" id="modal-title" type="text" placeholder="输入任务标题..." />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">描述</label>
+            <textarea class="input-glass resize-none" id="modal-description" placeholder="添加任务描述..." rows="3"></textarea>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">截止日期</label>
+              <input class="input-glass" id="modal-date" type="date" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">时间</label>
+              <input class="input-glass" id="modal-time" type="time" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">优先级</label>
+            <div class="flex gap-2">
+              <button class="flex-1 py-2.5 px-3 rounded-xl border border-gray-200 text-gray-600 text-sm modal-priority-btn" data-priority="low" onclick="window.selectModalPriority('low')">
+                <i class="fas fa-flag mr-1"></i>低
+              </button>
+              <button class="flex-1 py-2.5 px-3 rounded-xl border-2 border-primary bg-primary/10 text-primary text-sm modal-priority-btn" data-priority="medium" onclick="window.selectModalPriority('medium')">
+                <i class="fas fa-flag mr-1"></i>中
+              </button>
+              <button class="flex-1 py-2.5 px-3 rounded-xl border border-gray-200 text-gray-600 text-sm modal-priority-btn" data-priority="high" onclick="window.selectModalPriority('high')">
+                <i class="fas fa-flag mr-1"></i>高
+              </button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">标签</label>
+            <div class="flex flex-wrap gap-2" id="modal-tag-list">
+              <button class="px-3 py-1.5 rounded-full text-sm font-medium bg-task-work/10 text-task-work modal-tag-btn active" data-tag="work" onclick="window.selectModalTag('work')">
+                <i class="fas fa-briefcase mr-1"></i>工作
+              </button>
+              <button class="px-3 py-1.5 rounded-full text-sm font-medium bg-task-study/10 text-task-study modal-tag-btn" data-tag="study" onclick="window.selectModalTag('study')">
+                <i class="fas fa-book mr-1"></i>学习
+              </button>
+              <button class="px-3 py-1.5 rounded-full text-sm font-medium bg-task-life/10 text-task-life modal-tag-btn" data-tag="life" onclick="window.selectModalTag('life')">
+                <i class="fas fa-home mr-1"></i>生活
+              </button>
+              <button class="px-3 py-1.5 rounded-full text-sm font-medium bg-task-health/10 text-task-health modal-tag-btn" data-tag="health" onclick="window.selectModalTag('health')">
+                <i class="fas fa-heart mr-1"></i>健康
+              </button>
+            </div>
+          </div>
+          <div class="flex space-x-3 pt-4">
+            <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white" type="button" onclick="window.closeModalFunc()">
+              取消
+            </button>
+            <button class="flex-1 py-2.5 btn-primary-glass" type="button" onclick="window.createTaskFunc()">
+              <i class="fas fa-check mr-2"></i>创建任务
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 添加标签模态框 -->
+    <div id="new-tag-modal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-xl font-bold text-gray-800">
+            <i class="fas fa-tags text-primary mr-2"></i>添加新标签
+          </h2>
+          <button class="text-gray-500 hover:text-gray-700 p-2.5 rounded-xl hover:bg-gray-100" type="button" onclick="window.closeTagModalFunc()">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+        <div class="space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">标签名称 <span class="text-danger">*</span></label>
+            <input class="input-glass" id="modal-tag-name" type="text" placeholder="输入标签名称..." />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">标签颜色</label>
+            <div class="flex flex-wrap gap-3" id="modal-tag-color-list">
+              <button class="w-10 h-10 rounded-full border-2 border-primary bg-task-work modal-tag-color-btn active" data-color="task-work" onclick="window.selectTagColor('task-work')" title="工作"></button>
+              <button class="w-10 h-10 rounded-full border-2 border-gray-300 bg-task-study modal-tag-color-btn" data-color="task-study" onclick="window.selectTagColor('task-study')" title="学习"></button>
+              <button class="w-10 h-10 rounded-full border-2 border-gray-300 bg-task-life modal-tag-color-btn" data-color="task-life" onclick="window.selectTagColor('task-life')" title="生活"></button>
+              <button class="w-10 h-10 rounded-full border-2 border-gray-300 bg-task-health modal-tag-color-btn" data-color="task-health" onclick="window.selectTagColor('task-health')" title="健康"></button>
+              <button class="w-10 h-10 rounded-full border-2 border-gray-300 bg-primary modal-tag-color-btn" data-color="primary" onclick="window.selectTagColor('primary')" title="主要"></button>
+              <button class="w-10 h-10 rounded-full border-2 border-gray-300 bg-secondary modal-tag-color-btn" data-color="secondary" onclick="window.selectTagColor('secondary')" title="次要"></button>
+            </div>
+          </div>
+          <div class="flex space-x-3 pt-4">
+            <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white" type="button" onclick="window.closeTagModalFunc()">
+              取消
+            </button>
+            <button class="flex-1 py-2.5 btn-primary-glass" type="button" onclick="window.createTagFunc()">
+              <i class="fas fa-check mr-2"></i>创建标签
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 批量操作模态框 -->
     <div id="batch-action-modal" class="modal-overlay hidden">
       <div class="modal-content">
         <div class="flex justify-between items-center mb-6">
@@ -660,7 +1551,7 @@
       </div>
     </div>
     
-    <!-- ✅ 底部 Tab 栏 - 优化尺寸和毛玻璃效果 -->
+    <!-- 底部 Tab 栏 -->
     <footer class="glass-tab border-t border-gray-200/50 py-2 px-3 sticky bottom-0 z-40">
       <div class="container mx-auto flex justify-around items-center">
         <a href="待办页面.html" class="tab-item active flex flex-col items-center text-primary px-3 py-1.5 rounded-xl bg-primary/10">
@@ -719,16 +1610,48 @@
       // ==================== 工具函数 ====================
       function showToast(message, type) {
         type = type || 'success';
-        var toast = document.createElement('div');
+        
+        var existingToast = document.querySelector('.notification-toast');
+        if (existingToast) {
+          existingToast.classList.add('toastOut');
+          setTimeout(function() {
+            if (existingToast.parentNode) existingToast.remove();
+            createToast(message, type);
+          }, 300);
+        } else {
+          createToast(message, type);
+        }
+      }
+      
+      function createToast(message, type) {
         var icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
         var color = type === 'success' ? 'text-primary' : 'text-danger';
         var bgColor = type === 'success' ? 'bg-primary/10' : 'bg-danger/10';
-        toast.className = 'fixed top-20 right-4 z-[1001] glass-max rounded-2xl shadow-2xl p-4 flex items-center space-x-3 notification-slide min-w-[300px]';
-        toast.innerHTML = '<div class="w-10 h-10 rounded-full ' + bgColor + ' flex items-center justify-center"><i class="fas ' + icon + ' ' + color + '"></i></div>' +
-          '<div class="flex-1"><p class="font-medium text-gray-800 text-sm">提示</p><p class="text-xs text-gray-500">' + message + '</p></div>' +
-          '<button class="text-gray-400 hover:text-gray-600" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>';
+        
+        var toast = document.createElement('div');
+        toast.className = 'notification-toast';
+        toast.innerHTML = 
+          '<div class="w-10 h-10 rounded-full ' + bgColor + ' flex items-center justify-center flex-shrink-0">' +
+            '<i class="fas ' + icon + ' ' + color + ' text-lg"></i>' +
+          '</div>' +
+          '<div class="flex-1">' +
+            '<p class="font-medium text-gray-800 text-sm">提示</p>' +
+            '<p class="text-xs text-gray-500">' + message + '</p>' +
+          '</div>' +
+          '<button class="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition-colors" onclick="this.parentElement.remove()">' +
+            '<i class="fas fa-times"></i>' +
+          '</button>';
+        
         document.body.appendChild(toast);
-        setTimeout(function() { toast.remove(); }, 3000);
+        
+        setTimeout(function() {
+          if (toast.parentNode) {
+            toast.classList.add('toastOut');
+            setTimeout(function() {
+              if (toast.parentNode) toast.remove();
+            }, 300);
+          }
+        }, 3000);
       }
       
       function saveToLocalStorage() {
@@ -789,7 +1712,6 @@
         }
       };
       
-      // ✅ 标签模态框函数
       window.closeTagModalFunc = function() {
         var modal = document.getElementById('new-tag-modal');
         if (modal) modal.classList.add('hidden');
@@ -817,11 +1739,11 @@
         var buttons = document.querySelectorAll('.modal-tag-color-btn');
         buttons.forEach(function(btn) {
           if (btn.dataset.color === selectedTagColor) {
-            btn.classList.add('active', 'border-primary');
-            btn.classList.remove('border-gray-300');
+            btn.classList.add('active');
+            btn.style.borderColor = '#4F46E5';
           } else {
-            btn.classList.remove('active', 'border-primary');
-            btn.classList.add('border-gray-300');
+            btn.classList.remove('active');
+            btn.style.borderColor = '#D1D5DB';
           }
         });
       }
@@ -836,7 +1758,6 @@
           return;
         }
         
-        // 创建标签标识
         var tagKey = tagName.toLowerCase().replace(/\s+/g, '-');
         var exists = tags.some(function(t) { return t.key === tagKey; });
         if (exists) {
@@ -872,11 +1793,13 @@
         var buttons = document.querySelectorAll('.modal-priority-btn');
         buttons.forEach(function(btn) {
           if (btn.dataset.priority === selectedModalPriority) {
-            btn.classList.add('border-2', 'border-primary', 'bg-primary/10', 'text-primary');
-            btn.classList.remove('border-gray-200', 'text-gray-600');
+            btn.style.border = '2px solid #4F46E5';
+            btn.style.backgroundColor = 'rgba(79, 70, 229, 0.1)';
+            btn.style.color = '#4F46E5';
           } else {
-            btn.classList.remove('border-2', 'border-primary', 'bg-primary/10', 'text-primary');
-            btn.classList.add('border-gray-200', 'text-gray-600');
+            btn.style.border = '1px solid #E5E7EB';
+            btn.style.backgroundColor = '';
+            btn.style.color = '#6B7280';
           }
         });
       }
@@ -886,12 +1809,8 @@
         buttons.forEach(function(btn) {
           if (btn.dataset.tag === selectedModalTag) {
             btn.classList.add('active');
-            btn.style.opacity = '1';
-            btn.style.transform = 'scale(1.05)';
           } else {
             btn.classList.remove('active');
-            btn.style.opacity = '0.7';
-            btn.style.transform = 'scale(1)';
           }
         });
       }
@@ -947,7 +1866,7 @@
         showToast('✅ 任务创建成功！');
       };
       
-      // ==================== 批量操作模态框函数 ====================
+      // 批量操作模态框函数
       window.openBatchModalFunc = function() {
         var modal = document.getElementById('batch-action-modal');
         if (modal) {
@@ -1038,7 +1957,7 @@
         showToast('✅ 已清空选择');
       };
       
-      // ==================== 任务卡片生成 ====================
+      // 任务卡片生成
       function generateTaskCard(task, isToday) {
         var priorityClass = 'priority-' + task.priority;
         var tagColor = getTagColor(task.tag);
@@ -1050,13 +1969,13 @@
         var subtaskInfo = task.subtasks && task.subtasks.length > 0 ? 
           '<div class="flex items-center text-xs text-gray-500 mt-1"><i class="fas fa-check-square mr-1 text-success"></i>' + task.subtasks.length + ' 个子任务</div>' : '';
         
-        return '<div class="task-card task-card-shadow bg-white/85 backdrop-blur-sm rounded-xl p-4 cursor-pointer ' + priorityClass + ' ' + completedClass + ' ' + selectedClass + ' card-hover" data-task-id="' + task.id + '" data-is-today="' + isToday + '">' +
+        return '<div class="task-card bg-white/85 backdrop-blur-sm rounded-xl p-4 cursor-pointer ' + priorityClass + ' ' + completedClass + ' ' + selectedClass + ' card-hover" data-task-id="' + task.id + '" data-is-today="' + isToday + '">' +
           '<div class="flex items-start">' +
-          '<div class="flex-shrink-0 mr-4"><input class="task-checkbox w-5 h-5 rounded-lg" type="checkbox" ' + (task.completed ? 'checked' : '') + '/></div>' +
+          '<div class="flex-shrink-0 mr-4"><input class="task-checkbox custom-checkbox" type="checkbox" ' + (task.completed ? 'checked' : '') + '/></div>' +
           '<div class="flex-1">' +
           '<div class="flex justify-between items-start">' +
           '<h3 class="text-base font-medium ' + (task.completed ? 'line-through text-gray-500' : '') + '">' + task.title + '</h3>' +
-          '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium tag-' + tagColor + '"><i class="fas ' + tagIcon + ' mr-1"></i>' + tagName + '</span>' +
+          '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ' + 'tag-' + tagColor + '"><i class="fas ' + tagIcon + ' mr-1"></i>' + tagName + '</span>' +
           '</div>' +
           '<div class="mt-2 text-sm text-gray-500"><i class="fas fa-clock mr-2 text-primary"></i>' + (isToday ? '今天' : '明天') + ' ' + task.time + '</div>' +
           subtaskInfo +
@@ -1069,7 +1988,7 @@
           '</div></div>';
       }
       
-      // ==================== 任务操作处理 ====================
+      // 任务操作处理
       window.handleTaskAction = function(taskId, isToday, action) {
         var list = isToday ? tasks.today : tasks.tomorrow;
         var task = list.find(function(t) { return t.id === taskId; });
@@ -1114,74 +2033,7 @@
         }
       };
       
-      // ==================== 批量选择功能 ====================
-      window.toggleBatchSelect = function(taskId, isToday) {
-        var list = isToday ? tasks.today : tasks.tomorrow;
-        var task = list.find(function(t) { return t.id === taskId; });
-        var index = selectedBatchTasks.findIndex(function(t) { return t.id === taskId; });
-        
-        if (index > -1) {
-          selectedBatchTasks.splice(index, 1);
-        } else {
-          if (task) selectedBatchTasks.push({ id: taskId, isToday: isToday });
-        }
-        
-        renderTaskLists();
-      };
-      
-      window.batchCompleteFunc = function() {
-        if (selectedBatchTasks.length === 0) {
-          // 如果没有选中任务，完成所有可见任务
-          var count = tasks.today.length + tasks.tomorrow.length;
-          if (count === 0) {
-            showToast('⚠️ 暂无任务可完成', 'error');
-            return;
-          }
-          tasks.today.forEach(function(t) { t.completed = true; });
-          tasks.tomorrow.forEach(function(t) { t.completed = true; });
-          selectedBatchTasks = [];
-          renderTaskLists();
-          updateCountStats();
-          saveToLocalStorage();
-          showToast('✅ 已完成全部 ' + count + ' 个任务');
-        } else {
-          selectedBatchTasks.forEach(function(item) {
-            var list = item.isToday ? tasks.today : tasks.tomorrow;
-            var task = list.find(function(t) { return t.id === item.id; });
-            if (task) task.completed = true;
-          });
-          var count = selectedBatchTasks.length;
-          selectedBatchTasks = [];
-          renderTaskLists();
-          updateCountStats();
-          saveToLocalStorage();
-          showToast('✅ 已批量完成 ' + count + ' 个任务');
-        }
-      };
-      
-      window.batchDeleteFunc = function() {
-        if (selectedBatchTasks.length === 0) {
-          showToast('⚠️ 请先选择要删除的任务', 'error');
-          return;
-        }
-        
-        if (!confirm('确定要删除选中的 ' + selectedBatchTasks.length + ' 个任务吗？')) return;
-        
-        selectedBatchTasks.forEach(function(item) {
-          var list = item.isToday ? tasks.today : tasks.tomorrow;
-          var index = list.findIndex(function(t) { return t.id === item.id; });
-          if (index > -1) list.splice(index, 1);
-        });
-        
-        var count = selectedBatchTasks.length;
-        selectedBatchTasks = [];
-        renderTaskLists();
-        updateCountStats();
-        saveToLocalStorage();
-        showToast('🗑️ 已批量删除 ' + count + ' 个任务');
-      };
-      
-      // ==================== 渲染任务列表 ====================
+      // 渲染任务列表
       function renderTaskLists() {
         var todayList = document.getElementById('today-task-list');
         var tomorrowList = document.getElementById('tomorrow-task-list');
@@ -1198,7 +2050,7 @@
         bindTaskEvents();
       }
       
-      // ==================== 渲染侧边栏标签 ====================
+      // 渲染侧边栏标签
       function renderSidebarTags() {
         var tagListContainer = document.getElementById('sidebar-tag-list');
         if (!tagListContainer) return;
@@ -1210,7 +2062,7 @@
           html += '<li>' +
             '<a class="sidebar-item" href="javascript:void(0);" data-tag="' + tag.key + '">' +
             '<div class="flex items-center">' +
-            '<span class="w-3 h-3 rounded-full bg-' + tag.color + ' mr-3"></span>' +
+            '<span class="w-3 h-3 rounded-full ' + tag.color + ' mr-3"></span>' +
             '<span>#' + tag.name + '</span>' +
             '</div>' +
             '<span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-' + tag.key + '">' + count + '</span>' +
@@ -1220,7 +2072,7 @@
         tagListContainer.innerHTML = html;
       }
       
-      // ==================== 更新统计数据 ====================
+      // 更新统计数据
       function updateCountStats() {
         var countAll = document.getElementById('count-all');
         var countToday = document.getElementById('count-today');
@@ -1230,7 +2082,6 @@
         if (countToday) countToday.textContent = tasks.today.length;
         if (countImportant) countImportant.textContent = tasks.today.filter(function(t) { return t.priority === 'high'; }).length + tasks.tomorrow.filter(function(t) { return t.priority === 'high'; }).length;
         
-        // 更新标签统计
         tags.forEach(function(tag) {
           var countEl = document.getElementById('count-' + tag.key);
           if (countEl) {
@@ -1240,7 +2091,7 @@
         });
       }
       
-      // ==================== 绑定事件 ====================
+      // 绑定事件
       function bindTaskEvents() {
         document.querySelectorAll('.task-checkbox').forEach(function(cb) {
           cb.addEventListener('click', function(e) {
@@ -1266,7 +2117,6 @@
         
         document.querySelectorAll('.task-card').forEach(function(card) {
           card.addEventListener('click', function(e) {
-            // 排除复选框和操作按钮
             if (e.target.closest('.task-action-btn') || e.target.classList.contains('task-checkbox')) return;
             
             var taskId = parseInt(this.dataset.taskId);
@@ -1338,7 +2188,7 @@
         var html = '';
         tags.forEach(function(tag) {
           var isActive = currentEditingTask.tag === tag.key;
-          html += '<button class="px-3 py-1.5 rounded-full text-xs font-medium tag-' + tag.color + ' ' + (isActive ? 'ring-2 ring-primary' : '') + '" onclick="window.changeDetailTag(\'' + tag.key + '\')">' + tag.name + '</button>';
+          html += '<button class="px-3 py-1.5 rounded-full text-xs font-medium ' + 'tag-' + tag.color + ' ' + (isActive ? 'ring-2 ring-primary' : '') + '" onclick="window.changeDetailTag(\'' + tag.key + '\')">' + tag.name + '</button>';
         });
         tagList.innerHTML = html;
       }
@@ -1351,15 +2201,13 @@
         }
       };
       
-      // ==================== 页面初始化 ====================
+      // 页面初始化
       document.addEventListener('DOMContentLoaded', function() {
-        // 加载本地存储
         loadFromLocalStorage();
         renderTaskLists();
         renderSidebarTags();
         updateCountStats();
         
-        // 显示当前日期
         var dateEl = document.getElementById('current-date');
         if (dateEl) {
           var now = new Date();
@@ -1378,23 +2226,26 @@
           if (btn) {
             btn.addEventListener('click', function(e) {
               e.preventDefault();
+              e.stopPropagation();
               window.openModalFunc();
             });
           }
         });
         
-        // ✅ 绑定添加标签按钮
+        // 绑定添加标签按钮
         var addTagBtn = document.getElementById('add-tag-btn');
         var addTagInline = document.getElementById('add-tag-inline');
         if (addTagBtn) {
           addTagBtn.addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopPropagation();
             window.openTagModalFunc();
           });
         }
         if (addTagInline) {
           addTagInline.addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopPropagation();
             window.openTagModalFunc();
           });
         }
@@ -1415,7 +2266,10 @@
           });
         }
         
-        // 新建任务按钮
+        // 保存任务
+        var saveTaskBtn = document.getElementById('save-task-btn');
+        if (saveTaskBtn) {
+          saveTaskBtn.addEventListener('click', function() {
             if (currentEditingTask) {
               currentEditingTask.title = document.getElementById('detail-title').value;
               currentEditingTask.description = document.getElementById('detail-description').value;
@@ -1429,17 +2283,17 @@
           });
         }
         
-        // ✅ 批量操作
+        // 批量操作
         var batchCompleteBtn = document.getElementById('batch-complete-btn');
         var batchDeleteBtn = document.getElementById('batch-delete-btn');
         if (batchCompleteBtn) {
           batchCompleteBtn.addEventListener('click', function() {
-            window.batchCompleteFunc();
+            window.openBatchModalFunc();
           });
         }
         if (batchDeleteBtn) {
           batchDeleteBtn.addEventListener('click', function() {
-            window.batchDeleteFunc();
+            window.openBatchModalFunc();
           });
         }
         
@@ -1545,34 +2399,6 @@
           });
         }
         
-        // 快速添加任务
-        var quickAddTask = document.getElementById('quick-add-task');
-        if (quickAddTask) {
-          quickAddTask.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && this.value.trim()) {
-              var newTask = {
-                id: Date.now(),
-                title: this.value.trim(),
-                description: '',
-                priority: 'medium',
-                tag: 'work',
-                completed: false,
-                subtasks: [],
-                time: '12:00'
-              };
-              tasks.today.push(newTask);
-              renderTaskLists();
-              updateCountStats();
-              saveToLocalStorage();
-              this.value = '';
-              showToast('✅ 任务已添加');
-            }
-          });
-        }
-        
-        // 视图切换
-        var listViewBtn = document.getElementById('list-view-btn');
-        var cardViewBtn = document.getElementById('card-view-btn');
         // 视图切换
         var listViewBtn = document.getElementById('list-view-btn');
         var cardViewBtn = document.getElementById('card-view-btn');
