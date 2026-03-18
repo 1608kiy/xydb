@@ -49,28 +49,181 @@
           .scrollbar-hide::-webkit-scrollbar {
               display: none;
           }
-          .card-shadow {
-              box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+          .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+          .scrollbar-thin::-webkit-scrollbar-track { background: rgba(243, 244, 246, 0.5); border-radius: 3px; }
+          .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(79, 70, 229, 0.3); border-radius: 3px; }
+          .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(79, 70, 229, 0.5); }
+          
+          /* ✅ 毛玻璃效果 */
+          .glass { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.15); }
+          .glass-strong { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(36px); -webkit-backdrop-filter: blur(36px); border: 1px solid rgba(255, 255, 255, 0.25); }
+          .glass-max { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(48px); -webkit-backdrop-filter: blur(48px); border: 1px solid rgba(255, 255, 255, 0.35); }
+          .glass-input { background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(209, 213, 219, 0.5); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+          .glass-input:focus { background: rgba(255, 255, 255, 0.95); border-color: rgba(79, 70, 229, 0.5); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12); }
+          .glass-tab { 
+            background: rgba(255, 255, 255, 0.45); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border-top: 1px solid rgba(255, 255, 255, 0.2); 
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.15);
           }
-          .card-hover {
-              @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5;
+          .glass-header { 
+            background: rgba(255, 255, 255, 0.4); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
           }
-          .checkin-today {
-              @apply bg-primary text-white;
+          
+          /* ✅ 卡片阴影 */
+          .card-shadow { box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06); }
+          .card-hover { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+          .card-hover:hover { 
+            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12); 
+            transform: translateY(-4px);
+          }
+          
+          /* ✅ 背景装饰光斑 */
+          .bg-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.2; pointer-events: none; z-index: 0; animation: orbFloat 20s ease-in-out infinite; }
+          @keyframes orbFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -30px) scale(1.05); } 66% { transform: translate(-20px, 20px) scale(0.98); } }
+          
+          /* ✅ 动画效果 */
+          .fade-in { animation: fadeIn 0.5s ease-out; }
+          @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+          .float { animation: float 3s ease-in-out infinite; }
+          @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+          
+          /* ✅ 统计卡片 */
+          .stat-card { 
+            @apply bg-white/60 backdrop-blur-sm rounded-xl p-3 transition-all duration-300;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+          }
+          .stat-card:hover {
+            @apply bg-white/75 shadow-lg;
+            transform: translateY(-3px);
+          }
+          
+          /* ✅ Tab 指示器 */
+          .tab-item { @apply relative transition-all duration-300; }
+          .tab-item:hover { @apply scale-105; }
+          .tab-item.active .tab-indicator { @apply opacity-100 scale-100; }
+          .tab-indicator { @apply absolute -top-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary rounded-full opacity-0 scale-0 transition-all duration-300; }
+          
+          /* ✅ 进度条 */
+          .progress-bar { transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
+          .progress-bar::after { content: ''; position: absolute; top: 0; left: 0; height: 100%; width: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); animation: progressShine 3s ease-in-out infinite; }
+          @keyframes progressShine { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+          
+          /* ✅ 打卡类型按钮 */
+          .type-btn {
+            @apply px-3 py-1.5 rounded-full border text-xs font-medium transition-all duration-300 cursor-pointer flex items-center space-x-1 select-none;
+          }
+          .type-btn.selected {
+            @apply text-white shadow-md transform;
+          }
+          .type-btn.study.selected {
+            @apply bg-task-study border-task-study;
+          }
+          .type-btn.sport.selected {
+            @apply bg-task-health border-task-health;
+          }
+          .type-btn.wake.selected {
+            @apply bg-warning border-warning;
+          }
+          .type-btn.read.selected {
+            @apply bg-info border-info;
+          }
+          .type-btn:not(.selected) {
+            @apply border-gray-200 text-gray-700 hover:bg-gray-50;
+          }
+          
+          /* ✅ 智能建议卡片 */
+          .suggestion-card {
+            @apply rounded-xl p-4 transition-all duration-300 relative overflow-hidden;
+            background: linear-gradient(135deg, rgba(254, 243, 199, 0.45), rgba(254, 243, 199, 0.25));
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(245, 158, 11, 0.18);
+            box-shadow: 0 3px 10px rgba(245, 158, 11, 0.08);
+          }
+          .suggestion-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(180deg, #F59E0B, #FBBF24);
+            border-radius: 3px 0 0 3px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+          }
+          .suggestion-card:hover::after {
+            opacity: 1;
+          }
+          .suggestion-card:hover {
+            background: linear-gradient(135deg, rgba(254, 243, 199, 0.6), rgba(254, 243, 199, 0.4));
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.15);
+            transform: translateX(6px);
+          }
+          
+          /* ✅ 日历格子 */
+          .calendar-day {
+            @apply h-10 rounded-lg flex flex-col items-center justify-center border text-xs transition-all duration-300 cursor-default select-none;
+          }
+          .calendar-day.today {
+            @apply border-blue-400 bg-gradient-to-br from-blue-400 to-cyan-400 text-white shadow-md;
+          }
+          .calendar-day.checked {
+            @apply border-teal-300 bg-gradient-to-br from-teal-50 to-cyan-50 text-teal-700 hover:shadow-sm;
+          }
+          .calendar-day.empty {
+            @apply border-transparent bg-transparent text-gray-300;
+          }
+          .calendar-day:hover:not(.empty):not(.today) {
+            @apply border-cyan-500 bg-cyan-100 shadow-md;
+          }
+          
+          /* ✅ 打卡按钮 */
+          .checkin-btn {
+            @apply inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 select-none;
+            background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
+          }
+          .checkin-btn:hover {
+            background: linear-gradient(135deg, #5558E3 0%, #7C4FE8 100%);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+            transform: translateY(-2px);
+          }
+          .checkin-btn:active {
+            transform: translateY(0);
+          }
+          
+          /* ✅ 日历导航按钮 */
+          .calendar-nav-btn {
+            @apply w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 cursor-pointer;
+          }
+          .calendar-nav-btn:hover {
+            @apply bg-cyan-100 text-cyan-600 shadow-sm;
           }
       }
     </style>
   </head>
-  <body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+  <body class="font-inter bg-gradient-to-br from-slate-200 via-blue-200 to-indigo-200 text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden fade-in scroll-smooth">
+    <!-- ✅ 背景装饰光斑 -->
+    <div class="bg-orb w-[600px] h-[600px] bg-blue-400 -top-20 -left-20"></div>
+    <div class="bg-orb w-[500px] h-[500px] bg-cyan-400 -bottom-20 -right-20" style="animation-delay: -5s;"></div>
+    <div class="bg-orb w-[400px] h-[400px] bg-indigo-400 top-1/2 left-1/2" style="animation-delay: -10s;"></div>
+    
     <!-- 顶部导航 -->
-    <header class="bg-white shadow-sm sticky top-0 z-30">
+    <header class="glass-header sticky top-0 z-30">
       <div
         class="container mx-auto px-4 py-3 flex items-center justify-between"
       >
         <div class="flex items-center space-x-4">
           <a
             href="待办页面.html"
-            class="text-gray-600 hover:text-primary transition-colors"
+            class="text-gray-600 hover:text-primary transition-all duration-300 p-2.5 rounded-xl hover:bg-primary/10 hover:scale-110"
           >
             <i class="fas fa-arrow-left text-lg"></i>
           </a>
@@ -95,28 +248,31 @@
             </span>
           </div>
           <div class="relative group">
-            <button class="flex items-center space-x-2 focus:outline-none">
+            <button class="flex items-center space-x-2 focus:outline-none cursor-pointer">
               <img
                 src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
                 alt="用户头像"
-                class="w-8 h-8 rounded-full object-cover border-2 border-white shadow-sm"
+                class="w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300"
               />
               <span class="hidden md:inline-block font-medium">张明</span>
-              <i class="fas fa-chevron-down text-xs text-gray-500"></i>
+              <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform duration-300"></i>
             </button>
             <div
-              class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 hidden group-hover:block"
+              class="absolute right-0 mt-2 w-48 glass-max rounded-lg shadow-xl py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
+              style="pointer-events: none;"
             >
               <a
                 href="个人中心页面.html"
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors"
+                style="pointer-events: auto;"
               >
                 <i class="fas fa-user mr-2 text-gray-500"></i>
                 个人中心
               </a>
               <a
                 href="javascript:void(0);"
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors"
+                style="pointer-events: auto;"
               >
                 <i class="fas fa-cog mr-2 text-gray-500"></i>
                 设置
@@ -124,7 +280,8 @@
               <div class="border-t border-gray-100 my-1"></div>
               <a
                 href="登录页面.html"
-                class="block px-4 py-2 text-sm text-danger hover:bg-gray-100"
+                class="block px-4 py-2 text-sm text-danger hover:bg-danger/10 transition-colors"
+                style="pointer-events: auto;"
               >
                 <i class="fas fa-sign-out-alt mr-2"></i>
                 退出登录
@@ -136,7 +293,7 @@
     </header>
 
     <div class="flex flex-1 overflow-hidden">
-      <main class="flex-1 overflow-y-auto content-auto p-4 md:p-6">
+      <main class="flex-1 overflow-y-auto content-auto p-4 md:p-6 scrollbar-thin">
         <div
           class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[3fr,2fr] gap-6"
         >
@@ -144,11 +301,11 @@
           <div class="space-y-4">
             <!-- 今日打卡卡片 -->
             <section
-              class="card-shadow card-hover bg-white rounded-2xl p-5 md:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+              class="card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 md:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 fade-in"
             >
               <div class="flex items-start space-x-3">
                 <div
-                  class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary text-2xl"
+                  class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary text-2xl float"
                 >
                   ✅
                 </div>
@@ -164,32 +321,32 @@
                   </p>
                   <div class="mt-3 flex flex-wrap gap-2 text-xs">
                     <button
-                      class="px-3 py-1 rounded-full border border-primary text-primary bg-primary/5"
+                      class="type-btn study selected"
                       data-type="学习"
                     >
-                      <i class="fas fa-book-open mr-1"></i>
-                      学习
+                      <i class="fas fa-book-open"></i>
+                      <span>学习</span>
                     </button>
                     <button
-                      class="px-3 py-1 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-50"
+                      class="type-btn sport"
                       data-type="运动"
                     >
-                      <i class="fas fa-running mr-1"></i>
-                      运动
+                      <i class="fas fa-running"></i>
+                      <span>运动</span>
                     </button>
                     <button
-                      class="px-3 py-1 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-50"
+                      class="type-btn wake"
                       data-type="早起"
                     >
-                      <i class="fas fa-sun mr-1"></i>
-                      早起
+                      <i class="fas fa-sun"></i>
+                      <span>早起</span>
                     </button>
                     <button
-                      class="px-3 py-1 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-50"
+                      class="type-btn read"
                       data-type="阅读"
                     >
-                      <i class="fas fa-book mr-1"></i>
-                      阅读
+                      <i class="fas fa-book"></i>
+                      <span>阅读</span>
                     </button>
                   </div>
                 </div>
@@ -198,12 +355,12 @@
                 <textarea
                   id="checkin-note"
                   rows="2"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary glass-input resize-none"
                   placeholder="写下今天做了什么，例如：完成 2 轮番茄学习、跑步 3 公里、7 点起床等"
                 ></textarea>
                 <button
                   id="checkin-btn"
-                  class="w-full inline-flex items-center justify-center px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90"
+                  class="checkin-btn w-full"
                 >
                   <i class="fas fa-check mr-2"></i>
                   今日打卡
@@ -218,22 +375,30 @@
             </section>
 
             <!-- 打卡日历 -->
-            <section class="card-shadow card-hover bg-white rounded-2xl p-5">
+            <section class="card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 fade-in">
               <div class="flex items-center justify-between mb-3">
-                <h2 class="text-sm font-semibold text-gray-800">
-                  本月打卡日历
-                </h2>
+                <div class="flex items-center space-x-2">
+                  <button id="prev-month" class="calendar-nav-btn text-gray-500">
+                    <i class="fas fa-chevron-left text-sm"></i>
+                  </button>
+                  <h2 id="calendar-title" class="text-sm font-semibold text-gray-800">
+                    本月打卡日历
+                  </h2>
+                  <button id="next-month" class="calendar-nav-btn text-gray-500">
+                    <i class="fas fa-chevron-right text-sm"></i>
+                  </button>
+                </div>
                 <div class="flex items-center space-x-2 text-xs text-gray-500">
                   <span
-                    class="inline-flex items-center px-2 py-0.5 rounded-full bg-primary/5 text-primary"
+                    class="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 text-blue-600"
                   >
-                    <span class="w-2 h-2 rounded-full bg-primary mr-1"></span>
+                    <span class="w-2 h-2 rounded-full bg-blue-400 mr-1 animate-pulse"></span>
                     已打卡
                   </span>
                   <span
-                    class="inline-flex items-center px-2 py-0.5 rounded-full bg-green-50 text-green-600"
+                    class="inline-flex items-center px-2 py-0.5 rounded-full bg-teal-50 text-teal-600"
                   >
-                    <span class="w-2 h-2 rounded-full bg-green-500 mr-1"></span>
+                    <span class="w-2 h-2 rounded-full bg-teal-500 mr-1 animate-pulse"></span>
                     连续打卡
                   </span>
                 </div>
@@ -242,14 +407,14 @@
             </section>
 
             <!-- 历史打卡记录 -->
-            <section class="card-shadow card-hover bg-white rounded-2xl p-5">
+            <section class="card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 fade-in">
               <div class="flex items-center justify-between mb-3">
                 <h2 class="text-sm font-semibold text-gray-800">
                   最近打卡记录
                 </h2>
                 <button
                   id="clear-history"
-                  class="text-xs text-gray-400 hover:text-danger"
+                  class="text-xs text-gray-400 hover:text-danger transition-colors"
                 >
                   清空
                 </button>
@@ -265,14 +430,14 @@
           <div class="space-y-4">
             <!-- 统计概览 -->
             <section
-              class="card-shadow card-hover bg-white rounded-2xl p-4 md:p-5"
+              class="card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-4 md:p-5 fade-in"
             >
               <h2 class="text-sm font-semibold text-gray-800 mb-3">
                 打卡统计概要
               </h2>
               <div class="grid grid-cols-2 gap-3 text-center text-xs">
-                <div class="bg-gray-50 rounded-xl p-3">
-                  <div class="text-gray-500 mb-1">本月打卡天数</div>
+                <div class="stat-card">
+                  <div class="text-gray-500 mb-1">选中月份打卡天数</div>
                   <div
                     id="month-days"
                     class="text-xl font-bold text-gray-800"
@@ -280,7 +445,7 @@
                     12
                   </div>
                 </div>
-                <div class="bg-gray-50 rounded-xl p-3">
+                <div class="stat-card">
                   <div class="text-gray-500 mb-1">最长连续打卡</div>
                   <div
                     id="max-streak"
@@ -289,7 +454,7 @@
                     21
                   </div>
                 </div>
-                <div class="bg-gray-50 rounded-xl p-3">
+                <div class="stat-card">
                   <div class="text-gray-500 mb-1">当前连续打卡</div>
                   <div
                     id="current-streak"
@@ -298,7 +463,7 @@
                     15
                   </div>
                 </div>
-                <div class="bg-gray-50 rounded-xl p-3">
+                <div class="stat-card">
                   <div class="text-gray-500 mb-1">本周打卡次数</div>
                   <div id="week-count" class="text-xl font-bold text-gray-800">
                     5
@@ -307,63 +472,74 @@
               </div>
             </section>
 
-            <!-- 打卡类型分布（示意） -->
+            <!-- 打卡类型分布 -->
             <section
-              class="card-shadow card-hover bg-white rounded-2xl p-4 md:p-5"
+              class="card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-4 md:p-5 fade-in"
             >
               <h2 class="text-sm font-semibold text-gray-800 mb-3">
-                打卡类型分布（本月）
+                打卡类型分布（<span id="distribution-period">本月</span>）
               </h2>
-              <div class="space-y-2 text-xs text-gray-700">
+              <div class="space-y-3 text-xs text-gray-700">
                 <div>
-                  <div class="flex justify-between mb-1">
-                    <span>学习</span>
-                    <span data-type="study-percent">40%</span>
+                  <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center space-x-1.5">
+                      <i class="fas fa-book-open text-task-study"></i>
+                      <span>学习</span>
+                    </div>
+                    <span data-type="study-percent" class="font-medium">40%</span>
                   </div>
-                  <div class="w-full h-1.5 bg-gray-100 rounded-full">
+                  <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                     <div
-                      class="h-full bg-task-study rounded-full"
+                      class="h-full bg-task-study rounded-full progress-bar"
                       data-type="study-bar"
                       style="width: 40%"
                     ></div>
                   </div>
                 </div>
                 <div>
-                  <div class="flex justify-between mb-1">
-                    <span>运动</span>
-                    <span data-type="sport-percent">30%</span>
+                  <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center space-x-1.5">
+                      <i class="fas fa-running text-task-health"></i>
+                      <span>运动</span>
+                    </div>
+                    <span data-type="sport-percent" class="font-medium">30%</span>
                   </div>
-                  <div class="w-full h-1.5 bg-gray-100 rounded-full">
+                  <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                     <div
-                      class="h-full bg-task-health rounded-full"
+                      class="h-full bg-task-health rounded-full progress-bar"
                       data-type="sport-bar"
                       style="width: 30%"
                     ></div>
                   </div>
                 </div>
                 <div>
-                  <div class="flex justify-between mb-1">
-                    <span>早起</span>
-                    <span data-type="wake-percent">20%</span>
+                  <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center space-x-1.5">
+                      <i class="fas fa-sun text-warning"></i>
+                      <span>早起</span>
+                    </div>
+                    <span data-type="wake-percent" class="font-medium">20%</span>
                   </div>
-                  <div class="w-full h-1.5 bg-gray-100 rounded-full">
+                  <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                     <div
-                      class="h-full bg-warning rounded-full"
+                      class="h-full bg-warning rounded-full progress-bar"
                       data-type="wake-bar"
                       style="width: 20%"
                     ></div>
                   </div>
                 </div>
                 <div>
-                  <div class="flex justify-between mb-1">
-                    <span>阅读</span>
-                    <span data-type="read-percent">10%</span>
+                  <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center space-x-1.5">
+                      <i class="fas fa-book text-info"></i>
+                      <span>阅读</span>
+                    </div>
+                    <span data-type="read-percent" class="font-medium">10%</span>
                   </div>
-                  <div class="w-full h-1.5 bg-gray-100 rounded-full">
+                  <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                     <div
-                      class="h-full bg-info rounded-full"
+                      class="h-full bg-info rounded-full progress-bar"
                       data-type="read-bar"
-                      class="h-full bg-task-life rounded-full"
                       style="width: 10%"
                     ></div>
                   </div>
@@ -373,34 +549,29 @@
 
             <!-- 智能建议 -->
             <section
-              class="card-shadow card-hover bg-white rounded-2xl p-4 md:p-5"
+              class="card-shadow card-hover glass-strong rounded-2xl p-5 fade-in"
             >
-              <h2 class="text-sm font-semibold text-gray-800 mb-3">
+              <h2 class="text-sm font-semibold text-gray-800 mb-3 flex items-center">
+                <i class="fas fa-lightbulb text-yellow-500 mr-2 float"></i>
                 智能建议
               </h2>
-              <div class="space-y-2 text-xs text-gray-700">
-                <div class="flex items-start">
-                  <i class="fas fa-lightbulb text-yellow-400 mt-0.5 mr-2"></i>
-                  <p>
-                    建议将
-                    <span class="font-semibold">打卡时间固定在每天同一时段</span
-                    >，更容易形成习惯。
+              <div class="space-y-2">
+                <div class="suggestion-card flex items-start">
+                  <i class="fas fa-lightbulb text-yellow-500 mt-0.5 mr-2 flex-shrink-0"></i>
+                  <p class="text-gray-700 text-xs leading-relaxed">
+                    建议将<span class="font-semibold">打卡时间固定在每天同一时段</span>，更容易形成习惯。
                   </p>
                 </div>
-                <div class="flex items-start">
-                  <i class="fas fa-lightbulb text-yellow-400 mt-0.5 mr-2"></i>
-                  <p>
-                    你近一周在
-                    <span class="font-semibold">学习类打卡</span>
-                    表现突出，可以尝试提升每日学习时长目标。
+                <div class="suggestion-card flex items-start">
+                  <i class="fas fa-lightbulb text-yellow-500 mt-0.5 mr-2 flex-shrink-0"></i>
+                  <p class="text-gray-700 text-xs leading-relaxed">
+                    你近一周在<span class="font-semibold">学习类打卡</span>表现突出，可以尝试提升每日学习时长目标。
                   </p>
                 </div>
-                <div class="flex items-start">
-                  <i class="fas fa-lightbulb text-yellow-400 mt-0.5 mr-2"></i>
-                  <p>
-                    建议把打卡内容
-                    <span class="font-semibold">尽量量化</span>
-                    （如“阅读 20 页”、“跑步 3 公里”），更便于长期对比。
+                <div class="suggestion-card flex items-start">
+                  <i class="fas fa-lightbulb text-yellow-500 mt-0.5 mr-2 flex-shrink-0"></i>
+                  <p class="text-gray-700 text-xs leading-relaxed">
+                    建议把打卡内容<span class="font-semibold">尽量量化</span>（如"阅读 20 页"、"跑步 3 公里"），更便于长期对比。
                   </p>
                 </div>
               </div>
@@ -412,57 +583,65 @@
 
     <!-- 底部 Tab 栏 -->
     <footer
-      class="bg-white border-t border-gray-200 py-2 px-4 sticky bottom-0 z-20"
+      class="glass-tab py-1.5 px-2 sticky bottom-0 z-40"
     >
       <div class="container mx-auto flex justify-around items-center">
         <a
           href="待办页面.html"
-          class="flex flex-col items-center text-gray-500 hover:text-primary"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
         >
-          <i class="fas fa-list-alt text-xl"></i>
-          <span class="text-xs mt-1">待办</span>
+          <i class="fas fa-list-alt text-base"></i>
+          <span class="text-[10px] mt-0.5">待办</span>
+          <span class="tab-indicator"></span>
         </a>
         <a
           href="日历页面.html"
-          class="flex flex-col items-center text-gray-500 hover:text-primary"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
         >
-          <i class="fas fa-calendar text-xl"></i>
-          <span class="text-xs mt-1">日历</span>
+          <i class="fas fa-calendar text-base"></i>
+          <span class="text-[10px] mt-0.5">日历</span>
+          <span class="tab-indicator"></span>
         </a>
         <a
           href="番茄钟页面.html"
-          class="flex flex-col items-center text-gray-500 hover:text-primary"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
         >
-          <i class="fas fa-clock text-xl"></i>
-          <span class="text-xs mt-1">番茄钟</span>
+          <i class="fas fa-clock text-base"></i>
+          <span class="text-[10px] mt-0.5">番茄钟</span>
+          <span class="tab-indicator"></span>
         </a>
         <a
           href="数据周报页面.html"
-          class="flex flex-col items-center text-gray-500 hover:text-primary"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
         >
-          <i class="fas fa-chart-line text-xl"></i>
-          <span class="text-xs mt-1">数据周报</span>
+          <i class="fas fa-chart-line text-base"></i>
+          <span class="text-[10px] mt-0.5">数据周报</span>
+          <span class="tab-indicator"></span>
         </a>
         <!-- 当前页：打卡 -->
         <a
           href="打卡页面.html"
-          class="flex flex-col items-center text-primary"
+          class="tab-item active flex flex-col items-center text-primary px-2 py-1 rounded-lg bg-primary/10"
         >
-          <i class="fas fa-check-circle text-xl"></i>
-          <span class="text-xs mt-1">打卡</span>
+          <i class="fas fa-check-circle text-base"></i>
+          <span class="text-[10px] mt-0.5 font-semibold">打卡</span>
+          <span class="tab-indicator"></span>
         </a>
         <a
           href="个人中心页面.html"
-          class="flex flex-col items-center text-gray-500 hover:text-primary"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
         >
-          <i class="fas fa-user text-xl"></i>
-          <span class="text-xs mt-1">个人中心</span>
+          <i class="fas fa-user text-base"></i>
+          <span class="text-[10px] mt-0.5">个人中心</span>
+          <span class="tab-indicator"></span>
         </a>
       </div>
     </footer>
 
-    <!-- 简单 JS：日期 & 日历 & 本地会话打卡记录 -->
+    <!-- JS 代码 -->
     <script>
+      var currentCalendarDate = new Date();
+      
       // 设置今日日期文本
       (function () {
         var now = new Date();
@@ -477,31 +656,205 @@
         if (el) el.textContent = '今天 · ' + dateString;
       })();
 
-      // 生成本月简单打卡日历（演示为前几天已打卡）
-      (function () {
+      // ✅ 动画辅助函数（需在 renderCalendar 之前定义，否则会导致事件绑定提前失败）
+      function animateNumber(element, targetValue, suffix = '', duration = 800) {
+        if (!element) return;
+        var currentValue = element.textContent.trim();
+        var startValue = parseInt(currentValue.replace(/[^\d]/g, '')) || 0;
+        if (startValue === targetValue) return;
+        var startTime = null;
+
+        function animate(currentTime) {
+          if (!startTime) startTime = currentTime;
+          var progress = Math.min((currentTime - startTime) / duration, 1);
+          var easeProgress = 1 - Math.pow(1 - progress, 3);
+          var value = Math.floor(startValue + (targetValue - startValue) * easeProgress);
+          element.textContent = value + suffix;
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          }
+        }
+        requestAnimationFrame(animate);
+      }
+
+      function animatePercent(element, startValue, targetValue, duration = 600) {
+        if (!element) return;
+        if (startValue === targetValue) return;
+        var startTime = null;
+
+        function animate(currentTime) {
+          if (!startTime) startTime = currentTime;
+          var progress = Math.min((currentTime - startTime) / duration, 1);
+          var currentValue = Math.floor(startValue + (targetValue - startValue) * progress);
+          element.textContent = currentValue + '%';
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          }
+        }
+        requestAnimationFrame(animate);
+      }
+
+      function updateTypeDistribution(distribution, total) {
+        var types = {
+          '学习': 'study',
+          '运动': 'sport',
+          '早起': 'wake',
+          '阅读': 'read'
+        };
+
+        if (total === 0) {
+          Object.keys(types).forEach(function (typeName) {
+            var percentEl = document.querySelector('[data-type="' + types[typeName] + '-percent"]');
+            var barEl = document.querySelector('[data-type="' + types[typeName] + '-bar"]');
+            if (percentEl) percentEl.textContent = '0%';
+            if (barEl) {
+              barEl.style.width = '0%';
+              barEl.style.transition = 'width 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+            }
+          });
+          return;
+        }
+
+        Object.keys(types).forEach(function (typeName) {
+          var count = distribution[typeName] || 0;
+          var percent = Math.round((count / total) * 100);
+
+          var percentEl = document.querySelector('[data-type="' + types[typeName] + '-percent"]');
+          if (percentEl) {
+            percentEl.textContent = percent + '%';
+            animatePercent(percentEl, parseInt(percentEl.dataset.prev || 0), percent);
+            percentEl.dataset.prev = percent;
+          }
+
+          var barEl = document.querySelector('[data-type="' + types[typeName] + '-bar"]');
+          if (barEl) {
+            barEl.style.width = percent + '%';
+            barEl.style.transition = 'width 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+          }
+        });
+      }
+
+      // 获取指定月份的打卡统计数据
+      function getMonthCheckinStats(year, month) {
+        var stats = {
+          monthCheckins: 0,
+          maxStreak: 0,
+          currentStreak: 0,
+          weekCheckins: 0,
+          typeDistribution: {
+            '学习': 0,
+            '运动': 0,
+            '早起': 0,
+            '阅读': 0
+          },
+          totalCheckins: 0
+        };
+        
+        if (!AppState.checkins || AppState.checkins.length === 0) {
+          return stats;
+        }
+        
+        var monthCheckins = AppState.checkins.filter(function(item) {
+          var itemDate = new Date(item.date);
+          return itemDate.getFullYear() === year && itemDate.getMonth() === month;
+        });
+        
+        stats.monthCheckins = monthCheckins.length;
+        stats.totalCheckins = monthCheckins.length;
+        
+        monthCheckins.forEach(function(item) {
+          if (stats.typeDistribution[item.type] !== undefined) {
+            stats.typeDistribution[item.type]++;
+          }
+        });
+        
+        if (monthCheckins.length > 0) {
+          var sortedDates = monthCheckins.map(function(item) {
+            return new Date(item.date);
+          }).sort(function(a, b) {
+            return a - b;
+          });
+          
+          var currentStreak = 1;
+          var maxStreak = 1;
+          
+          for (var i = 1; i < sortedDates.length; i++) {
+            var diffTime = sortedDates[i].getTime() - sortedDates[i-1].getTime();
+            var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 1) {
+              currentStreak++;
+              maxStreak = Math.max(maxStreak, currentStreak);
+            } else {
+              currentStreak = 1;
+            }
+          }
+          
+          stats.maxStreak = maxStreak;
+        }
+        
+        var today = new Date();
+        var isCurrentMonth = year === today.getFullYear() && month === today.getMonth();
+        
+        if (isCurrentMonth && monthCheckins.length > 0) {
+          var sortedDates = monthCheckins.map(function(item) {
+            return new Date(item.date);
+          }).sort(function(a, b) {
+            return b - a;
+          });
+          
+          var expectedDate = new Date(today);
+          expectedDate.setHours(0, 0, 0, 0);
+          
+          var streak = 0;
+          for (var i = 0; i < sortedDates.length; i++) {
+            var checkDate = sortedDates[i];
+            checkDate.setHours(0, 0, 0, 0);
+            
+            var diffTime = expectedDate.getTime() - checkDate.getTime();
+            var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0 || diffDays === 1) {
+              streak++;
+              expectedDate = checkDate;
+              expectedDate.setDate(expectedDate.getDate() - 1);
+            } else {
+              break;
+            }
+          }
+          
+          stats.currentStreak = streak;
+        }
+        
+        if (isCurrentMonth) {
+          var weekStart = new Date(today);
+          weekStart.setDate(weekStart.getDate() - 7);
+          
+          stats.weekCheckins = AppState.checkins.filter(function(item) {
+            var itemDate = new Date(item.date);
+            return itemDate >= weekStart && itemDate <= today;
+          }).length;
+        }
+        
+        return stats;
+      }
+
+      // 生成本月简单打卡日历并更新统计
+      function renderCalendar(date) {
         var container = document.getElementById('checkin-calendar');
         if (!container) return;
 
-        var now = new Date();
-        var year = now.getFullYear();
-        var month = now.getMonth(); // 0-11
+        var year = date.getFullYear();
+        var month = date.getMonth();
         var firstDay = new Date(year, month, 1);
-        var startWeekday = (firstDay.getDay() + 6) % 7; // 把周一作为一周开始
+        var startWeekday = (firstDay.getDay() + 6) % 7;
         var daysInMonth = new Date(year, month + 1, 0).getDate();
-
-        // demo：假设 1~(today-1) 都已打卡
-        var today = now.getDate();
+        var today = new Date();
+        var isCurrentMonth = year === today.getFullYear() && month === today.getMonth();
+        var checkToday = isCurrentMonth ? today.getDate() : -1;
 
         var html = '';
-        html += '<div class="flex justify-between items-center mb-2">';
-        html +=
-          '<span class="text-sm font-medium text-gray-800">' +
-          year +
-          ' 年 ' +
-          (month + 1) +
-          ' 月</span>';
-        html += '</div>';
-        html += '<div class="grid grid-cols-7 gap-1 text-center mb-1 text-[11px] text-gray-400">';
+        html += '<div class="grid grid-cols-7 gap-1 text-center mb-1 text-[11px] text-gray-500 font-semibold">';
         ['一', '二', '三', '四', '五', '六', '日'].forEach(function (d) {
           html += '<div>' + d + '</div>';
         });
@@ -509,40 +862,106 @@
         html += '<div class="grid grid-cols-7 gap-1 text-[11px]">';
 
         for (var i = 0; i < startWeekday; i++) {
-          html += '<div class="h-9"></div>';
+          html += '<div class="calendar-day empty"></div>';
         }
         for (var day = 1; day <= daysInMonth; day++) {
-          var isPast = day < today;
-          var isToday = day === today;
-          var cls =
-            'h-9 rounded-lg flex flex-col items-center justify-center border text-xs';
-          var style = '';
+          var isPast = isCurrentMonth && day < checkToday;
+          var isToday = isCurrentMonth && day === checkToday;
+          var cls = 'calendar-day';
           if (isToday) {
-            cls += ' border-primary bg-primary text-white';
+            cls += ' today';
           } else if (isPast) {
-            cls += ' border-green-200 bg-green-50 text-green-700';
+            cls += ' checked';
           } else {
-            cls += ' border-gray-100 bg-white text-gray-700';
+            cls += ' empty';
           }
-          html += '<div class="' + cls + '" style="' + style + '">';
+          html += '<div class="' + cls + '">';
           html += '<div>' + day + '</div>';
           if (isToday) {
             html += '<div class="text-[9px] mt-0.5">今日</div>';
           } else if (isPast) {
-            html += '<div class="w-1.5 h-1.5 rounded-full bg-green-500 mt-0.5"></div>';
+            html += '<div class="w-1.5 h-1.5 rounded-full bg-teal-500 mt-0.5 animate-pulse"></div>';
           }
           html += '</div>';
         }
         html += '</div>';
         container.innerHTML = html;
-      })();
+        
+        var titleEl = document.getElementById('calendar-title');
+        if (titleEl) {
+          if (isCurrentMonth) {
+            titleEl.textContent = '本月打卡日历';
+          } else {
+            titleEl.textContent = year + '年' + (month + 1) + '月打卡日历';
+          }
+        }
+        
+        var periodEl = document.getElementById('distribution-period');
+        if (periodEl) {
+          if (isCurrentMonth) {
+            periodEl.textContent = '本月';
+          } else {
+            periodEl.textContent = year + '年' + (month + 1) + '月';
+          }
+        }
+        
+        updateStatisticsForMonth(year, month);
+      }
+
+      // 更新指定月份的统计数据
+      function updateStatisticsForMonth(year, month) {
+        var stats = getMonthCheckinStats(year, month);
+        
+        var monthEl = document.getElementById('month-days');
+        if (monthEl) animateNumber(monthEl, stats.monthCheckins);
+        
+        var maxEl = document.getElementById('max-streak');
+        if (maxEl) animateNumber(maxEl, stats.maxStreak);
+        
+        var currentEl = document.getElementById('current-streak');
+        if (currentEl) animateNumber(currentEl, stats.currentStreak);
+        
+        var weekEl = document.getElementById('week-count');
+        if (weekEl) animateNumber(weekEl, stats.weekCheckins);
+        
+        var streakDaysEl = document.getElementById('streak-days');
+        if (streakDaysEl && year === new Date().getFullYear() && month === new Date().getMonth()) {
+          animateNumber(streakDaysEl, stats.currentStreak);
+        }
+        
+        updateTypeDistribution(stats.typeDistribution, stats.totalCheckins);
+      }
+
+      // 初始化日历
+      renderCalendar(currentCalendarDate);
+
+      // 月份切换
+      var prevBtn = document.getElementById('prev-month');
+      var nextBtn = document.getElementById('next-month');
+      
+      if (prevBtn) {
+        prevBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+          renderCalendar(currentCalendarDate);
+        });
+      }
+      
+      if (nextBtn) {
+        nextBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+          renderCalendar(currentCalendarDate);
+        });
+      }
 
       AppState.init();
       renderHeader('checkin');
       renderFooter('checkin');
       bindGlobalLogout();
 
-      // 简单的本次会话打卡记录
       (function () {
         var btn = document.getElementById('checkin-btn');
         var status = document.getElementById('checkin-status');
@@ -551,21 +970,27 @@
         var clearBtn = document.getElementById('clear-history');
         var selectedType = '学习';
 
-        var typeButtons = document.querySelectorAll('[data-type]');
+        var typeButtons = document.querySelectorAll('.type-btn');
         typeButtons.forEach(function (b) {
           b.addEventListener('click', function () {
-            typeButtons.forEach(function (x) { x.classList.remove('bg-primary','text-white'); x.classList.add('border-gray-200','text-gray-700'); });
-            this.classList.add('bg-primary','text-white');
+            typeButtons.forEach(function (x) { 
+              x.classList.remove('selected'); 
+            });
+            this.classList.add('selected');
             selectedType = this.getAttribute('data-type') || '学习';
           });
         });
 
         function renderCheckins() {
           list.innerHTML = '';
+          if (!AppState.checkins || AppState.checkins.length === 0) {
+            list.innerHTML = '<li class="text-center text-gray-400 py-4 text-xs">暂无打卡记录</li>';
+            return;
+          }
           AppState.checkins.slice().reverse().forEach(function (item) {
             var li = document.createElement('li');
-            li.className = 'flex items-start justify-between px-3 py-2 rounded-lg bg-gray-50';
-            li.innerHTML = '<div><div class="text-gray-800 mb-0.5">' + item.time + '</div><div class="text-gray-600">' + item.type + ' · ' + item.note + '</div></div><span class="text-[11px] text-primary mt-0.5">' + item.status + '</span>';
+            li.className = 'flex items-start justify-between px-3 py-2 rounded-lg bg-gray-50/50 hover:bg-gray-100/50 transition-colors';
+            li.innerHTML = '<div><div class="text-gray-800 mb-0.5 font-medium">' + item.time + '</div><div class="text-gray-600"><span class="inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] mr-2">' + item.type + '</span>' + item.note + '</div></div><span class="text-[11px] text-success mt-0.5 font-medium">' + item.status + '</span>';
             list.appendChild(li);
           });
         }
@@ -578,7 +1003,7 @@
           var date = new Date(today);
           while (true) {
             var key = date.toISOString().slice(0, 10);
-            if (AppState.checkins.some((c) => c.date === key)) {
+            if (AppState.checkins && AppState.checkins.some((c) => c.date === key)) {
               streak += 1;
               date.setDate(date.getDate() - 1);
             } else {
@@ -588,69 +1013,56 @@
           streakEl.textContent = String(streak);
         }
 
-        // BUG-23: 添加更新打卡统计概要的函数
         function updateCheckinStatistics() {
           var stats = getCheckinStats();
           
-          // 更新本月打卡天数
           var monthEl = document.getElementById('month-days');
-          if (monthEl) monthEl.textContent = stats.monthCheckins;
+          if (monthEl) animateNumber(monthEl, stats.monthCheckins);
           
-          // 更新最长连续打卡
           var maxEl = document.getElementById('max-streak');
-          if (maxEl) maxEl.textContent = stats.maxStreak;
+          if (maxEl) animateNumber(maxEl, stats.maxStreak);
           
-          // 更新当前连续打卡
           var currentEl = document.getElementById('current-streak');
-          if (currentEl) currentEl.textContent = stats.currentStreak;
+          if (currentEl) animateNumber(currentEl, stats.currentStreak);
           
-          // 更新本周打卡次数
           var weekEl = document.getElementById('week-count');
-          if (weekEl) weekEl.textContent = stats.weekCheckins;
+          if (weekEl) animateNumber(weekEl, stats.weekCheckins);
           
-          // 更新顶部连续天数
           var streakDaysEl = document.getElementById('streak-days');
-          if (streakDaysEl) streakDaysEl.textContent = stats.currentStreak;
+          if (streakDaysEl) animateNumber(streakDaysEl, stats.currentStreak);
           
-          // 更新打卡类型分布
           updateTypeDistribution(stats.typeDistribution, stats.totalCheckins);
-        }
-        
-        function updateTypeDistribution(distribution, total) {
-          if (total === 0) return;
-          
-          var types = {
-            '学习': 'study',
-            '运动': 'sport',
-            '早起': 'wake',
-            '阅读': 'read'
-          };
-          
-          Object.keys(types).forEach(function(typeName) {
-            var count = distribution[typeName] || 0;
-            var percent = Math.round((count / total) * 100);
-            
-            // 更新百分比显示
-            var percentEl = document.querySelector('[data-type="' + types[typeName] + '-percent"]');
-            if (percentEl) percentEl.textContent = percent + '%';
-            
-            // 更新进度条宽度
-            var barEl = document.querySelector('[data-type="' + types[typeName] + '-bar"]');
-            if (barEl) barEl.style.width = percent + '%';
-          });
         }
 
         function updateTodayDateLabel() {
           var todayText = document.getElementById('today-date-text');
           if (todayText) {
             var now = new Date();
-            todayText.textContent = now.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'long' });
+            var options = {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              weekday: 'long'
+            };
+            todayText.textContent = '今天 · ' + now.toLocaleDateString('zh-CN', options);
+          }
+        }
+
+        function checkTodayChecked() {
+          var today = new Date().toISOString().slice(0, 10);
+          if (AppState.checkins && AppState.checkins.some(c => c.date === today)) {
+            status.textContent = '今日已打卡 ✔';
+            status.className = 'text-[11px] text-success text-center font-medium';
+            if (btn) btn.disabled = true;
+            if (btn) btn.classList.add('opacity-50', 'cursor-not-allowed');
           }
         }
 
         if (!btn || !status || !list) return;
 
         btn.addEventListener('click', function () {
+          if (btn.disabled) return;
+          
           var note = (noteInput && noteInput.value.trim()) || '今日已坚持打卡一次';
           var now = new Date();
           var dateStr = now.toISOString().slice(0, 10);
@@ -666,13 +1078,17 @@
           });
           AppState.save();
 
-          showToast('打卡成功');
+          showToast('打卡成功 🎉');
           renderCheckins();
           updateStreak();
+          renderCalendar(currentCalendarDate);
 
           status.textContent = '今日已打卡 ✔';
-          status.className = 'text-[11px] text-success text-center';
+          status.className = 'text-[11px] text-success text-center font-medium';
           if (noteInput) noteInput.value = '';
+          
+          btn.disabled = true;
+          btn.classList.add('opacity-50', 'cursor-not-allowed');
         });
 
         if (clearBtn) {
@@ -681,6 +1097,16 @@
               AppState.checkins = [];
               AppState.save();
               renderCheckins();
+              updateStreak();
+              renderCalendar(currentCalendarDate);
+              
+              if (btn) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+              }
+              status.textContent = '今日尚未打卡';
+              status.className = 'text-[11px] text-gray-500 text-center';
+              
               showToast('打卡记录已清空');
             }
           });
@@ -689,9 +1115,9 @@
         renderCheckins();
         updateStreak();
         updateTodayDateLabel();
-        updateCheckinStatistics();  // BUG-23: 初始化时更新统计数据
+        checkTodayChecked();
+        updateCheckinStatistics();
       })();
     </script>
   </body>
 </html>
-
