@@ -149,6 +149,26 @@ function getWeeklyStats() {
   };
 }
 
+// 全局 API 请求封装：自动携带 Authorization header（从 localStorage 读取 token）
+function apiRequest(path, options) {
+  options = options || {};
+  var base = '';
+  // 默认指向后端 8080
+  var url = path.startsWith('http') ? path : (base + path);
+  var headers = options.headers || {};
+  headers['Content-Type'] = headers['Content-Type'] || 'application/json';
+  var token = localStorage.getItem('token');
+  if (token) {
+    headers['Authorization'] = 'Bearer ' + token;
+  }
+  options.headers = headers;
+  return fetch(url, options).then(function (res) {
+    return res.json().catch(function () { return { status: res.status }; }).then(function (body) {
+      return { status: res.status, body: body };
+    });
+  });
+}
+
 function getCheckinStats() {
   if (!AppState || !AppState.checkins) {
     return {

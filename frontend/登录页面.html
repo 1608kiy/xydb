@@ -381,20 +381,34 @@
             return;
           }
 
-          AppState.user = {
-            id: 'u_' + Date.now(),
-            name: '轻悦用户',
-            email: account.includes('@') ? account : 'demo@qingyue.com',
-            phone: account.match(/^1\d{10}$/) ? account : '13800000000',
-            level: 3,
-            exp: 900,
-            avatar: AppState.user?.avatar || 'https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png'
+          // 组装请求体：后端要求 email 字段
+          var payload = {
+            email: account.includes('@') ? account : account,
+            password: password
           };
-          AppState.save();
-          showToast('登录成功，正在跳转...');
-          setTimeout(function () {
-            window.location.href = '待办页面.html';
-          }, 600);
+
+          fetch('http://localhost:8080/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          }).then(function (res) {
+            return res.json().then(function (body) { return { status: res.status, body: body }; });
+          }).then(function (resp) {
+            if (resp.status === 200 && resp.body && resp.body.code === 200) {
+              var token = resp.body.data && resp.body.data.token;
+              if (token) {
+                localStorage.setItem('token', token);
+                showToast('登录成功，正在跳转...');
+                setTimeout(function () { window.location.href = '待办页面.html'; }, 400);
+                return;
+              }
+            }
+            var msg = (resp.body && resp.body.message) || '登录失败，请检查账号密码';
+            showToast(msg);
+          }).catch(function (err) {
+            console.error(err);
+            showToast('网络错误，无法登录');
+          });
         });
 
         document.querySelectorAll('.btn-social').forEach(function (button) {

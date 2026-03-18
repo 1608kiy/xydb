@@ -732,6 +732,7 @@
       window.addEventListener('load', function () {
         // 任务完成趋势图
         var taskTrendChart = echarts.init(document.getElementById('task-trend-chart'));
+        window.taskTrendChart = taskTrendChart;
         taskTrendChart.setOption({
           xAxis: {
             type: 'category',
@@ -777,6 +778,7 @@
 
         // 任务分类统计饼图
         var categoryPieChart = echarts.init(document.getElementById('category-pie-chart'));
+        window.categoryPieChart = categoryPieChart;
         categoryPieChart.setOption({
           series: [{
             type: 'pie',
@@ -801,6 +803,7 @@
 
         // 番茄专注分析柱状图
         var focusBarChart = echarts.init(document.getElementById('focus-bar-chart'));
+        window.focusBarChart = focusBarChart;
         focusBarChart.setOption({
           xAxis: {
             type: 'category',
@@ -838,6 +841,7 @@
 
         // 专注时间段分布热力图
         var focusHeatmap = echarts.init(document.getElementById('focus-heatmap'));
+        window.focusHeatmap = focusHeatmap;
         focusHeatmap.setOption({
           tooltip: {
             position: 'top',
@@ -998,10 +1002,83 @@
         
         var now = new Date();
         document.getElementById('current-date').textContent = now.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
-        
-        updateWeeklyStats();
-        updateTimeSlots();
+        // 优先从后端获取报表数据并更新视图，失败则回退到本地计算
+        fetchReportsOverview().catch(function () {
+          updateWeeklyStats();
+        });
+        fetchReportsDailyTrend().catch(function () {
+          // 若日趋势接口失败，仅使用本地 updateTimeSlots
+          updateTimeSlots();
+        });
       });
+
+      // 从后端拉取概览数据并更新页面（覆盖概览卡），在 data 缺失时回退到 0/空显示
+      function fetchReportsOverview() {
+        return apiRequest('http://localhost:8080/api/reports/overview', { method: 'GET' }).then(function (resp) {
+          if (!(resp && resp.status === 200 && resp.body && resp.body.code === 200)) return Promise.reject(new Error('overview fetch failed'));
+          var data = resp.body.data || {};
+          // 统一回退值，确保页面在空数据时显示为 0 或清空图表
+          var completedTasks = Number(data.completedTasks || 0);
+          var totalFocusMinutes = Number(data.totalFocusMinutes || 0);
+          var totalPomodoros = Number(data.totalPomodoros || 0);
+          var maxContinuousPomodoros = Number(data.maxContinuousPomodoros || 0);
+          var effectivenessScore = Number(data.effectivenessScore || 0);
+
+          animateValue(document.getElementById('completed-tasks'), completedTasks, ' 项');
+          animateValue(document.getElementById('focus-hours'), (totalFocusMinutes/60).toFixed(1), ' 小时');
+          animateValue(document.getElementById('pomodoro-count'), totalPomodoros, ' 个');
+          animateValue(document.getElementById('max-continuous-pomodoros'), maxContinuousPomodoros, ' 个番茄');
+          animateValue(document.getElementById('effectiveness-score'), effectivenessScore, ' 分');
+
+          // 分类饼图更新（如果有 categoryStats 数组），否则清空数据
+          try {
+            if (data.categoryStats && Array.isArray(data.categoryStats) && window.categoryPieChart) {
+              var pieData = data.categoryStats.map(function (c) { return { name: c.name, value: c.value }; });
+              window.categoryPieChart.setOption({ series: [{ data: pieData }] });
+            } else if (window.categoryPieChart) {
+              window.categoryPieChart.setOption({ series: [{ data: [] }] });
+            }
+          } catch (e) { console.warn('update categoryPieChart failed', e); }
+
+          return Promise.resolve();
+        });
+      }
+
+      // 从后端拉取日趋势数据并更新图表（任务完成趋势 / 番茄柱状 / 热力图）
+      function fetchReportsDailyTrend() {
+        return apiRequest('http://localhost:8080/api/reports/daily-trend', { method: 'GET' }).then(function (resp) {
+          if (!(resp && resp.status === 200 && resp.body && resp.body.code === 200)) return Promise.reject(new Error('daily-trend fetch failed'));
+          var d = resp.body.data || {};
+
+          // 任务完成趋势 - 若无数据则使用七天空数组
+          try {
+            var days = Array.isArray(d.days) && d.days.length ? d.days : ['周一','周二','周三','周四','周五','周六','周日'];
+            var taskCounts = Array.isArray(d.taskCounts) && d.taskCounts.length ? d.taskCounts : [0,0,0,0,0,0,0];
+            if (window.taskTrendChart) {
+              window.taskTrendChart.setOption({ xAxis: { data: days }, series: [{ data: taskCounts }] });
+            }
+          } catch (e) { console.warn('update taskTrendChart failed', e); }
+
+          // 番茄柱状图
+          try {
+            var focusMinutes = Array.isArray(d.focusMinutes) && d.focusMinutes.length ? d.focusMinutes : [0,0,0,0,0,0,0];
+            if (window.focusBarChart) {
+              window.focusBarChart.setOption({ xAxis: { data: days }, series: [{ data: focusMinutes.map(function(m){ return (m/60).toFixed(1); }) }] });
+            }
+          } catch (e) { console.warn('update focusBarChart failed', e); }
+
+          // 热力图 (expects matrix data)
+          try {
+            if (Array.isArray(d.heatmap) && d.heatmap.length && window.focusHeatmap) {
+              window.focusHeatmap.setOption({ series: [{ data: d.heatmap }] });
+            } else if (window.focusHeatmap) {
+              window.focusHeatmap.setOption({ series: [{ data: [] }] });
+            }
+          } catch (e) { console.warn('update focusHeatmap failed', e); }
+
+          return Promise.resolve();
+        });
+      }
       
       function updateWeeklyStats() {
         if (typeof getWeeklyStats !== 'function') {
