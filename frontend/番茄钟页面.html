@@ -922,6 +922,37 @@
               };
               AppState.pomodoroSessions.push(pomodoroSession);
               AppState.save();
+              // 同步到后端保存番茄记录
+              (function(session){
+                apiRequest('http://localhost:8080/api/pomodoros', {
+                  method: 'POST',
+                  body: JSON.stringify({
+                    taskId: session.taskId,
+                    mode: session.mode,
+                    plannedMinutes: session.plannedMinutes,
+                    actualMinutes: session.actualMinutes,
+                    startedAt: session.startedAt,
+                    endedAt: session.endedAt,
+                    completed: session.completed
+                  })
+                }).then(function(resp){
+                  if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+                    var serverRec = resp.body.data;
+                    // 用服务端返回的记录替换本地临时记录（按 id 匹配）
+                    for (var i = 0; i < AppState.pomodoroSessions.length; i++) {
+                      if (AppState.pomodoroSessions[i].id === session.id) {
+                        AppState.pomodoroSessions[i] = serverRec;
+                        break;
+                      }
+                    }
+                    AppState.save();
+                  } else {
+                    console.warn('保存番茄记录到服务端失败', resp);
+                  }
+                }).catch(function(err){
+                  console.error('网络错误，保存番茄记录失败', err);
+                });
+              })(pomodoroSession);
               
               this.updateHistoryUI();
               this.updateStatsUI();

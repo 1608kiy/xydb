@@ -1062,33 +1062,59 @@
 
         btn.addEventListener('click', function () {
           if (btn.disabled) return;
-          
+
           var note = (noteInput && noteInput.value.trim()) || '今日已坚持打卡一次';
           var now = new Date();
           var dateStr = now.toISOString().slice(0, 10);
           var timeStr = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
 
-          AppState.checkins.push({
-            id: generateId('c'),
-            date: dateStr,
-            time: timeStr,
-            type: selectedType,
-            note: note,
-            status: '今日'
-          });
-          AppState.save();
-
-          showToast('打卡成功 🎉');
-          renderCheckins();
-          updateStreak();
-          renderCalendar(currentCalendarDate);
-
-          status.textContent = '今日已打卡 ✔';
-          status.className = 'text-[11px] text-success text-center font-medium';
-          if (noteInput) noteInput.value = '';
-          
+          // 乐观更新：先禁用按钮，随后尝试同步到后端，失败回退到本地保存
           btn.disabled = true;
           btn.classList.add('opacity-50', 'cursor-not-allowed');
+
+          apiRequest('http://localhost:8080/api/checkins', {
+            method: 'POST',
+            body: JSON.stringify({ date: dateStr, time: timeStr, type: selectedType, note: note })
+          }).then(function (resp) {
+            if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+              var saved = resp.body.data;
+              if (saved) {
+                AppState.checkins.push(saved);
+              } else {
+                AppState.checkins.push({ id: generateId('c'), date: dateStr, time: timeStr, type: selectedType, note: note, status: '今日' });
+              }
+              AppState.save();
+
+              showToast('打卡成功 🎉');
+              renderCheckins();
+              updateStreak();
+              renderCalendar(currentCalendarDate);
+
+              status.textContent = '今日已打卡 ✔';
+              status.className = 'text-[11px] text-success text-center font-medium';
+              if (noteInput) noteInput.value = '';
+            } else {
+              // 服务端返回异常，保存到本地
+              AppState.checkins.push({ id: generateId('c'), date: dateStr, time: timeStr, type: selectedType, note: note, status: '今日' });
+              AppState.save();
+              showToast('网络异常，已保存本地记录', 'error');
+              renderCheckins();
+              updateStreak();
+              renderCalendar(currentCalendarDate);
+              status.textContent = '今日已打卡 ✔';
+              status.className = 'text-[11px] text-success text-center font-medium';
+            }
+          }).catch(function (err) {
+            console.error('保存打卡失败', err);
+            AppState.checkins.push({ id: generateId('c'), date: dateStr, time: timeStr, type: selectedType, note: note, status: '今日' });
+            AppState.save();
+            showToast('网络错误，已保存本地记录', 'error');
+            renderCheckins();
+            updateStreak();
+            renderCalendar(currentCalendarDate);
+            status.textContent = '今日已打卡 ✔';
+            status.className = 'text-[11px] text-success text-center font-medium';
+          });
         });
 
         if (clearBtn) {
@@ -1112,11 +1138,40 @@
           });
         }
 
-        renderCheckins();
-        updateStreak();
-        updateTodayDateLabel();
-        checkTodayChecked();
-        updateCheckinStatistics();
+        // 优先从服务端拉取打卡数据并渲染，失败则使用本地数据回退
+        function fetchCheckinsFromServer() {
+          return apiRequest('http://localhost:8080/api/checkins/calendar', { method: 'GET' }).then(function (resp) {
+            if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+              var data = resp.body.data;
+              if (Array.isArray(data)) {
+                AppState.checkins = data;
+              } else if (data && Array.isArray(data.checkins)) {
+                AppState.checkins = data.checkins;
+              }
+              AppState.save();
+              renderCheckins();
+              updateStreak();
+              updateTodayDateLabel();
+              checkTodayChecked();
+              updateCheckinStatistics();
+              return Promise.resolve();
+            } else {
+              return Promise.reject(new Error('获取打卡数据失败'));
+            }
+          }).catch(function (err) {
+            console.warn('fetchCheckinsFromServer error', err);
+            return Promise.reject(err);
+          });
+        }
+
+        fetchCheckinsFromServer().catch(function () {
+          // 回退到本地数据渲染
+          renderCheckins();
+          updateStreak();
+          updateTodayDateLabel();
+          checkTodayChecked();
+          updateCheckinStatistics();
+        });
       })();
     </script>
   </body>
