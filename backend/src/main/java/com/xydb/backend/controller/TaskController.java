@@ -44,17 +44,21 @@ public class TaskController {
     @PutMapping("/{id}")
     public ResponseEntity<Result<Task>> update(@PathVariable Long id, @RequestBody Task task){
         return taskService.findById(id).map(existing -> {
-            existing.setTitle(task.getTitle());
-            existing.setDescription(task.getDescription());
-            existing.setStatus(task.getStatus());
-            existing.setPriority(task.getPriority());
-            existing.setTags(task.getTags());
-            existing.setDueAt(task.getDueAt());
-            existing.setReminderAt(task.getReminderAt());
-            existing.setPomodoroPlan(task.getPomodoroPlan());
-            existing.setPomodoroDone(task.getPomodoroDone());
-            existing.setListName(task.getListName());
+            // Only overwrite fields that are present in the incoming payload
+            if (task.getTitle() != null) existing.setTitle(task.getTitle());
+            if (task.getDescription() != null) existing.setDescription(task.getDescription());
+            if (task.getStatus() != null) existing.setStatus(task.getStatus());
+            if (task.getPriority() != null) existing.setPriority(task.getPriority());
+            if (task.getTags() != null) existing.setTags(task.getTags());
+            if (task.getDueAt() != null) existing.setDueAt(task.getDueAt());
+            if (task.getReminderAt() != null) existing.setReminderAt(task.getReminderAt());
+            if (task.getPomodoroPlan() != null) existing.setPomodoroPlan(task.getPomodoroPlan());
+            if (task.getPomodoroDone() != null) existing.setPomodoroDone(task.getPomodoroDone());
+            if (task.getListName() != null) existing.setListName(task.getListName());
+
             Task saved = taskService.update(existing);
+            // avoid serializing the user entity (prevents lazy-loading / recursion issues in responses)
+            if (saved != null) saved.setUser(null);
             return ResponseEntity.ok(Result.ok(saved));
         }).orElseGet(() -> ResponseEntity.status(404).body(Result.fail(404, "Not found")));
     }
