@@ -80,10 +80,10 @@ if ($me.success) {
 # 3) 创建测试任务
 Write-Host "[3/4] 尝试创建测试任务（带 token）..."
 $taskPayload = @{
-  title = "自动化测试任务 $(Get-Date -Format o)"
-  description = "由 verify_api.ps1 自动创建，用于验证创建接口"
+  title = "verify-api-test-$(Get-Date -Format o)"
+  description = "created-by-verify_api.ps1"
   priority = 'medium'
-  tags = '["工作"]'
+  tags = '["work"]'
   status = 'pending'
   dueAt = (Get-Date).ToString('yyyy-MM-dd') + 'T12:00:00'
 }
