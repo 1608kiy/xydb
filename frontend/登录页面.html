@@ -352,6 +352,19 @@
     <script src="components.js"></script>
     <script>
       document.addEventListener('DOMContentLoaded', function () {
+        // 若已存在 token，则验证并直接跳转到待办页，避免重复登录
+        try {
+          var __tok = localStorage.getItem('token');
+        } catch (e) { var __tok = null; }
+        if (__tok) {
+          apiRequest('/api/me', { method: 'GET' }).then(function (r) {
+            if (r && r.status === 200 && r.body && r.body.code === 200) {
+              safeNavigate('待办页面.html');
+              return;
+            }
+          }).catch(function () { /* ignore, show login form */ });
+        }
+
         AppState.init();
 
         var loginPassword = document.getElementById('login-password');
