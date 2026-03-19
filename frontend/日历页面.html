@@ -190,6 +190,9 @@
         </div>
       </div>
     </header>
+    <script>
+      if (typeof checkAuthOnLoad === 'function') { checkAuthOnLoad().catch(function(){}); }
+    </script>
     <!-- [/MODULE] a1b_顶部导航 -- 包含返回按钮、应用名称、今天按钮、日期显示、视图切换、添加任务按钮和用户头像 -->
     <div class="flex flex-1 overflow-hidden">
       <!-- 任务分类侧边栏已删除 -->

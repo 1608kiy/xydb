@@ -835,6 +835,7 @@
 
       // 番茄钟逻辑
       document.addEventListener('DOMContentLoaded', function () {
+        if (typeof checkAuthOnLoad === 'function') { checkAuthOnLoad().catch(function(){}); }
         AppState.init();
         
         class PomodoroTimer {

@@ -1537,6 +1537,7 @@
       });
 
       document.addEventListener('DOMContentLoaded', function () {
+        if (typeof checkAuthOnLoad === 'function') { checkAuthOnLoad().catch(function(){}); }
         AppState.init();
         renderHeader('profile');
         renderFooter('profile');

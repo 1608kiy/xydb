@@ -170,6 +170,47 @@ function apiRequest(path, options) {
   });
 }
 
+// 统一的身份检查：在页面加载时调用，若无 token 或 token 无效则清理并跳转登录页
+function checkAuthOnLoad(opts) {
+  opts = opts || {};
+  var redirect = typeof opts.redirect === 'undefined' ? true : !!opts.redirect;
+  var silent = !!opts.silent;
+
+  var token = null;
+  try { token = localStorage.getItem('token'); } catch (e) { token = null; }
+  if (!token) {
+    if (!silent) console.warn('auth: no token found');
+    // clear any app state and optionally redirect
+    try { localStorage.removeItem('token'); } catch (e) {}
+    if (window.AppState && typeof window.AppState.logout === 'function') window.AppState.logout();
+    if (redirect) safeNavigate('登录页面.html');
+    return Promise.reject(new Error('no-token'));
+  }
+
+  // validate token by calling /api/me (non-blocking but will redirect on 401)
+  return apiRequest('/api/me', { method: 'GET' }).then(function (resp) {
+    if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+      // token valid
+      if (!silent) console.info('auth: token valid');
+      return Promise.resolve(resp.body.data);
+    }
+    // invalid token
+    if (!silent) console.warn('auth: token invalid or expired', resp);
+    try { localStorage.removeItem('token'); } catch (e) {}
+    if (window.AppState && typeof window.AppState.logout === 'function') window.AppState.logout();
+    if (redirect) safeNavigate('登录页面.html');
+    return Promise.reject(new Error('invalid-token'));
+  }).catch(function (err) {
+    // network or parse error: assume token might be invalid
+    if (!silent) console.warn('auth: validation failed', err);
+    // If status is 401 returned as body.status, handle similarly
+    try { localStorage.removeItem('token'); } catch (e) {}
+    if (window.AppState && typeof window.AppState.logout === 'function') window.AppState.logout();
+    if (redirect) safeNavigate('登录页面.html');
+    return Promise.reject(err || new Error('auth-check-failed'));
+  });
+}
+
 function getCheckinStats() {
   if (!AppState || !AppState.checkins) {
     return {

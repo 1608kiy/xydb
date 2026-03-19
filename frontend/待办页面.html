@@ -2038,6 +2038,7 @@
 
     // 页面初始化
     document.addEventListener('DOMContentLoaded', function () {
+      if (typeof checkAuthOnLoad === 'function') { checkAuthOnLoad().catch(function(){}); }
       loadFromLocalStorage();
       renderSidebarTags();
       // 优先从服务端拉取最新任务

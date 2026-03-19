@@ -292,6 +292,10 @@
       </div>
     </header>
 
+    <script>
+      if (typeof checkAuthOnLoad === 'function') { checkAuthOnLoad().catch(function(){}); }
+    </script>
+
     <div class="flex flex-1 overflow-hidden">
       <main class="flex-1 overflow-y-auto content-auto p-4 md:p-6 scrollbar-thin">
         <div

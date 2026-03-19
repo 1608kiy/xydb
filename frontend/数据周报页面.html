@@ -38,6 +38,7 @@
       };
     </script>
     <script id="report-data-fetch">
+      if (typeof checkAuthOnLoad === 'function') { checkAuthOnLoad().catch(function(){}); }
       // Fetch server data (tasks, pomodoros) and render aggregated weekly stats and charts
       function parseDateVal(v) {
         if (v === null || v === undefined || v === '') return null;
