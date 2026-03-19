@@ -101,6 +101,17 @@ if ($me.success) {
 }
 
 # 3) 创建测试任务
+if ($token) {
+  $meAuth = Invoke-Api -Method 'GET' -Path '/api/me' -Token $token
+  if ($meAuth.success) {
+    Write-Host "Authenticated /api/me returned:"; $meAuth.data | ConvertTo-Json -Depth 5 | Write-Host
+  } else {
+    Write-Warning "Provided token did not authenticate against /api/me. Will still attempt task creation to capture server response."
+    if ($meAuth.raw) {
+      try { $sr = New-Object System.IO.StreamReader($meAuth.raw.GetResponseStream()); $bodyText = $sr.ReadToEnd(); $sr.Close(); Write-Host "Auth response body: $bodyText" } catch {}
+    }
+  }
+}
 Write-Host "[3/4] Attempting to create test task (with token)..."
 $taskPayload = @{
   title = "verify-api-test-$(Get-Date -Format o)"
