@@ -102,6 +102,7 @@ const AppState = {
   },
   logout() {
     this.user = null;
+    try { localStorage.removeItem('token'); } catch (e) {}
     this.save();
   }
 };

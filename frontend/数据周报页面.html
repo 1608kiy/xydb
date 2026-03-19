@@ -17,8 +17,8 @@
         theme: {
           extend: {
             colors: {
-              primary: '#7C3AED',
-              secondary: '#8B5CF6',
+              primary: '#4F46E5',
+              secondary: '#7C3AED',
               success: '#10B981',
               warning: '#F59E0B',
               danger: '#EF4444',
@@ -37,6 +37,142 @@
         }
       };
     </script>
+    <script id="report-data-fetch">
+      // Fetch server data (tasks, pomodoros) and render aggregated weekly stats and charts
+      function parseDateVal(v) {
+        if (v === null || v === undefined || v === '') return null;
+        if (typeof v === 'number') {
+          var dnum = new Date(v);
+          return isNaN(dnum.getTime()) ? null : dnum.toISOString();
+        }
+        if (typeof v === 'string') {
+          var s = v.trim();
+          if (s === '') return null;
+          var d = new Date(s);
+          if (!isNaN(d.getTime())) return d.toISOString();
+          var n = parseInt(s, 10);
+          if (!isNaN(n)) {
+            d = new Date(n);
+            if (!isNaN(d.getTime())) return d.toISOString();
+            d = new Date(n * 1000);
+            if (!isNaN(d.getTime())) return d.toISOString();
+          }
+        }
+        return null;
+      }
+
+      function normalizeTask(t) {
+        return {
+          id: String(t.id || t.taskId || t.idStr || ''),
+          title: t.title || t.name || '',
+          description: t.description || t.note || '',
+          dueAt: parseDateVal(t.dueAt || t.due_at || t.dueAtStr || t.dueTime),
+          status: t.status || t.state || 'pending',
+          priority: t.priority || 'medium',
+          labels: (t.tags && Array.isArray(t.tags)) ? t.tags : (t.labels || t.tagNames || []),
+          createdAt: parseDateVal(t.createdAt || t.created_at),
+          updatedAt: parseDateVal(t.updatedAt || t.updated_at)
+        };
+      }
+
+      function normalizePomo(p) {
+        return {
+          id: String(p.id || p.pomodoroId || ''),
+          startedAt: parseDateVal(p.startedAt || p.startTime || p.started_at),
+          completed: !!p.completed,
+          actualMinutes: p.actualMinutes || p.duration || p.minutes || 25,
+          mode: p.mode || 'focus'
+        };
+      }
+
+      function updateChartsAndStats() {
+        var stats = getWeeklyStats();
+        // update overview cards
+        document.getElementById('completed-tasks').textContent = (stats.completedTasks || 0) + ' 项';
+        document.getElementById('focus-hours').textContent = Math.round((stats.totalFocusMinutes || 0) / 60) + ' 小时';
+        document.getElementById('pomodoro-count').textContent = (stats.totalPomodoros || 0) + ' 个';
+        document.getElementById('max-continuous-pomodoros').textContent = (stats.maxContinuousPomodoros || 0) + ' 个番茄';
+        document.getElementById('effectiveness-score').textContent = (stats.effectivenessScore || 0) + ' 分';
+
+        // taskTrendChart: 每日完成任务数（周一..周日）
+        if (window.taskTrendChart) {
+          var weekStart = getWeekStart();
+          var counts = [];
+          for (var i = 0; i < 7; i++) {
+            var d = new Date(weekStart);
+            d.setDate(weekStart.getDate() + i);
+            var key = d.toISOString().slice(0,10);
+            var c = (AppState.tasks || []).filter(function(t){
+              if (!t.updatedAt && !t.dueAt) return false;
+              // treat tasks with status 'completed' and updatedAt in that day
+              var d1 = t.updatedAt || t.completedAt || t.dueAt;
+              if (!d1) return false;
+              return d1.slice(0,10) === key && (t.status === 'completed' || (t.status && String(t.status).toLowerCase()==='completed'));
+            }).length;
+            counts.push(c);
+          }
+          window.taskTrendChart.setOption({ series:[{ data: counts }] });
+        }
+
+        // categoryPieChart: 本周各类任务数
+        if (window.categoryPieChart) {
+          var categories = {};
+          (AppState.tasks || []).forEach(function(t){
+            var labels = t.labels && t.labels.length ? t.labels : ['工作'];
+            var label = labels[0];
+            if (!categories[label]) categories[label] = 0;
+            // 仅统计本周的任务
+            var weekStart = getWeekStart();
+            var weekEnd = getWeekEnd();
+            var d = t.dueAt ? new Date(t.dueAt) : (t.updatedAt ? new Date(t.updatedAt) : null);
+            if (!d) return;
+            if (isDateInRange(d, weekStart, weekEnd)) categories[label]++;
+          });
+          var pieData = Object.keys(categories).map(function(k){ return { name: k, value: categories[k] }; });
+          if (pieData.length === 0) pieData = [ { name: '工作', value: 0 } ];
+          window.categoryPieChart.setOption({ series:[{ data: pieData }] });
+        }
+
+        // focusBarChart: 番茄数按周分布
+        if (window.focusBarChart) {
+          var weekPomos = (AppState.pomodoroSessions || []).filter(function(s){
+            if (!s.startedAt) return false;
+            var sd = new Date(s.startedAt);
+            return isDateInRange(sd, getWeekStart(), getWeekEnd());
+          });
+          var dayCounts = [0,0,0,0,0,0,0];
+          weekPomos.forEach(function(s){
+            var sd = new Date(s.startedAt);
+            var idx = (sd.getDay() + 6) % 7; // convert Sun..Sat to Mon..Sun index 0..6
+            dayCounts[idx]++;
+          });
+          window.focusBarChart.setOption({ series:[{ data: dayCounts }] });
+        }
+      }
+
+      function updateWeeklyStats() {
+        // try to fetch server data for tasks and pomodoros; fallback to local AppState
+        Promise.all([ apiRequest('/api/tasks'), apiRequest('/api/pomodoros') ]).then(function(results){
+          var tRes = results[0];
+          var pRes = results[1];
+          try {
+            if (tRes && tRes.status === 200 && tRes.body && Array.isArray(tRes.body.data)) {
+              AppState.tasks = (tRes.body.data || []).map(normalizeTask);
+            }
+            if (pRes && pRes.status === 200 && pRes.body && Array.isArray(pRes.body.data)) {
+              AppState.pomodoroSessions = (pRes.body.data || []).map(normalizePomo);
+            }
+            AppState.save && AppState.save();
+          } catch (e) {
+            console.warn('report parse failed', e);
+          }
+        }).catch(function(){
+          // ignore network errors, use local
+        }).finally(function(){
+          updateChartsAndStats();
+        });
+      }
+    </script>
     <style type="text/tailwindcss">
       @layer utilities {
           .content-auto {
@@ -51,8 +187,8 @@
           }
           .scrollbar-thin::-webkit-scrollbar { width: 6px; }
           .scrollbar-thin::-webkit-scrollbar-track { background: rgba(243, 244, 246, 0.5); border-radius: 3px; }
-          .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(124, 58, 237, 0.3); border-radius: 3px; }
-          .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(124, 58, 237, 0.5); }
+          .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(79, 70, 229, 0.3); border-radius: 3px; }
+          .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(79, 70, 229, 0.5); }
           
           /* ✅ 毛玻璃效果 */
           .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.3); }
@@ -997,6 +1133,10 @@
       document.addEventListener('DOMContentLoaded', function () {
         AppState.init();
         renderHeader('report');
+        // 页面加载后请求并渲染真实聚合数据
+        if (typeof updateWeeklyStats === 'function') {
+          updateWeeklyStats();
+        }
         renderFooter('report');
         bindGlobalLogout();
         

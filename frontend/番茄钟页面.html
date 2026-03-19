@@ -17,7 +17,7 @@
         theme: {
           extend: {
             colors: {
-              primary: '#FF6B4A',
+              primary: '#FF6B6B',
               secondary: '#FF8E72',
               success: '#10B981',
               warning: '#F59E0B',
@@ -51,8 +51,8 @@
           }
           .scrollbar-thin::-webkit-scrollbar { width: 6px; }
           .scrollbar-thin::-webkit-scrollbar-track { background: rgba(243, 244, 246, 0.5); border-radius: 3px; }
-          .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(255, 107, 74, 0.3); border-radius: 3px; }
-          .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(255, 107, 74, 0.5); }
+          .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(255, 107, 107, 0.3); border-radius: 3px; }
+          .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(255, 107, 107, 0.5); }
           
           /* ✅ 毛玻璃效果 */
           .glass { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); }
@@ -67,7 +67,7 @@
           }
           .glass-header { 
             background: rgba(255, 255, 255, 0.5); 
-            backdrop-filter: blur(20px); 
+            backdrop-filter: blur(20p x); 
             -webkit-backdrop-filter: blur(20px); 
             border-bottom: 1px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
@@ -121,12 +121,12 @@
           /* ✅ 任务卡片 */
           .task-card {
             @apply bg-white/50 backdrop-blur-sm rounded-xl p-3 transition-all duration-300 cursor-pointer border border-white/40;
-            box-shadow: 0 2px 6px rgba(255, 107, 74, 0.08);
+            box-shadow: 0 2px 6px rgba(255, 107, 107, 0.08);
           }
           .task-card:hover {
             @apply bg-white/70 shadow-lg;
             transform: translateY(-2px);
-            border-color: rgba(255, 107, 74, 0.3);
+            border-color: rgba(255, 107, 107, 0.3);
           }
           .task-card.selected {
             @apply border-primary border-2 bg-primary/15 shadow-md;
@@ -146,7 +146,7 @@
           /* ✅ 统计卡片 */
           .stat-box {
             @apply bg-gradient-to-br from-white/70 to-white/50 backdrop-blur-sm rounded-xl p-3 transition-all duration-300;
-            box-shadow: 0 2px 8px rgba(255, 107, 74, 0.1);
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.4);
           }
           .stat-box:hover {
@@ -208,13 +208,13 @@
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
             backdrop-filter: blur(20px);
             border: 2px solid rgba(209, 213, 219, 0.6);
-            box-shadow: 0 2px 8px rgba(255, 107, 74, 0.1);
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.1);
             padding-right: 40px;
           }
           .task-select-dropdown:focus {
             @apply outline-none;
-            border-color: rgba(255, 107, 74, 0.5);
-            box-shadow: 0 0 0 4px rgba(255, 107, 74, 0.12), 0 4px 12px rgba(255, 107, 74, 0.18);
+            border-color: rgba(255, 107, 107, 0.5);
+            box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12), 0 4px 12px rgba(255, 107, 107, 0.18);
             transform: translateY(-2px);
           }
           .task-select-dropdown option {
@@ -227,7 +227,7 @@
           }
           .task-select-container.open .task-select-arrow {
             transform: translate(-50%, -50%) rotate(180deg);
-            color: #FF6B4A;
+            color: #FF6B6B;
           }
           .task-select-options {
             @apply absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-xl rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-50 opacity-0 invisible transition-all duration-300 ease-out;
@@ -277,9 +277,9 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
           }
           .custom-checkbox input:checked + .checkmark {
-            background: linear-gradient(135deg, #FF6B4A, #FF8E72);
-            border-color: #FF6B4A;
-            box-shadow: 0 2px 8px rgba(255, 107, 74, 0.3);
+            background: linear-gradient(135deg, #FF6B6B, #FF8E72);
+            border-color: #FF6B6B;
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
           }
           .custom-checkbox .checkmark::after {
             content: '✓';
@@ -322,12 +322,12 @@
             @apply fixed top-20 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl shadow-2xl z-50 transition-all duration-300;
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.95));
             backdrop-filter: blur(24px);
-            border: 2px solid rgba(255, 107, 74, 0.3);
-            box-shadow: 0 10px 40px rgba(255, 107, 74, 0.2);
+            border: 2px solid rgba(255, 107, 107, 0.3);
+            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.2);
           }
           .message-toast.success {
-            border-color: rgba(255, 107, 74, 0.4);
-            box-shadow: 0 10px 40px rgba(255, 107, 74, 0.25);
+            border-color: rgba(255, 107, 107, 0.4);
+            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.25);
           }
           .message-toast.warning {
             border-color: rgba(245, 158, 11, 0.4);

@@ -17,8 +17,8 @@
         theme: {
           extend: {
             colors: {
-              primary: '#3B82F6',
-              secondary: '#60A5FA',
+              primary: '#4F46E5',
+              secondary: '#7C3AED',
               success: '#10B981',
               warning: '#F59E0B',
               danger: '#EF4444',
@@ -49,9 +49,9 @@
           .scrollbar-hide::-webkit-scrollbar {
               display: none;
           }
-            .task-card-shadow {
-              box-shadow: 0 1px 3px rgba(59, 130, 246, 0.08);
-            }
+          .task-card-shadow {
+              box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+          }
           .task-card-shadow-hover {
               box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.15);
           }
@@ -1372,10 +1372,26 @@
                 return t.id === taskId;
               });
               if (!task) return;
-              task.dueAt = new Date(this.dataset.date + 'T00:00:00').toISOString();
+              // 将时间设为当天的上午 09:00（可按需调整）
+              var newDue = new Date(this.dataset.date + 'T09:00:00').toISOString();
+              task.dueAt = newDue;
               AppState.save();
-              showToast('任务已安排到该日');
-              renderMonthGrid();
+              // 尝试同步到后端
+              apiRequest('/api/tasks/' + encodeURIComponent(task.id), {
+                method: 'PUT',
+                body: JSON.stringify({ dueAt: task.dueAt })
+              }).then(function (res) {
+                if (res && (res.status === 200 || res.status === 204)) {
+                  showToast('任务已安排并同步到服务器');
+                } else {
+                  showToast('任务已本地安排，未能同步到服务器', 'warning');
+                }
+              }).catch(function () {
+                showToast('任务已本地安排，网络错误未能同步', 'warning');
+              }).finally(function () {
+                renderMonthGrid();
+                if (typeof renderScheduledTaskList === 'function') renderScheduledTaskList();
+              });
             });
             cell.addEventListener('click', function () {
               var dateStr = this.dataset.date;

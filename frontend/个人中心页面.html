@@ -17,8 +17,8 @@
         theme: {
           extend: {
             colors: {
-              primary: '#10B981',
-              secondary: '#34D399',
+              primary: '#4F46E5',
+              secondary: '#7C3AED',
               success: '#10B981',
               warning: '#F59E0B',
               danger: '#EF4444',
@@ -51,8 +51,8 @@
           }
           .scrollbar-thin::-webkit-scrollbar { width: 6px; }
           .scrollbar-thin::-webkit-scrollbar-track { background: rgba(243, 244, 246, 0.5); border-radius: 3px; }
-          .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.3); border-radius: 3px; }
-          .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(16, 185, 129, 0.5); }
+          .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(79, 70, 229, 0.3); border-radius: 3px; }
+          .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(79, 70, 229, 0.5); }
           
           /* ✅ 毛玻璃效果增强 */
           .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.3); }
@@ -347,7 +347,8 @@
               </a>
               <div class="border-t border-gray-100 my-1"></div>
               <a
-                href="登录页面.html"
+                href="javascript:void(0);"
+                id="profile-logout"
                 class="block px-4 py-2 text-sm text-danger hover:bg-danger/10 transition-colors"
                 style="pointer-events: auto;"
               >
@@ -1152,6 +1153,18 @@
 
           // initial load
           apiRequest('/api/me', { method: 'GET' }).then(function (r) { if (r.status === 200 && r.body && r.body.code === 200) populateProfile(r.body.data); });
+
+          // profile logout button
+          var profileLogout = document.getElementById('profile-logout');
+          if (profileLogout) {
+            profileLogout.addEventListener('click', function (e) {
+              e.preventDefault();
+              try { localStorage.removeItem('token'); } catch (err) {}
+              AppState.logout && AppState.logout();
+              showToast('已退出登录');
+              setTimeout(function () { safeNavigate('登录页面.html'); }, 250);
+            });
+          }
         });
       </script>
     </div>
