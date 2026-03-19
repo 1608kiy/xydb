@@ -391,28 +391,23 @@
             password: password
           };
 
-          fetch('http://localhost:8080/api/auth/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          }).then(function (res) {
-            return res.json().then(function (body) { return { status: res.status, body: body }; });
-          }).then(function (resp) {
-            if (resp.status === 200 && resp.body && resp.body.code === 200) {
-              var token = resp.body.data && resp.body.data.token;
-              if (token) {
-                localStorage.setItem('token', token);
-                showToast('注册并登录成功，正在跳转...');
-                setTimeout(function () { window.location.href = '待办页面.html'; }, 400);
-                return;
+          apiRequest('/api/auth/register', { method: 'POST', body: JSON.stringify(payload) })
+            .then(function (resp) {
+              if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+                var token = resp.body.data && resp.body.data.token;
+                if (token) {
+                  localStorage.setItem('token', token);
+                  showToast('注册并登录成功，正在跳转...');
+                  setTimeout(function () { safeNavigate('待办页面.html'); }, 400);
+                  return;
+                }
               }
-            }
-            var msg = (resp.body && resp.body.message) || '注册失败';
-            showToast(msg);
-          }).catch(function (err) {
-            console.error(err);
-            showToast('网络错误，无法注册');
-          });
+              var msg = (resp && resp.body && resp.body.message) || '注册失败';
+              showToast(msg);
+            }).catch(function (err) {
+              console.error('register error', err);
+              showToast('网络错误，无法注册');
+            });
         });
 
         document.querySelectorAll('.btn-social').forEach(function (button) {
