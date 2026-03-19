@@ -431,9 +431,10 @@
               exp: 120,
               avatar: 'https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png'
             };
-            AppState.save();
+            AppState.save && AppState.save();
+            try { localStorage.setItem('token', 'dev-' + Date.now()); localStorage.setItem('devSkipAuth', '1'); } catch (e) {}
             setTimeout(function () {
-              window.location.href = '待办页面.html';
+              safeNavigate('待办页面.html');
             }, 500);
           });
         });

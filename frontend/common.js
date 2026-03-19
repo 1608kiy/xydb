@@ -187,6 +187,15 @@ function checkAuthOnLoad(opts) {
     return Promise.reject(new Error('no-token'));
   }
 
+  // If this is a local dev/demo token or dev flag is set, skip remote validation
+  try {
+    var devFlag = localStorage.getItem('devSkipAuth');
+    if ((token && String(token).startsWith('dev-')) || devFlag === '1') {
+      if (!silent) console.info('auth: dev token detected, skipping remote validation');
+      return Promise.resolve(window.AppState && window.AppState.user ? window.AppState.user : {});
+    }
+  } catch (e) { /* ignore localStorage errors */ }
+
   // validate token by calling /api/me (non-blocking but will redirect on 401)
   return apiRequest('/api/me', { method: 'GET' }).then(function (resp) {
     if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
