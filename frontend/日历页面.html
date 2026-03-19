@@ -1560,32 +1560,80 @@
         window.renderMonthGrid = renderMonthGrid;
         // 从后端加载任务并合并到本地状态
         function parseTags(tags) {
-          if (!tags) return [];
-          try {
-            var parsed = JSON.parse(tags);
-            if (Array.isArray(parsed)) return parsed.map(String);
-          } catch (e) {
-            // ignore
+          if (!tags && tags !== '') return [];
+          // If already an array
+          if (Array.isArray(tags)) return tags.map(String).map(function(s){ return s.trim(); }).filter(Boolean);
+          // If it's an object with name fields
+          if (typeof tags === 'object' && tags !== null) {
+            try {
+              return Object.values(tags).map(String).map(function(s){ return s.trim(); }).filter(Boolean);
+            } catch (e) { return []; }
           }
-          return tags.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+          // If it's a JSON string representing an array
+          if (typeof tags === 'string') {
+            var raw = tags.trim();
+            if (raw === '') return [];
+            try {
+              var parsed = JSON.parse(raw);
+              if (Array.isArray(parsed)) return parsed.map(String).map(function(s){ return s.trim(); }).filter(Boolean);
+              if (typeof parsed === 'object' && parsed !== null) return Object.values(parsed).map(String).map(function(s){ return s.trim(); }).filter(Boolean);
+            } catch (e) {
+              // fallback to comma-separated
+            }
+            return raw.split(/[;,|]/).map(function(s){ return s.trim(); }).filter(Boolean);
+          }
+          return [];
         }
 
         apiRequest('/api/tasks').then(function(res) {
           if (res && (res.status === 200 || res.status === 0) && res.body && res.body.data) {
             try {
               var serverTasks = res.body.data;
+
+              function parseDateVal(v) {
+                if (v === null || v === undefined || v === '') return null;
+                if (typeof v === 'number') {
+                  var dnum = new Date(v);
+                  return isNaN(dnum.getTime()) ? null : dnum.toISOString();
+                }
+                if (typeof v === 'string') {
+                  var s = v.trim();
+                  if (s === '') return null;
+                  // ISO or common formats
+                  var d = new Date(s);
+                  if (!isNaN(d.getTime())) return d.toISOString();
+                  // try numeric string timestamp (seconds or ms)
+                  var n = parseInt(s, 10);
+                  if (!isNaN(n)) {
+                    d = new Date(n);
+                    if (!isNaN(d.getTime())) return d.toISOString();
+                    // try seconds -> ms
+                    d = new Date(n * 1000);
+                    if (!isNaN(d.getTime())) return d.toISOString();
+                  }
+                }
+                return null;
+              }
+
+              function normalizeTagsField(t) {
+                var raw = null;
+                if (!t) return [];
+                raw = t.tags || t.tag || t.labels || t.tagNames || t.tagsString || '';
+                return parseTags(raw);
+              }
+
               AppState.tasks = (serverTasks || []).map(function(t){
                 return {
-                  id: String(t.id),
-                  title: t.title || '',
-                  description: t.description || '',
-                  dueAt: t.dueAt ? (new Date(t.dueAt).toString() === 'Invalid Date' ? null : new Date(t.dueAt).toISOString()) : null,
-                  status: t.status || 'pending',
+                  id: String(t.id || t.taskId || ''),
+                  title: t.title || t.name || '',
+                  description: t.description || t.note || '',
+                  dueAt: parseDateVal(t.dueAt || t.dueAtStr || t.due_at || t.dueTime || t.startTime || t.startedAt),
+                  status: t.status || t.state || 'pending',
                   priority: t.priority || 'medium',
-                  labels: parseTags(t.tags || t.tags === '' ? t.tags : null),
-                  estimate: t.pomodoroPlan || 0,
-                  createdAt: t.createdAt || null,
-                  updatedAt: t.updatedAt || null
+                  labels: normalizeTagsField(t),
+                  estimate: t.pomodoroPlan || t.estimate || t.estimatedPomodoros || 0,
+                  createdAt: parseDateVal(t.createdAt || t.created_at),
+                  updatedAt: parseDateVal(t.updatedAt || t.updated_at)
                 };
               });
               AppState.save && AppState.save();
