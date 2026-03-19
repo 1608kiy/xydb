@@ -1077,8 +1077,9 @@
                 this.showToast('已完成 4 个专注，建议长休息 🎉');
               }
               
+              const tempId = 'p' + Date.now() + Math.floor(Math.random()*1000);
               const pomodoroSession = {
-                id: generateId('p'),
+                tempId: tempId,
                 taskId: this.state.selectedTaskId || null,
                 mode: 'focus',
                 plannedMinutes: this.config.modes['focus'].seconds / 60,
@@ -1094,7 +1095,7 @@
                 apiRequest('http://localhost:8080/api/pomodoros', {
                   method: 'POST',
                   body: JSON.stringify({
-                    taskId: session.taskId,
+                    task: session.taskId ? { id: session.taskId } : null,
                     mode: session.mode,
                     plannedMinutes: session.plannedMinutes,
                     actualMinutes: session.actualMinutes,
@@ -1107,7 +1108,9 @@
                     var serverRec = resp.body.data;
                     // 用服务端返回的记录替换本地临时记录（按 id 匹配）
                     for (var i = 0; i < AppState.pomodoroSessions.length; i++) {
-                      if (AppState.pomodoroSessions[i].id === session.id) {
+                      if (AppState.pomodoroSessions[i].tempId && session.tempId && AppState.pomodoroSessions[i].tempId === session.tempId) {
+                        // preserve tempId for traceability
+                        serverRec.tempId = AppState.pomodoroSessions[i].tempId;
                         AppState.pomodoroSessions[i] = serverRec;
                         break;
                       }
