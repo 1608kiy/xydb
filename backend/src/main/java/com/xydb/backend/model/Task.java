@@ -1,5 +1,6 @@
 package com.xydb.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -7,9 +8,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "tasks")
 @Data
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
