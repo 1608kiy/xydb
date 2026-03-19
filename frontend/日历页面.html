@@ -1246,6 +1246,28 @@
           return 'bg-gray-400';
         }
 
+        // 显示友好的日期/时间字符串
+        function formatDisplayDate(iso) {
+          if (!iso) return '未设置日期';
+          try {
+            var d = new Date(iso);
+            if (isNaN(d.getTime())) return '未设置日期';
+            var opts = { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            return d.toLocaleString('zh-CN', opts).replace(/\//g, '-');
+          } catch (e) { return '未设置日期'; }
+        }
+
+        // 将标签映射为小标签的样式类
+        function getTagClass(tag) {
+          if (!tag) return 'tag-work';
+          var t = String(tag).trim().toLowerCase();
+          if (t === '工作' || t === 'work') return 'tag-work';
+          if (t === '学习' || t === 'study') return 'tag-study';
+          if (t === '生活' || t === 'life') return 'tag-life';
+          if (t === '健康' || t === 'health') return 'tag-health';
+          return 'bg-gray-100 text-gray-700';
+        }
+
         function renderScheduledTaskList() {
           var list = document.getElementById('scheduled-task-list');
           if (!list) return;
@@ -1264,7 +1286,7 @@
           tasks.forEach(function (task) {
             var item = document.createElement('div');
             item.className = 'p-2 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary/5 cursor-pointer';
-            item.innerHTML = '<div class="flex justify-between items-center"><div class="text-sm font-medium text-gray-700">' + (task.title || '未命名任务') + '</div><div class="text-xs text-gray-500">' + getDateKey(task.dueAt) + '</div></div><div class="text-xs text-gray-500">' + (task.labels && task.labels.length ? '#' + task.labels[0] : '无标签') + '</div>';
+            item.innerHTML = '<div class="flex justify-between items-center"><div class="text-sm font-medium text-gray-700">' + (task.title || '未命名任务') + '</div><div class="text-xs text-gray-500">' + formatDisplayDate(task.dueAt) + '</div></div><div class="text-xs"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ' + (task.labels && task.labels[0] ? getTagClass(task.labels[0]) : 'tag-work') + '"> ' + (task.labels && task.labels[0] ? task.labels[0] : '工作') + ' </span></div>';
             item.addEventListener('click', function () {
               var due = new Date(task.dueAt || new Date());
               monthDate = new Date(due.getFullYear(), due.getMonth(), 1);
@@ -1316,10 +1338,12 @@
             var dotContainer = document.createElement('div');
             dotContainer.className = 'mt-1 flex flex-wrap gap-1';
 
-            dayTasks.slice(0, 3).forEach(function (task) {
+              dayTasks.slice(0, 3).forEach(function (task) {
               var dot = document.createElement('span');
               dot.className = 'w-2 h-2 rounded-full ' + getDayColor(task) + ' cursor-pointer';
-              dot.title = task.title;
+              var timeStr = task.dueAt ? formatDisplayDate(task.dueAt) : '';
+              var labels = (task.labels || []).join(', ');
+              dot.title = (task.title || '') + (timeStr ? (' — ' + timeStr) : '') + (labels ? (' — ' + labels) : '');
               dot.dataset.taskId = task.id;
               dot.addEventListener('click', function (e) {
                 e.stopPropagation();
@@ -1874,16 +1898,17 @@
           tasks.forEach(function(task) {
             var dateStr = task.dueAt ? getDateKey(new Date(task.dueAt)) : '未设置日期';
             var priorityClass = 'priority-' + (task.priority || 'medium');
-            var tagColor = task.labels && task.labels[0] ? 'tag-' + task.labels[0].toLowerCase() : 'tag-work';
+            var tagLabel = task.labels && task.labels[0] ? task.labels[0] : '工作';
+            var tagClass = getTagClass(tagLabel);
             
             html += '<div class="task-card bg-white rounded-xl p-4 shadow-sm border-l-4 ' + priorityClass + ' card-hover">' +
               '<div class="flex items-start justify-between">' +
               '<div class="flex-1">' +
               '<h3 class="font-medium text-gray-800">' + (task.title || '未命名任务') + '</h3>' +
-              '<p class="text-sm text-gray-500 mt-1"><i class="fas fa-calendar mr-2"></i>' + dateStr + '</p>' +
+              '<p class="text-sm text-gray-500 mt-1"><i class="fas fa-calendar mr-2"></i>' + formatDisplayDate(task.dueAt) + '</p>' +
               '</div>' +
-              '<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ' + tagColor + '">' +
-              (task.labels && task.labels[0] ? '#' + task.labels[0] : '#工作') +
+              '<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ' + tagClass + '">' +
+              ('#' + tagLabel) +
               '</span>' +
               '</div></div>';
           });
