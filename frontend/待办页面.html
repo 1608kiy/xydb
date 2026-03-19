@@ -1348,6 +1348,9 @@
           tasks.tomorrow = [];
           var todayStr = new Date().toISOString().slice(0, 10);
           list.forEach(function (t) {
+            // normalize server model to client fields
+            t.completed = (t.status === 'completed');
+            t.time = t.dueAt ? (t.dueAt.split('T')[1] || '').replace(/:00$/, '') : '';
             var due = t.dueAt ? t.dueAt.split('T')[0] : null;
             if (due === todayStr) tasks.today.push(t);
             else tasks.tomorrow.push(t);
@@ -1370,6 +1373,17 @@
       });
     }
 
+    // 更新任务（部分或全部字段）
+    function updateTaskOnServer(taskId, payload) {
+      return apiRequest('http://localhost:8080/api/tasks/' + taskId, {
+        method: 'PUT',
+        body: JSON.stringify(payload)
+      }).then(function (resp) {
+        if (resp.status === 200 && resp.body && resp.body.code === 200) return resp.body.data;
+        throw new Error((resp.body && resp.body.message) || '更新失败');
+      });
+    }
+
     // 切换任务完成状态（本地 UI 调用）
     function toggleTaskCompleteServer(taskId, isComplete, listName) {
       var newStatus = isComplete ? 'completed' : 'pending';
@@ -1377,7 +1391,10 @@
         // update local copy
         var list = (listName === 'today') ? tasks.today : tasks.tomorrow;
         var t = list.find(function (x) { return String(x.id) === String(taskId); });
-        if (t) { t.status = newStatus; }
+        if (t) {
+          t.status = (updated && updated.status) ? updated.status : newStatus;
+          t.completed = (t.status === 'completed');
+        }
         renderTaskLists();
         updateCountStats();
         showToast('已更新任务状态');
@@ -1570,7 +1587,7 @@
         title: title,
         description: modalDesc ? modalDesc.value.trim() : '',
         priority: selectedModalPriority,
-        tags: JSON.stringify([selectedModalTag]),
+        tags: [selectedModalTag],
         status: 'pending',
         dueAt: (modalDate ? (modalDate.value + 'T' + (modalTime ? modalTime.value : '12:00') + ':00') : null)
       };
@@ -1586,7 +1603,9 @@
             showToast('创建任务失败：服务端未返回数据', 'error');
             return;
           }
-          // place into lists based on due date
+          // normalize and place into lists based on due date
+          created.completed = (created.status === 'completed');
+          created.time = created.dueAt ? (created.dueAt.split('T')[1] || '').replace(/:00$/, '') : '';
           var due = created.dueAt ? created.dueAt.split('T')[0] : null;
           var today = new Date().toISOString().slice(0, 10);
           if (due === today) tasks.today.unshift(created);
@@ -1760,14 +1779,21 @@
         }
       } else if (action === 'delete') {
         if (confirm('确定要删除任务 "' + task.title + '" 吗？')) {
-          var index = list.findIndex(function (t) { return t.id === taskId; });
-          if (index > -1) {
-            list.splice(index, 1);
-            renderTaskLists();
-            updateCountStats();
-            saveToLocalStorage();
-            showToast('🗑️ 任务已删除');
-          }
+          apiRequest('http://localhost:8080/api/tasks/' + taskId, { method: 'DELETE' }).then(function (resp) {
+            if (resp.status === 200 && resp.body && resp.body.code === 200) {
+              var index = list.findIndex(function (t) { return t.id === taskId; });
+              if (index > -1) list.splice(index, 1);
+              renderTaskLists();
+              updateCountStats();
+              saveToLocalStorage();
+              showToast('🗑️ 任务已删除');
+            } else {
+              showToast((resp.body && resp.body.message) || '删除失败', 'error');
+            }
+          }).catch(function (err) {
+            console.error(err);
+            showToast('网络错误，删除任务失败', 'error');
+          });
         }
       }
     };
@@ -1892,7 +1918,7 @@
       currentEditingTask.subtasks.forEach(function (subtask, index) {
         html += '<div class="flex items-center gap-2 p-2 bg-white/50 rounded-lg">' +
           '<input type="checkbox" class="w-4 h-4 rounded" ' + (subtask.completed ? 'checked' : '') + ' onchange="toggleSubtask(' + index + ')">' +
-          '<span class="flex-1 text-sm ' + (subtask.completed ? 'line-through text-gray-400' : '') + '">' + subtask.text + '</span>' +
+          '<span class="flex-1 text-sm ' + (subtask.completed ? 'line-through text-gray-400' : '') + '">' + (subtask.title || subtask.text || '') + '</span>' +
           '<button class="text-gray-400 hover:text-danger" onclick="deleteSubtask(' + index + ')"><i class="fas fa-times"></i></button>' +
           '</div>';
       });
@@ -1902,17 +1928,60 @@
     window.toggleSubtask = function (index) {
       if (currentEditingTask && currentEditingTask.subtasks[index]) {
         currentEditingTask.subtasks[index].completed = !currentEditingTask.subtasks[index].completed;
-        renderSubtasks();
-        saveToLocalStorage();
+        // sync to server if task persisted
+        if (currentEditingTask.id) {
+          var payload = currentEditingTask.subtasks.map(function (s) { return { title: s.title || s.text || '', completed: !!s.completed }; });
+          apiRequest('http://localhost:8080/api/tasks/' + currentEditingTask.id + '/subtasks', {
+            method: 'PUT',
+            body: JSON.stringify(payload)
+          }).then(function (resp) {
+            if (resp.status === 200 && resp.body && resp.body.code === 200) {
+              renderSubtasks();
+              saveToLocalStorage();
+            } else {
+              showToast((resp.body && resp.body.message) || '更新子任务失败', 'error');
+              // rollback
+              currentEditingTask.subtasks[index].completed = !currentEditingTask.subtasks[index].completed;
+              renderSubtasks();
+            }
+          }).catch(function (err) {
+            console.error(err);
+            showToast('网络错误，更新子任务失败', 'error');
+            currentEditingTask.subtasks[index].completed = !currentEditingTask.subtasks[index].completed;
+            renderSubtasks();
+          });
+        } else {
+          renderSubtasks();
+          saveToLocalStorage();
+        }
       }
     };
 
     window.deleteSubtask = function (index) {
       if (currentEditingTask && currentEditingTask.subtasks[index]) {
         currentEditingTask.subtasks.splice(index, 1);
-        renderSubtasks();
-        saveToLocalStorage();
-        showToast('✅ 子任务已删除');
+        if (currentEditingTask.id) {
+          var payload = currentEditingTask.subtasks.map(function (s) { return { title: s.title || s.text || '', completed: !!s.completed }; });
+          apiRequest('http://localhost:8080/api/tasks/' + currentEditingTask.id + '/subtasks', {
+            method: 'PUT',
+            body: JSON.stringify(payload)
+          }).then(function (resp) {
+            if (resp.status === 200 && resp.body && resp.body.code === 200) {
+              renderSubtasks();
+              saveToLocalStorage();
+              showToast('✅ 子任务已删除');
+            } else {
+              showToast((resp.body && resp.body.message) || '删除子任务失败', 'error');
+            }
+          }).catch(function (err) {
+            console.error(err);
+            showToast('网络错误，删除子任务失败', 'error');
+          });
+        } else {
+          renderSubtasks();
+          saveToLocalStorage();
+          showToast('✅ 子任务已删除');
+        }
       }
     };
 
@@ -2009,14 +2078,24 @@
       if (saveTaskBtn) {
         saveTaskBtn.addEventListener('click', function () {
           if (currentEditingTask) {
-            currentEditingTask.title = document.getElementById('detail-title').value;
-            currentEditingTask.description = document.getElementById('detail-description').value;
-            currentEditingTask.priority = selectedDetailPriority;
-            renderTaskLists();
-            updateCountStats();
-            saveToLocalStorage();
-            document.getElementById('task-detail-panel').classList.add('hidden');
-            showToast('✅ 任务保存成功！');
+            var updatedPayload = {
+              title: document.getElementById('detail-title').value,
+              description: document.getElementById('detail-description').value,
+              priority: selectedDetailPriority
+            };
+            updateTaskOnServer(currentEditingTask.id, updatedPayload).then(function (updated) {
+              // merge returned fields
+              Object.assign(currentEditingTask, updated);
+              currentEditingTask.completed = (currentEditingTask.status === 'completed');
+              renderTaskLists();
+              updateCountStats();
+              saveToLocalStorage();
+              document.getElementById('task-detail-panel').classList.add('hidden');
+              showToast('✅ 任务保存成功！');
+            }).catch(function (err) {
+              console.error(err);
+              showToast('保存任务失败', 'error');
+            });
           }
         });
       }
@@ -2069,17 +2148,24 @@
       if (deleteTaskBtn) {
         deleteTaskBtn.addEventListener('click', function () {
           if (currentEditingTask && confirm('确定要删除这个任务吗？')) {
-            var isToday = tasks.today.some(function (t) { return t.id === currentEditingTask.id; });
-            var list = isToday ? tasks.today : tasks.tomorrow;
-            var index = list.findIndex(function (t) { return t.id === currentEditingTask.id; });
-            if (index > -1) {
-              list.splice(index, 1);
-              renderTaskLists();
-              updateCountStats();
-              saveToLocalStorage();
-              document.getElementById('task-detail-panel').classList.add('hidden');
-              showToast('🗑️ 任务已删除');
-            }
+            apiRequest('http://localhost:8080/api/tasks/' + currentEditingTask.id, { method: 'DELETE' }).then(function (resp) {
+              if (resp.status === 200 && resp.body && resp.body.code === 200) {
+                var isToday = tasks.today.some(function (t) { return t.id === currentEditingTask.id; });
+                var list = isToday ? tasks.today : tasks.tomorrow;
+                var index = list.findIndex(function (t) { return t.id === currentEditingTask.id; });
+                if (index > -1) list.splice(index, 1);
+                renderTaskLists();
+                updateCountStats();
+                saveToLocalStorage();
+                document.getElementById('task-detail-panel').classList.add('hidden');
+                showToast('🗑️ 任务已删除');
+              } else {
+                showToast((resp.body && resp.body.message) || '删除失败', 'error');
+              }
+            }).catch(function (err) {
+              console.error(err);
+              showToast('网络错误，删除任务失败', 'error');
+            });
           }
         });
       }
@@ -2115,11 +2201,36 @@
         addSubtaskBtn.addEventListener('click', function () {
           var text = newSubtaskInput.value.trim();
           if (text && currentEditingTask) {
-            currentEditingTask.subtasks.push({ text: text, completed: false });
-            renderSubtasks();
-            saveToLocalStorage();
-            newSubtaskInput.value = '';
-            showToast('✅ 子任务已添加');
+            var newSub = { title: text, completed: false };
+            // if task exists on server, sync
+            if (currentEditingTask.id) {
+              var payload = currentEditingTask.subtasks.map(function (s) { return { title: s.title || s.text || '', completed: !!s.completed }; });
+              payload.push(newSub);
+              apiRequest('http://localhost:8080/api/tasks/' + currentEditingTask.id + '/subtasks', {
+                method: 'PUT',
+                body: JSON.stringify(payload)
+              }).then(function (resp) {
+                if (resp.status === 200 && resp.body && resp.body.code === 200) {
+                  // append locally
+                  currentEditingTask.subtasks.push(newSub);
+                  renderSubtasks();
+                  saveToLocalStorage();
+                  newSubtaskInput.value = '';
+                  showToast('✅ 子任务已添加');
+                } else {
+                  showToast((resp.body && resp.body.message) || '添加子任务失败', 'error');
+                }
+              }).catch(function (err) {
+                console.error(err);
+                showToast('网络错误，添加子任务失败', 'error');
+              });
+            } else {
+              currentEditingTask.subtasks.push({ title: text, completed: false });
+              renderSubtasks();
+              saveToLocalStorage();
+              newSubtaskInput.value = '';
+              showToast('✅ 子任务已添加');
+            }
           }
         });
       }

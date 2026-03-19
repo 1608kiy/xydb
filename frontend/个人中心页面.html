@@ -1063,6 +1063,97 @@
           </div>
         </div>
       </main>
+      <script>
+        function devLog(msg) {
+          var el = document.getElementById('dev-log');
+          if (!el) return;
+          el.textContent = (new Date().toISOString()) + ' ' + msg + '\n' + el.textContent;
+        }
+
+        function toggleDevPanel() {
+          var p = document.getElementById('dev-test-panel');
+          if (!p) return;
+          p.classList.toggle('hidden');
+        }
+
+        function devLogin() {
+          var email = prompt('测试登录邮箱', 'test@test.com');
+          var pwd = prompt('密码', 'password');
+          if (!email || !pwd) return;
+          apiRequest('/api/auth/login', { method: 'POST', body: JSON.stringify({ email: email, password: pwd }) }).then(function (r) {
+            devLog(JSON.stringify(r));
+            if (r.status === 200 && r.body && r.body.code === 200) {
+              var token = r.body.data.token;
+              if (token) localStorage.setItem('token', token);
+              showToast('登录成功');
+            } else {
+              showToast('登录失败', 'error');
+            }
+          }).catch(function (e) { devLog('err:' + e); showToast('网络错误', 'error'); });
+        }
+
+        function devFetchMe() {
+          apiRequest('/api/me', { method: 'GET' }).then(function (r) { devLog(JSON.stringify(r)); if (r.status === 200 && r.body && r.body.code === 200) populateProfile(r.body.data); else showToast('获取用户信息失败', 'error'); }).catch(function (e) { devLog('err:' + e); showToast('网络错误', 'error'); });
+        }
+
+        function devUpdateNickname() {
+          var nick = prompt('新的昵称', 'dev');
+          if (!nick) return;
+          apiRequest('/api/me', { method: 'PUT', body: JSON.stringify({ nickname: nick }) }).then(function (r) { devLog(JSON.stringify(r)); if (r.status === 200 && r.body && r.body.code === 200) populateProfile(r.body.data); else showToast('更新失败', 'error'); }).catch(function (e) { devLog('err:' + e); showToast('网络错误', 'error'); });
+        }
+
+        function devFetchTasks() {
+          apiRequest('/api/tasks', { method: 'GET' }).then(function (r) { devLog(JSON.stringify(r)); showToast('已拉取 /api/tasks'); }).catch(function (e) { devLog('err:' + e); showToast('网络错误', 'error'); });
+        }
+
+        function populateProfile(user) {
+          if (!user) return;
+          try { document.getElementById('user-name').value = user.nickname || ''; } catch (e) {}
+          try { document.getElementById('user-email').textContent = user.email || ''; } catch (e) {}
+          try { document.getElementById('user-phone').textContent = user.phone || ''; } catch (e) {}
+          try { if (user.avatarUrl) document.getElementById('profile-avatar').src = user.avatarUrl; } catch (e) {}
+        }
+
+        // save nickname on blur
+        document.addEventListener('DOMContentLoaded', function () {
+          var nameInput = document.getElementById('user-name');
+          if (nameInput) {
+            nameInput.addEventListener('blur', function () {
+              var v = nameInput.value.trim();
+              apiRequest('/api/me', { method: 'PUT', body: JSON.stringify({ nickname: v }) }).then(function (r) { if (r.status === 200 && r.body && r.body.code === 200) showToast('昵称已保存'); else showToast('保存昵称失败', 'error'); }).catch(function () { showToast('网络错误', 'error'); });
+            });
+          }
+
+          var changeAvatar = document.getElementById('change-avatar-btn');
+          var avatarInput = document.getElementById('avatar-file-input');
+          if (changeAvatar && avatarInput) {
+            changeAvatar.addEventListener('click', function () { avatarInput.click(); });
+            avatarInput.addEventListener('change', function () {
+              var f = avatarInput.files && avatarInput.files[0];
+              if (!f) return;
+              var reader = new FileReader();
+              reader.onload = function (e) {
+                var data = e.target.result;
+                document.getElementById('profile-avatar').src = data;
+                apiRequest('/api/me', { method: 'PUT', body: JSON.stringify({ avatarUrl: data }) }).then(function (r) { if (r.status === 200 && r.body && r.body.code === 200) showToast('头像已更新'); else showToast('更新头像失败', 'error'); }).catch(function () { showToast('网络错误，更新头像失败', 'error'); });
+              };
+              reader.readAsDataURL(f);
+            });
+          }
+
+          var editPhone = document.getElementById('edit-phone-btn');
+          if (editPhone) {
+            editPhone.addEventListener('click', function () {
+              var p = prompt('输入手机号', '18888880000');
+              if (!p) return;
+              apiRequest('/api/me', { method: 'PUT', body: JSON.stringify({ phone: p }) }).then(function (r) { if (r.status === 200 && r.body && r.body.code === 200) { document.getElementById('user-phone').textContent = p; showToast('手机号已更新'); } else showToast('更新手机号失败', 'error'); }).catch(function () { showToast('网络错误，更新手机号失败', 'error'); });
+            });
+          }
+
+          // initial load
+          apiRequest('/api/me', { method: 'GET' }).then(function (r) { if (r.status === 200 && r.body && r.body.code === 200) populateProfile(r.body.data); });
+        });
+      </script>
     </div>
 
     <!-- 底部 Tab 栏 -->

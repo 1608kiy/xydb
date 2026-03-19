@@ -51,6 +51,41 @@ taskkill /PID <PID> /F
 - `backend/check_reports.ps1`：用现有 token 调用 `/api/me`、`/api/reports/overview`、`/api/reports/daily-trend`，便于端到端验证。
 - 其它脚本：`restart_with_log.ps1`、`start_and_call.ps1`（若存在）可用于重定向日志并启动服务。
 
+## 开发进度（2026-03-19，同步）
+- 后端已在 `local` profile 下可本地启动，使用内存 H2 数据库（用于本地快速验收）。
+- 已移除 local profile 中的自动注入测试用户逻辑，改为更安全的本地配置（`DevSecurityConfig` 使用 `permitAll()`），并为依赖注入添加了 `BCryptPasswordEncoder` bean。
+- 修复/调整：`backend/src/main/java/com/xydb/backend/model/Task.java` 增强 Jackson 反序列化容错，解决 POST 400 问题。
+- 前端：在 `frontend/待办页面.html` 中加入了对 `common.js` 的引入，修复了按钮因脚本错误无法响应的问题。
+- 本地测试脚本（位于 `backend/target`，仅供本地调试）：
+  - `register_dev.ps1`：注册本地测试账户并返回 token。
+  - `login.ps1`：登录（获取 token）。
+  - `create_task.ps1`：使用 token 创建测试任务。
+ 另外新增辅助脚本：`backend/scripts/stop_java.ps1`（停止本机 java 进程，释放被占用的 jar）。
+- 已在本地完成一次注册与任务创建验证：
+  - 注册响应包含 token（示例 token 已用于后续测试）。
+  - 使用该 token 成功创建了一个测试任务，响应示例包含 `id`、`title`、`status`、`priority`、`user` 等字段。
+
+重现实验的 PowerShell 命令示例（可直接在项目根或 `backend` 目录运行）：
+
+```powershell
+# 注册（返回 token）
+$body = '{"nickname":"test","email":"dev@test.com","password":"123456"}'
+Invoke-RestMethod -Uri 'http://localhost:8080/api/auth/register' -Method Post -ContentType 'application/json' -Body $body
+
+# 登录
+$body = '{"email":"dev@test.com","password":"123456"}'
+Invoke-RestMethod -Uri 'http://localhost:8080/api/auth/login' -Method Post -ContentType 'application/json' -Body $body
+
+# 使用 token 创建任务（将 <TOKEN> 替换为上一步返回的 token）
+$token = '<TOKEN>'
+$task = '{"title":"测试任务","priority":"medium","status":"pending"}'
+Invoke-RestMethod -Uri 'http://localhost:8080/api/tasks' -Method Post -ContentType 'application/json' -Headers @{ Authorization = "Bearer $token" } -Body $task
+```
+
+已把本次改动提交并推送到远程分支（commit 信息："chore: 本地开发调整：DevSecurityConfig、为待办页引入 common.js、添加本地测试脚本"，已 push 到 `origin/main`）。
+
+如需我把测试脚本移到 `backend/scripts` 下并移除 `target` 中的临时文件以保持仓库整洁，我可以把脚本迁移并提交一条新的 commit。
+
 ## 常见问题与排查
 - 403 问题常见原因：JWT 未携带或 `/error` 路径被安全链保护导致的间接 403。
 - Jackson 序列化异常会导致请求跳转到 `/error` 并被安全拦截，请确保 Controller 返回可序列化结构（Map/DTO/POJO），不要直接返回 `new Object()`。
