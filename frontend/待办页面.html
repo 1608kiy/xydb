@@ -1681,21 +1681,19 @@
         showToast('⚠️ 请先选择要完成的任务', 'error');
         return;
       }
-
-      if (confirm('确定要完成选中的 ' + selectedBatchTasks.length + ' 个任务吗？')) {
-        selectedBatchTasks.forEach(function (item) {
-          var list = item.isToday ? tasks.today : tasks.tomorrow;
-          var task = list.find(function (t) { return t.id === item.id; });
-          if (task) task.completed = true;
-        });
-        var count = selectedBatchTasks.length;
-        selectedBatchTasks = [];
-        renderTaskLists();
-        updateCountStats();
-        saveToLocalStorage();
-        window.closeBatchModalFunc();
-        showToast('✅ 已批量完成 ' + count + ' 个任务');
-      }
+      // 直接执行批量完成并关闭模态（无需二次确认）
+      selectedBatchTasks.forEach(function (item) {
+        var list = item.isToday ? tasks.today : tasks.tomorrow;
+        var task = list.find(function (t) { return t.id === item.id; });
+        if (task) task.completed = true;
+      });
+      var count = selectedBatchTasks.length;
+      selectedBatchTasks = [];
+      renderTaskLists();
+      updateCountStats();
+      saveToLocalStorage();
+      window.closeBatchModalFunc();
+      showToast('✅ 已批量完成 ' + count + ' 个任务');
     };
 
     window.confirmBatchDelete = function () {
@@ -1703,21 +1701,19 @@
         showToast('⚠️ 请先选择要删除的任务', 'error');
         return;
       }
-
-      if (confirm('确定要删除选中的 ' + selectedBatchTasks.length + ' 个任务吗？')) {
-        selectedBatchTasks.forEach(function (item) {
-          var list = item.isToday ? tasks.today : tasks.tomorrow;
-          var index = list.findIndex(function (t) { return t.id === item.id; });
-          if (index > -1) list.splice(index, 1);
-        });
-        var count = selectedBatchTasks.length;
-        selectedBatchTasks = [];
-        renderTaskLists();
-        updateCountStats();
-        saveToLocalStorage();
-        window.closeBatchModalFunc();
-        showToast('🗑️ 已批量删除 ' + count + ' 个任务');
-      }
+      // 直接执行批量删除并关闭模态（无需二次确认）
+      selectedBatchTasks.forEach(function (item) {
+        var list = item.isToday ? tasks.today : tasks.tomorrow;
+        var index = list.findIndex(function (t) { return t.id === item.id; });
+        if (index > -1) list.splice(index, 1);
+      });
+      var count = selectedBatchTasks.length;
+      selectedBatchTasks = [];
+      renderTaskLists();
+      updateCountStats();
+      saveToLocalStorage();
+      window.closeBatchModalFunc();
+      showToast('🗑️ 已批量删除 ' + count + ' 个任务');
     };
 
     window.completeAllTasks = function () {
@@ -1726,17 +1722,15 @@
         showToast('⚠️ 暂无任务可完成', 'error');
         return;
       }
-
-      if (confirm('确定要完成所有 ' + count + ' 个任务吗？')) {
-        tasks.today.forEach(function (t) { t.completed = true; });
-        tasks.tomorrow.forEach(function (t) { t.completed = true; });
-        selectedBatchTasks = [];
-        renderTaskLists();
-        updateCountStats();
-        saveToLocalStorage();
-        window.closeBatchModalFunc();
-        showToast('✅ 已完成全部 ' + count + ' 个任务');
-      }
+      // 直接完成所有任务并关闭模态（无需二次确认）
+      tasks.today.forEach(function (t) { t.completed = true; });
+      tasks.tomorrow.forEach(function (t) { t.completed = true; });
+      selectedBatchTasks = [];
+      renderTaskLists();
+      updateCountStats();
+      saveToLocalStorage();
+      window.closeBatchModalFunc();
+      showToast('✅ 已完成全部 ' + count + ' 个任务');
     };
 
     window.clearBatchSelection = function () {
