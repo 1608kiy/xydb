@@ -865,12 +865,15 @@
           html += '<div class="calendar-day empty"></div>';
         }
         for (var day = 1; day <= daysInMonth; day++) {
-          var isPast = isCurrentMonth && day < checkToday;
+          var monthStr = String(month + 1).padStart(2, '0');
+          var dayStr = String(day).padStart(2, '0');
+          var dateKey = year + '-' + monthStr + '-' + dayStr;
+          var isChecked = AppState.checkins && AppState.checkins.some(function(c) { return c.date === dateKey; });
           var isToday = isCurrentMonth && day === checkToday;
           var cls = 'calendar-day';
           if (isToday) {
             cls += ' today';
-          } else if (isPast) {
+          } else if (isChecked) {
             cls += ' checked';
           } else {
             cls += ' empty';
@@ -879,7 +882,7 @@
           html += '<div>' + day + '</div>';
           if (isToday) {
             html += '<div class="text-[9px] mt-0.5">今日</div>';
-          } else if (isPast) {
+          } else if (isChecked) {
             html += '<div class="w-1.5 h-1.5 rounded-full bg-teal-500 mt-0.5 animate-pulse"></div>';
           }
           html += '</div>';
@@ -1140,7 +1143,7 @@
 
         // 优先从服务端拉取打卡数据并渲染，失败则使用本地数据回退
         function fetchCheckinsFromServer() {
-          return apiRequest('http://localhost:8080/api/checkins/calendar', { method: 'GET' }).then(function (resp) {
+          return apiRequest('http://localhost:8080/api/checkins/recent', { method: 'GET' }).then(function (resp) {
             if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
               var data = resp.body.data;
               if (Array.isArray(data)) {
