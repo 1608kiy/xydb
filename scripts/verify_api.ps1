@@ -39,46 +39,46 @@ function Invoke-Api {
   }
 }
 
-Write-Host "[1/4] 检查 API 基址: $ApiBase"
+Write-Host "[1/4] Checking API base: $ApiBase"
 
 # 1) 先尝试 /api/me
 $me = Invoke-Api -Method 'GET' -Path '/api/me'
 if ($me.success) {
-  Write-Host "/api/me 返回成功："
+  Write-Host "/api/me returned success:"
   $me.data | ConvertTo-Json -Depth 5 | Write-Host
-  Write-Host "已认证用户，跳过登录。"
+  Write-Host "Authenticated user, skipping login."
   $token = ''
-  # 有些后端未返回 token，这里只验证接口可达
+  # Some backends do not return a token here; we only verify reachability
 } else {
-  Write-Warning "/api/me 无法直接访问或未认证。"
+  Write-Warning "/api/me inaccessible or not authenticated."
   if (-not [string]::IsNullOrWhiteSpace($User) -and -not [string]::IsNullOrWhiteSpace($Pass)) {
-    Write-Host "[2/4] 尝试使用提供的凭证登录：$User"
+    Write-Host "[2/4] Attempting login with provided credentials: $User"
     $loginPayload = @{ email = $User; password = $Pass }
     $login = Invoke-Api -Method 'POST' -Path '/api/auth/login' -Body $loginPayload
     if ($login.success) {
-      Write-Host "登录返回："
+      Write-Host "Login returned:"
       $login.data | ConvertTo-Json -Depth 5 | Write-Host
-      # 解析 token
+      # parse token
       $token = $null
       try { $token = $login.data.data.token } catch { $token = $null }
       if (-not $token) {
-        Write-Warning "登录成功但未返回 token（字段位置不一致）。请检查返回格式。"
+        Write-Warning "Login succeeded but no token returned; check response format."
         $token = ''
       } else {
-        Write-Host "已获取 token 长度: $($token.Length)"
+        Write-Host "Obtained token length: $($token.Length)"
       }
     } else {
-      Write-Error "登录失败： $($login.error.Message)"
+      Write-Error "Login failed: $($login.error.Message)"
       exit 2
     }
   } else {
-    Write-Warning "未提供用户名/密码，跳过登录步骤（无法获取 token）。"
+    Write-Warning "No username/password provided; skipping login step (no token)."
     $token = ''
   }
 }
 
 # 3) 创建测试任务
-Write-Host "[3/4] 尝试创建测试任务（带 token）..."
+Write-Host "[3/4] Attempting to create test task (with token)..."
 $taskPayload = @{
   title = "verify-api-test-$(Get-Date -Format o)"
   description = "created-by-verify_api.ps1"
@@ -90,17 +90,17 @@ $taskPayload = @{
 
 $create = Invoke-Api -Method 'POST' -Path '/api/tasks' -Body $taskPayload -Token $token
 if ($create.success) {
-  Write-Host "创建任务成功，返回："
+  Write-Host "Create task success, response:"
   $create.data | ConvertTo-Json -Depth 5 | Write-Host
-  Write-Host "验证通过：后端可达且可创建任务。"
+  Write-Host "Verification passed: backend reachable and created task."
   exit 0
 } else {
-  Write-Error "创建任务失败："
+  Write-Error "Create task failed:"
   if ($create.raw) {
     try {
       $sr = New-Object System.IO.StreamReader($create.raw.GetResponseStream())
       $bodyText = $sr.ReadToEnd(); $sr.Close();
-      Write-Host "响应体: $bodyText"
+      Write-Host "Response body: $bodyText"
     } catch {}
   }
   if ($create.error) { Write-Host $create.error.ToString() }
