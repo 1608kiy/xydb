@@ -1339,7 +1339,7 @@
 
     // ============ 后端交互 ============
     function fetchTasksFromServer() {
-      return apiRequest('http://localhost:8080/api/tasks', { method: 'GET' }).then(function (resp) {
+      return apiRequest('/api/tasks', { method: 'GET' }).then(function (resp) {
         if (resp.status === 200 && resp.body && resp.body.code === 200) {
           // expect body.data to be an array
           var list = resp.body.data || [];
@@ -1380,7 +1380,7 @@
     }
 
     function updateTaskStatusOnServer(taskId, status) {
-      return apiRequest('http://localhost:8080/api/tasks/' + taskId, {
+      return apiRequest('/api/tasks/' + taskId, {
         method: 'PUT',
         body: JSON.stringify({ status: status })
       }).then(function (resp) {
@@ -1391,7 +1391,7 @@
 
     // 更新任务（部分或全部字段）
     function updateTaskOnServer(taskId, payload) {
-      return apiRequest('http://localhost:8080/api/tasks/' + taskId, {
+      return apiRequest('/api/tasks/' + taskId, {
         method: 'PUT',
         body: JSON.stringify(payload)
       }).then(function (resp) {
@@ -1609,7 +1609,7 @@
         dueAt: (modalDate ? (modalDate.value + 'T' + (modalTime ? modalTime.value : '12:00') + ':00') : null)
       };
 
-      apiRequest('http://localhost:8080/api/tasks', {
+      apiRequest('/api/tasks', {
         method: 'POST',
         body: JSON.stringify(payload)
       }).then(function (resp) {
@@ -1810,7 +1810,7 @@
         }
       } else if (action === 'delete') {
         if (confirm('确定要删除任务 "' + task.title + '" 吗？')) {
-          apiRequest('http://localhost:8080/api/tasks/' + taskId, { method: 'DELETE' }).then(function (resp) {
+          apiRequest('/api/tasks/' + taskId, { method: 'DELETE' }).then(function (resp) {
             if (resp.status === 200 && resp.body && resp.body.code === 200) {
               var index = list.findIndex(function (t) { return t.id === taskId; });
               if (index > -1) list.splice(index, 1);
@@ -1962,7 +1962,7 @@
         // sync to server if task persisted
         if (currentEditingTask.id) {
           var payload = currentEditingTask.subtasks.map(function (s) { return { title: s.title || s.text || '', completed: !!s.completed }; });
-          apiRequest('http://localhost:8080/api/tasks/' + currentEditingTask.id + '/subtasks', {
+          apiRequest('/api/tasks/' + currentEditingTask.id + '/subtasks', {
             method: 'PUT',
             body: JSON.stringify(payload)
           }).then(function (resp) {
@@ -1993,7 +1993,7 @@
         currentEditingTask.subtasks.splice(index, 1);
         if (currentEditingTask.id) {
           var payload = currentEditingTask.subtasks.map(function (s) { return { title: s.title || s.text || '', completed: !!s.completed }; });
-          apiRequest('http://localhost:8080/api/tasks/' + currentEditingTask.id + '/subtasks', {
+          apiRequest('/api/tasks/' + currentEditingTask.id + '/subtasks', {
             method: 'PUT',
             body: JSON.stringify(payload)
           }).then(function (resp) {
@@ -2180,7 +2180,7 @@
       if (deleteTaskBtn) {
         deleteTaskBtn.addEventListener('click', function () {
           if (currentEditingTask && confirm('确定要删除这个任务吗？')) {
-            apiRequest('http://localhost:8080/api/tasks/' + currentEditingTask.id, { method: 'DELETE' }).then(function (resp) {
+            apiRequest('/api/tasks/' + currentEditingTask.id, { method: 'DELETE' }).then(function (resp) {
               if (resp.status === 200 && resp.body && resp.body.code === 200) {
                 var isToday = tasks.today.some(function (t) { return t.id === currentEditingTask.id; });
                 var list = isToday ? tasks.today : tasks.tomorrow;
@@ -2238,7 +2238,7 @@
             if (currentEditingTask.id) {
               var payload = currentEditingTask.subtasks.map(function (s) { return { title: s.title || s.text || '', completed: !!s.completed }; });
               payload.push(newSub);
-              apiRequest('http://localhost:8080/api/tasks/' + currentEditingTask.id + '/subtasks', {
+              apiRequest('/api/tasks/' + currentEditingTask.id + '/subtasks', {
                 method: 'PUT',
                 body: JSON.stringify(payload)
               }).then(function (resp) {
