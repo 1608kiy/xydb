@@ -5,6 +5,7 @@ import com.xydb.backend.model.PomodoroSession;
 import com.xydb.backend.model.Task;
 import com.xydb.backend.model.User;
 import com.xydb.backend.repository.PomodoroRepository;
+import com.xydb.backend.service.UserService;
 import com.xydb.backend.repository.TaskRepository;
 import com.xydb.backend.util.Result;
 import org.springframework.http.ResponseEntity;
@@ -26,30 +27,32 @@ public class ReportController {
 
     private final TaskRepository taskRepository;
     private final PomodoroRepository pomodoroRepository;
+    private final UserService userService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public ReportController(TaskRepository taskRepository, PomodoroRepository pomodoroRepository) {
+    public ReportController(TaskRepository taskRepository, PomodoroRepository pomodoroRepository, UserService userService) {
         this.taskRepository = taskRepository;
         this.pomodoroRepository = pomodoroRepository;
+        this.userService = userService;
     }
 
     // 概览（默认返回最近 7 天的汇总）
-    @GetMapping("/overview")
-    public ResponseEntity<Result<Object>> overview() {
-        User user = getCurrentUser();
-        LocalDate today = LocalDate.now();
-        LocalDate startDate = today.minusDays(6); // 最近 7 天
-        LocalDateTime start = startDate.atStartOfDay();
-        LocalDateTime end = today.plusDays(1).atStartOfDay();
+        @GetMapping("/overview")
+        public ResponseEntity<Result<Object>> overview() {
+        return userService.getCurrentUser().map(user -> {
+            LocalDate today = LocalDate.now();
+            LocalDate startDate = today.minusDays(6); // 最近 7 天
+            LocalDateTime start = startDate.atStartOfDay();
+            LocalDateTime end = today.plusDays(1).atStartOfDay();
 
-        List<Task> userTasks = taskRepository.findByUser(user);
-        long completedTasks = userTasks.stream()
+            List<Task> userTasks = taskRepository.findByUser(user);
+            long completedTasks = userTasks.stream()
                 .filter(t -> t.getStatus() != null && t.getStatus().equalsIgnoreCase("completed")
-                        && t.getUpdatedAt() != null
-                        && !t.getUpdatedAt().isBefore(start) && t.getUpdatedAt().isBefore(end))
+                    && t.getUpdatedAt() != null
+                    && !t.getUpdatedAt().isBefore(start) && t.getUpdatedAt().isBefore(end))
                 .count();
 
-        List<PomodoroSession> sessions = pomodoroRepository.findByUserAndStartedAtBetween(user, start, end);
+            List<PomodoroSession> sessions = pomodoroRepository.findByUserAndStartedAtBetween(user, start, end);
 
         int totalFocusMinutes = sessions.stream().filter(s -> s.getActualMinutes() != null)
                 .mapToInt(PomodoroSession::getActualMinutes).sum();
@@ -111,20 +114,21 @@ public class ReportController {
         }
         overview.put("categoryStats", categoryStats);
 
-        return ResponseEntity.ok(Result.ok(overview));
+            return ResponseEntity.ok(Result.ok(overview));
+        }).orElseGet(() -> ResponseEntity.status(401).body(Result.fail(401, "Unauthorized")));
     }
 
     // 日趋势（最近 7 天）
     @GetMapping("/daily-trend")
     public ResponseEntity<Result<Object>> dailyTrend() {
-        User user = getCurrentUser();
-        LocalDate today = LocalDate.now();
-        LocalDate startDate = today.minusDays(6);
-        LocalDateTime start = startDate.atStartOfDay();
-        LocalDateTime end = today.plusDays(1).atStartOfDay();
+        return userService.getCurrentUser().map(user -> {
+            LocalDate today = LocalDate.now();
+            LocalDate startDate = today.minusDays(6);
+            LocalDateTime start = startDate.atStartOfDay();
+            LocalDateTime end = today.plusDays(1).atStartOfDay();
 
-        List<Task> userTasks = taskRepository.findByUser(user);
-        List<PomodoroSession> sessions = pomodoroRepository.findByUserAndStartedAtBetween(user, start, end);
+            List<Task> userTasks = taskRepository.findByUser(user);
+            List<PomodoroSession> sessions = pomodoroRepository.findByUserAndStartedAtBetween(user, start, end);
 
         List<String> days = new ArrayList<>();
         List<Integer> taskCounts = new ArrayList<>();
@@ -164,44 +168,40 @@ public class ReportController {
         resp.put("focusMinutes", focusMinutes);
         resp.put("heatmap", heat);
 
-        return ResponseEntity.ok(Result.ok(resp));
+            return ResponseEntity.ok(Result.ok(resp));
+        }).orElseGet(() -> ResponseEntity.status(401).body(Result.fail(401, "Unauthorized")));
     }
 
     @GetMapping("/task-category")
     public ResponseEntity<Result<Object>> taskCategory() {
         // 返回与 overview 中相同的 categoryStats
-        User user = getCurrentUser();
-        List<Task> userTasks = taskRepository.findByUser(user);
-        Map<String, Integer> categoryCount = new HashMap<>();
-        for (Task t : userTasks) {
-            String tags = t.getTags();
-            if (tags == null) continue;
-            try {
-                if (tags.trim().startsWith("[")) {
-                    List<String> arr = objectMapper.readValue(tags, List.class);
-                    for (Object o : arr) categoryCount.merge(String.valueOf(o), 1, Integer::sum);
-                } else {
-                    String[] parts = tags.split(",");
-                    for (String p : parts) if (!p.isBlank()) categoryCount.merge(p.trim(), 1, Integer::sum);
+        return userService.getCurrentUser().map(user -> {
+            List<Task> userTasks = taskRepository.findByUser(user);
+            Map<String, Integer> categoryCount = new HashMap<>();
+            for (Task t : userTasks) {
+                String tags = t.getTags();
+                if (tags == null) continue;
+                try {
+                    if (tags.trim().startsWith("[")) {
+                        List<String> arr = objectMapper.readValue(tags, List.class);
+                        for (Object o : arr) categoryCount.merge(String.valueOf(o), 1, Integer::sum);
+                    } else {
+                        String[] parts = tags.split(",");
+                        for (String p : parts) if (!p.isBlank()) categoryCount.merge(p.trim(), 1, Integer::sum);
+                    }
+                } catch (Exception ex) {
                 }
-            } catch (Exception ex) {
             }
-        }
-        List<Map<String, Object>> categoryStats = new ArrayList<>();
-        for (Map.Entry<String, Integer> e : categoryCount.entrySet()) {
-            Map<String, Object> m = new HashMap<>();
-            m.put("name", e.getKey());
-            m.put("value", e.getValue());
-            categoryStats.add(m);
-        }
-        Map<String, Object> out = new HashMap<>();
-        out.put("categoryStats", categoryStats);
-        return ResponseEntity.ok(Result.ok(out));
-    }
-
-    private User getCurrentUser() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof User) return (User) principal;
-        return null;
+            List<Map<String, Object>> categoryStats = new ArrayList<>();
+            for (Map.Entry<String, Integer> e : categoryCount.entrySet()) {
+                Map<String, Object> m = new HashMap<>();
+                m.put("name", e.getKey());
+                m.put("value", e.getValue());
+                categoryStats.add(m);
+            }
+            Map<String, Object> out = new HashMap<>();
+            out.put("categoryStats", categoryStats);
+            return ResponseEntity.ok(Result.ok(out));
+        }).orElseGet(() -> ResponseEntity.status(401).body(Result.fail(401, "Unauthorized")));
     }
 }
