@@ -11,6 +11,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.core.env.Environment;
 
 @Profile("!local")
 @Configuration
@@ -18,10 +19,12 @@ public class SecurityConfig {
 
     private final JWTUtil jwtUtil;
     private final UserRepository userRepository;
+    private final Environment env;
 
-    public SecurityConfig(JWTUtil jwtUtil, UserRepository userRepository) {
+    public SecurityConfig(JWTUtil jwtUtil, UserRepository userRepository, Environment env) {
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
+        this.env = env;
     }
 
     @Bean
@@ -31,7 +34,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        JwtAuthenticationFilter jwtFilter = new JwtAuthenticationFilter(jwtUtil, userRepository);
+        JwtAuthenticationFilter jwtFilter = new JwtAuthenticationFilter(jwtUtil, userRepository, env);
 
         http
                 .csrf().disable()
