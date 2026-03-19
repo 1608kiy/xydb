@@ -1558,10 +1558,47 @@
         }
 
         window.renderMonthGrid = renderMonthGrid;
-        renderMonthGrid();
-        renderScheduledTaskList();
-        renderWeekView(calendarState.selectedDate);
-        renderDayView(calendarState.selectedDate);
+        // 从后端加载任务并合并到本地状态
+        function parseTags(tags) {
+          if (!tags) return [];
+          try {
+            var parsed = JSON.parse(tags);
+            if (Array.isArray(parsed)) return parsed.map(String);
+          } catch (e) {
+            // ignore
+          }
+          return tags.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+        }
+
+        apiRequest('/api/tasks').then(function(res) {
+          if (res && (res.status === 200 || res.status === 0) && res.body && res.body.data) {
+            try {
+              var serverTasks = res.body.data;
+              AppState.tasks = (serverTasks || []).map(function(t){
+                return {
+                  id: String(t.id),
+                  title: t.title || '',
+                  description: t.description || '',
+                  dueAt: t.dueAt ? (new Date(t.dueAt).toString() === 'Invalid Date' ? null : new Date(t.dueAt).toISOString()) : null,
+                  status: t.status || 'pending',
+                  priority: t.priority || 'medium',
+                  labels: parseTags(t.tags || t.tags === '' ? t.tags : null),
+                  estimate: t.pomodoroPlan || 0,
+                  createdAt: t.createdAt || null,
+                  updatedAt: t.updatedAt || null
+                };
+              });
+              AppState.save && AppState.save();
+            } catch (e) {
+              console.warn('任务解析失败', e);
+            }
+          }
+        }).catch(function(){ /* ignore network errors */ }).finally(function(){
+          renderMonthGrid();
+          renderScheduledTaskList();
+          renderWeekView(calendarState.selectedDate);
+          renderDayView(calendarState.selectedDate);
+        });
       });
     </script>
     <!-- [/JSMOD] p9q_日历视图交互功能 -- 实现视图切换、今日、月导航、任务拖拽持久化和日历渲染 -->

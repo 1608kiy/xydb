@@ -49,9 +49,7 @@ public class ReportController {
                         && !t.getUpdatedAt().isBefore(start) && t.getUpdatedAt().isBefore(end))
                 .count();
 
-        List<PomodoroSession> sessions = pomodoroRepository.findByStartedAtBetween(start, end).stream()
-                .filter(p -> p.getUser() != null && Objects.equals(p.getUser().getId(), user.getId()))
-                .collect(Collectors.toList());
+        List<PomodoroSession> sessions = pomodoroRepository.findByUserAndStartedAtBetween(user, start, end);
 
         int totalFocusMinutes = sessions.stream().filter(s -> s.getActualMinutes() != null)
                 .mapToInt(PomodoroSession::getActualMinutes).sum();
@@ -126,9 +124,7 @@ public class ReportController {
         LocalDateTime end = today.plusDays(1).atStartOfDay();
 
         List<Task> userTasks = taskRepository.findByUser(user);
-        List<PomodoroSession> sessions = pomodoroRepository.findByStartedAtBetween(start, end).stream()
-                .filter(p -> p.getUser() != null && Objects.equals(p.getUser().getId(), user.getId()))
-                .collect(Collectors.toList());
+        List<PomodoroSession> sessions = pomodoroRepository.findByUserAndStartedAtBetween(user, start, end);
 
         List<String> days = new ArrayList<>();
         List<Integer> taskCounts = new ArrayList<>();

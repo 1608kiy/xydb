@@ -152,7 +152,8 @@ function getWeeklyStats() {
 // 全局 API 请求封装：自动携带 Authorization header（从 localStorage 读取 token）
 function apiRequest(path, options) {
   options = options || {};
-  var base = '';
+  // 默认后端地址（本地联调时使用）；可通过在页面中设置 window.__API_BASE__ 覆盖
+    var base = window.__API_BASE__ || 'http://localhost:8080';
   // 默认指向后端 8080
   var url = path.startsWith('http') ? path : (base + path);
   var headers = options.headers || {};
