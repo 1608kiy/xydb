@@ -14,8 +14,8 @@
       theme: {
         extend: {
           colors: {
-            primary: '#F59E0B',
-            secondary: '#FBBF24',
+            primary: '#4F46E5',
+            secondary: '#7C3AED',
             success: '#10B981',
             warning: '#F59E0B',
             danger: '#EF4444',
@@ -43,7 +43,7 @@
 
     body {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: linear-gradient(135deg, #FFF9ED 0%, #F9F6F0 100%);
+      background: linear-gradient(135deg, #EFF6FF 0%, #F5F3FF 50%, #FDF4FF 100%);
       color: #1F2937;
       min-height: 100vh;
       display: flex;
@@ -1351,6 +1351,22 @@
             // normalize server model to client fields
             t.completed = (t.status === 'completed');
             t.time = t.dueAt ? (t.dueAt.split('T')[1] || '').replace(/:00$/, '') : '';
+            // normalize tags: backend stores tags as JSON string or may return array
+            try {
+              if (typeof t.tags === 'string' && t.tags.trim()) {
+                var parsed = JSON.parse(t.tags);
+                t.tag = Array.isArray(parsed) && parsed.length > 0 ? parsed[0] : null;
+              } else if (Array.isArray(t.tags)) {
+                t.tag = t.tags.length > 0 ? t.tags[0] : null;
+              } else if (t.tag) {
+                // already present
+              } else {
+                t.tag = null;
+              }
+            } catch (e) {
+              t.tag = null;
+            }
+
             var due = t.dueAt ? t.dueAt.split('T')[0] : null;
             if (due === todayStr) tasks.today.push(t);
             else tasks.tomorrow.push(t);
@@ -1587,7 +1603,8 @@
         title: title,
         description: modalDesc ? modalDesc.value.trim() : '',
         priority: selectedModalPriority,
-        tags: [selectedModalTag],
+        // backend Task.tags is a String column (JSON array string); serialize here
+        tags: JSON.stringify([selectedModalTag]),
         status: 'pending',
         dueAt: (modalDate ? (modalDate.value + 'T' + (modalTime ? modalTime.value : '12:00') + ':00') : null)
       };
@@ -1606,6 +1623,20 @@
           // normalize and place into lists based on due date
           created.completed = (created.status === 'completed');
           created.time = created.dueAt ? (created.dueAt.split('T')[1] || '').replace(/:00$/, '') : '';
+          // ensure frontend-friendly `tag` field exists (backend may return `tags` string)
+          try {
+            if (typeof created.tags === 'string' && created.tags.trim()) {
+              var p = JSON.parse(created.tags);
+              created.tag = Array.isArray(p) && p.length > 0 ? p[0] : (selectedModalTag || null);
+            } else if (Array.isArray(created.tags)) {
+              created.tag = created.tags.length > 0 ? created.tags[0] : (selectedModalTag || null);
+            } else {
+              created.tag = selectedModalTag || null;
+            }
+          } catch (e) {
+            created.tag = selectedModalTag || null;
+          }
+
           var due = created.dueAt ? created.dueAt.split('T')[0] : null;
           var today = new Date().toISOString().slice(0, 10);
           if (due === today) tasks.today.unshift(created);
