@@ -1082,6 +1082,16 @@
             if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
               var saved = resp.body.data;
               if (saved) {
+                // Normalize server record for UI: provide `time` and `status` fields
+                if (!saved.time && saved.createdAt) {
+                  try {
+                    var d = new Date(saved.createdAt);
+                    saved.time = d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+                  } catch (e) {
+                    saved.time = timeStr;
+                  }
+                }
+                saved.status = saved.status || '今日';
                 AppState.checkins.push(saved);
               } else {
                 AppState.checkins.push({ id: generateId('c'), date: dateStr, time: timeStr, type: selectedType, note: note, status: '今日' });
@@ -1151,6 +1161,14 @@
               } else if (data && Array.isArray(data.checkins)) {
                 AppState.checkins = data.checkins;
               }
+              // Normalize items: ensure `time` and `status` exist for UI
+              AppState.checkins = (AppState.checkins || []).map(function(item){
+                if (!item.time && item.createdAt) {
+                  try { item.time = new Date(item.createdAt).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }); } catch(e){ item.time = ''; }
+                }
+                item.status = item.status || '';
+                return item;
+              });
               AppState.save();
               renderCheckins();
               updateStreak();
