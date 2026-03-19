@@ -72,8 +72,31 @@ if ($me.success) {
       exit 2
     }
   } else {
-    Write-Warning "No username/password provided; skipping login step (no token)."
-    $token = ''
+    Write-Warning "No username/password provided; attempting to auto-register a test user..."
+    $rand = Get-Random -Maximum 100000
+    $testEmail = "verify-$rand-$(Get-Date -Format yyyyMMddHHmmss)@example.test"
+    $testPass = "VerifyPass123!"
+    $testNick = "verify-$rand"
+    $regPayload = @{ nickname = $testNick; email = $testEmail; password = $testPass }
+    Write-Host "Attempting register with $testEmail / $testPass"
+    $reg = Invoke-Api -Method 'POST' -Path '/api/auth/register' -Body $regPayload
+    if ($reg.success) {
+      Write-Host "Register returned:"; $reg.data | ConvertTo-Json -Depth 5 | Write-Host
+      # Try to login to get token
+      $loginPayload = @{ email = $testEmail; password = $testPass }
+      $login = Invoke-Api -Method 'POST' -Path '/api/auth/login' -Body $loginPayload
+      if ($login.success) {
+        Write-Host "Login returned:"; $login.data | ConvertTo-Json -Depth 5 | Write-Host
+        try { $token = $login.data.data.token } catch { $token = '' }
+        if (-not $token) { Write-Warning "Auto-login succeeded but no token found."; $token = '' }
+      } else {
+        Write-Warning "Auto-login failed after register: $($login.error.Message)"
+        $token = ''
+      }
+    } else {
+      Write-Warning "Auto-register failed; skipping login (no token)."
+      $token = ''
+    }
   }
 }
 
