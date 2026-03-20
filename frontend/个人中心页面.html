@@ -280,6 +280,38 @@
           }
           .phone-modal-overlay.hidden { display: none !important; }
           .phone-modal-overlay:not(.hidden) { display: flex !important; }
+
+          /* ✅ 危险操作确认弹窗（同打卡页清空风格） */
+          .confirm-modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 120000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            background: rgba(15, 23, 42, 0.35);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+          }
+          .confirm-modal-overlay.show {
+            display: flex !important;
+          }
+          .confirm-modal-card {
+            width: min(92vw, 520px);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.86);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            box-shadow: 0 20px 48px rgba(15, 23, 42, 0.2);
+            animation: confirmModalIn 0.24s ease-out;
+          }
+          @keyframes confirmModalIn {
+            from { opacity: 0; transform: translateY(10px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+          }
       }
     </style>
   </head>
@@ -1252,6 +1284,29 @@
       </div>
     </div>
 
+    <!-- ✅ 危险操作确认弹窗 -->
+    <div id="danger-confirm-modal" class="confirm-modal-overlay" aria-hidden="true">
+      <div class="confirm-modal-card">
+        <div class="flex items-start space-x-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-danger/10 text-danger flex items-center justify-center shrink-0">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div>
+            <h3 id="danger-confirm-title" class="text-base font-semibold text-gray-800">确认操作</h3>
+            <p id="danger-confirm-desc" class="text-sm text-gray-600 mt-1">请确认是否继续此操作。</p>
+          </div>
+        </div>
+        <div class="flex items-center justify-end gap-3">
+          <button id="danger-confirm-cancel-btn" class="px-4 py-2 rounded-xl border border-gray-200 text-gray-600 bg-white/70 hover:bg-white transition-colors">
+            取消
+          </button>
+          <button id="danger-confirm-ok-btn" class="px-4 py-2 rounded-xl text-white bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 shadow-md shadow-red-500/25 transition-all">
+            确认
+          </button>
+        </div>
+      </div>
+    </div>
+
     <script>
       var hasShownThemeToast = false;
       
@@ -1513,6 +1568,34 @@
         var expBar = document.getElementById('exp-bar');
         var expNextText = document.getElementById('exp-next-text');
         var userLevelTag = document.getElementById('user-level-tag');
+        var dangerConfirmModal = document.getElementById('danger-confirm-modal');
+        var dangerConfirmTitle = document.getElementById('danger-confirm-title');
+        var dangerConfirmDesc = document.getElementById('danger-confirm-desc');
+        var dangerConfirmCancelBtn = document.getElementById('danger-confirm-cancel-btn');
+        var dangerConfirmOkBtn = document.getElementById('danger-confirm-ok-btn');
+        var pendingDangerAction = null;
+
+        if (dangerConfirmModal && dangerConfirmModal.parentElement !== document.body) {
+          document.body.appendChild(dangerConfirmModal);
+        }
+
+        function closeDangerConfirmModal() {
+          if (!dangerConfirmModal) return;
+          dangerConfirmModal.classList.remove('show');
+          dangerConfirmModal.setAttribute('aria-hidden', 'true');
+          pendingDangerAction = null;
+        }
+
+        function openDangerConfirmModal(options) {
+          if (!dangerConfirmModal) return;
+          var opts = options || {};
+          if (dangerConfirmTitle) dangerConfirmTitle.textContent = opts.title || '确认操作';
+          if (dangerConfirmDesc) dangerConfirmDesc.textContent = opts.desc || '请确认是否继续此操作。';
+          if (dangerConfirmOkBtn) dangerConfirmOkBtn.textContent = opts.okText || '确认';
+          pendingDangerAction = typeof opts.onConfirm === 'function' ? opts.onConfirm : null;
+          dangerConfirmModal.classList.add('show');
+          dangerConfirmModal.setAttribute('aria-hidden', 'false');
+        }
 
         if (profileAvatar) profileAvatar.src = AppState.user?.avatar || profileAvatar.src;
         if (userName) userName.value = AppState.user?.name || '轻悦用户';
@@ -1615,12 +1698,18 @@
 
         if (clearAllDataBtn) {
           clearAllDataBtn.addEventListener('click', function () {
-            if (!confirm('此操作将永久删除所有任务、打卡和专注记录，且无法恢复。确定继续？')) return;
-            localStorage.removeItem('qingyue_todo_app_state_v1');
-            AppState.reset();
-            updateDataStatistics();
-            showToast('所有数据已清除');
-            setTimeout(function () { window.location.reload(); }, 180);
+            openDangerConfirmModal({
+              title: '删除所有数据',
+              desc: '将永久删除所有任务、打卡和专注记录，且无法恢复。',
+              okText: '确认删除',
+              onConfirm: function () {
+                localStorage.removeItem('qingyue_todo_app_state_v1');
+                AppState.reset();
+                updateDataStatistics();
+                showToast('所有数据已清除');
+                setTimeout(function () { window.location.reload(); }, 180);
+              }
+            });
           });
         }
 
@@ -1844,12 +1933,18 @@
         var clearCacheBtn = document.getElementById('clear-cache-btn');
         if (clearCacheBtn) {
           clearCacheBtn.addEventListener('click', function () {
-            if (!confirm('确认清理本地缓存吗？')) return;
-            AppState.tasks = [];
-            AppState.pomodoroSessions = [];
-            AppState.checkins = [];
-            AppState.save();
-            showToast('缓存已清理');
+            openDangerConfirmModal({
+              title: '清理缓存',
+              desc: '将清理本地缓存数据（任务、番茄记录与打卡记录）。',
+              okText: '确认清理',
+              onConfirm: function () {
+                AppState.tasks = [];
+                AppState.pomodoroSessions = [];
+                AppState.checkins = [];
+                AppState.save();
+                showToast('缓存已清理');
+              }
+            });
           });
         }
 
@@ -1865,16 +1960,39 @@
         var deleteBtn = document.getElementById('delete-account-btn');
         if (deleteBtn) {
           deleteBtn.addEventListener('click', function () {
-            var confirmText = prompt('输入【注销】以确认注销账号');
-            if (confirmText === '注销') {
-              localStorage.clear();
-              showToast('账号已注销');
-              setTimeout(function () { window.location.href = '注册页面.html'; }, 400);
-            } else {
-              showToast('已取消注销');
-            }
+            openDangerConfirmModal({
+              title: '注销账号',
+              desc: '将清空当前设备上的账号与应用数据，并退出登录。',
+              okText: '确认注销',
+              onConfirm: function () {
+                localStorage.clear();
+                showToast('账号已注销');
+                setTimeout(function () { window.location.href = '注册页面.html'; }, 400);
+              }
+            });
           });
         }
+
+        if (dangerConfirmCancelBtn) {
+          dangerConfirmCancelBtn.addEventListener('click', closeDangerConfirmModal);
+        }
+        if (dangerConfirmOkBtn) {
+          dangerConfirmOkBtn.addEventListener('click', function () {
+            var action = pendingDangerAction;
+            closeDangerConfirmModal();
+            if (typeof action === 'function') action();
+          });
+        }
+        if (dangerConfirmModal) {
+          dangerConfirmModal.addEventListener('click', function (e) {
+            if (e.target === dangerConfirmModal) closeDangerConfirmModal();
+          });
+        }
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && dangerConfirmModal && dangerConfirmModal.classList.contains('show')) {
+            closeDangerConfirmModal();
+          }
+        });
         
         // ✅ 初始化自定义下拉列表
         initCustomSelect(document.getElementById('focus-duration-select'));

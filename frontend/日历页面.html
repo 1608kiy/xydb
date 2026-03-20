@@ -329,6 +329,36 @@
             box-shadow: 0 6px 16px rgba(239, 68, 68, 0.2);
           }
 
+          /* ✅ 任务详情模态框（与待办页一致） */
+          .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+          }
+          .modal-overlay:not(.hidden) {
+            display: flex !important;
+          }
+          .modal-content {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(48px);
+            -webkit-backdrop-filter: blur(48px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            padding: 24px;
+            width: 100%;
+            max-width: 512px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideInRight 0.35s ease-out;
+          }
+
           .calendar-nav-btn {
             @apply glass-card p-2.5 rounded-2xl text-gray-600 transition-all duration-300;
             border-color: rgba(255, 179, 71, 0.25);
@@ -792,185 +822,65 @@
       </main>
       <!-- [/MODULE] e3f_主内容区域 -->
       
-      <!-- [MODULE] k6l_任务详情/编辑区 -->
-      <aside
-        class="task-detail-panel hidden w-80 md:w-96 glass-strong border-l border-white/50 overflow-y-auto transition-all duration-400 z-20"
-        id="task-detail-panel"
-      >
-        <div
-          class="p-4 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white/75 backdrop-blur-2xl z-10"
-        >
-          <h2 class="text-lg font-semibold text-gray-800">任务详情</h2>
-          <button
-            class="icon-soft-danger"
-            id="close-detail-btn"
-          >
-            <i class="fas fa-times"> </i>
+    </div>
+
+    <!-- [MODULE] k6l_任务详情/编辑区 -->
+    <div id="task-detail-panel" class="modal-overlay hidden">
+      <div class="modal-content">
+        <div class="flex justify-between items-center mb-5">
+          <h2 class="text-xl font-bold text-gray-800">
+            <i class="fas fa-clipboard-list text-primary mr-2"></i>任务详情
+          </h2>
+          <button class="icon-soft-danger" id="close-detail-btn">
+            <i class="fas fa-times"></i>
           </button>
         </div>
-        <div class="p-4 space-y-6">
-          <!-- 任务标题 -->
+
+        <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">
-              任务标题
-            </label>
-            <input id="detail-title"
-              class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none transition-all"
-              type="text"
-            />
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">任务标题</label>
+            <input id="detail-title" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none transition-all" type="text" />
           </div>
-          <!-- 描述/备注 -->
+
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">
-              描述
-            </label>
-            <textarea id="detail-description"
-              class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none transition-all"
-              placeholder="添加描述..."
-              rows="4"
-            ></textarea>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">描述</label>
+            <textarea id="detail-description" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none transition-all resize-none" placeholder="添加描述..." rows="3"></textarea>
           </div>
-          <!-- 截止日期和时间 -->
+
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">
-              截止日期和时间
-            </label>
-            <input id="detail-dueAt"
-              class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none transition-all"
-              type="datetime-local"
-            />
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">截止日期和时间</label>
+            <input id="detail-dueAt" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none transition-all" type="datetime-local" />
           </div>
-          <!-- 重复设置 -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              重复
-            </label>
-            <select
-              class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none transition-all"
-            >
-              <option>不重复</option>
-              <option>每天</option>
-              <option>每周</option>
-              <option>每月</option>
-              <option>自定义</option>
-            </select>
-          </div>
-          <!-- 提醒设置 -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              提醒
-            </label>
-            <div class="space-y-2">
-              <label class="flex items-center space-x-2 p-2.5 rounded-xl hover:bg-primary/5 transition-colors cursor-pointer">
-                <input
-                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
-                  name="reminder"
-                  type="radio"
-                />
-                <span class="text-sm text-gray-700">准时</span>
-              </label>
-              <label class="flex items-center space-x-2 p-2.5 rounded-xl hover:bg-primary/5 transition-colors cursor-pointer">
-                <input
-                  checked
-                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
-                  name="reminder"
-                  type="radio"
-                />
-                <span class="text-sm text-gray-700">5 分钟前</span>
-              </label>
-              <label class="flex items-center space-x-2 p-2.5 rounded-xl hover:bg-primary/5 transition-colors cursor-pointer">
-                <input
-                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
-                  name="reminder"
-                  type="radio"
-                />
-                <span class="text-sm text-gray-700">15 分钟前</span>
-              </label>
-              <label class="flex items-center space-x-2 p-2.5 rounded-xl hover:bg-primary/5 transition-colors cursor-pointer">
-                <input
-                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
-                  name="reminder"
-                  type="radio"
-                />
-                <span class="text-sm text-gray-700">30 分钟前</span>
-              </label>
-              <label class="flex items-center space-x-2 p-2.5 rounded-xl hover:bg-primary/5 transition-colors cursor-pointer">
-                <input
-                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
-                  name="reminder"
-                  type="radio"
-                />
-                <span class="text-sm text-gray-700">1 小时前</span>
-              </label>
-              <label class="flex items-center space-x-2 p-2.5 rounded-xl hover:bg-primary/5 transition-colors cursor-pointer">
-                <input
-                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
-                  name="reminder"
-                  type="radio"
-                />
-                <span class="text-sm text-gray-700">1 天前</span>
-              </label>
-              <label class="flex items-center space-x-2 p-2.5 rounded-xl hover:bg-primary/5 transition-colors cursor-pointer">
-                <input
-                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
-                  name="reminder"
-                  type="radio"
-                />
-                <span class="text-sm text-gray-700">自定义</span>
-              </label>
-            </div>
-          </div>
-          <!-- 子任务管理 -->
-          <div>
-            <div class="flex justify-between items-center mb-2">
-              <label class="block text-sm font-medium text-gray-700">
-                子任务
-              </label>
+
+          <div class="rounded-xl border border-gray-200/70 bg-white/60 p-3">
+            <div class="flex justify-between items-center mb-2.5">
+              <label class="block text-sm font-medium text-gray-700">子任务</label>
               <button class="text-sm text-primary hover:text-secondary transition-colors">
-                <i class="fas fa-check-square mr-1"> </i>
-                全部完成
+                <i class="fas fa-check-square mr-1"></i>全部完成
               </button>
             </div>
-            <div class="space-y-2 mb-3" id="subtask-list"></div>
+            <div class="space-y-2 mb-3 max-h-32 overflow-y-auto" id="subtask-list"></div>
             <div class="flex">
-              <input
-                class="glass-input flex-1 px-4 py-2.5 rounded-l-xl focus:outline-none transition-all"
-                placeholder="添加子任务..."
-                type="text"
-              />
-              <button
-                class="px-4 py-2.5 btn-primary rounded-r-xl"
-              >
-                <i class="fas fa-plus"> </i>
+              <input class="glass-input flex-1 px-4 py-2.5 rounded-l-xl focus:outline-none transition-all" placeholder="添加子任务..." type="text" />
+              <button class="px-4 py-2.5 btn-primary rounded-r-xl">
+                <i class="fas fa-plus"></i>
               </button>
             </div>
           </div>
-          <!-- 标签管理 -->
+
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              标签
-            </label>
-            <div class="flex flex-wrap gap-2 mb-3" id="tag-list"></div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">标签</label>
+            <div class="flex flex-wrap gap-2 mb-2.5" id="tag-list"></div>
           </div>
-          <!-- 保存/取消按钮 -->
+
           <div class="flex space-x-3 pt-4 border-t border-gray-200">
-            <button
-              class="flex-1 py-2.5 btn-soft-danger rounded-xl text-sm font-medium"
-              id="cancel-btn"
-            >
-              取消
-            </button>
-            <button
-              class="flex-1 py-2.5 btn-primary rounded-xl text-sm font-medium"
-              id="save-btn"
-            >
-              保存任务
-            </button>
+            <button class="flex-1 py-2.5 btn-soft-danger rounded-xl text-sm font-medium" id="cancel-btn">取消</button>
+            <button class="flex-1 py-2.5 btn-primary rounded-xl text-sm font-medium" id="save-btn">保存任务</button>
           </div>
         </div>
-      </aside>
-      <!-- [/MODULE] k6l_任务详情/编辑区 -->
+      </div>
     </div>
+    <!-- [/MODULE] k6l_任务详情/编辑区 -->
     
     <!-- [MODULE] m7n_底部 Tab 栏 -->
     <footer
@@ -1064,6 +974,7 @@
         var dayTitle = document.querySelector('#day-view h2');
         var detailPanel = document.getElementById('task-detail-panel');
         var closeDetailBtn = document.getElementById('close-detail-btn');
+        var cancelBtn = document.getElementById('cancel-btn');
         var saveBtn = document.getElementById('save-btn');
         var detailTitle = document.getElementById('detail-title');
         var detailDescription = document.getElementById('detail-description');
@@ -1077,6 +988,31 @@
           if (window.__unifiedShowToast) {
             window.__unifiedShowToast(message, type || 'info');
           }
+        }
+
+        function setCalendarChromeVisible(visible) {
+          var selector = '.unified-top-header-dock, .unified-bottom-tab-dock, header.sticky.top-0, footer.glass-tab';
+          document.querySelectorAll(selector).forEach(function (el) {
+            if (!visible) {
+              if (el.dataset.calendarDetailChromeHidden === '1') return;
+              el.dataset.calendarDetailChromeHidden = '1';
+              el.style.opacity = '0';
+              el.style.visibility = 'hidden';
+              el.style.pointerEvents = 'none';
+              return;
+            }
+            if (el.dataset.calendarDetailChromeHidden === '1') {
+              el.style.opacity = '';
+              el.style.visibility = '';
+              el.style.pointerEvents = '';
+              delete el.dataset.calendarDetailChromeHidden;
+            }
+          });
+        }
+
+        function closeTaskDetailModal() {
+          if (detailPanel) detailPanel.classList.add('hidden');
+          setCalendarChromeVisible(true);
         }
 
         function generateId(prefix) {
@@ -1446,7 +1382,7 @@
           }
           if (detailPanel) {
             detailPanel.classList.remove('hidden');
-            detailPanel.classList.add('slide-in-right');
+            setCalendarChromeVisible(false);
           }
         }
 
@@ -1708,9 +1644,27 @@
 
         if (closeDetailBtn) {
           closeDetailBtn.addEventListener('click', function () {
-            detailPanel.classList.add('hidden');
+            closeTaskDetailModal();
           });
         }
+
+        if (cancelBtn) {
+          cancelBtn.addEventListener('click', function () {
+            closeTaskDetailModal();
+          });
+        }
+
+        if (detailPanel) {
+          detailPanel.addEventListener('click', function (e) {
+            if (e.target === detailPanel) closeTaskDetailModal();
+          });
+        }
+
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && detailPanel && !detailPanel.classList.contains('hidden')) {
+            closeTaskDetailModal();
+          }
+        });
 
         if (saveBtn) {
           saveBtn.addEventListener('click', function () {
@@ -1747,7 +1701,7 @@
                 renderScheduledTaskList();
                 renderWeekView();
                 renderDayView();
-                if (detailPanel) detailPanel.classList.add('hidden');
+                closeTaskDetailModal();
                 showToast('任务已保存', 'success');
               } else {
                 showToast((resp && resp.body && resp.body.message) || '保存失败', 'error');

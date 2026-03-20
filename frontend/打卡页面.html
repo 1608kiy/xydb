@@ -183,6 +183,32 @@
           .calendar-day:hover:not(.empty):not(.today) {
             @apply border-cyan-500 bg-cyan-100 shadow-md;
           }
+
+          /* ✅ 月份切换动画 */
+          .calendar-month-viewport {
+            will-change: transform, opacity;
+          }
+          .calendar-enter-fade {
+            animation: calendarMonthFade 240ms cubic-bezier(0.22, 1, 0.36, 1);
+          }
+          .calendar-enter-next {
+            animation: calendarMonthEnterNext 280ms cubic-bezier(0.22, 1, 0.36, 1);
+          }
+          .calendar-enter-prev {
+            animation: calendarMonthEnterPrev 280ms cubic-bezier(0.22, 1, 0.36, 1);
+          }
+          @keyframes calendarMonthFade {
+            from { opacity: 0.72; }
+            to { opacity: 1; }
+          }
+          @keyframes calendarMonthEnterNext {
+            from { opacity: 0.7; transform: translateX(16px); }
+            to { opacity: 1; transform: translateX(0); }
+          }
+          @keyframes calendarMonthEnterPrev {
+            from { opacity: 0.7; transform: translateX(-16px); }
+            to { opacity: 1; transform: translateX(0); }
+          }
           
           /* ✅ 打卡按钮 */
           .checkin-btn {
@@ -206,6 +232,37 @@
           .calendar-nav-btn:hover {
             @apply bg-cyan-100 text-cyan-600 shadow-sm;
           }
+
+          /* ✅ 清空打卡记录确认弹窗 */
+          .confirm-modal-overlay {
+            @apply fixed inset-0 z-[120] hidden items-center justify-center px-4;
+            background: rgba(15, 23, 42, 0.35);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+          }
+          .confirm-modal-overlay.show {
+            @apply flex;
+          }
+          .confirm-modal-card {
+            @apply w-full max-w-md rounded-2xl p-5;
+            background: rgba(255, 255, 255, 0.86);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            box-shadow: 0 20px 48px rgba(15, 23, 42, 0.2);
+            animation: confirmModalIn 0.24s ease-out;
+          }
+          @keyframes confirmModalIn {
+            from {
+              opacity: 0;
+              transform: translateY(10px) scale(0.98);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0) scale(1);
+            }
+          }
+
       }
     </style>
   </head>
@@ -642,6 +699,29 @@
       </div>
     </footer>
 
+    <!-- 清空打卡记录确认弹窗 -->
+    <div id="clear-history-modal" class="confirm-modal-overlay" aria-hidden="true">
+      <div class="confirm-modal-card">
+        <div class="flex items-start space-x-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-danger/10 text-danger flex items-center justify-center shrink-0">
+            <i class="fas fa-trash-alt"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-semibold text-gray-800">清空最近打卡记录</h3>
+            <p class="text-sm text-gray-600 mt-1">将删除当前会话内的打卡记录，此操作不可撤销。</p>
+          </div>
+        </div>
+        <div class="flex items-center justify-end gap-3">
+          <button id="cancel-clear-history-btn" class="px-4 py-2 rounded-xl border border-gray-200 text-gray-600 bg-white/70 hover:bg-white transition-colors">
+            取消
+          </button>
+          <button id="confirm-clear-history-btn" class="px-4 py-2 rounded-xl text-white bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 shadow-md shadow-red-500/25 transition-all">
+            <i class="fas fa-trash-alt mr-1.5"></i>确认删除
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- JS 代码 -->
     <script>
       var currentCalendarDate = new Date();
@@ -871,7 +951,7 @@
       }
 
       // 生成本月简单打卡日历并更新统计
-      function renderCalendar(date) {
+      function renderCalendar(date, navDirection) {
         var container = document.getElementById('checkin-calendar');
         if (!container) return;
 
@@ -884,7 +964,15 @@
         var isCurrentMonth = year === today.getFullYear() && month === today.getMonth();
         var checkToday = isCurrentMonth ? today.getDate() : -1;
 
+        var animClass = 'calendar-enter-fade';
+        if (navDirection === 'prev') {
+          animClass = 'calendar-enter-prev';
+        } else if (navDirection === 'next') {
+          animClass = 'calendar-enter-next';
+        }
+
         var html = '';
+        html += '<div class="calendar-month-viewport ' + animClass + '">';
         html += '<div class="grid grid-cols-7 gap-1 text-center mb-1 text-[11px] text-gray-500 font-semibold">';
         ['一', '二', '三', '四', '五', '六', '日'].forEach(function (d) {
           html += '<div>' + d + '</div>';
@@ -918,6 +1006,7 @@
           }
           html += '</div>';
         }
+        html += '</div>';
         html += '</div>';
         container.innerHTML = html;
         
@@ -978,7 +1067,7 @@
           e.preventDefault();
           e.stopPropagation();
           currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
-          renderCalendar(currentCalendarDate);
+          renderCalendar(currentCalendarDate, 'prev');
         });
       }
       
@@ -987,7 +1076,7 @@
           e.preventDefault();
           e.stopPropagation();
           currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
-          renderCalendar(currentCalendarDate);
+          renderCalendar(currentCalendarDate, 'next');
         });
       }
 
@@ -1002,7 +1091,47 @@
         var list = document.getElementById('checkin-list');
         var noteInput = document.getElementById('checkin-note');
         var clearBtn = document.getElementById('clear-history');
+        var clearHistoryModal = document.getElementById('clear-history-modal');
+        var cancelClearHistoryBtn = document.getElementById('cancel-clear-history-btn');
+        var confirmClearHistoryBtn = document.getElementById('confirm-clear-history-btn');
         var selectedType = '学习';
+
+        function closeClearHistoryModal() {
+          if (!clearHistoryModal) return;
+          clearHistoryModal.classList.remove('show');
+          clearHistoryModal.setAttribute('aria-hidden', 'true');
+        }
+
+        function performClearHistory() {
+          AppState.checkins = [];
+          AppState.save();
+          renderCheckins();
+          updateStreak();
+          renderCalendar(currentCalendarDate);
+
+          if (btn) {
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+          }
+          status.textContent = '今日尚未打卡';
+          status.className = 'text-[11px] text-gray-500 text-center';
+
+          showToast('打卡记录已清空');
+        }
+
+        function openClearHistoryModal() {
+          var hasCheckins = Array.isArray(AppState.checkins) && AppState.checkins.length > 0;
+          if (!hasCheckins) {
+            showToast('暂无打卡记录可删除', 'error');
+            return;
+          }
+          if (!clearHistoryModal) {
+            performClearHistory();
+            return;
+          }
+          clearHistoryModal.classList.add('show');
+          clearHistoryModal.setAttribute('aria-hidden', 'false');
+        }
 
         function normalizeCheckinItem(item, fallbackDate, fallbackTime) {
           var source = item || {};
@@ -1199,24 +1328,29 @@
 
         if (clearBtn) {
           clearBtn.addEventListener('click', function () {
-            if (confirm('确定要清空本次会话的打卡记录吗？')) {
-              AppState.checkins = [];
-              AppState.save();
-              renderCheckins();
-              updateStreak();
-              renderCalendar(currentCalendarDate);
-              
-              if (btn) {
-                btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
-              }
-              status.textContent = '今日尚未打卡';
-              status.className = 'text-[11px] text-gray-500 text-center';
-              
-              showToast('打卡记录已清空');
-            }
+            openClearHistoryModal();
           });
         }
+
+        if (cancelClearHistoryBtn) {
+          cancelClearHistoryBtn.addEventListener('click', closeClearHistoryModal);
+        }
+        if (confirmClearHistoryBtn) {
+          confirmClearHistoryBtn.addEventListener('click', function () {
+            closeClearHistoryModal();
+            performClearHistory();
+          });
+        }
+        if (clearHistoryModal) {
+          clearHistoryModal.addEventListener('click', function (e) {
+            if (e.target === clearHistoryModal) closeClearHistoryModal();
+          });
+        }
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && clearHistoryModal && clearHistoryModal.classList.contains('show')) {
+            closeClearHistoryModal();
+          }
+        });
 
         // 优先从服务端拉取打卡数据并渲染，失败则使用本地数据回退
         function fetchCheckinsFromServer() {

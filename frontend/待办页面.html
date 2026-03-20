@@ -909,24 +909,27 @@
       </div>
     </main>
 
-    <!-- 任务详情面板 -->
-    <aside
-      class="task-detail-panel hidden w-80 md:w-96 glass-max border-l border-gray-200/50 overflow-y-auto z-30 slide-in-right"
-      id="task-detail-panel" style="width: 320px;">
-      <div class="p-4 border-b border-gray-200/50 flex justify-between items-center sticky top-0 glass-strong z-10">
-        <h2 class="text-lg font-semibold text-gray-800">任务详情</h2>
-        <button class="text-gray-500 hover:text-gray-700 p-2.5 rounded-xl hover:bg-gray-100" id="close-detail-btn">
-          <i class="fas fa-times"></i>
+  </div>
+
+  <!-- 任务详情模态框 -->
+  <div id="task-detail-panel" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="flex justify-between items-center mb-5">
+        <h2 class="text-xl font-bold text-gray-800">
+          <i class="fas fa-clipboard-list text-primary mr-2"></i>任务详情
+        </h2>
+        <button class="text-gray-500 hover:text-gray-700 p-2.5 rounded-xl hover:bg-gray-100" type="button" id="close-detail-btn">
+          <i class="fas fa-times text-lg"></i>
         </button>
       </div>
-      <div class="p-5 space-y-5">
+      <div class="space-y-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1.5">任务标题</label>
           <input class="input-glass" id="detail-title" type="text" />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1.5">描述</label>
-          <textarea class="input-glass resize-none" id="detail-description" placeholder="添加描述..." rows="4"></textarea>
+          <textarea class="input-glass resize-none" id="detail-description" placeholder="添加描述..." rows="3"></textarea>
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1.5">截止日期和时间</label>
@@ -934,73 +937,66 @@
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">优先级</label>
-          <div class="flex gap-2">
-            <button class="flex-1 py-2.5 px-3 rounded-xl text-sm priority-btn" data-priority="high"
-              onclick="window.selectDetailPriority('high')">
+          <div class="grid grid-cols-3 gap-2">
+            <button class="py-2.5 px-3 rounded-xl text-sm priority-btn" data-priority="high" onclick="window.selectDetailPriority('high')">
               <i class="fas fa-flag mr-1"></i>高
             </button>
-            <button class="flex-1 py-2.5 px-3 rounded-xl text-sm priority-btn" data-priority="medium"
-              onclick="window.selectDetailPriority('medium')">
+            <button class="py-2.5 px-3 rounded-xl text-sm priority-btn" data-priority="medium" onclick="window.selectDetailPriority('medium')">
               <i class="fas fa-flag mr-1"></i>中
             </button>
-            <button class="flex-1 py-2.5 px-3 rounded-xl text-sm priority-btn" data-priority="low"
-              onclick="window.selectDetailPriority('low')">
+            <button class="py-2.5 px-3 rounded-xl text-sm priority-btn" data-priority="low" onclick="window.selectDetailPriority('low')">
               <i class="fas fa-flag mr-1"></i>低
             </button>
           </div>
         </div>
-        <div>
-          <div class="flex justify-between items-center mb-3">
+        <div class="rounded-xl border border-gray-200/70 bg-white/60 p-3">
+          <div class="flex justify-between items-center mb-2.5">
             <label class="block text-sm font-medium text-gray-700">子任务</label>
             <button class="text-sm text-primary hover:text-primary/80" id="complete-all-subtasks">
               <i class="fas fa-check-square mr-1"></i>全部完成
             </button>
           </div>
-          <div class="space-y-2 mb-3" id="subtask-list"></div>
+          <div class="space-y-2 mb-3 max-h-32 overflow-y-auto" id="subtask-list"></div>
           <div class="flex">
-            <input
-              class="flex-1 px-3 py-2.5 border border-gray-200 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-primary/30"
+            <input class="flex-1 px-3 py-2.5 border border-gray-200 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-primary/30"
               id="new-subtask-input" placeholder="添加子任务..." type="text" />
             <button class="px-4 py-2.5 bg-primary text-white rounded-r-xl hover:bg-primary/90" id="add-subtask-btn">
               <i class="fas fa-plus"></i>
             </button>
           </div>
         </div>
-        
-
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">标签</label>
-          <div class="flex flex-wrap gap-2 mb-3" id="tag-list"></div>
+          <div class="flex flex-wrap gap-2 mb-2.5" id="tag-list"></div>
           <button class="text-sm text-primary hover:text-primary/80" id="add-tag-inline">
             <i class="fas fa-plus mr-1"></i>添加标签
           </button>
         </div>
         <div class="flex space-x-3 pt-4 border-t border-gray-200/50">
-          <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white"
-            id="cancel-edit-btn">取消</button>
+          <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white" id="cancel-edit-btn">取消</button>
           <button class="flex-1 py-2.5 btn-primary-glass" id="save-task-btn">
             <i class="fas fa-save mr-2"></i>保存任务
           </button>
         </div>
-        <div class="flex gap-2 pt-2 border-t border-gray-200/50">
-          <button class="flex-1 min-w-[80px] py-2.5 btn-secondary-glass text-primary inline-flex items-center justify-center gap-1.5 text-xs"
+        <div class="grid grid-cols-3 gap-2 pt-1">
+          <button class="min-w-[80px] py-2.5 btn-secondary-glass text-primary inline-flex items-center justify-center gap-1.5 text-xs"
             id="share-task-btn">
             <i class="fas fa-share-alt text-sm"></i>
             <span>分享</span>
           </button>
-          <button class="flex-1 min-w-[80px] py-2.5 btn-secondary-glass inline-flex items-center justify-center gap-1.5 text-xs"
+          <button class="min-w-[80px] py-2.5 btn-secondary-glass inline-flex items-center justify-center gap-1.5 text-xs"
             id="copy-task-btn">
             <i class="fas fa-copy text-sm"></i>
             <span>复制</span>
           </button>
-          <button class="flex-1 min-w-[80px] py-2.5 btn-secondary-glass text-danger inline-flex items-center justify-center gap-1.5 text-xs"
+          <button class="min-w-[80px] py-2.5 btn-secondary-glass text-danger inline-flex items-center justify-center gap-1.5 text-xs"
             id="delete-task-btn">
             <i class="fas fa-trash-alt text-sm"></i>
             <span>删除</span>
           </button>
         </div>
       </div>
-    </aside>
+    </div>
   </div>
 
 
@@ -1132,67 +1128,6 @@
           </button>
           <button class="flex-1 py-2.5 btn-primary-glass" type="button" onclick="window.createTagFunc()">
             <i class="fas fa-check mr-2"></i>创建标签
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-
-  <!-- 批量操作模态框 -->
-  <div id="batch-action-modal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-bold text-gray-800">
-          <i class="fas fa-tasks text-primary mr-2"></i>批量操作
-        </h2>
-        <button class="text-gray-500 hover:text-gray-700 p-2.5 rounded-xl hover:bg-gray-100" type="button"
-          onclick="window.closeBatchModalFunc()">
-          <i class="fas fa-times text-lg"></i>
-        </button>
-      </div>
-      <div class="space-y-5">
-        <div>
-          <p class="text-sm text-gray-600 mb-4">当前已选择 <span id="batch-selected-count"
-              class="font-bold text-primary">0</span> 个任务</p>
-          <div class="flex flex-col gap-3">
-            <button
-              class="w-full py-3 px-4 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl border border-green-200 flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
-              onclick="window.confirmBatchComplete()">
-              <i class="fas fa-check-circle text-lg"></i>
-              <span class="font-medium">批量完成选中任务</span>
-            </button>
-            <button
-              class="w-full py-3 px-4 bg-red-50 hover:bg-red-100 text-red-700 rounded-xl border border-red-200 flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
-              onclick="window.confirmBatchDelete()">
-              <i class="fas fa-trash-alt text-lg"></i>
-              <span class="font-medium">批量删除选中任务</span>
-            </button>
-            <button
-              class="w-full py-3 px-4 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl border border-blue-200 flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
-              onclick="window.completeAllTasks()">
-              <i class="fas fa-check-double text-lg"></i>
-              <span class="font-medium">完成所有任务</span>
-            </button>
-          </div>
-        </div>
-        <div class="pt-4 border-t border-gray-200/50">
-          <p class="text-xs text-gray-500 mb-3">操作说明：</p>
-          <ul class="text-xs text-gray-500 space-y-1">
-            <li class="flex items-start gap-2"><i class="fas fa-circle text-[6px] mt-1.5"></i>点击任务卡片可以选中/取消选中</li>
-            <li class="flex items-start gap-2"><i class="fas fa-circle text-[6px] mt-1.5"></i>批量完成：将选中的任务标记为已完成</li>
-            <li class="flex items-start gap-2"><i class="fas fa-circle text-[6px] mt-1.5"></i>批量删除：永久删除选中的任务</li>
-            <li class="flex items-start gap-2"><i class="fas fa-circle text-[6px] mt-1.5"></i>完成所有：将所有任务标记为已完成</li>
-          </ul>
-        </div>
-        <div class="flex space-x-3 pt-4">
-          <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white" type="button"
-            onclick="window.closeBatchModalFunc()">
-            取消
-          </button>
-          <button class="flex-1 py-2.5 btn-secondary-glass" type="button" onclick="window.clearBatchSelection()">
-            <i class="fas fa-times mr-2"></i>清空选择
           </button>
         </div>
       </div>
@@ -1657,6 +1592,32 @@
       });
     }
 
+    function setTodoChromeVisible(visible) {
+      var selector = '.unified-top-header-dock, .unified-bottom-tab-dock, #main-header, footer.glass-tab';
+      document.querySelectorAll(selector).forEach(function (el) {
+        if (!visible) {
+          if (el.dataset.todoDetailChromeHidden === '1') return;
+          el.dataset.todoDetailChromeHidden = '1';
+          el.style.opacity = '0';
+          el.style.visibility = 'hidden';
+          el.style.pointerEvents = 'none';
+          return;
+        }
+        if (el.dataset.todoDetailChromeHidden === '1') {
+          el.style.opacity = '';
+          el.style.visibility = '';
+          el.style.pointerEvents = '';
+          delete el.dataset.todoDetailChromeHidden;
+        }
+      });
+    }
+
+    function closeTaskDetailModal() {
+      var panel = document.getElementById('task-detail-panel');
+      if (panel) panel.classList.add('hidden');
+      setTodoChromeVisible(true);
+    }
+
     // ==================== 模态框全局函数 ====================
     window.closeModalFunc = function () {
       var modal = document.getElementById('new-task-modal');
@@ -1921,33 +1882,12 @@
       });
     };
 
-    // 批量操作模态框函数
-    window.openBatchModalFunc = function () {
-      var modal = document.getElementById('batch-action-modal');
-      if (modal) {
-        modal.classList.remove('hidden');
-        updateBatchSelectedCount();
-      }
-    };
-
-    window.closeBatchModalFunc = function () {
-      var modal = document.getElementById('batch-action-modal');
-      if (modal) modal.classList.add('hidden');
-    };
-
-    window.updateBatchSelectedCount = function () {
-      var countEl = document.getElementById('batch-selected-count');
-      if (countEl) {
-        countEl.textContent = selectedBatchTasks.length;
-      }
-    };
-
     window.confirmBatchComplete = function () {
       if (selectedBatchTasks.length === 0) {
         showToast('⚠️ 请先选择要完成的任务', 'error');
         return;
       }
-      // 直接执行批量完成并关闭模态（无需二次确认）
+      // 直接执行批量完成（无需二次确认）
       selectedBatchTasks.forEach(function (item) {
         var list = item.isToday ? tasks.today : tasks.tomorrow;
         var task = list.find(function (t) { return t.id === item.id; });
@@ -1958,7 +1898,6 @@
       renderTaskLists();
       updateCountStats();
       saveToLocalStorage();
-      window.closeBatchModalFunc();
       showToast('✅ 已批量完成 ' + count + ' 个任务');
     };
 
@@ -1967,7 +1906,7 @@
         showToast('⚠️ 请先选择要删除的任务', 'error');
         return;
       }
-      // 直接执行批量删除并关闭模态（无需二次确认）
+      // 直接执行批量删除（无需二次确认）
       selectedBatchTasks.forEach(function (item) {
         var list = item.isToday ? tasks.today : tasks.tomorrow;
         var index = list.findIndex(function (t) { return t.id === item.id; });
@@ -1978,7 +1917,6 @@
       renderTaskLists();
       updateCountStats();
       saveToLocalStorage();
-      window.closeBatchModalFunc();
       showToast('🗑️ 已批量删除 ' + count + ' 个任务');
     };
 
@@ -1988,21 +1926,19 @@
         showToast('⚠️ 暂无任务可完成', 'error');
         return;
       }
-      // 直接完成所有任务并关闭模态（无需二次确认）
+      // 直接完成所有任务（无需二次确认）
       tasks.today.forEach(function (t) { t.completed = true; });
       tasks.tomorrow.forEach(function (t) { t.completed = true; });
       selectedBatchTasks = [];
       renderTaskLists();
       updateCountStats();
       saveToLocalStorage();
-      window.closeBatchModalFunc();
       showToast('✅ 已完成全部 ' + count + ' 个任务');
     };
 
     window.clearBatchSelection = function () {
       selectedBatchTasks = [];
       renderTaskLists();
-      updateBatchSelectedCount();
       showToast('✅ 已清空选择');
     };
 
@@ -2227,9 +2163,10 @@
       var panel = document.getElementById('task-detail-panel');
       if (!panel) return;
       panel.classList.remove('hidden');
+      setTodoChromeVisible(false);
       document.getElementById('detail-title').value = task.title;
       document.getElementById('detail-description').value = task.description || '';
-      document.getElementById('detail-datetime').value = task.time;
+      document.getElementById('detail-datetime').value = (task.dueAt || '').slice(0, 16) || '';
       selectedDetailPriority = task.priority;
       updateDetailPriorityButtons();
       renderSubtasks();
@@ -2434,17 +2371,28 @@
 
       // 关闭详情面板
       var closeDetailBtn = document.getElementById('close-detail-btn');
+      var taskDetailPanel = document.getElementById('task-detail-panel');
       if (closeDetailBtn) {
         closeDetailBtn.addEventListener('click', function () {
-          document.getElementById('task-detail-panel').classList.add('hidden');
+          closeTaskDetailModal();
         });
       }
+      if (taskDetailPanel) {
+        taskDetailPanel.addEventListener('click', function (e) {
+          if (e.target === taskDetailPanel) closeTaskDetailModal();
+        });
+      }
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && taskDetailPanel && !taskDetailPanel.classList.contains('hidden')) {
+          closeTaskDetailModal();
+        }
+      });
 
       // 取消编辑
       var cancelEditBtn = document.getElementById('cancel-edit-btn');
       if (cancelEditBtn) {
         cancelEditBtn.addEventListener('click', function () {
-          document.getElementById('task-detail-panel').classList.add('hidden');
+          closeTaskDetailModal();
         });
       }
 
@@ -2464,7 +2412,7 @@
               renderTaskLists();
               updateCountStats();
               saveToLocalStorage();
-              document.getElementById('task-detail-panel').classList.add('hidden');
+              closeTaskDetailModal();
               showToast('✅ 本地离线任务已保存');
               return;
             }
@@ -2475,7 +2423,7 @@
               renderTaskLists();
               updateCountStats();
               saveToLocalStorage();
-              document.getElementById('task-detail-panel').classList.add('hidden');
+              closeTaskDetailModal();
               showToast('✅ 任务保存成功！');
             }).catch(function (err) {
               console.error(err);
@@ -2490,12 +2438,12 @@
       var batchDeleteBtn = document.getElementById('batch-delete-btn');
       if (batchCompleteBtn) {
         batchCompleteBtn.addEventListener('click', function () {
-          window.openBatchModalFunc();
+          window.confirmBatchComplete();
         });
       }
       if (batchDeleteBtn) {
         batchDeleteBtn.addEventListener('click', function () {
-          window.openBatchModalFunc();
+          window.confirmBatchDelete();
         });
       }
 
@@ -2580,7 +2528,7 @@
               renderTaskLists();
               updateCountStats();
               saveToLocalStorage();
-              document.getElementById('task-detail-panel').classList.add('hidden');
+              closeTaskDetailModal();
               showToast('🗑️ 本地离线任务已删除');
               return;
             }
@@ -2593,7 +2541,7 @@
                 renderTaskLists();
                 updateCountStats();
                 saveToLocalStorage();
-                document.getElementById('task-detail-panel').classList.add('hidden');
+                closeTaskDetailModal();
                 showToast('🗑️ 任务已删除');
               } else {
                 showToast((resp.body && resp.body.message) || '删除失败', 'error');
