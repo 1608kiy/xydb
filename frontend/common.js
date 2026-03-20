@@ -1,20 +1,214 @@
-function showToast(message, duration = 1800) {
-  if (!message) return;
-  let toast = document.getElementById('toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'toast';
-    toast.className = 'fixed bottom-4 left-1/2 -translate-x-1/2 bg-black/80 text-white text-sm px-4 py-2 rounded-full shadow-xl opacity-0 pointer-events-none z-50 transition-all duration-300';
-    document.body.appendChild(toast);
+function ensureUnifiedToastStyle() {
+  if (document.getElementById('unified-toast-style')) return;
+  var style = document.createElement('style');
+  style.id = 'unified-toast-style';
+  style.textContent = `
+  .unified-toast-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 100000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+    max-width: min(360px, calc(100vw - 20px));
   }
-  toast.textContent = message;
-  toast.classList.remove('opacity-0');
-  toast.classList.add('opacity-100');
-  clearTimeout(showToast._timer);
-  showToast._timer = setTimeout(() => {
-    toast.classList.remove('opacity-100');
-    toast.classList.add('opacity-0');
-  }, duration);
+  .unified-toast {
+    min-width: 280px;
+    max-width: min(360px, calc(100vw - 20px));
+    padding: 14px 16px;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.68);
+    border-left: 4px solid var(--toast-accent, #4F46E5);
+    background: linear-gradient(90deg, var(--toast-bg, rgba(79, 70, 229, 0.12)), rgba(255, 255, 255, 0.95));
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
+    opacity: 0;
+    transform: translateX(120px);
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    pointer-events: auto;
+  }
+  .unified-toast.show {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .unified-toast.hide {
+    opacity: 0;
+    transform: translateX(120px);
+  }
+  .unified-toast-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .unified-toast-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--toast-accent, #4F46E5);
+    background: var(--toast-accent-soft, rgba(79, 70, 229, 0.16));
+    flex-shrink: 0;
+  }
+  .unified-toast-text {
+    color: #374151;
+    font-size: 13px;
+    line-height: 1.45;
+    font-weight: 500;
+    word-break: break-word;
+    flex: 1;
+  }
+  @media (max-width: 640px) {
+    .unified-toast-container {
+      top: 14px;
+      right: 12px;
+      left: 12px;
+      max-width: none;
+    }
+    .unified-toast {
+      min-width: 0;
+      max-width: none;
+    }
+  }
+  `;
+  document.head.appendChild(style);
+}
+
+function getUnifiedToastThemeByPath() {
+  var path = '';
+  try { path = decodeURIComponent((window.location && window.location.pathname) || ''); } catch (e) { path = (window.location && window.location.pathname) || ''; }
+
+  var preset = {
+    info: '#4F46E5',
+    success: '#10B981',
+    warning: '#F59E0B',
+    error: '#EF4444'
+  };
+
+  if (path.indexOf('番茄钟页面') !== -1) {
+    preset.info = '#FF6B6B';
+    preset.success = '#34D399';
+    preset.warning = '#FB923C';
+    preset.error = '#EF4444';
+  } else if (path.indexOf('日历页面') !== -1) {
+    preset.info = '#FFB347';
+    preset.success = '#F59E0B';
+    preset.warning = '#FB923C';
+    preset.error = '#EF4444';
+  } else if (path.indexOf('打卡页面') !== -1) {
+    preset.info = '#3B82F6';
+    preset.success = '#10B981';
+    preset.warning = '#F59E0B';
+    preset.error = '#EF4444';
+  } else if (path.indexOf('个人中心页面') !== -1) {
+    preset.info = '#7C3AED';
+    preset.success = '#22C55E';
+    preset.warning = '#F59E0B';
+    preset.error = '#EF4444';
+  }
+
+  return preset;
+}
+
+function normalizeToastType(type) {
+  var t = (type || 'info').toString().toLowerCase();
+  if (t === 'danger') return 'error';
+  if (t === 'warn') return 'warning';
+  if (t !== 'success' && t !== 'info' && t !== 'warning' && t !== 'error') return 'info';
+  return t;
+}
+
+function hexToRgba(hex, alpha) {
+  var h = String(hex || '').replace('#', '').trim();
+  if (h.length === 3) {
+    h = h.split('').map(function (c) { return c + c; }).join('');
+  }
+  if (!/^[0-9a-fA-F]{6}$/.test(h)) return 'rgba(79, 70, 229, ' + String(alpha) + ')';
+  var r = parseInt(h.slice(0, 2), 16);
+  var g = parseInt(h.slice(2, 4), 16);
+  var b = parseInt(h.slice(4, 6), 16);
+  return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + String(alpha) + ')';
+}
+
+function getUnifiedToastContainer() {
+  var container = document.getElementById('unified-toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'unified-toast-container';
+    container.className = 'unified-toast-container';
+    document.body.appendChild(container);
+  }
+  return container;
+}
+
+function showToast(message, typeOrDuration, duration) {
+  if (!message) return;
+  ensureUnifiedToastStyle();
+
+  var type = 'info';
+  var life = 3000;
+
+  if (typeof typeOrDuration === 'number') {
+    life = typeOrDuration;
+  } else if (typeof typeOrDuration === 'string') {
+    type = normalizeToastType(typeOrDuration);
+  }
+  if (typeof duration === 'number') {
+    life = duration;
+  }
+
+  var palette = getUnifiedToastThemeByPath();
+  var accent = palette[type] || palette.info;
+
+  var iconClass = 'fa-info-circle';
+  if (type === 'success') iconClass = 'fa-check-circle';
+  if (type === 'warning') iconClass = 'fa-exclamation-triangle';
+  if (type === 'error') iconClass = 'fa-exclamation-circle';
+
+  var container = getUnifiedToastContainer();
+  var toast = document.createElement('div');
+  toast.className = 'unified-toast unified-toast-' + type;
+  toast.style.setProperty('--toast-accent', accent);
+  toast.style.setProperty('--toast-bg', hexToRgba(accent, 0.16));
+  toast.style.setProperty('--toast-accent-soft', hexToRgba(accent, 0.16));
+
+  var inner = document.createElement('div');
+  inner.className = 'unified-toast-inner';
+
+  var icon = document.createElement('span');
+  icon.className = 'unified-toast-icon';
+  icon.innerHTML = '<i class="fas ' + iconClass + '"></i>';
+
+  var text = document.createElement('span');
+  text.className = 'unified-toast-text';
+  text.textContent = String(message);
+
+  inner.appendChild(icon);
+  inner.appendChild(text);
+  toast.appendChild(inner);
+  container.appendChild(toast);
+
+  requestAnimationFrame(function () {
+    toast.classList.add('show');
+  });
+
+  var hide = function () {
+    toast.classList.remove('show');
+    toast.classList.add('hide');
+    setTimeout(function () {
+      if (toast && toast.parentNode) toast.remove();
+    }, 420);
+  };
+
+  setTimeout(hide, Math.max(1200, life));
+}
+
+if (typeof window !== 'undefined') {
+  window.__unifiedShowToast = showToast;
 }
 
 function isMobile() {

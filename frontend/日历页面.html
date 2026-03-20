@@ -1,4 +1,4 @@
-<html lang="zh-CN">
+﻿<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
@@ -1074,31 +1074,9 @@
 
         // ✅ Toast 提示函数 - 右上角弹出
         function showToast(message, type) {
-          if (type === void 0) type = 'info';
-          var toastContainer = document.getElementById('toast-container');
-          if (!toastContainer) return;
-          
-          var toast = document.createElement('div');
-          toast.className = 'toast ' + type;
-          var iconClass = 'fa-info-circle';
-          if (type === 'success') iconClass = 'fa-check-circle';
-          else if (type === 'error') iconClass = 'fa-exclamation-circle';
-          else if (type === 'warning') iconClass = 'fa-exclamation-triangle';
-          
-          toast.innerHTML = '<div class="flex items-center space-x-2"><i class="fas ' + iconClass + ' text-' + type + '"></i><span>' + message + '</span></div>';
-          
-          toastContainer.appendChild(toast);
-          
-          setTimeout(function() {
-            toast.classList.add('show');
-          }, 10);
-          
-          setTimeout(function() {
-            toast.classList.remove('show');
-            setTimeout(function() {
-              if (toast.parentNode) toast.remove();
-            }, 400);
-          }, 3000);
+          if (window.__unifiedShowToast) {
+            window.__unifiedShowToast(message, type || 'info');
+          }
         }
 
         function generateId(prefix) {

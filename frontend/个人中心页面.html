@@ -1,4 +1,4 @@
-<html lang="zh-CN">
+﻿<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
@@ -1261,17 +1261,9 @@
       }
       
       function showToast(message, type) {
-        type = type || 'success';
-        var toast = document.createElement('div');
-        var icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
-        var color = type === 'success' ? 'text-primary' : 'text-danger';
-        var bgColor = type === 'success' ? 'bg-primary/10' : 'bg-danger/10';
-        toast.className = 'fixed top-20 right-4 z-[1001] glass-max rounded-2xl shadow-2xl p-4 flex items-center space-x-3 min-w-[300px] bounce-in';
-        toast.innerHTML = '<div class="w-10 h-10 rounded-full ' + bgColor + ' flex items-center justify-center"><i class="fas ' + icon + ' ' + color + '"></i></div>' +
-          '<div class="flex-1"><p class="font-medium text-gray-800 text-sm">提示</p><p class="text-xs text-gray-500">' + message + '</p></div>' +
-          '<button class="text-gray-400 hover:text-gray-600" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>';
-        document.body.appendChild(toast);
-        setTimeout(function() { toast.remove(); }, 3000);
+        if (window.__unifiedShowToast) {
+          window.__unifiedShowToast(message, type || 'success');
+        }
       }
 
       // ✅ 自定义下拉列表通用函数

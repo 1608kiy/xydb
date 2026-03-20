@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 
 <head>
@@ -1277,49 +1277,9 @@
 
     // ==================== 工具函数 ====================
     function showToast(message, type) {
-      type = type || 'success';
-
-      var existingToast = document.querySelector('.notification-toast');
-      if (existingToast) {
-        existingToast.classList.add('toastOut');
-        setTimeout(function () {
-          if (existingToast.parentNode) existingToast.remove();
-          createToast(message, type);
-        }, 300);
-      } else {
-        createToast(message, type);
+      if (window.__unifiedShowToast) {
+        window.__unifiedShowToast(message, type || 'success');
       }
-    }
-
-    function createToast(message, type) {
-      var icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
-      var color = type === 'success' ? 'text-primary' : 'text-danger';
-      var bgColor = type === 'success' ? 'bg-primary/10' : 'bg-danger/10';
-
-      var toast = document.createElement('div');
-      toast.className = 'notification-toast';
-      toast.innerHTML =
-        '<div class="w-10 h-10 rounded-full ' + bgColor + ' flex items-center justify-center flex-shrink-0">' +
-        '<i class="fas ' + icon + ' ' + color + ' text-lg"></i>' +
-        '</div>' +
-        '<div class="flex-1">' +
-        '<p class="font-medium text-gray-800 text-sm">提示</p>' +
-        '<p class="text-xs text-gray-500">' + message + '</p>' +
-        '</div>' +
-        '<button class="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition-colors" onclick="this.parentElement.remove()">' +
-        '<i class="fas fa-times"></i>' +
-        '</button>';
-
-      document.body.appendChild(toast);
-
-      setTimeout(function () {
-        if (toast.parentNode) {
-          toast.classList.add('toastOut');
-          setTimeout(function () {
-            if (toast.parentNode) toast.remove();
-          }, 300);
-        }
-      }, 3000);
     }
 
     function saveToLocalStorage() {

@@ -804,33 +804,9 @@
 
       // 消息提示
       function showMessage(message, type = 'info') {
-        const toast = document.getElementById('message-toast');
-        const icon = document.getElementById('message-icon');
-        const text = document.getElementById('message-text');
-        
-        if (!toast || !icon || !text) return;
-        
-        const icons = {
-          success: 'fa-check-circle text-success',
-          error: 'fa-times-circle text-danger',
-          warning: 'fa-exclamation-circle text-warning',
-          info: 'fa-info-circle text-primary'
-        };
-        
-        icon.className = `fas ${icons[type] || icons.info}`;
-        text.textContent = message;
-        
-        toast.className = `message-toast ${type}`;
-        
-        setTimeout(() => {
-          toast.classList.remove('opacity-0', 'invisible');
-          toast.style.transform = 'translateX(-50%) translateY(0)';
-        }, 10);
-        
-        setTimeout(() => {
-          toast.classList.add('opacity-0', 'invisible');
-          toast.style.transform = 'translateX(-50%) translateY(-20px)';
-        }, 2500);
+        if (window.__unifiedShowToast) {
+          window.__unifiedShowToast(message, type || 'info');
+        }
       }
 
       // 番茄钟逻辑
