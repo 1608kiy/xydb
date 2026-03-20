@@ -727,9 +727,9 @@
         <!-- 主要分类 -->
         <nav>
           <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-3">主要分类</h2>
-          <ul class="space-y-1">
+          <ul class="space-y-1" id="sidebar-main-list">
             <li>
-              <a class="sidebar-item-active sidebar-item" href="javascript:void(0);">
+              <a class="sidebar-item-active sidebar-item" href="javascript:void(0);" data-main="all">
                 <div class="flex items-center">
                   <i class="fas fa-tasks w-5 h-5 mr-3 text-primary"></i>
                   <span>所有任务</span>
@@ -738,7 +738,7 @@
               </a>
             </li>
             <li>
-              <a class="sidebar-item" href="javascript:void(0);">
+              <a class="sidebar-item" href="javascript:void(0);" data-main="myday">
                 <div class="flex items-center">
                   <i class="fas fa-sun w-5 h-5 mr-3 text-warning"></i>
                   <span>我的一天</span>
@@ -747,7 +747,7 @@
               </a>
             </li>
             <li>
-              <a class="sidebar-item" href="javascript:void(0);">
+              <a class="sidebar-item" href="javascript:void(0);" data-main="important">
                 <div class="flex items-center">
                   <i class="fas fa-star w-5 h-5 mr-3 text-warning"></i>
                   <span>重要任务</span>
@@ -756,7 +756,7 @@
               </a>
             </li>
             <li>
-              <a class="sidebar-item" href="javascript:void(0);">
+              <a class="sidebar-item" href="javascript:void(0);" data-main="planned">
                 <div class="flex items-center">
                   <i class="fas fa-calendar w-5 h-5 mr-3 text-info"></i>
                   <span>已计划</span>
@@ -765,12 +765,12 @@
               </a>
             </li>
             <li>
-              <a class="sidebar-item" href="javascript:void(0);">
+              <a class="sidebar-item" href="javascript:void(0);" data-main="assigned">
                 <div class="flex items-center">
                   <i class="fas fa-user w-5 h-5 mr-3 text-secondary"></i>
                   <span>已分配给我</span>
                 </div>
-                <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full">3</span>
+                <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-assigned">0</span>
               </a>
             </li>
           </ul>
@@ -837,6 +837,9 @@
             <button class="btn-secondary-glass inline-flex items-center text-danger" id="batch-delete-btn">
               <i class="fas fa-trash-alt mr-2"></i>批量删除
             </button>
+            <span class="inline-flex items-center text-xs px-3 py-2 rounded-xl bg-gray-100 text-gray-600" id="sync-status-badge">
+              <i class="fas fa-check-circle mr-1"></i>已同步
+            </span>
           </div>
           <div class="flex items-center gap-3">
             <div class="relative" style="position: relative;">
@@ -1274,6 +1277,12 @@
     var selectedDetailPriority = 'medium';
     var selectedTagColor = 'task-work';
     var selectedBatchTasks = [];
+    var currentMainFilter = 'all';
+    var currentTagFilter = null;
+    var currentSortMode = 'time';
+    var pendingCreateQueue = [];
+    var syncingPendingCreates = false;
+    var PENDING_CREATE_KEY = 'todoPendingCreates_v1';
 
     // ==================== 工具函数 ====================
     function showToast(message, type) {
@@ -1287,6 +1296,139 @@
         localStorage.setItem('todoTasks', JSON.stringify(tasks));
         localStorage.setItem('todoTags', JSON.stringify(tags));
       } catch (e) { console.error('保存失败:', e); }
+    }
+
+    function savePendingQueue() {
+      try {
+        localStorage.setItem(PENDING_CREATE_KEY, JSON.stringify(pendingCreateQueue));
+        updateSyncStatusBadge();
+      } catch (e) { console.error('待同步队列保存失败:', e); }
+    }
+
+    function loadPendingQueue() {
+      try {
+        var raw = localStorage.getItem(PENDING_CREATE_KEY);
+        pendingCreateQueue = raw ? JSON.parse(raw) : [];
+        if (!Array.isArray(pendingCreateQueue)) pendingCreateQueue = [];
+      } catch (e) {
+        console.error('待同步队列加载失败:', e);
+        pendingCreateQueue = [];
+      }
+      updateSyncStatusBadge();
+    }
+
+    function updateSyncStatusBadge(mode) {
+      var badge = document.getElementById('sync-status-badge');
+      if (!badge) return;
+
+      var pendingCount = pendingCreateQueue.length;
+      var status = mode || (syncingPendingCreates ? 'syncing' : (pendingCount > 0 ? 'pending' : 'synced'));
+
+      if (status === 'syncing') {
+        badge.className = 'inline-flex items-center text-xs px-3 py-2 rounded-xl bg-blue-100 text-blue-700';
+        badge.innerHTML = '<i class="fas fa-arrows-rotate animate-spin mr-1"></i>同步中' + (pendingCount > 0 ? '（' + pendingCount + '）' : '');
+        return;
+      }
+
+      if (status === 'pending') {
+        badge.className = 'inline-flex items-center text-xs px-3 py-2 rounded-xl bg-amber-100 text-amber-700';
+        badge.innerHTML = '<i class="fas fa-cloud-arrow-up mr-1"></i>待同步（' + pendingCount + '）';
+        return;
+      }
+
+      badge.className = 'inline-flex items-center text-xs px-3 py-2 rounded-xl bg-emerald-100 text-emerald-700';
+      badge.innerHTML = '<i class="fas fa-check-circle mr-1"></i>已同步';
+    }
+
+    function normalizeServerTask(created, fallbackTag) {
+      if (!created) return null;
+      created.completed = (created.status === 'completed');
+      created.time = created.dueAt ? (created.dueAt.split('T')[1] || '').replace(/:00$/, '') : '';
+      if (!Array.isArray(created.subtasks)) created.subtasks = [];
+      try {
+        if (typeof created.tags === 'string' && created.tags.trim()) {
+          var parsed = JSON.parse(created.tags);
+          created.tag = Array.isArray(parsed) && parsed.length > 0 ? parsed[0] : (fallbackTag || null);
+        } else if (Array.isArray(created.tags)) {
+          created.tag = created.tags.length > 0 ? created.tags[0] : (fallbackTag || null);
+        } else {
+          created.tag = fallbackTag || created.tag || null;
+        }
+      } catch (e) {
+        created.tag = fallbackTag || created.tag || null;
+      }
+      return created;
+    }
+
+    function replaceLocalTaskById(localId, serverTask) {
+      var i = tasks.today.findIndex(function (t) { return String(t.id) === String(localId); });
+      if (i > -1) {
+        tasks.today[i] = serverTask;
+        return true;
+      }
+      var j = tasks.tomorrow.findIndex(function (t) { return String(t.id) === String(localId); });
+      if (j > -1) {
+        tasks.tomorrow[j] = serverTask;
+        return true;
+      }
+      return false;
+    }
+
+    function removePendingByLocalId(localId) {
+      pendingCreateQueue = pendingCreateQueue.filter(function (q) {
+        return String(q.localId) !== String(localId);
+      });
+      savePendingQueue();
+    }
+
+    function syncOfflineTasksToServer(silent) {
+      if (syncingPendingCreates) return Promise.resolve();
+      if (!pendingCreateQueue || pendingCreateQueue.length === 0) return Promise.resolve();
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) return Promise.resolve();
+
+      syncingPendingCreates = true;
+      updateSyncStatusBadge('syncing');
+      var succeeded = 0;
+
+      var chain = Promise.resolve();
+      pendingCreateQueue.slice().forEach(function (item) {
+        chain = chain.then(function () {
+          return apiRequest('/api/tasks', {
+            method: 'POST',
+            body: JSON.stringify(item.payload)
+          }).then(function (resp) {
+            if (!(resp.status === 200 && resp.body && resp.body.code === 200 && resp.body.data)) {
+              throw new Error((resp.body && resp.body.message) || '同步失败');
+            }
+
+            var created = normalizeServerTask(resp.body.data, item.fallbackTag);
+            replaceLocalTaskById(item.localId, created);
+
+            pendingCreateQueue = pendingCreateQueue.filter(function (q) {
+              return String(q.localId) !== String(item.localId);
+            });
+            savePendingQueue();
+            succeeded++;
+          });
+        });
+      });
+
+      return chain.catch(function (err) {
+        console.warn('离线任务同步中断:', err);
+      }).finally(function () {
+        syncingPendingCreates = false;
+        updateSyncStatusBadge();
+        renderTaskLists();
+        updateCountStats();
+        saveToLocalStorage();
+        if (!silent && succeeded > 0) {
+          showToast('已自动同步 ' + succeeded + ' 条离线任务');
+        }
+      });
+    }
+
+    function isLocalTaskId(id) {
+      return String(id || '').indexOf('local_') === 0;
     }
 
     // ============ 后端交互 ============
@@ -1395,6 +1537,124 @@
     function getTagIcon(tagKey) {
       var icons = { work: 'fa-briefcase', study: 'fa-book', life: 'fa-home', health: 'fa-heart' };
       return icons[tagKey] || 'fa-tag';
+    }
+
+    function getPriorityRank(priority) {
+      var map = { high: 3, medium: 2, low: 1 };
+      return map[String(priority || '').toLowerCase()] || 0;
+    }
+
+    function getTaskTimeValue(task) {
+      if (task && task.dueAt) {
+        var dueTs = new Date(task.dueAt).getTime();
+        if (!Number.isNaN(dueTs)) return dueTs;
+      }
+      if (task && task.time) {
+        var hhmm = String(task.time).split(':');
+        var h = parseInt(hhmm[0], 10);
+        var m = parseInt(hhmm[1], 10);
+        if (!Number.isNaN(h) && !Number.isNaN(m)) return h * 60 + m;
+      }
+      return Number.MAX_SAFE_INTEGER;
+    }
+
+    function sortTaskList(list) {
+      if (!Array.isArray(list)) return;
+      list.sort(function (a, b) {
+        if (currentSortMode === 'priority') {
+          var pDiff = getPriorityRank(b.priority) - getPriorityRank(a.priority);
+          if (pDiff !== 0) return pDiff;
+          return getTaskTimeValue(a) - getTaskTimeValue(b);
+        }
+
+        if (currentSortMode === 'tag') {
+          var aTag = getTagName(a.tag || '').toString();
+          var bTag = getTagName(b.tag || '').toString();
+          var tDiff = aTag.localeCompare(bTag, 'zh-CN');
+          if (tDiff !== 0) return tDiff;
+          return getTaskTimeValue(a) - getTaskTimeValue(b);
+        }
+
+        if (currentSortMode === 'status') {
+          var aDone = (a.completed || a.status === 'completed') ? 1 : 0;
+          var bDone = (b.completed || b.status === 'completed') ? 1 : 0;
+          if (aDone !== bDone) return aDone - bDone;
+          return getTaskTimeValue(a) - getTaskTimeValue(b);
+        }
+
+        return getTaskTimeValue(a) - getTaskTimeValue(b);
+      });
+    }
+
+    function applyCurrentSort() {
+      sortTaskList(tasks.today);
+      sortTaskList(tasks.tomorrow);
+    }
+
+    function getSortLabel(mode) {
+      if (mode === 'priority') return '按优先级';
+      if (mode === 'tag') return '按标签';
+      if (mode === 'status') return '按完成状态';
+      return '按时间';
+    }
+
+    function isAssignedTask(task) {
+      if (!task) return false;
+      var me = (window.AppState && window.AppState.user && window.AppState.user.id) ? String(window.AppState.user.id) : '';
+      var assigneeId = task.assigneeId ? String(task.assigneeId) : '';
+      if (task.assignedToMe === true) return true;
+      if (task.assignee === 'me') return true;
+      if (me && assigneeId && assigneeId === me) return true;
+      // 单人模式兜底：无指派字段时视为“分配给我”
+      if (!task.assigneeId && typeof task.assignedToMe === 'undefined' && !task.assignee) return true;
+      return false;
+    }
+
+    function matchMainFilter(task, isToday) {
+      if (currentMainFilter === 'myday') return !!isToday;
+      if (currentMainFilter === 'important') return String(task.priority || '') === 'high';
+      if (currentMainFilter === 'planned') return !!(task.dueAt || task.time);
+      if (currentMainFilter === 'assigned') return isAssignedTask(task);
+      return true;
+    }
+
+    function matchTagFilter(task) {
+      if (!currentTagFilter) return true;
+      return String(task.tag || '') === String(currentTagFilter);
+    }
+
+    function getFilteredTasks(list, isToday) {
+      return (list || []).filter(function (task) {
+        return matchMainFilter(task, isToday) && matchTagFilter(task);
+      });
+    }
+
+    function updateSidebarActiveState() {
+      var mainItems = document.querySelectorAll('#sidebar-main-list [data-main]');
+      mainItems.forEach(function (item) {
+        if (item.dataset.main === currentMainFilter) item.classList.add('sidebar-item-active');
+        else item.classList.remove('sidebar-item-active');
+      });
+
+      var tagItems = document.querySelectorAll('#sidebar-tag-list [data-tag]');
+      tagItems.forEach(function (item) {
+        var active = currentTagFilter && item.dataset.tag === currentTagFilter;
+        if (active) item.classList.add('sidebar-item-active');
+        else item.classList.remove('sidebar-item-active');
+      });
+    }
+
+    function updateSortMenuState() {
+      var menu = document.getElementById('sort-filter-menu');
+      if (!menu) return;
+      var items = menu.querySelectorAll('[data-sort]');
+      items.forEach(function (item) {
+        if (item.dataset.sort === currentSortMode) {
+          item.classList.add('bg-primary/10', 'text-primary');
+        } else {
+          item.classList.remove('bg-primary/10', 'text-primary');
+        }
+      });
     }
 
     // ==================== 模态框全局函数 ====================
@@ -1538,6 +1798,42 @@
       });
     }
 
+    function createTaskLocalFallback(payload, title, description, dueAt, time, tag, message) {
+      var localId = 'local_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+      var fallbackTask = {
+        id: localId,
+        title: title,
+        description: description,
+        priority: selectedModalPriority,
+        tag: tag,
+        status: 'pending',
+        completed: false,
+        dueAt: dueAt,
+        time: time,
+        subtasks: []
+      };
+
+      pendingCreateQueue.push({
+        localId: localId,
+        payload: payload,
+        fallbackTag: tag,
+        createdAt: new Date().toISOString()
+      });
+      savePendingQueue();
+      updateSyncStatusBadge('pending');
+
+      var fallbackDue = fallbackTask.dueAt ? fallbackTask.dueAt.split('T')[0] : null;
+      var fallbackToday = new Date().toISOString().slice(0, 10);
+      if (fallbackDue === fallbackToday) tasks.today.unshift(fallbackTask);
+      else tasks.tomorrow.unshift(fallbackTask);
+
+      renderTaskLists();
+      updateCountStats();
+      saveToLocalStorage();
+      window.closeModalFunc();
+      showToast(message || '网络异常，已保存到本地', 'error');
+    }
+
     window.createTaskFunc = function () {
       var modalTitle = document.getElementById('modal-title');
       var modalDesc = document.getElementById('modal-description');
@@ -1560,6 +1856,9 @@
         status: 'pending',
         dueAt: (modalDate && modalDate.value ? (modalDate.value + 'T' + ((modalTime && modalTime.value) ? modalTime.value : '12:00') + ':00') : null)
       };
+      var localDesc = modalDesc ? modalDesc.value.trim() : '';
+      var localDueAt = (modalDate ? (modalDate.value + 'T' + (modalTime ? modalTime.value : '12:00') + ':00') : null);
+      var localTime = (modalTime ? modalTime.value : '12:00');
 
       apiRequest('/api/tasks', {
         method: 'POST',
@@ -1593,21 +1892,7 @@
             };
           }
           // normalize and place into lists based on due date
-          created.completed = (created.status === 'completed');
-          created.time = created.dueAt ? (created.dueAt.split('T')[1] || '').replace(/:00$/, '') : '';
-          // ensure frontend-friendly `tag` field exists (backend may return `tags` string)
-          try {
-            if (typeof created.tags === 'string' && created.tags.trim()) {
-              var p = JSON.parse(created.tags);
-              created.tag = Array.isArray(p) && p.length > 0 ? p[0] : (selectedModalTag || null);
-            } else if (Array.isArray(created.tags)) {
-              created.tag = created.tags.length > 0 ? created.tags[0] : (selectedModalTag || null);
-            } else {
-              created.tag = selectedModalTag || null;
-            }
-          } catch (e) {
-            created.tag = selectedModalTag || null;
-          }
+          created = normalizeServerTask(created, selectedModalTag);
 
           var due = created.dueAt ? created.dueAt.split('T')[0] : null;
           var today = new Date().toISOString().slice(0, 10);
@@ -1619,12 +1904,20 @@
           window.closeModalFunc();
           showToast('✅ 任务创建成功！');
         } else {
-          var msg = (body && body.message) || ('创建失败（状态码 ' + (resp && typeof resp.status !== 'undefined' ? resp.status : '未知') + '）');
-          showToast(msg, 'error');
+          if (resp.status === 401 || resp.status === 403) {
+            var authMsg = (resp.body && resp.body.message) || ('创建任务失败（HTTP ' + resp.status + '）');
+            showToast(authMsg, 'error');
+            return;
+          }
+
+          var fallbackMsg = (resp.status === 404 || resp.status === 405)
+            ? '后端接口不可用，已保存到本地'
+            : ('服务暂不可用（HTTP ' + resp.status + '），已保存到本地');
+          createTaskLocalFallback(payload, title, localDesc, localDueAt, localTime, selectedModalTag, fallbackMsg);
         }
       }).catch(function (err) {
         console.error(err);
-        showToast('网络错误，创建任务失败', 'error');
+        createTaskLocalFallback(payload, title, localDesc, localDueAt, localTime, selectedModalTag, '网络异常，已保存到本地');
       });
     };
 
@@ -1737,9 +2030,9 @@
         subtaskInfo +
         '</div>' +
         '<div class="task-actions">' +
-        '<button class="task-action-btn share" onclick="event.stopPropagation(); handleTaskAction(' + task.id + ', ' + isToday + ', \'share\')" title="分享"><i class="fas fa-share-alt"></i></button>' +
-        '<button class="task-action-btn copy" onclick="event.stopPropagation(); handleTaskAction(' + task.id + ', ' + isToday + ', \'copy\')" title="复制"><i class="fas fa-copy"></i></button>' +
-        '<button class="task-action-btn delete" onclick="event.stopPropagation(); handleTaskAction(' + task.id + ', ' + isToday + ', \'delete\')" title="删除"><i class="fas fa-trash-alt"></i></button>' +
+        '<button class="task-action-btn share" onclick="event.stopPropagation(); handleTaskAction(' + JSON.stringify(task.id) + ', ' + isToday + ', \'share\')" title="分享"><i class="fas fa-share-alt"></i></button>' +
+        '<button class="task-action-btn copy" onclick="event.stopPropagation(); handleTaskAction(' + JSON.stringify(task.id) + ', ' + isToday + ', \'copy\')" title="复制"><i class="fas fa-copy"></i></button>' +
+        '<button class="task-action-btn delete" onclick="event.stopPropagation(); handleTaskAction(' + JSON.stringify(task.id) + ', ' + isToday + ', \'delete\')" title="删除"><i class="fas fa-trash-alt"></i></button>' +
         '</div>' +
         '</div></div>';
     }
@@ -1777,6 +2070,16 @@
         }
       } else if (action === 'delete') {
         if (confirm('确定要删除任务 "' + task.title + '" 吗？')) {
+          if (String(taskId).indexOf('local_') === 0) {
+            var localIndex = list.findIndex(function (t) { return String(t.id) === String(taskId); });
+            if (localIndex > -1) list.splice(localIndex, 1);
+            removePendingByLocalId(taskId);
+            renderTaskLists();
+            updateCountStats();
+            saveToLocalStorage();
+            showToast('🗑️ 本地离线任务已删除');
+            return;
+          }
           apiRequest('/api/tasks/' + taskId, { method: 'DELETE' }).then(function (resp) {
             if (resp.status === 200 && resp.body && resp.body.code === 200) {
               var index = list.findIndex(function (t) { return t.id === taskId; });
@@ -1802,13 +2105,27 @@
       var tomorrowList = document.getElementById('tomorrow-task-list');
       if (!todayList || !tomorrowList) return;
 
-      todayList.innerHTML = tasks.today.map(function (t) { return generateTaskCard(t, true); }).join('');
-      tomorrowList.innerHTML = tasks.tomorrow.map(function (t) { return generateTaskCard(t, false); }).join('');
+      applyCurrentSort();
+
+      var filteredToday = getFilteredTasks(tasks.today, true);
+      var filteredTomorrow = getFilteredTasks(tasks.tomorrow, false);
+
+      todayList.innerHTML = filteredToday.map(function (t) { return generateTaskCard(t, true); }).join('');
+      tomorrowList.innerHTML = filteredTomorrow.map(function (t) { return generateTaskCard(t, false); }).join('');
+
+      if (filteredToday.length === 0) {
+        todayList.innerHTML = '<div class="text-center text-sm text-gray-400 py-6">当前筛选下暂无任务</div>';
+      }
+      if (filteredTomorrow.length === 0) {
+        tomorrowList.innerHTML = '<div class="text-center text-sm text-gray-400 py-6">当前筛选下暂无任务</div>';
+      }
 
       var todayCount = document.getElementById('today-task-count');
       var tomorrowCount = document.getElementById('tomorrow-task-count');
-      if (todayCount) todayCount.textContent = tasks.today.length;
-      if (tomorrowCount) tomorrowCount.textContent = tasks.tomorrow.length;
+      if (todayCount) todayCount.textContent = filteredToday.length;
+      if (tomorrowCount) tomorrowCount.textContent = filteredTomorrow.length;
+
+      updateSidebarActiveState();
 
       bindTaskEvents();
     }
@@ -1822,8 +2139,9 @@
       tags.forEach(function (tag) {
         var count = tasks.today.filter(function (t) { return t.tag === tag.key; }).length +
           tasks.tomorrow.filter(function (t) { return t.tag === tag.key; }).length;
+        var activeClass = currentTagFilter === tag.key ? ' sidebar-item-active' : '';
         html += '<li>' +
-          '<a class="sidebar-item" href="javascript:void(0);" data-tag="' + tag.key + '">' +
+          '<a class="sidebar-item' + activeClass + '" href="javascript:void(0);" data-tag="' + tag.key + '">' +
           '<div class="flex items-center">' +
           '<span class="w-3 h-3 rounded-full ' + tag.color + ' mr-3"></span>' +
           '<span>#' + tag.name + '</span>' +
@@ -1844,6 +2162,10 @@
       if (countAll) countAll.textContent = tasks.today.length + tasks.tomorrow.length;
       if (countToday) countToday.textContent = tasks.today.length;
       if (countImportant) countImportant.textContent = tasks.today.filter(function (t) { return t.priority === 'high'; }).length + tasks.tomorrow.filter(function (t) { return t.priority === 'high'; }).length;
+      var countPlanned = document.getElementById('count-planned');
+      var countAssigned = document.getElementById('count-assigned');
+      if (countPlanned) countPlanned.textContent = tasks.today.filter(function (t) { return !!(t.dueAt || t.time); }).length + tasks.tomorrow.filter(function (t) { return !!(t.dueAt || t.time); }).length;
+      if (countAssigned) countAssigned.textContent = tasks.today.filter(function (t) { return isAssignedTask(t); }).length + tasks.tomorrow.filter(function (t) { return isAssignedTask(t); }).length;
 
       tags.forEach(function (tag) {
         var countEl = document.getElementById('count-' + tag.key);
@@ -1860,11 +2182,22 @@
         cb.addEventListener('click', function (e) {
           e.stopPropagation();
           var card = this.closest('.task-card');
-          var taskId = parseInt(card.dataset.taskId);
+          var taskId = card.dataset.taskId;
           var isToday = card.dataset.isToday === 'true';
           var list = isToday ? tasks.today : tasks.tomorrow;
+          var task = list.find(function (x) { return String(x.id) === String(taskId); });
           // optimistic UI change will be handled after server response
           var checked = this.checked;
+          if (String(taskId).indexOf('local_') === 0) {
+            if (task) {
+              task.completed = checked;
+              task.status = checked ? 'completed' : 'pending';
+            }
+            renderTaskLists();
+            updateCountStats();
+            saveToLocalStorage();
+            return;
+          }
           toggleTaskCompleteServer(taskId, checked, isToday ? 'today' : 'tomorrow').then(function () {
             // success handled inside toggleTaskCompleteServer
           }).catch(function () {
@@ -1878,10 +2211,10 @@
         card.addEventListener('click', function (e) {
           if (e.target.closest('.task-action-btn') || e.target.classList.contains('task-checkbox')) return;
 
-          var taskId = parseInt(this.dataset.taskId);
+          var taskId = this.dataset.taskId;
           var isToday = this.dataset.isToday === 'true';
           var list = isToday ? tasks.today : tasks.tomorrow;
-          var task = list.find(function (t) { return t.id === taskId; });
+          var task = list.find(function (t) { return String(t.id) === String(taskId); });
           if (task) {
             currentEditingTask = task;
             openTaskDetail(task);
@@ -1927,7 +2260,7 @@
       if (currentEditingTask && currentEditingTask.subtasks[index]) {
         currentEditingTask.subtasks[index].completed = !currentEditingTask.subtasks[index].completed;
         // sync to server if task persisted
-        if (currentEditingTask.id) {
+        if (currentEditingTask.id && !isLocalTaskId(currentEditingTask.id)) {
           var payload = currentEditingTask.subtasks.map(function (s) { return { title: s.title || s.text || '', completed: !!s.completed }; });
           apiRequest('/api/tasks/' + currentEditingTask.id + '/subtasks', {
             method: 'PUT',
@@ -1958,7 +2291,7 @@
     window.deleteSubtask = function (index) {
       if (currentEditingTask && currentEditingTask.subtasks[index]) {
         currentEditingTask.subtasks.splice(index, 1);
-        if (currentEditingTask.id) {
+        if (currentEditingTask.id && !isLocalTaskId(currentEditingTask.id)) {
           var payload = currentEditingTask.subtasks.map(function (s) { return { title: s.title || s.text || '', completed: !!s.completed }; });
           apiRequest('/api/tasks/' + currentEditingTask.id + '/subtasks', {
             method: 'PUT',
@@ -2007,11 +2340,23 @@
     document.addEventListener('DOMContentLoaded', function () {
       if (typeof checkAuthOnLoad === 'function') { checkAuthOnLoad().catch(function(){}); }
       loadFromLocalStorage();
+      loadPendingQueue();
+      updateSyncStatusBadge();
       renderSidebarTags();
       // 优先从服务端拉取最新任务
       fetchTasksFromServer().then(function(){
         // fallback: if server empty, keep local
         renderSidebarTags();
+        syncOfflineTasksToServer(true);
+      });
+
+      window.addEventListener('online', function () {
+        updateSyncStatusBadge('syncing');
+        syncOfflineTasksToServer(false);
+      });
+
+      window.addEventListener('offline', function () {
+        updateSyncStatusBadge('pending');
       });
 
       var dateEl = document.getElementById('current-date');
@@ -2113,6 +2458,16 @@
               description: document.getElementById('detail-description').value,
               priority: selectedDetailPriority
             };
+            if (isLocalTaskId(currentEditingTask.id)) {
+              Object.assign(currentEditingTask, updatedPayload);
+              currentEditingTask.completed = (currentEditingTask.status === 'completed');
+              renderTaskLists();
+              updateCountStats();
+              saveToLocalStorage();
+              document.getElementById('task-detail-panel').classList.add('hidden');
+              showToast('✅ 本地离线任务已保存');
+              return;
+            }
             updateTaskOnServer(currentEditingTask.id, updatedPayload).then(function (updated) {
               // merge returned fields
               Object.assign(currentEditingTask, updated);
@@ -2148,14 +2503,52 @@
       var sortFilterBtn = document.getElementById('sort-filter-btn');
       var sortFilterMenu = document.getElementById('sort-filter-menu');
       if (sortFilterBtn && sortFilterMenu) {
+        updateSortMenuState();
         sortFilterBtn.addEventListener('click', function (e) {
           e.stopPropagation();
           sortFilterMenu.classList.toggle('hidden');
+        });
+        sortFilterMenu.querySelectorAll('[data-sort]').forEach(function (item) {
+          item.addEventListener('click', function (e) {
+            e.preventDefault();
+            currentSortMode = item.dataset.sort || 'time';
+            updateSortMenuState();
+            sortFilterMenu.classList.add('hidden');
+            renderTaskLists();
+            showToast('已切换排序：' + getSortLabel(currentSortMode));
+          });
         });
         document.addEventListener('click', function (e) {
           if (!sortFilterBtn.contains(e.target) && !sortFilterMenu.contains(e.target)) {
             sortFilterMenu.classList.add('hidden');
           }
+        });
+      }
+
+      // 侧边栏主分类筛选
+      var sidebarMainList = document.getElementById('sidebar-main-list');
+      if (sidebarMainList) {
+        sidebarMainList.addEventListener('click', function (e) {
+          var item = e.target.closest('[data-main]');
+          if (!item) return;
+          e.preventDefault();
+          currentMainFilter = item.dataset.main || 'all';
+          currentTagFilter = null;
+          renderTaskLists();
+        });
+      }
+
+      // 侧边栏标签筛选（再次点击取消筛选）
+      var sidebarTagList = document.getElementById('sidebar-tag-list');
+      if (sidebarTagList) {
+        sidebarTagList.addEventListener('click', function (e) {
+          var item = e.target.closest('[data-tag]');
+          if (!item) return;
+          e.preventDefault();
+          var clicked = item.dataset.tag;
+          currentTagFilter = (currentTagFilter === clicked) ? null : clicked;
+          currentMainFilter = 'all';
+          renderTaskLists();
         });
       }
 
@@ -2178,6 +2571,19 @@
       if (deleteTaskBtn) {
         deleteTaskBtn.addEventListener('click', function () {
           if (currentEditingTask && confirm('确定要删除这个任务吗？')) {
+            if (isLocalTaskId(currentEditingTask.id)) {
+              var localIsToday = tasks.today.some(function (t) { return String(t.id) === String(currentEditingTask.id); });
+              var localList = localIsToday ? tasks.today : tasks.tomorrow;
+              var localIndex = localList.findIndex(function (t) { return String(t.id) === String(currentEditingTask.id); });
+              if (localIndex > -1) localList.splice(localIndex, 1);
+              removePendingByLocalId(currentEditingTask.id);
+              renderTaskLists();
+              updateCountStats();
+              saveToLocalStorage();
+              document.getElementById('task-detail-panel').classList.add('hidden');
+              showToast('🗑️ 本地离线任务已删除');
+              return;
+            }
             apiRequest('/api/tasks/' + currentEditingTask.id, { method: 'DELETE' }).then(function (resp) {
               if (resp.status === 200 && resp.body && resp.body.code === 200) {
                 var isToday = tasks.today.some(function (t) { return t.id === currentEditingTask.id; });
@@ -2233,7 +2639,7 @@
           if (text && currentEditingTask) {
             var newSub = { title: text, completed: false };
             // if task exists on server, sync
-            if (currentEditingTask.id) {
+            if (currentEditingTask.id && !isLocalTaskId(currentEditingTask.id)) {
               var payload = currentEditingTask.subtasks.map(function (s) { return { title: s.title || s.text || '', completed: !!s.completed }; });
               payload.push(newSub);
               apiRequest('/api/tasks/' + currentEditingTask.id + '/subtasks', {

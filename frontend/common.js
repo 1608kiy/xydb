@@ -376,8 +376,54 @@ function resolveApiBase() {
 // 全局 API 请求封装：自动携带 Authorization header（从 localStorage 读取 token）
 function apiRequest(path, options) {
   options = options || {};
-  var base = resolveApiBase();
-  var url = path.startsWith('http') ? path : (base + path);
+  // 优先级：window.__API_BASE__ > localStorage.apiBase > 同源；同源失败时自动回退 localhost:8080
+  var explicitBase = (window.__API_BASE__ || '').trim();
+  var storedBase = '';
+  try {
+    storedBase = (localStorage.getItem('apiBase') || '').trim();
+  } catch (e) {
+    storedBase = '';
+  }
+
+  var candidateBases = [];
+  if (explicitBase) candidateBases.push(explicitBase);
+  if (storedBase && candidateBases.indexOf(storedBase) === -1) candidateBases.push(storedBase);
+
+  var protocol = (window.location && window.location.protocol) || '';
+  if (!explicitBase && !storedBase && (protocol === 'http:' || protocol === 'https:')) {
+    candidateBases.push(window.location.origin);
+  }
+  if (candidateBases.indexOf('http://localhost:8080') === -1) {
+    candidateBases.push('http://localhost:8080');
+  }
+
+  function sanitizeBase(base) {
+    return String(base || '').replace(/\/+$/, '');
+  }
+
+  function parseResponse(res) {
+    var contentType = (res.headers && res.headers.get && res.headers.get('content-type')) || '';
+    if (contentType.indexOf('application/json') > -1) {
+      return res.json().catch(function () { return { status: res.status }; }).then(function (body) {
+        return { status: res.status, body: body };
+      });
+    }
+    return res.text().then(function (text) {
+      return { status: res.status, body: { status: res.status, rawText: text } };
+    }).catch(function () {
+      return { status: res.status, body: { status: res.status } };
+    });
+  }
+
+  function shouldFallback(resp) {
+    if (!path || path.indexOf('/api/') !== 0) return false;
+    if (!resp) return true;
+    if (resp.status === 404 || resp.status === 405) return true;
+    if (!resp.body) return true;
+    // 非标准 Result 结构（例如静态服务返回 HTML）时允许回退重试
+    if (typeof resp.body.code === 'undefined' && typeof resp.body.message === 'undefined') return true;
+    return false;
+  }
   var headers = options.headers || {};
   headers['Content-Type'] = headers['Content-Type'] || 'application/json';
   var token = localStorage.getItem('token');
@@ -385,11 +431,29 @@ function apiRequest(path, options) {
     headers['Authorization'] = 'Bearer ' + token;
   }
   options.headers = headers;
-  return fetch(url, options).then(function (res) {
-    return res.json().catch(function () { return { status: res.status }; }).then(function (body) {
-      return { status: res.status, body: body };
+
+  if (path.startsWith('http')) {
+    return fetch(path, options).then(parseResponse);
+  }
+
+  var idx = 0;
+  function tryNext(lastResp) {
+    if (idx >= candidateBases.length) {
+      return Promise.resolve(lastResp || { status: 0, body: { message: 'Network error' } });
+    }
+    var base = sanitizeBase(candidateBases[idx++]);
+    var url = base + path;
+    return fetch(url, options).then(parseResponse).then(function (resp) {
+      if (idx < candidateBases.length && shouldFallback(resp)) {
+        return tryNext(resp);
+      }
+      return resp;
+    }).catch(function () {
+      return tryNext(lastResp);
     });
-  });
+  }
+
+  return tryNext();
 }
 
 // 统一的身份检查：在页面加载时调用，若无 token 或 token 无效则清理并跳转登录页
