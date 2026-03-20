@@ -31,6 +31,12 @@ public class TaskController {
 
     @PostMapping
     public ResponseEntity<Result<Task>> create(@RequestBody Task task){
+        if (task == null || task.getTitle() == null || task.getTitle().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Result.fail(400, "Task title is required"));
+        }
+
+        task.setTitle(task.getTitle().trim());
+
         return userService.getCurrentUser()
                 .map(user -> {
                     task.setUser(user);

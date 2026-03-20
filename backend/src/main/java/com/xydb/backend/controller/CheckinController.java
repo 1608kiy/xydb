@@ -34,6 +34,13 @@ public class CheckinController {
 
     @GetMapping("/calendar")
     public ResponseEntity<Result<List<Checkin>>> calendar(@RequestParam int year, @RequestParam int month){
+        if (month < 1 || month > 12) {
+            return ResponseEntity.badRequest().body(Result.fail(400, "Invalid month"));
+        }
+        if (year < 1 || year > 9999) {
+            return ResponseEntity.badRequest().body(Result.fail(400, "Invalid year"));
+        }
+
         LocalDate start = LocalDate.of(year, month, 1);
         LocalDate end = start.plusMonths(1).minusDays(1);
         return userService.getCurrentUser().map(u -> {
