@@ -50,6 +50,23 @@ taskkill /PID <PID> /F
 ## 调试脚本
 - `backend/check_reports.ps1`：用现有 token 调用 `/api/me`、`/api/reports/overview`、`/api/reports/daily-trend`，便于端到端验证。
 - 其它脚本：`restart_with_log.ps1`、`start_and_call.ps1`（若存在）可用于重定向日志并启动服务。
+- `scripts/run_regression.ps1`：标准化后端回归入口（先跑测试，再以 `local` profile 启动服务，最后执行 `scripts/verify_api.ps1` 冒烟）。
+
+## 一键回归（推荐）
+在项目根目录执行：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\run_regression.ps1
+```
+
+可选参数：
+- `-ApiBase 'http://localhost:8080'`：改用 8080 或其它端口。
+- `-SkipTests`：仅做启动与 API 冒烟，不执行 `mvn test`。
+
+## CI 自动门禁
+已新增 GitHub Actions 工作流：`.github/workflows/backend-ci.yml`
+- `backend-test`：在 Ubuntu 上执行 `mvn test`。
+- `api-smoke`：在 Windows 上启动 `local` profile 后端并执行 `scripts/verify_api.ps1`。
 
 ## 开发进度（2026-03-19，同步）
 - 后端已在 `local` profile 下可本地启动，使用内存 H2 数据库（用于本地快速验收）。

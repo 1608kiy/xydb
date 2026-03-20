@@ -1,0 +1,95 @@
+name: Backend CI
+
+on:
+  push:
+    paths:
+      - backend/**
+      - scripts/**
+      - .github/workflows/backend-ci.yml
+  pull_request:
+    paths:
+      - backend/**
+      - scripts/**
+      - .github/workflows/backend-ci.yml
+
+jobs:
+  backend-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Run Unit Tests
+        run: |
+          chmod +x backend/mvnw
+          ./backend/mvnw -f backend/pom.xml -q test
+
+  api-smoke:
+    runs-on: windows-latest
+    needs: backend-test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Start Backend (local profile)
+        shell: pwsh
+        run: |
+          $mvnCommand = '.\backend\mvnw.cmd -f .\backend\pom.xml spring-boot:run "-Dspring-boot.run.profiles=local" "-Dspring-boot.run.arguments=--server.port=8082"'
+          $proc = Start-Process -FilePath "cmd.exe" -ArgumentList "/c", $mvnCommand -PassThru
+          "BACKEND_PID=$($proc.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "Started backend PID=$($proc.Id)"
+
+      - name: Wait For Backend
+        shell: pwsh
+        run: |
+          $ok = $false
+          1..120 | ForEach-Object {
+            try {
+              $r = Invoke-RestMethod -Uri 'http://localhost:8082/actuator/health' -Method Get -TimeoutSec 2 -ErrorAction Stop
+              if ($r.status -eq 'UP') {
+                $ok = $true
+                Write-Host 'Backend health is UP'
+                return
+              }
+            } catch {
+              Start-Sleep -Seconds 1
+            }
+          }
+          if (-not $ok) {
+            throw 'Backend failed to become healthy on port 8082 within 120s'
+          }
+
+      - name: Run API Smoke Script
+        shell: pwsh
+        run: |
+          powershell -ExecutionPolicy Bypass -File .\scripts\verify_api.ps1 -ApiBase 'http://localhost:8082'
+
+      - name: Stop Backend
+        if: always()
+        shell: pwsh
+        run: |
+          if ($env:BACKEND_PID) {
+            Stop-Process -Id $env:BACKEND_PID -Force -ErrorAction SilentlyContinue
+            Write-Host "Stopped backend PID=$env:BACKEND_PID"
+          }
+          $conn = Get-NetTCPConnection -LocalPort 8082 -State Listen -ErrorAction SilentlyContinue
+          if ($conn) {
+            ($conn | Select-Object -ExpandProperty OwningProcess -Unique) | ForEach-Object {
+              Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue
+              Write-Host "Stopped lingering PID=$_"
+            }
+          }
