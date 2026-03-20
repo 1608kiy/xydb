@@ -1115,57 +1115,7 @@
           try { if (user.avatarUrl) document.getElementById('profile-avatar').src = user.avatarUrl; } catch (e) {}
         }
 
-        // save nickname on blur
-        document.addEventListener('DOMContentLoaded', function () {
-          var nameInput = document.getElementById('user-name');
-          if (nameInput) {
-            nameInput.addEventListener('blur', function () {
-              var v = nameInput.value.trim();
-              apiRequest('/api/me', { method: 'PUT', body: JSON.stringify({ nickname: v }) }).then(function (r) { if (r.status === 200 && r.body && r.body.code === 200) showToast('昵称已保存'); else showToast('保存昵称失败', 'error'); }).catch(function () { showToast('网络错误', 'error'); });
-            });
-          }
-
-          var changeAvatar = document.getElementById('change-avatar-btn');
-          var avatarInput = document.getElementById('avatar-file-input');
-          if (changeAvatar && avatarInput) {
-            changeAvatar.addEventListener('click', function () { avatarInput.click(); });
-            avatarInput.addEventListener('change', function () {
-              var f = avatarInput.files && avatarInput.files[0];
-              if (!f) return;
-              var reader = new FileReader();
-              reader.onload = function (e) {
-                var data = e.target.result;
-                document.getElementById('profile-avatar').src = data;
-                apiRequest('/api/me', { method: 'PUT', body: JSON.stringify({ avatarUrl: data }) }).then(function (r) { if (r.status === 200 && r.body && r.body.code === 200) showToast('头像已更新'); else showToast('更新头像失败', 'error'); }).catch(function () { showToast('网络错误，更新头像失败', 'error'); });
-              };
-              reader.readAsDataURL(f);
-            });
-          }
-
-          var editPhone = document.getElementById('edit-phone-btn');
-          if (editPhone) {
-            editPhone.addEventListener('click', function () {
-              var p = prompt('输入手机号', '18888880000');
-              if (!p) return;
-              apiRequest('/api/me', { method: 'PUT', body: JSON.stringify({ phone: p }) }).then(function (r) { if (r.status === 200 && r.body && r.body.code === 200) { document.getElementById('user-phone').textContent = p; showToast('手机号已更新'); } else showToast('更新手机号失败', 'error'); }).catch(function () { showToast('网络错误，更新手机号失败', 'error'); });
-            });
-          }
-
-          // initial load
-          apiRequest('/api/me', { method: 'GET' }).then(function (r) { if (r.status === 200 && r.body && r.body.code === 200) populateProfile(r.body.data); });
-
-          // profile logout button
-          var profileLogout = document.getElementById('profile-logout');
-          if (profileLogout) {
-            profileLogout.addEventListener('click', function (e) {
-              e.preventDefault();
-              try { localStorage.removeItem('token'); } catch (err) {}
-              AppState.logout && AppState.logout();
-              showToast('已退出登录');
-              setTimeout(function () { safeNavigate('登录页面.html'); }, 250);
-            });
-          }
-        });
+        // duplicate legacy DOMContentLoaded bindings removed; main bootstrap below handles profile init.
       </script>
     </div>
 
@@ -1539,6 +1489,13 @@
       document.addEventListener('DOMContentLoaded', function () {
         if (typeof checkAuthOnLoad === 'function') { checkAuthOnLoad().catch(function(){}); }
         AppState.init();
+        function ensureSettingsScopes() {
+          AppState.settings = AppState.settings || {};
+          AppState.settings.notifications = AppState.settings.notifications || {};
+          AppState.settings.pomodoro = AppState.settings.pomodoro || {};
+          AppState.settings.calendar = AppState.settings.calendar || {};
+        }
+        ensureSettingsScopes();
         renderHeader('profile');
         renderFooter('profile');
         bindGlobalLogout();
@@ -1669,74 +1626,9 @@
             if (!confirm('此操作将永久删除所有任务、打卡和专注记录，且无法恢复。确定继续？')) return;
             localStorage.removeItem('qingyue_todo_app_state_v1');
             AppState.reset();
-            showToast('所有数据已清除');
             updateDataStatistics();
-
-            // Dev test helpers
-            function toggleDevPanel() {
-              var p = document.getElementById('dev-test-panel');
-              if (!p) return;
-              if (p.style.display === 'block') p.style.display = 'none'; else p.style.display = 'block';
-            }
-
-            // 自动在本地环境显示 dev 面板（Live Server 使用localhost）
-            try {
-              if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-                var dp = document.getElementById('dev-test-panel');
-                if (dp) dp.style.display = 'block';
-              }
-            } catch (e) { /* ignore in file:// */ }
-
-            function devLog(msg) {
-              var el = document.getElementById('dev-log');
-              if (!el) return;
-              el.textContent = (new Date()).toLocaleTimeString() + ' - ' + msg + '\n' + el.textContent;
-            }
-
-            function devLogin() {
-              devLog('开始登录...');
-              apiRequest('/api/auth/login', {
-                method: 'POST',
-                body: JSON.stringify({ email: 'test@test.com', password: '123456' })
-              }).then(function (resp) {
-                var data = resp && resp.body;
-                if (resp && resp.status === 200 && data && data.data && data.data.token) {
-                  localStorage.setItem('token', data.data.token);
-                  devLog('登录成功，token 已保存');
-                } else {
-                  devLog('登录失败: ' + JSON.stringify(data));
-                }
-              }).catch(function (e) { devLog('登录异常: ' + e.message); });
-            }
-
-            function devFetchMe() {
-              devLog('请求 /api/me ...');
-              apiRequest('/api/me').then(function(res) {
-                devLog('/api/me 返回: ' + JSON.stringify(res && res.body ? res.body : res));
-              }).catch(function(e){ devLog('/api/me 异常: ' + e.message); });
-            }
-
-            function devUpdateNickname() {
-              var newName = prompt('输入要设置的昵称', 'E2E Tester');
-              if (!newName) return;
-              devLog('PUT /api/me 昵称 -> ' + newName);
-              apiRequest('/api/me', { method: 'PUT', body: JSON.stringify({ nickname: newName }) })
-                .then(function(res) {
-                  devLog('PUT 返回: ' + JSON.stringify(res && res.body ? res.body : res));
-                  if (res && res.status === 200 && res.body && res.body.data) {
-                    var userName = document.getElementById('user-name');
-                    if (userName) userName.value = res.body.data.nickname;
-                  }
-                }).catch(function(e){ devLog('PUT 异常: ' + e.message); });
-            }
-
-            function devFetchTasks() {
-              devLog('GET /api/tasks ...');
-              apiRequest('/api/tasks').then(function(res) {
-                devLog('/api/tasks 返回: ' + JSON.stringify(res && res.body ? res.body : res));
-              }).catch(function(e){ devLog('/api/tasks 异常: ' + e.message); });
-            }
-            window.location.reload();
+            showToast('所有数据已清除');
+            setTimeout(function () { window.location.reload(); }, 180);
           });
         }
 

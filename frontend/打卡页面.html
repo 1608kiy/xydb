@@ -739,6 +739,29 @@
       }
 
       // 获取指定月份的打卡统计数据
+      function formatLocalDateKey(dateObj) {
+        var y = dateObj.getFullYear();
+        var m = String(dateObj.getMonth() + 1).padStart(2, '0');
+        var d = String(dateObj.getDate()).padStart(2, '0');
+        return y + '-' + m + '-' + d;
+      }
+
+      function parseLocalDateKey(dateValue) {
+        if (!dateValue && dateValue !== 0) return null;
+        if (dateValue instanceof Date) {
+          if (isNaN(dateValue.getTime())) return null;
+          return new Date(dateValue.getFullYear(), dateValue.getMonth(), dateValue.getDate());
+        }
+        var text = String(dateValue).trim();
+        var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(text);
+        if (m) {
+          return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+        }
+        var parsed = new Date(text);
+        if (isNaN(parsed.getTime())) return null;
+        return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+      }
+
       function getMonthCheckinStats(year, month) {
         var stats = {
           monthCheckins: 0,
@@ -759,8 +782,8 @@
         }
         
         var monthCheckins = AppState.checkins.filter(function(item) {
-          var itemDate = new Date(item.date);
-          return itemDate.getFullYear() === year && itemDate.getMonth() === month;
+          var itemDate = parseLocalDateKey(item && item.date);
+          return itemDate && itemDate.getFullYear() === year && itemDate.getMonth() === month;
         });
         
         stats.monthCheckins = monthCheckins.length;
@@ -774,7 +797,9 @@
         
         if (monthCheckins.length > 0) {
           var sortedDates = monthCheckins.map(function(item) {
-            return new Date(item.date);
+            return parseLocalDateKey(item.date);
+          }).filter(function(d) {
+            return !!d;
           }).sort(function(a, b) {
             return a - b;
           });
@@ -802,7 +827,9 @@
         
         if (isCurrentMonth && monthCheckins.length > 0) {
           var sortedDates = monthCheckins.map(function(item) {
-            return new Date(item.date);
+            return parseLocalDateKey(item.date);
+          }).filter(function(d) {
+            return !!d;
           }).sort(function(a, b) {
             return b - a;
           });
@@ -835,8 +862,8 @@
           weekStart.setDate(weekStart.getDate() - 7);
           
           stats.weekCheckins = AppState.checkins.filter(function(item) {
-            var itemDate = new Date(item.date);
-            return itemDate >= weekStart && itemDate <= today;
+            var itemDate = parseLocalDateKey(item && item.date);
+            return itemDate && itemDate >= weekStart && itemDate <= today;
           }).length;
         }
         
@@ -977,6 +1004,42 @@
         var clearBtn = document.getElementById('clear-history');
         var selectedType = '学习';
 
+        function normalizeCheckinItem(item, fallbackDate, fallbackTime) {
+          var source = item || {};
+          var dateObj = parseLocalDateKey(source.date) || parseLocalDateKey(source.createdAt) || new Date();
+          var normalizedDate = formatLocalDateKey(dateObj);
+          var normalizedTime = source.time;
+          if (!normalizedTime) {
+            if (source.createdAt) {
+              try {
+                normalizedTime = new Date(source.createdAt).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+              } catch (e) {
+                normalizedTime = '';
+              }
+            }
+            if (!normalizedTime) normalizedTime = fallbackTime || '';
+          }
+          return {
+            id: source.id || generateId('c'),
+            date: normalizedDate || fallbackDate,
+            time: normalizedTime,
+            type: source.type || selectedType,
+            note: source.note || '',
+            status: source.status || '今日',
+            createdAt: source.createdAt
+          };
+        }
+
+        function upsertCheckinByDate(item) {
+          if (!item || !item.date) return;
+          if (!Array.isArray(AppState.checkins)) AppState.checkins = [];
+          var index = AppState.checkins.findIndex(function(c) { return c && c.date === item.date; });
+          if (index >= 0) {
+            AppState.checkins[index] = Object.assign({}, AppState.checkins[index], item);
+          } else {
+            AppState.checkins.push(item);
+          }
+        }
         var typeButtons = document.querySelectorAll('.type-btn');
         typeButtons.forEach(function (b) {
           b.addEventListener('click', function () {
@@ -1009,7 +1072,7 @@
           var streak = 0;
           var date = new Date(today);
           while (true) {
-            var key = date.toISOString().slice(0, 10);
+            var key = formatLocalDateKey(date);
             if (AppState.checkins && AppState.checkins.some((c) => c.date === key)) {
               streak += 1;
               date.setDate(date.getDate() - 1);
@@ -1056,7 +1119,7 @@
         }
 
         function checkTodayChecked() {
-          var today = new Date().toISOString().slice(0, 10);
+          var today = formatLocalDateKey(new Date());
           if (AppState.checkins && AppState.checkins.some(c => c.date === today)) {
             status.textContent = '今日已打卡 ✔';
             status.className = 'text-[11px] text-success text-center font-medium';
@@ -1072,7 +1135,7 @@
 
           var note = (noteInput && noteInput.value.trim()) || '今日已坚持打卡一次';
           var now = new Date();
-          var dateStr = now.toISOString().slice(0, 10);
+          var dateStr = formatLocalDateKey(now);
           var timeStr = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
 
           // 乐观更新：先禁用按钮，随后尝试同步到后端，失败回退到本地保存
@@ -1096,9 +1159,9 @@
                   }
                 }
                 saved.status = saved.status || '今日';
-                AppState.checkins.push(saved);
+                upsertCheckinByDate(normalizeCheckinItem(saved, dateStr, timeStr));
               } else {
-                AppState.checkins.push({ id: generateId('c'), date: dateStr, time: timeStr, type: selectedType, note: note, status: '今日' });
+                upsertCheckinByDate(normalizeCheckinItem({ date: dateStr, time: timeStr, type: selectedType, note: note, status: '今日' }, dateStr, timeStr));
               }
               AppState.save();
 
@@ -1112,7 +1175,7 @@
               if (noteInput) noteInput.value = '';
             } else {
               // 服务端返回异常，保存到本地
-              AppState.checkins.push({ id: generateId('c'), date: dateStr, time: timeStr, type: selectedType, note: note, status: '今日' });
+              upsertCheckinByDate(normalizeCheckinItem({ date: dateStr, time: timeStr, type: selectedType, note: note, status: '今日' }, dateStr, timeStr));
               AppState.save();
               showToast('网络异常，已保存本地记录', 'error');
               renderCheckins();
@@ -1123,7 +1186,7 @@
             }
           }).catch(function (err) {
             console.error('保存打卡失败', err);
-            AppState.checkins.push({ id: generateId('c'), date: dateStr, time: timeStr, type: selectedType, note: note, status: '今日' });
+            upsertCheckinByDate(normalizeCheckinItem({ date: dateStr, time: timeStr, type: selectedType, note: note, status: '今日' }, dateStr, timeStr));
             AppState.save();
             showToast('网络错误，已保存本地记录', 'error');
             renderCheckins();
@@ -1166,12 +1229,22 @@
                 AppState.checkins = data.checkins;
               }
               // Normalize items: ensure `time` and `status` exist for UI
-              AppState.checkins = (AppState.checkins || []).map(function(item){
-                if (!item.time && item.createdAt) {
-                  try { item.time = new Date(item.createdAt).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }); } catch(e){ item.time = ''; }
+              var dateMap = {};
+              (AppState.checkins || []).forEach(function(item) {
+                var normalized = normalizeCheckinItem(item);
+                var existing = dateMap[normalized.date];
+                if (!existing) {
+                  dateMap[normalized.date] = normalized;
+                  return;
                 }
-                item.status = item.status || '';
-                return item;
+                var existingStamp = existing.createdAt ? new Date(existing.createdAt).getTime() : 0;
+                var incomingStamp = normalized.createdAt ? new Date(normalized.createdAt).getTime() : 0;
+                if (incomingStamp >= existingStamp) {
+                  dateMap[normalized.date] = normalized;
+                }
+              });
+              AppState.checkins = Object.keys(dateMap).sort().map(function(key) {
+                return dateMap[key];
               });
               AppState.save();
               renderCheckins();

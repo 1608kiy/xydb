@@ -308,3 +308,215 @@ function getCheckinStats() {
     totalCheckins: checkins.length
   };
 }
+
+function ensureUnifiedBottomTabStyle() {
+  if (document.getElementById('unified-bottom-tab-style')) return;
+  var style = document.createElement('style');
+  style.id = 'unified-bottom-tab-style';
+  style.textContent = `
+  :root {
+    --unified-tab-space: 108px;
+  }
+  body.has-unified-bottom-tab {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  footer.unified-bottom-tab-source {
+    display: none !important;
+  }
+  .unified-bottom-tab-dock {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    width: fit-content;
+    max-width: calc(100vw - 20px);
+    z-index: 80;
+    animation: unified-tab-rise 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .unified-bottom-tab-dock .unified-tab-row {
+    display: flex !important;
+    align-items: stretch !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    width: fit-content;
+    max-width: calc(100vw - 20px);
+    padding: 10px 14px;
+    border-radius: 9999px;
+    background: linear-gradient(140deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.12));
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.62), inset 0 -1px 0 rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(36px) saturate(215%);
+    -webkit-backdrop-filter: blur(36px) saturate(215%);
+  }
+  .unified-bottom-tab-dock .unified-tab-item {
+    position: relative;
+    flex: 0 0 auto;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-width: 66px;
+    min-height: 58px;
+    padding: 7px 6px !important;
+    border-radius: 16px !important;
+    color: rgb(71, 85, 105) !important;
+    text-decoration: none !important;
+    transition: transform 220ms ease, color 220ms ease, filter 220ms ease;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .unified-bottom-tab-dock .unified-tab-item::before {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    border-radius: 14px;
+    background: transparent;
+    opacity: 0;
+  }
+  .unified-bottom-tab-dock .unified-tab-item:hover {
+    transform: translateY(-1.5px);
+    filter: saturate(1.03);
+  }
+  .unified-bottom-tab-dock .unified-tab-item:focus,
+  .unified-bottom-tab-dock .unified-tab-item:focus-visible,
+  .unified-bottom-tab-dock .unified-tab-item:active {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  .unified-bottom-tab-dock .unified-tab-icon,
+  .unified-bottom-tab-dock .unified-tab-label {
+    position: relative;
+    z-index: 1;
+  }
+  .unified-bottom-tab-dock .unified-tab-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    background: rgba(255, 255, 255, 0.14);
+    box-shadow: none;
+    transition: background 220ms ease, color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
+  }
+  .unified-bottom-tab-dock .unified-tab-label {
+    font-size: 11px;
+    line-height: 1.05;
+    font-weight: 600;
+    letter-spacing: 0.18px;
+    white-space: nowrap;
+  }
+  .unified-bottom-tab-dock .unified-tab-item.active {
+    color: rgb(37, 99, 235) !important;
+    transform: translateY(-2px);
+  }
+  .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon {
+    color: rgb(37, 99, 235);
+    background: rgba(255, 255, 255, 0.24);
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.12);
+    transform: translateY(-0.5px) scale(1.02);
+  }
+  .unified-bottom-tab-dock .tab-indicator {
+    display: none !important;
+  }
+  @keyframes unified-tab-rise {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+  @media (max-width: 420px) {
+    .unified-bottom-tab-dock {
+      max-width: calc(100vw - 12px);
+    }
+    .unified-bottom-tab-dock .unified-tab-row {
+      max-width: calc(100vw - 12px);
+      padding: 9px 10px;
+      gap: 6px !important;
+    }
+    .unified-bottom-tab-dock .unified-tab-item {
+      min-width: 54px;
+      padding: 6px 3px !important;
+    }
+    .unified-bottom-tab-dock .unified-tab-label {
+      font-size: 10px;
+      letter-spacing: 0;
+    }
+    .unified-bottom-tab-dock .unified-tab-icon {
+      width: 30px;
+      height: 30px;
+      font-size: 14px;
+    }
+  }
+  `;
+  document.head.appendChild(style);
+}
+
+function syncUnifiedBottomTabSpace() {
+  var docks = document.querySelectorAll('.unified-bottom-tab-dock');
+  if (!docks.length) return;
+  var maxHeight = 0;
+  docks.forEach(function (dock) {
+    var h = Math.ceil(dock.getBoundingClientRect().height || 0);
+    if (h > maxHeight) maxHeight = h;
+  });
+  document.documentElement.style.setProperty('--unified-tab-space', String(maxHeight + 24) + 'px');
+}
+
+function decorateUnifiedTabs(root) {
+  if (!root) return;
+  var tabs = root.querySelectorAll('.tab-item');
+  tabs.forEach(function (tab) {
+    if (tab.classList.contains('text-primary') && !tab.classList.contains('active')) {
+      tab.classList.add('active');
+    }
+    tab.classList.add('unified-tab-item');
+    tab.classList.remove('bg-primary/10', 'hover:bg-primary/10', 'rounded-lg');
+
+    var icon = tab.querySelector('i');
+    if (icon) icon.classList.add('unified-tab-icon');
+
+    var label = tab.querySelector('span:not(.tab-indicator)');
+    if (label) label.classList.add('unified-tab-label');
+  });
+}
+
+function initUnifiedBottomTabs() {
+  var footers = document.querySelectorAll('footer.glass-tab');
+  if (!footers.length) return;
+
+  ensureUnifiedBottomTabStyle();
+  document.body.classList.add('has-unified-bottom-tab');
+
+  document.querySelectorAll('.unified-bottom-tab-dock').forEach(function (el) { el.remove(); });
+
+  footers.forEach(function (footer) {
+    footer.classList.add('unified-bottom-tab-source');
+
+    var row = footer.querySelector('.container');
+    if (!row) return;
+
+    var rowClone = row.cloneNode(true);
+    rowClone.classList.add('unified-tab-row');
+    rowClone.classList.remove('justify-around', 'items-center');
+
+    decorateUnifiedTabs(rowClone);
+
+    var dock = document.createElement('div');
+    dock.className = 'unified-bottom-tab-dock';
+    dock.appendChild(rowClone);
+    document.body.appendChild(dock);
+
+    // Remove source footer entirely to avoid any full-width overlay side effects.
+    try { footer.remove(); } catch (e) { footer.classList.add('unified-bottom-tab-source'); }
+  });
+
+  syncUnifiedBottomTabSpace();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initUnifiedBottomTabs);
+} else {
+  initUnifiedBottomTabs();
+}
+window.addEventListener('resize', syncUnifiedBottomTabSpace);

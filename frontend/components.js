@@ -31,19 +31,23 @@ function renderHeader(activePage) {
 
 function renderFooter(activePage) {
   const footer = `
-  <footer class="bg-white border-t border-gray-200 py-2 px-4">
-    <div class="container mx-auto flex justify-around items-center text-xs text-gray-600">
-      <a href="待办页面.html" class="flex flex-col items-center ${activePage === 'todo' ? 'text-primary' : ''}"><i class="fas fa-list-alt"></i><span>待办</span></a>
-      <a href="日历页面.html" class="flex flex-col items-center ${activePage === 'calendar' ? 'text-primary' : ''}"><i class="fas fa-calendar"></i><span>日历</span></a>
-      <a href="番茄钟页面.html" class="flex flex-col items-center ${activePage === 'pomodoro' ? 'text-primary' : ''}"><i class="fas fa-clock"></i><span>番茄</span></a>
-      <a href="数据周报页面.html" class="flex flex-col items-center ${activePage === 'report' ? 'text-primary' : ''}"><i class="fas fa-chart-line"></i><span>周报</span></a>
-      <a href="打卡页面.html" class="flex flex-col items-center ${activePage === 'checkin' ? 'text-primary' : ''}"><i class="fas fa-check-circle"></i><span>打卡</span></a>
-      <a href="个人中心页面.html" class="flex flex-col items-center ${activePage === 'profile' ? 'text-primary' : ''}"><i class="fas fa-user"></i><span>我的</span></a>
+  <footer class="glass-tab py-1.5 px-2 sticky bottom-0 z-40">
+    <div class="container mx-auto flex justify-around items-center">
+      <a href="待办页面.html" class="tab-item ${activePage === 'todo' ? 'active text-primary' : 'text-gray-500 hover:text-primary'} flex flex-col items-center px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"><i class="fas fa-list-alt text-base"></i><span class="text-[10px] mt-0.5">待办</span><span class="tab-indicator"></span></a>
+      <a href="日历页面.html" class="tab-item ${activePage === 'calendar' ? 'active text-primary' : 'text-gray-500 hover:text-primary'} flex flex-col items-center px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"><i class="fas fa-calendar text-base"></i><span class="text-[10px] mt-0.5">日历</span><span class="tab-indicator"></span></a>
+      <a href="番茄钟页面.html" class="tab-item ${activePage === 'pomodoro' ? 'active text-primary' : 'text-gray-500 hover:text-primary'} flex flex-col items-center px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"><i class="fas fa-clock text-base"></i><span class="text-[10px] mt-0.5">番茄钟</span><span class="tab-indicator"></span></a>
+      <a href="数据周报页面.html" class="tab-item ${activePage === 'report' ? 'active text-primary' : 'text-gray-500 hover:text-primary'} flex flex-col items-center px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"><i class="fas fa-chart-line text-base"></i><span class="text-[10px] mt-0.5">周报</span><span class="tab-indicator"></span></a>
+      <a href="打卡页面.html" class="tab-item ${activePage === 'checkin' ? 'active text-primary' : 'text-gray-500 hover:text-primary'} flex flex-col items-center px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"><i class="fas fa-check-circle text-base"></i><span class="text-[10px] mt-0.5">打卡</span><span class="tab-indicator"></span></a>
+      <a href="个人中心页面.html" class="tab-item ${activePage === 'profile' ? 'active text-primary' : 'text-gray-500 hover:text-primary'} flex flex-col items-center px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"><i class="fas fa-user text-base"></i><span class="text-[10px] mt-0.5">我的</span><span class="tab-indicator"></span></a>
     </div>
   </footer>
   `;
   const container = document.getElementById('footer-container');
-  if (container) container.innerHTML = footer;
+  if (container) {
+    container.innerHTML = footer;
+    if (typeof initUnifiedBottomTabs === 'function') initUnifiedBottomTabs();
+    if (typeof syncUnifiedBottomTabSpace === 'function') syncUnifiedBottomTabSpace();
+  }
 }
 
 function bindGlobalLogout() {
