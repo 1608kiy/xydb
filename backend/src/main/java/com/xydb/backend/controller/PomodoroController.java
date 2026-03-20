@@ -43,6 +43,8 @@ public class PomodoroController {
             }
 
             PomodoroSession s = pomodoroRepository.save(session);
+            s.setUser(null);
+            s.setTask(null);
             return ResponseEntity.ok(Result.ok(s));
         }).orElseGet(() -> ResponseEntity.status(401).body(Result.fail(401, "Unauthorized")));
     }
@@ -53,10 +55,19 @@ public class PomodoroController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end
     ){
         return userService.getCurrentUser().map(user -> {
+            List<PomodoroSession> sessions;
             if(start != null && end != null){
-                return ResponseEntity.ok(Result.ok(pomodoroRepository.findByUserAndStartedAtBetween(user, start, end)));
+                sessions = pomodoroRepository.findByUserAndStartedAtBetween(user, start, end);
+            } else {
+                sessions = pomodoroRepository.findByUser(user);
             }
-            return ResponseEntity.ok(Result.ok(pomodoroRepository.findByUser(user)));
+
+            sessions.forEach(s -> {
+                s.setUser(null);
+                s.setTask(null);
+            });
+
+            return ResponseEntity.ok(Result.ok(sessions));
         }).orElseGet(() -> ResponseEntity.status(401).body(Result.fail(401, "Unauthorized")));
     }
 }

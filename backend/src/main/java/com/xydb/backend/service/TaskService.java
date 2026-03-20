@@ -2,8 +2,10 @@ package com.xydb.backend.service;
 
 import com.xydb.backend.model.Task;
 import com.xydb.backend.model.User;
+import com.xydb.backend.repository.SubTaskRepository;
 import com.xydb.backend.repository.TaskRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,9 +14,11 @@ import java.util.Optional;
 @Service
 public class TaskService {
     private final TaskRepository taskRepository;
+    private final SubTaskRepository subTaskRepository;
 
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, SubTaskRepository subTaskRepository) {
         this.taskRepository = taskRepository;
+        this.subTaskRepository = subTaskRepository;
     }
 
     public List<Task> listByUser(User user){
@@ -35,7 +39,9 @@ public class TaskService {
         return taskRepository.save(exist);
     }
 
+    @Transactional
     public void delete(Long id){
+        subTaskRepository.deleteByTaskId(id);
         taskRepository.deleteById(id);
     }
 }

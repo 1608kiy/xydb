@@ -35,6 +35,7 @@ public class TaskController {
                 .map(user -> {
                     task.setUser(user);
                     Task t = taskService.create(task);
+                    if (t != null) t.setUser(null);
                     return ResponseEntity.ok(Result.ok(t));
                 })
                 .orElseGet(() -> ResponseEntity.status(401).body(Result.fail(401, "Unauthorized")));

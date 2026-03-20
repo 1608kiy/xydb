@@ -27,6 +27,7 @@ public class CheckinController {
             checkin.setUser(u);
             checkin.setCreatedAt(java.time.LocalDateTime.now());
             Checkin c = checkinRepository.save(checkin);
+            c.setUser(null);
             return ResponseEntity.ok(Result.ok(c));
         }).orElseGet(() -> ResponseEntity.status(401).body(Result.fail(401, "Unauthorized")));
     }
@@ -37,6 +38,7 @@ public class CheckinController {
         LocalDate end = start.plusMonths(1).minusDays(1);
         return userService.getCurrentUser().map(u -> {
             List<Checkin> list = checkinRepository.findByUserIdAndDateBetween(u.getId(), start, end);
+            list.forEach(c -> c.setUser(null));
             return ResponseEntity.ok(Result.ok(list));
         }).orElseGet(() -> ResponseEntity.status(401).body(Result.fail(401, "Unauthorized")));
     }
@@ -45,6 +47,7 @@ public class CheckinController {
     public ResponseEntity<Result<List<Checkin>>> recent(){
         return userService.getCurrentUser().map(u -> {
             List<Checkin> all = checkinRepository.findByUserIdAndDateBetween(u.getId(), LocalDate.MIN, LocalDate.MAX);
+            all.forEach(c -> c.setUser(null));
             return ResponseEntity.ok(Result.ok(all));
         }).orElseGet(() -> ResponseEntity.status(401).body(Result.fail(401, "Unauthorized")));
     }
