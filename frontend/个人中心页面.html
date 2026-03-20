@@ -1695,18 +1695,18 @@
 
             function devLogin() {
               devLog('开始登录...');
-              fetch('/api/auth/login', {
+              apiRequest('/api/auth/login', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: 'test@test.com', password: '123456' })
-              }).then(r => r.json()).then(data => {
-                if (data && data.data && data.data.token) {
+              }).then(function (resp) {
+                var data = resp && resp.body;
+                if (resp && resp.status === 200 && data && data.data && data.data.token) {
                   localStorage.setItem('token', data.data.token);
                   devLog('登录成功，token 已保存');
                 } else {
                   devLog('登录失败: ' + JSON.stringify(data));
                 }
-              }).catch(e => devLog('登录异常: ' + e.message));
+              }).catch(function (e) { devLog('登录异常: ' + e.message); });
             }
 
             function devFetchMe() {

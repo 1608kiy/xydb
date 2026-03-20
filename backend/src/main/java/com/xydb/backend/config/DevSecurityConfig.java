@@ -18,15 +18,18 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import com.xydb.backend.repository.UserRepository;
 import com.xydb.backend.model.User;
+import com.xydb.backend.util.JWTUtil;
 
 @Configuration
 @Profile("local")
 public class DevSecurityConfig {
 
     private final UserRepository userRepository;
+    private final JWTUtil jwtUtil;
 
-    public DevSecurityConfig(UserRepository userRepository) {
+    public DevSecurityConfig(UserRepository userRepository, JWTUtil jwtUtil) {
         this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     @Bean
@@ -62,6 +65,18 @@ public class DevSecurityConfig {
                             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user, null, null);
                             auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                             SecurityContextHolder.getContext().setAuthentication(auth);
+                        } catch (Exception e) {
+                            // ignore
+                        }
+                    } else if (jwtUtil.validate(token)) {
+                        try {
+                            String email = jwtUtil.getSubject(token);
+                            User user = userRepository.findByEmail(email).orElse(null);
+                            if (user != null) {
+                                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user, null, null);
+                                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                                SecurityContextHolder.getContext().setAuthentication(auth);
+                            }
                         } catch (Exception e) {
                             // ignore
                         }

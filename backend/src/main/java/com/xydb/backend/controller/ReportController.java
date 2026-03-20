@@ -38,7 +38,7 @@ public class ReportController {
 
     // 概览（默认返回最近 7 天的汇总）
         @GetMapping("/overview")
-        public ResponseEntity<Result<Object>> overview() {
+        public ResponseEntity<Result<Map<String, Object>>> overview() {
         return userService.getCurrentUser().map(user -> {
             LocalDate today = LocalDate.now();
             LocalDate startDate = today.minusDays(6); // 最近 7 天
@@ -120,7 +120,7 @@ public class ReportController {
 
     // 日趋势（最近 7 天）
     @GetMapping("/daily-trend")
-    public ResponseEntity<Result<Object>> dailyTrend() {
+    public ResponseEntity<Result<Map<String, Object>>> dailyTrend() {
         return userService.getCurrentUser().map(user -> {
             LocalDate today = LocalDate.now();
             LocalDate startDate = today.minusDays(6);
@@ -173,7 +173,7 @@ public class ReportController {
     }
 
     @GetMapping("/task-category")
-    public ResponseEntity<Result<Object>> taskCategory() {
+    public ResponseEntity<Result<Map<String, Object>>> taskCategory() {
         // 返回与 overview 中相同的 categoryStats
         return userService.getCurrentUser().map(user -> {
             List<Task> userTasks = taskRepository.findByUser(user);

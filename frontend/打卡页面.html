@@ -1079,7 +1079,7 @@
           btn.disabled = true;
           btn.classList.add('opacity-50', 'cursor-not-allowed');
 
-          apiRequest('http://localhost:8080/api/checkins', {
+          apiRequest('/api/checkins', {
             method: 'POST',
             body: JSON.stringify({ date: dateStr, time: timeStr, type: selectedType, note: note })
           }).then(function (resp) {
@@ -1157,7 +1157,7 @@
 
         // 优先从服务端拉取打卡数据并渲染，失败则使用本地数据回退
         function fetchCheckinsFromServer() {
-          return apiRequest('http://localhost:8080/api/checkins/recent', { method: 'GET' }).then(function (resp) {
+          return apiRequest('/api/checkins/recent', { method: 'GET' }).then(function (resp) {
             if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
               var data = resp.body.data;
               if (Array.isArray(data)) {

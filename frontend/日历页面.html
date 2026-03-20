@@ -987,6 +987,7 @@
         var dayTitle = document.querySelector('#day-view h2');
         var detailPanel = document.getElementById('task-detail-panel');
         var closeDetailBtn = document.getElementById('close-detail-btn');
+        var saveBtn = document.getElementById('save-btn');
         var detailTitle = document.getElementById('detail-title');
         var detailDescription = document.getElementById('detail-description');
         var detailDueAt = document.getElementById('detail-dueAt');
@@ -1557,6 +1558,52 @@
           });
         }
 
+        if (saveBtn) {
+          saveBtn.addEventListener('click', function () {
+            if (!selectedTaskId) {
+              showToast('未选择任务', 'warning');
+              return;
+            }
+
+            var task = (AppState.tasks || []).find(function (t) {
+              return String(t.id) === String(selectedTaskId);
+            });
+            if (!task) {
+              showToast('任务不存在或已删除', 'error');
+              return;
+            }
+
+            var payload = {
+              title: detailTitle ? detailTitle.value.trim() : task.title,
+              description: detailDescription ? detailDescription.value.trim() : task.description,
+              dueAt: detailDueAt && detailDueAt.value ? new Date(detailDueAt.value).toISOString() : null
+            };
+
+            apiRequest('/api/tasks/' + selectedTaskId, {
+              method: 'PUT',
+              body: JSON.stringify(payload)
+            }).then(function (resp) {
+              if (resp && resp.status === 200 && resp.body && resp.body.code === 200 && resp.body.data) {
+                var updated = resp.body.data;
+                task.title = updated.title || payload.title || task.title;
+                task.description = updated.description || payload.description || task.description;
+                task.dueAt = updated.dueAt || payload.dueAt;
+                AppState.save();
+                renderMonthGrid();
+                renderScheduledTaskList();
+                renderWeekView();
+                renderDayView();
+                if (detailPanel) detailPanel.classList.add('hidden');
+                showToast('任务已保存', 'success');
+              } else {
+                showToast((resp && resp.body && resp.body.message) || '保存失败', 'error');
+              }
+            }).catch(function () {
+              showToast('网络错误，保存失败', 'error');
+            });
+          });
+        }
+
         window.renderMonthGrid = renderMonthGrid;
         
         // ✅ 从后端加载任务
@@ -1650,6 +1697,15 @@
         renderHeader('calendar');
         renderFooter('calendar');
         bindGlobalLogout();
+
+        function performLogout() {
+          AppState.logout();
+          showToast('已退出登录', 'success');
+          setTimeout(function () {
+            window.location.href = '登录页面.html';
+          }, 300);
+        }
+        window.performLogout = performLogout;
         
         // 绑定顶部退出登录按钮
         var logoutBtnTop = document.getElementById('logout-btn-top');

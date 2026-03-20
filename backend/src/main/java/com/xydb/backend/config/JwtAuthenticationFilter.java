@@ -36,11 +36,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(header) && header.startsWith("Bearer ")) {
             String token = header.substring(7);
 
-            // Dev/demo tokens start with 'dev-': allow them for local/dev testing by mapping to a demo user
-            if (token.startsWith("dev-")) {
+            // Dev/demo tokens are accepted only in local profile.
+            if (token.startsWith("dev-") && env.acceptsProfiles(Profiles.of("local"))) {
                 try {
-                    // Only allow dev tokens when running in 'local' profile OR always for developer convenience
-                    // (You may restrict with env.acceptsProfiles(Profiles.of("local")) )
                     String devEmail = "dev@example.test";
                     Optional<User> userOpt = userRepository.findByEmail(devEmail);
                     User user;

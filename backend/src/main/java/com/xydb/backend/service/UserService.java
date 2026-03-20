@@ -18,12 +18,11 @@ public class UserService {
     public Optional<User> getCurrentUser(){
         Object principal = SecurityContextHolder.getContext().getAuthentication();
         if(principal == null) {
-            // Local dev fallback: try to find a test user for quick acceptance tests
-            return userRepository.findByEmail("test@test.com");
+            return Optional.empty();
         }
         // If there's an authentication but it's not the expected UsernamePasswordAuthenticationToken
         if(!(principal instanceof org.springframework.security.authentication.UsernamePasswordAuthenticationToken)){
-            return userRepository.findByEmail("test@test.com");
+            return Optional.empty();
         }
         if(principal instanceof org.springframework.security.authentication.UsernamePasswordAuthenticationToken){
             Object p = ((org.springframework.security.authentication.UsernamePasswordAuthenticationToken) principal).getPrincipal();

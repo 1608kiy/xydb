@@ -9,5 +9,7 @@ import java.util.List;
 public interface PomodoroRepository extends JpaRepository<PomodoroSession, Long> {
     List<PomodoroSession> findByStartedAtBetween(LocalDateTime start, LocalDateTime end);
 
+    List<PomodoroSession> findByUser(User user);
+
     List<PomodoroSession> findByUserAndStartedAtBetween(User user, LocalDateTime start, LocalDateTime end);
 }
