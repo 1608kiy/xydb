@@ -865,14 +865,6 @@
                 </a>
               </div>
             </div>
-            <div class="flex border border-gray-200/50 rounded-xl overflow-hidden glass">
-              <button class="px-4 py-2.5 text-sm text-gray-500 hover:bg-gray-100/50" id="list-view-btn" title="列表视图">
-                <i class="fas fa-list"></i>
-              </button>
-              <button class="px-4 py-2.5 text-sm text-primary bg-primary/10" id="card-view-btn" title="卡片视图">
-                <i class="fas fa-th-large"></i>
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -1606,19 +1598,39 @@
         // backend Task.tags is a String column (JSON array string); serialize here
         tags: JSON.stringify([selectedModalTag]),
         status: 'pending',
-        dueAt: (modalDate ? (modalDate.value + 'T' + (modalTime ? modalTime.value : '12:00') + ':00') : null)
+        dueAt: (modalDate && modalDate.value ? (modalDate.value + 'T' + ((modalTime && modalTime.value) ? modalTime.value : '12:00') + ':00') : null)
       };
 
       apiRequest('/api/tasks', {
         method: 'POST',
         body: JSON.stringify(payload)
       }).then(function (resp) {
-        if (resp.status === 200 && resp.body && resp.body.code === 200) {
-          // server returns created task in data
-          var created = resp.body.data;
-          if (!created) {
-            showToast('创建任务失败：服务端未返回数据', 'error');
-            return;
+        var statusOk = resp && (resp.status === 200 || resp.status === 201);
+        var body = resp && resp.body ? resp.body : null;
+        var code = body ? body.code : undefined;
+        var codeOk = (code === undefined || code === null || code === 0 || code === 200 || code === 201);
+        var created = null;
+        if (body) {
+          if (body.data && typeof body.data === 'object') {
+            created = body.data.task && typeof body.data.task === 'object' ? body.data.task : body.data;
+          } else if (body.task && typeof body.task === 'object') {
+            created = body.task;
+          }
+        }
+        var successFlag = !!(body && (body.success === true || body.ok === true));
+
+        if (statusOk && (codeOk || successFlag || !!created)) {
+          if (!created || typeof created !== 'object') {
+            // Some backends only return success message without entity.
+            created = {
+              id: Date.now(),
+              title: payload.title,
+              description: payload.description,
+              priority: payload.priority,
+              tags: payload.tags,
+              status: payload.status,
+              dueAt: payload.dueAt
+            };
           }
           // normalize and place into lists based on due date
           created.completed = (created.status === 'completed');
@@ -1643,10 +1655,11 @@
           else tasks.tomorrow.unshift(created);
           renderTaskLists();
           updateCountStats();
+          saveToLocalStorage();
           window.closeModalFunc();
           showToast('✅ 任务创建成功！');
         } else {
-          var msg = (resp.body && resp.body.message) || '创建任务失败';
+          var msg = (body && body.message) || ('创建失败（状态码 ' + (resp && typeof resp.status !== 'undefined' ? resp.status : '未知') + '）');
           showToast(msg, 'error');
         }
       }).catch(function (err) {
@@ -2302,26 +2315,6 @@
             saveToLocalStorage();
             showToast('✅ 所有子任务已标记完成');
           }
-        });
-      }
-
-      // 视图切换
-      var listViewBtn = document.getElementById('list-view-btn');
-      var cardViewBtn = document.getElementById('card-view-btn');
-      if (listViewBtn && cardViewBtn) {
-        listViewBtn.addEventListener('click', function () {
-          listViewBtn.classList.add('text-primary', 'bg-primary/10');
-          listViewBtn.classList.remove('text-gray-500');
-          cardViewBtn.classList.remove('text-primary', 'bg-primary/10');
-          cardViewBtn.classList.add('text-gray-500');
-          showToast('📋 已切换到列表视图');
-        });
-        cardViewBtn.addEventListener('click', function () {
-          cardViewBtn.classList.add('text-primary', 'bg-primary/10');
-          cardViewBtn.classList.remove('text-gray-500');
-          listViewBtn.classList.remove('text-primary', 'bg-primary/10');
-          listViewBtn.classList.add('text-gray-500');
-          showToast('🎴 已切换到卡片视图');
         });
       }
 

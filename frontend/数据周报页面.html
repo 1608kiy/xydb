@@ -38,6 +38,7 @@
       };
     </script>
     <script id="report-data-fetch">
+      try { document.documentElement.classList.add('defer-unified-tab'); } catch (e) {}
       if (typeof checkAuthOnLoad === 'function') { checkAuthOnLoad().catch(function(){}); }
       // Fetch server data (tasks, pomodoros) and render aggregated weekly stats and charts
       function parseDateVal(v) {
@@ -1485,6 +1486,16 @@
         renderHeader('report');
         renderFooter('report');
         bindGlobalLogout();
+        var tabShown = false;
+        function revealBottomTab() {
+          if (tabShown) return;
+          tabShown = true;
+          if (typeof showUnifiedBottomTabDock === 'function') {
+            showUnifiedBottomTabDock();
+          }
+        }
+        setTimeout(revealBottomTab, 1800);
+        window.addEventListener('load', revealBottomTab);
 
         var now = new Date();
         var currentDateEl = document.getElementById('current-date');
@@ -1501,7 +1512,10 @@
         try { savedRange = localStorage.getItem('report-time-range'); } catch (e) { savedRange = null; }
         applyTimeRangeSelection(savedRange || '本周');
 
-        updateWeeklyStats({ sync: true });
+        Promise.resolve()
+          .then(function () { return updateWeeklyStats({ sync: true }); })
+          .catch(function (err) { console.error('updateWeeklyStats error:', err); })
+          .finally(revealBottomTab);
       });
 function exportReport() {
         showToast('报告导出功能正在开发中');

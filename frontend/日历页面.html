@@ -340,20 +340,7 @@
             box-shadow: 0 8px 20px rgba(255, 179, 71, 0.18);
           }
 
-          .task-view-btn {
-            @apply px-4 py-2 text-sm font-medium transition-all duration-300;
-            color: #6b7280;
-            background: rgba(255, 255, 255, 0.55);
-          }
-          .task-view-btn:hover {
-            color: #d97706;
-            background: rgba(255, 179, 71, 0.12);
-          }
-          .task-view-btn.active {
-            color: #d97706;
-            background: rgba(255, 179, 71, 0.2);
-            box-shadow: inset 0 0 0 1px rgba(255, 179, 71, 0.35);
-          }
+          
 /* ✅ 下拉菜单样式 - 修复层级问题 */
           .dropdown-menu {
             @apply absolute right-0 w-48 rounded-2xl shadow-2xl py-2 overflow-hidden;
@@ -674,21 +661,7 @@
                   </a>
                 </div>
               </div>
-              <!-- 视图切换 -->
-              <div
-                class="flex glass-card rounded-2xl overflow-hidden border border-white/40"
-              >
-                <button id="view-list-btn"
-                  class="task-view-btn"
-                >
-                  <i class="fas fa-list"> </i>
-                </button>
-                <button id="view-grid-btn"
-                  class="task-view-btn active"
-                >
-                  <i class="fas fa-th-large"> </i>
-                </button>
-              </div>
+              
             </div>
           </div>
         </div>
@@ -1097,8 +1070,6 @@
         var detailDueAt = document.getElementById('detail-dueAt');
         var selectedTaskId = null;
         var taskPool = document.getElementById('task-pool');
-        var viewListBtn = document.getElementById('view-list-btn');
-        var viewGridBtn = document.getElementById('view-grid-btn');
         var taskPoolView = 'grid';
 
         // ✅ Toast 提示函数 - 右上角弹出
@@ -1272,13 +1243,6 @@
           });
         }
 
-        function setTaskPoolView(view) {
-          if (view !== 'list' && view !== 'grid') return;
-          taskPoolView = view;
-          if (viewListBtn) viewListBtn.classList.toggle('active', view === 'list');
-          if (viewGridBtn) viewGridBtn.classList.toggle('active', view === 'grid');
-          renderTaskPool();
-        }
         function renderScheduledTaskList() {
           var list = document.getElementById('scheduled-task-list');
           if (!list) return;
@@ -1540,17 +1504,7 @@
           });
         });
 
-        if (viewListBtn) {
-          viewListBtn.addEventListener('click', function () {
-            setTaskPoolView('list');
-          });
-        }
-        if (viewGridBtn) {
-          viewGridBtn.addEventListener('click', function () {
-            setTaskPoolView('grid');
-          });
-        }
-        setTaskPoolView(taskPoolView);
+        renderTaskPool();
 
         function updateCurrentDateLabel() {
           var now = new Date();
