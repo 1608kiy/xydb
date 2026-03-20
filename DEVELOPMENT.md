@@ -1,148 +1,108 @@
-# 项目开发说明
+# 项目开发文档（更新于 2026-03-20）
 
-本文档概述如何在本地运行、调试和扩展本项目（后端：Spring Boot；前端：静态 HTML + 原生 JS）。
+本文档用于快速上手本仓库开发、联调和交付。
 
-## 环境要求
-- JDK 17+（项目使用 Java 24 也可兼容，确保本地 JDK 与构建工具兼容）
-- Maven（推荐使用仓库内的 `mvnw`）
-- MySQL 8（或兼容的数据库），已配置在 `backend/src/main/resources/application.properties` 中
-- Windows / macOS / Linux 任一支持环境
+## 1. 项目概览
+- 前端：多页面静态站点（HTML + Tailwind CDN + 原生 JS）
+- 后端：Spring Boot（JWT 鉴权，统一 `Result<T>` 返回）
+- 目录：
+  - `frontend/`：业务页面与前端脚本
+  - `backend/`：Java 服务与接口
+  - `scripts/`：回归与接口验证脚本
+  - `REPORTS/`：日报与进度记录
 
-## 快速启动（后端）
-1. 进入后端目录：
+## 2. 本地环境
+- JDK 17+
+- Maven（推荐仓库内 Wrapper）
+- MySQL 8（生产/默认配置）
+- Windows PowerShell（仓库内脚本默认使用）
+
+## 3. 启动方式
+
+### 3.1 后端（推荐 local 配置）
+
+`local` 使用 H2 内存库，最适合联调：
 
 ```powershell
 cd "E:\computer science\xydb\backend"
+cmd.exe /c ".\mvnw.cmd -Dspring-boot.run.profiles=local spring-boot:run"
 ```
 
-2. 使用 Maven Wrapper 打包并启动（跳过测试以加快）
+探活：
 
 ```powershell
-.\mvnw.cmd -DskipTests spring-boot:run
+Invoke-WebRequest -Uri "http://localhost:8080/actuator/health" -UseBasicParsing
 ```
 
-3. 若 8080 被占用，请先查找并终止占用进程：
+### 3.2 前端
+- 可直接打开 `frontend/*.html`。
+- 若使用静态服务，请确保 `/api` 能代理到后端，或在页面设置 `window.__API_BASE__` / localStorage `apiBase`。
 
-```powershell
-netstat -ano | findstr :8080
-taskkill /PID <PID> /F
+## 4. 当前关键能力（本轮完善）
+
+### 4.1 待办页离线与同步
+- 创建任务失败时自动降级为本地离线创建。
+- 离线任务进入待同步队列，网络恢复后自动同步到后端。
+- 提供同步状态徽标：`待同步` / `同步中` / `已同步`。
+
+### 4.2 待办页排序
+- 已支持：按时间、按优先级、按标签、按完成状态。
+- 排序菜单支持选中态，高亮当前排序策略。
+
+### 4.3 侧边栏筛选
+- 主分类 5 项可点击：所有任务、我的一天、重要任务、已计划、已分配给我。
+- 标签可点击筛选同类任务，再次点击可取消。
+- 主分类与标签筛选交互做了互斥优化，避免“看似无响应”。
+- 空结果显示“当前筛选下暂无任务”。
+
+## 5. API 约定
+- 鉴权头：`Authorization: Bearer <token>`
+- 统一响应：
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {}
+}
 ```
 
-## 快速启动（前端）
-- 前端为静态页面，直接在浏览器打开 `frontend/` 下 HTML 文件即可开发与调试。
-- 推荐在登录后打开 `frontend/数据周报页面.html` 验证报表渲染。
+- 典型接口：
+  - `POST /api/auth/login`
+  - `GET /api/me`
+  - `GET /api/tasks`
+  - `POST /api/tasks`
+  - `PUT /api/tasks/{id}`
+  - `DELETE /api/tasks/{id}`
 
-## 主要后端接口（摘选）
-- POST `/api/auth/login` — 登录，返回 JWT
-- GET `/api/me` — 获取当前用户信息（需授权）
-- GET `/api/reports/overview` — 概览（最近 7 天默认）
-- GET `/api/reports/daily-trend` — 日趋势（days, taskCounts, focusMinutes, heatmap）
-- 其他：任务、番茄、打卡相关接口请参考 `backend/src/main/java/com/xydb/backend/controller` 下文件
+## 6. 联调脚本
+- `scripts/run_regression.ps1`：回归入口
+- `scripts/verify_api.ps1`：API 冒烟
+- `backend/check_reports.ps1`：报表接口检查
+- `backend/scripts/stop_java.ps1`：释放 Java 占用进程
 
-响应模型：统一使用 `Result<T>` 格式：{ code, message, data }
+## 7. 常见问题
 
-## 报表接口说明
-- `overview` 返回字段示例：
-  - `completedTasks`、`totalFocusMinutes`、`totalPomodoros`、`maxContinuousPomodoros`、`effectivenessScore`、`categoryStats`（数组）
-- `daily-trend` 返回字段示例：
-  - `days`（字符串数组）、`taskCounts`（每日完成任务数）、`focusMinutes`（每日专注分钟）、`heatmap`（[[slot, dayIndex, value], ...]）
+### 7.1 创建任务出现 404/405/5xx
+- 前端已支持自动离线保存并待后续同步。
+- 优先排查后端是否启动：`http://localhost:8080/actuator/health`。
 
-## 调试脚本
-- `backend/check_reports.ps1`：用现有 token 调用 `/api/me`、`/api/reports/overview`、`/api/reports/daily-trend`，便于端到端验证。
-- 其它脚本：`restart_with_log.ps1`、`start_and_call.ps1`（若存在）可用于重定向日志并启动服务。
-- `scripts/run_regression.ps1`：标准化后端回归入口（先跑测试，再以 `local` profile 启动服务，最后执行 `scripts/verify_api.ps1` 冒烟）。
+### 7.2 push 被拒绝（non-fast-forward）
+- 先执行 `git pull --rebase origin main`，处理冲突后再 push。
+- 避免把运行日志和临时目录提交（如 `backend_run.log/err`、`tmp/`）。
 
-## 一键回归（推荐）
-在项目根目录执行：
+### 7.3 401/403
+- 检查 token 是否存在且有效。
+- local 模式可使用 dev token 进行联调。
 
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\run_regression.ps1
-```
+## 8. 提交规范（建议）
+- 推荐格式：`type: summary`
+- 示例：
+  - `fix: 修复待办页创建任务网络降级逻辑`
+  - `feat: 增加侧边栏筛选交互`
+  - `chore: 补充联调脚本与文档`
 
-可选参数：
-- `-ApiBase 'http://localhost:8080'`：改用 8080 或其它端口。
-- `-SkipTests`：仅做启动与 API 冒烟，不执行 `mvn test`。
-
-## CI 自动门禁
-已新增 GitHub Actions 工作流：`.github/workflows/backend-ci.yml`
-- `backend-test`：在 Ubuntu 上执行 `mvn test`。
-- `api-smoke`：在 Windows 上启动 `local` profile 后端并执行 `scripts/verify_api.ps1`。
-
-## 开发进度（2026-03-19，同步）
-- 后端已在 `local` profile 下可本地启动，使用内存 H2 数据库（用于本地快速验收）。
-- 已移除 local profile 中的自动注入测试用户逻辑，改为更安全的本地配置（`DevSecurityConfig` 使用 `permitAll()`），并为依赖注入添加了 `BCryptPasswordEncoder` bean。
-- 修复/调整：`backend/src/main/java/com/xydb/backend/model/Task.java` 增强 Jackson 反序列化容错，解决 POST 400 问题。
-- 前端：在 `frontend/待办页面.html` 中加入了对 `common.js` 的引入，修复了按钮因脚本错误无法响应的问题。
-- 本地测试脚本（位于 `backend/target`，仅供本地调试）：
-  - `register_dev.ps1`：注册本地测试账户并返回 token。
-  - `login.ps1`：登录（获取 token）。
-  - `create_task.ps1`：使用 token 创建测试任务。
- 另外新增辅助脚本：`backend/scripts/stop_java.ps1`（停止本机 java 进程，释放被占用的 jar）。
-- 已在本地完成一次注册与任务创建验证：
-  - 注册响应包含 token（示例 token 已用于后续测试）。
-  - 使用该 token 成功创建了一个测试任务，响应示例包含 `id`、`title`、`status`、`priority`、`user` 等字段。
-
-重现实验的 PowerShell 命令示例（可直接在项目根或 `backend` 目录运行）：
-
-```powershell
-# 注册（返回 token）
-$body = '{"nickname":"test","email":"dev@test.com","password":"123456"}'
-Invoke-RestMethod -Uri 'http://localhost:8080/api/auth/register' -Method Post -ContentType 'application/json' -Body $body
-
-# 登录
-$body = '{"email":"dev@test.com","password":"123456"}'
-Invoke-RestMethod -Uri 'http://localhost:8080/api/auth/login' -Method Post -ContentType 'application/json' -Body $body
-
-# 使用 token 创建任务（将 <TOKEN> 替换为上一步返回的 token）
-$token = '<TOKEN>'
-$task = '{"title":"测试任务","priority":"medium","status":"pending"}'
-Invoke-RestMethod -Uri 'http://localhost:8080/api/tasks' -Method Post -ContentType 'application/json' -Headers @{ Authorization = "Bearer $token" } -Body $task
-```
-
-已把本次改动提交并推送到远程分支（commit 信息："chore: 本地开发调整：DevSecurityConfig、为待办页引入 common.js、添加本地测试脚本"，已 push 到 `origin/main`）。
-
-如需我把测试脚本移到 `backend/scripts` 下并移除 `target` 中的临时文件以保持仓库整洁，我可以把脚本迁移并提交一条新的 commit。
-
-## 常见问题与排查
-- 403 问题常见原因：JWT 未携带或 `/error` 路径被安全链保护导致的间接 403。
-- Jackson 序列化异常会导致请求跳转到 `/error` 并被安全拦截，请确保 Controller 返回可序列化结构（Map/DTO/POJO），不要直接返回 `new Object()`。
-
-## 本地数据库与数据迁移
-- 请查看 `backend/pom.xml` 与 `application.properties` 获取数据库配置；开发时可以使用 `spring.jpa.hibernate.ddl-auto=update`。谨慎在生产使用。
-
-## 开发约定
-- Controller 返回 `ResponseEntity<Result<?>>`。
-- 安全：使用 JWT，前端需在 `Authorization: Bearer <token>` 中携带。
-
-## 每日汇报流程（最小化）
-1. 使用 `backend/check_reports.ps1` 验证报表接口是否可达并截图/保存输出。
-2. 在每日汇报文档（`REPORTS/DAILY_REPORT_TEMPLATE.md`）中填写今天工作简报并提交到项目跟进记录。
-
----
-如需补充 CI、测试或代码风格规范，请告诉我我会一并加入。
-
-## 后续规划（按优先级）
-下面为分阶段的后续开发计划，按优先级排序，便于每日跟踪与拆分任务。
-
-### 第一阶段：完善核心功能（明天）
-1. 个人中心页面对接后端（用户信息修改）
-2. 日历页面对接任务接口（创建/编辑/显示任务在日历上）
-3. 报表聚合逻辑优化（用真实数据替换占位，按任务与时间段精确统计）
-
-### 第二阶段：数据完整性
-1. 子任务批量更新接口（支持前端一次性更新多个子任务状态/内容）
-2. 标签管理接口对接前端（增删改查标签并用于任务过滤）
-3. 打卡日历数据真实化（将打卡数据与日历视图绑定并支持历史查询）
-
-### 第三阶段：部署上线
-1. 打包为可运行的 JAR（生产配置、profiles）
-2. 上传到阿里云服务器并配置运行环境（JRE、数据库连接）
-3. 配置 Nginx 反向代理（前端静态与后端 API 反代与 TLS）
-4. 前端静态文件部署（将 `frontend` 构建/放到静态宿主或 CDN）
-
-### 第四阶段：收尾
-1. 接口参数校验完善（使用 DTO 与校验注解）
-2. 错误处理优化（统一异常处理、友好错误消息）
-3. 基础功能测试（单元 + 集成测试，覆盖报表/认证/重要业务流）
-
-每项完成后请在 `REPORTS/` 下提交当日进度文件以便追踪。
+## 9. 下一步建议
+1. 给排序与筛选状态增加持久化（刷新不丢状态）。
+2. 完成“已分配给我”真实后端字段对齐。
+3. 完善任务同步冲突策略（本地与远端并发修改）。
