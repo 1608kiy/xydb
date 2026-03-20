@@ -2,7 +2,7 @@
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>待办清单</title>
+    <title>日历视图 - 轻悦待办</title>
     <script src="https://res.gemcoder.com/js/reload.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="data.js"></script>
@@ -17,15 +17,16 @@
         theme: {
           extend: {
             colors: {
-              primary: '#4F46E5',
-              secondary: '#7C3AED',
-              success: '#10B981',
-              warning: '#F59E0B',
-              danger: '#EF4444',
+              primary: '#FFB347',
+              secondary: '#FFC778',
+              accent: '#FF9F1A',
+              success: '#F59E0B',
+              warning: '#FB923C',
+              danger: '#FB923C',
               info: '#3B82F6',
               light: '#F3F4F6',
               dark: '#1F2937',
-              'task-work': '#3B82F6',
+              'task-work': '#FFB347',
               'task-study': '#8B5CF6',
               'task-life': '#EC4899',
               'task-health': '#10B981'
@@ -49,61 +50,353 @@
           .scrollbar-hide::-webkit-scrollbar {
               display: none;
           }
-          .task-card-shadow {
-              box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+          .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+          .scrollbar-thin::-webkit-scrollbar-track { background: rgba(243, 244, 246, 0.5); border-radius: 3px; }
+          .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(255, 179, 71, 0.4); border-radius: 3px; }
+          .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(255, 179, 71, 0.6); }
+          
+          /* ✅ 毛玻璃效果 - 增强 */
+          .glass { 
+            background: rgba(255, 255, 255, 0.55); 
+            backdrop-filter: blur(24px) saturate(200%); 
+            -webkit-backdrop-filter: blur(24px) saturate(200%); 
+            border: 1px solid rgba(255, 255, 255, 0.5);
           }
-          .task-card-shadow-hover {
-              box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.15);
+          .glass-strong { 
+            background: rgba(255, 255, 255, 0.75); 
+            backdrop-filter: blur(32px) saturate(200%); 
+            -webkit-backdrop-filter: blur(32px) saturate(200%); 
+            border: 1px solid rgba(255, 255, 255, 0.6);
           }
-          .card-shadow {
-              box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+          .glass-max { 
+            background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(40px) saturate(200%); 
+            -webkit-backdrop-filter: blur(40px) saturate(200%); 
+            border: 1px solid rgba(255, 255, 255, 0.7);
           }
-          .card-hover {
-              @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5;
+          .glass-tab { 
+            background: rgba(255, 255, 255, 0.55); 
+            backdrop-filter: blur(24px) saturate (200%); 
+            -webkit-backdrop-filter: blur(24px) saturate(200%); 
+            border-top: 1px solid rgba(255, 255, 255, 0.5); 
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6);
           }
-          .sidebar-item-active {
-              @apply bg-primary/10 text-primary border-l-4 border-primary;
+          .glass-header { 
+            background: rgba(255, 255, 255, 0.55); 
+            backdrop-filter: blur(24px) saturate(200%); 
+            -webkit-backdrop-filter: blur(24px) saturate(200%); 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           }
-          .tag-work {
-              @apply bg-task-work/10 text-task-work;
+          .glass-card { 
+            background: rgba(255, 255, 255, 0.65); 
+            backdrop-filter: blur(24px) saturate(200%); 
+            -webkit-backdrop-filter: blur(24px) saturate(200%); 
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
           }
-          .tag-study {
-              @apply bg-task-study/10 text-task-study;
+          .glass-input { 
+            background: rgba(255, 255, 255, 0.65); 
+            backdrop-filter: blur(16px) saturate(200%); 
+            -webkit-backdrop-filter: blur(16px) saturate(200%); 
+            border: 1px solid rgba(209, 213, 219, 0.7); 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           }
-          .tag-life {
-              @apply bg-task-life/10 text-task-life;
+          .glass-input:focus { 
+            background: rgba(255, 255, 255, 0.85); 
+            border-color: rgba(255, 179, 71, 0.6); 
+            box-shadow: 0 0 0 3px rgba(255, 179, 71, 0.18);
           }
-          .tag-health {
-              @apply bg-task-health/10 text-task-health;
+          
+          /* ✅ 背景装饰光斑 */
+          .bg-orb { 
+            position: fixed; 
+            border-radius: 50%; 
+            filter: blur(160px); 
+            opacity: 0.1; 
+            pointer-events: none; 
+            z-index: 0; 
+            animation: orbFloat 24s ease-in-out infinite; 
           }
-          .priority-high {
-              @apply border-l-4 border-danger;
+          .bg-orb-primary { 
+            background: linear-gradient(135deg, #FFB347, #FFC778); 
           }
-          .priority-medium {
-              @apply border-l-4 border-warning;
+          .bg-orb-secondary { 
+            background: linear-gradient(135deg, #FFC778, #FFE5B4); 
           }
-          .priority-low {
-              @apply border-l-4 border-success;
+          @keyframes orbFloat { 
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.1; } 
+            33% { transform: translate(40px, -40px) scale(1.1); opacity: 0.14; }
+            66% { transform: translate(-30px, 30px) scale(0.95); opacity: 0.09; }
           }
-          .modal-mask.hidden {
-              display: none;
+          
+          /* ✅ 动画效果 - 月份切换优化 */
+          .fade-in { 
+            animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
           }
-          .task-detail-panel.hidden {
-              display: none;
+          @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
+          }
+          .slide-up { 
+            animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+          }
+          @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(24px); } 
+            to { opacity: 1; transform: translateY(0); } 
+          }
+          .scale-in { 
+            animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
+          }
+          @keyframes scaleIn { 
+            from { opacity: 0; transform: scale(0.92); } 
+            to { opacity: 1; transform: scale(1); } 
+          }
+          .slide-in-right { 
+            animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+          }
+          @keyframes slideInRight { 
+            from { opacity: 0; transform: translateX(40px); } 
+            to { opacity: 1; transform: translateX(0); } 
+          }
+          .float { 
+            animation: float 4s ease-in-out infinite; 
+          }
+          @keyframes float { 
+            0%, 100% { transform: translateY(0); } 
+            50% { transform: translateY(-6px); } 
+          }
+          .pulse-glow { 
+            animation: pulseGlow 2s ease-in-out infinite; 
+          }
+          @keyframes pulseGlow { 
+            0%, 100% { box-shadow: 0 0 24px rgba(255, 179, 71, 0.4); } 
+            50% { box-shadow: 0 0 40px rgba(255, 179, 71, 0.6); } 
+          }
+          
+          /* ✅ 卡片样式 */
+          .card-shadow { 
+            box-shadow: 0 2px 8px rgba(255, 179, 71, 0.12); 
+          }
+          .card-hover { 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+          }
+          .card-hover:hover { 
+            box-shadow: 0 12px 32px rgba(255, 179, 71, 0.22); 
+            transform: translateY(-4px); 
+          }
+          
+          /* ✅ 日历格子样式 */
+          .calendar-cell { 
+            @apply relative rounded-2xl p-2.5 text-right text-sm transition-all duration-300 border;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px) saturate(200%);
+            -webkit-backdrop-filter: blur(16px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+          }
+          .calendar-cell.other-month { 
+            background: rgba(249, 250, 251, 0.45);
+            color: rgba(156, 163, 175, 0.5);
+            border: 1px solid rgba(243, 244, 246, 0.45);
+          }
+          .calendar-cell.today { 
+            background: linear-gradient(135deg, rgba(255, 179, 71, 0.22) 0%, rgba(255, 199, 120, 0.15) 100%);
+            border: 2px solid rgba(255, 179, 71, 0.55);
+            box-shadow: 0 6px 20px rgba(255, 179, 71, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+          }
+          .calendar-cell:hover { 
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 8px 24px rgba(255, 179, 71, 0.22);
+            transform: translateY(-3px);
+            border-color: rgba(255, 179, 71, 0.5);
+          }
+          
+          /* ✅ 任务分类标签 */
+          .tag-work { 
+            @apply bg-task-work/20 text-task-work border border-task-work/40; 
+          }
+          .tag-study { 
+            @apply bg-task-study/20 text-task-study border border-task-study/40; 
+          }
+          .tag-life { 
+            @apply bg-task-life/20 text-task-life border border-task-life/40; 
+          }
+          .tag-health { 
+            @apply bg-task-health/20 text-task-health border border-task-health/40; 
+          }
+          
+          /* ✅ Tab 项样式 */
+          .tab-item { 
+            @apply relative transition-all duration-300; 
+          }
+          .tab-item:hover { 
+            @apply scale-105; 
+          }
+          .tab-item.active .tab-indicator { 
+            @apply opacity-100 scale-100; 
+          }
+          .tab-indicator { 
+            @apply absolute -top-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-primary rounded-full opacity-0 scale-0 transition-all duration-300;
+            box-shadow: 0 0 8px rgba(255, 179, 71, 0.7);
+          }
+          
+          /* ✅ 按钮样式 - 参考个人中心 */
+          .btn-primary { 
+            @apply inline-flex items-center justify-center px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300;
+            background: linear-gradient(135deg, rgba(255, 179, 71, 0.95), rgba(255, 199, 120, 0.9));
+            color: white;
+            border: 1px solid rgba(255, 179, 71, 0.6);
+            box-shadow: 0 4px 12px rgba(255, 179, 71, 0.3);
+          }
+          .btn-primary:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 179, 71, 0.4);
+          }
+          
+          .btn-glass {
+            @apply inline-flex items-center justify-center px-4 py-2 glass-card rounded-xl text-sm font-medium transition-all duration-300;
+            color: #374151;
+          }
+          .btn-glass:hover {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(255, 179, 71, 0.45);
+            box-shadow: 0 6px 16px rgba(255, 179, 71, 0.2);
+            transform: translateY(-2px);
+          }
+          
+          /* ✅ 下拉菜单样式 - 修复层级问题 */
+          .dropdown-menu {
+            @apply absolute right-0 w-48 rounded-2xl shadow-2xl py-2 overflow-hidden;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(24px) saturate(200%);
+            -webkit-backdrop-filter: blur(24px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px) scale(0.96);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 99999;
+          }
+          .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+          }
+          .dropdown-item {
+            @apply block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/15 hover:text-primary transition-all duration-200 cursor-pointer;
+          }
+          .dropdown-item:first-child {
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+          }
+          .dropdown-item:last-child {
+            border-bottom-left-radius: 1rem;
+            border-bottom-right-radius: 1rem;
+          }
+          
+          /* ✅ Toast 提示样式 - 右上角弹出，配色协调 */
+          .toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            min-width: 280px;
+            padding: 14px 20px;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            z-index: 100000;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(24px) saturate(200%);
+            -webkit-backdrop-filter: blur(24px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            opacity: 0;
+            transform: translateX(120px);
+          }
+          .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+          }
+          .toast.success {
+            border-left: 4px solid #F59E0B;
+            background: linear-gradient(90deg, rgba(245, 158, 11, 0.08), rgba(255, 255, 255, 0.95));
+          }
+          .toast.error {
+            border-left: 4px solid #FB923C;
+            background: linear-gradient(90deg, rgba(251, 146, 60, 0.12), rgba(255, 255, 255, 0.95));
+          }
+          .toast.info {
+            border-left: 4px solid #FFB347;
+            background: linear-gradient(90deg, rgba(255, 179, 71, 0.08), rgba(255, 255, 255, 0.95));
+          }
+          .toast.warning {
+            border-left: 4px solid #FB923C;
+            background: linear-gradient(90deg, rgba(251, 146, 60, 0.15), rgba(255, 255, 255, 0.95));
+          }
+          
+          /* ✅ 加载动画 */
+          .loading-pulse {
+            animation: loadingPulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+          }
+          @keyframes loadingPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+          }
+          
+          /* ✅ 光感效果 */
+          .glow-effect {
+            position: relative;
+          }
+          .glow-effect::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, rgba(255, 179, 71, 0.4), rgba(255, 199, 120, 0.3), rgba(255, 179, 71, 0.4));
+            background-size: 200% 200%;
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            animation: glowRotate 3s ease-in-out infinite;
+          }
+          .glow-effect:hover::before {
+            opacity: 1;
+          }
+          @keyframes glowRotate {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+          }
+          
+          /* ✅ 月份切换动画 */
+          .month-slide-enter {
+            animation: monthSlideEnter 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+          }
+          @keyframes monthSlideEnter {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
           }
       }
     </style>
   </head>
-  <body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col text-[13px] md:text-[14px]">
+  <body class="font-inter bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 text-gray-800 min-h-screen flex flex-col text-[13px] md:text-[14px] relative overflow-x-hidden">
+    
+    <!-- ✅ 背景光斑装饰 -->
+    <div class="bg-orb bg-orb-primary w-[500px] h-[500px] -top-40 -left-40"></div>
+    <div class="bg-orb bg-orb-secondary w-[400px] h-[400px] bottom-0 right-0"></div>
+    
     <!-- [MODULE] a1b_顶部导航 -->
-    <header class="bg-white shadow-sm sticky top-0 z-30">
+    <header class="glass-header sticky top-0 z-50">
       <div
         class="container mx-auto px-4 py-3 flex items-center justify-between"
       >
         <!-- 返回首页/应用名称 -->
         <div class="flex items-center space-x-4">
           <a
-            class="text-gray-600 hover:text-primary transition-colors"
+            class="text-gray-600 hover:text-primary transition-all duration-300 transform hover:scale-110"
             href="javascript:void(0);"
           >
             <i class="fas fa-arrow-left text-lg"> </i>
@@ -113,28 +406,28 @@
         <!-- 日期显示和视图切换 -->
         <div class="flex items-center space-x-4">
           <button id="today-btn"
-            class="bg-primary text-white px-3 py-1 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+            class="btn-primary glow-effect"
           >
             今天
           </button>
-          <div class="text-gray-600">
-            <span class="font-medium" id="current-date"> </span>
+          <div class="glass-card px-4 py-2 rounded-2xl">
+            <span class="font-medium text-gray-700" id="current-date"> </span>
           </div>
           <div class="flex space-x-2">
             <button
-              class="view-btn active bg-primary text-white px-3 py-1 rounded-lg text-sm font-medium"
+              class="view-btn active btn-primary"
               data-view="month"
             >
               月视图
             </button>
             <button
-              class="view-btn bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors"
+              class="view-btn btn-glass"
               data-view="week"
             >
               周视图
             </button>
             <button
-              class="view-btn bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors"
+              class="view-btn btn-glass"
               data-view="day"
             >
               日视图
@@ -143,44 +436,49 @@
         </div>
         <!-- 右侧操作区 -->
         <div class="flex items-center space-x-4">
-          <button id="add-task-btn"
-            class="bg-primary text-white px-3 py-1 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+          <a
+            href="待办页面.html"
+            id="add-task-btn"
+            class="btn-primary glow-effect"
+            data-open-modal="new-task"
           >
-            <i class="fas fa-plus mr-1"> </i>
+            <i class="fas fa-plus mr-1.5"> </i>
             添加任务
-          </button>
-          <div class="relative group">
-            <button class="flex items-center space-x-2 focus:outline-none">
+          </a>
+          <div class="relative" id="user-menu-container">
+            <button class="flex items-center space-x-2 focus:outline-none outline-none transition-all duration-300 hover:scale-105" id="user-menu-btn">
               <img
                 alt="用户头像"
-                class="w-8 h-8 rounded-full object-cover border-2 border-white shadow-sm"
+                class="w-8 h-8 rounded-full object-cover border-2 border-white shadow-md ring-2 ring-primary/30"
                 src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
               />
-              <span class="hidden md:inline-block font-medium"> 张明 </span>
+              <span class="hidden md:inline-block font-medium text-gray-700"> 张明 </span>
               <i class="fas fa-chevron-down text-xs text-gray-500"> </i>
             </button>
-            <!-- 下拉菜单 (默认隐藏) -->
+            <!-- 下拉菜单 -->
             <div
-              class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 hidden group-hover:block transition-all duration-200"
+              class="dropdown-menu"
+              id="user-dropdown"
             >
               <a
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                href="javascript:void(0);"
+                class="dropdown-item"
+                href="个人中心页面.html"
               >
-                <i class="fas fa-user mr-2 text-gray-500"> </i>
+                <i class="fas fa-user mr-2 text-primary"> </i>
                 个人中心
               </a>
               <a
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                class="dropdown-item"
                 href="javascript:void(0);"
               >
-                <i class="fas fa-cog mr-2 text-gray-500"> </i>
+                <i class="fas fa-cog mr-2 text-primary"> </i>
                 设置
               </a>
-              <div class="border-t border-gray-100 my-1"></div>
+              <div class="border-t border-gray-200 my-1"></div>
               <a
-                class="block px-4 py-2 text-sm text-danger hover:bg-gray-100"
+                class="dropdown-item text-danger"
                 href="javascript:void(0);"
+                id="logout-btn-top"
               >
                 <i class="fas fa-sign-out-alt mr-2"> </i>
                 退出登录
@@ -190,97 +488,99 @@
         </div>
       </div>
     </header>
-    <script>
-      if (typeof checkAuthOnLoad === 'function') { checkAuthOnLoad().catch(function(){}); }
-    </script>
-    <!-- [/MODULE] a1b_顶部导航 -- 包含返回按钮、应用名称、今天按钮、日期显示、视图切换、添加任务按钮和用户头像 -->
-    <div class="flex flex-1 overflow-hidden">
-      <!-- 任务分类侧边栏已删除 -->
+    <!-- [/MODULE] a1b_顶部导航 -->
+    
+    <div class="flex flex-1 overflow-hidden relative z-10">
       <!-- [MODULE] e3f_主内容区域 -->
-      <main class="flex-1 overflow-y-auto bg-gray-50 p-4 md:p-6">
+      <main class="flex-1 overflow-y-auto p-4 md:p-6 scrollbar-thin">
         <!-- [MODULE] g4h_快捷操作栏 -->
-        <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
+        <div class="glass-card rounded-2xl p-4 mb-6 fade-in">
           <div
             class="flex flex-col md:flex-row md:items-center justify-between gap-4"
           >
             <!-- 移动端搜索框 -->
             <div class="relative md:hidden w-full">
               <input
-                class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                class="glass-input w-full pl-10 pr-4 py-2.5 rounded-xl focus:outline-none transition-all"
                 placeholder="搜索任务..."
                 type="text"
               />
               <i
-                class="fas fa-search absolute left-3 top-1/2 transform -translate-y-center text-gray-400"
+                class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
               >
               </i>
             </div>
             <!-- 批量操作按钮 -->
             <div class="flex flex-wrap gap-2">
               <button id="batch-complete-btn"
-                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 bg-gradient-to-r from-success/90 to-success/85 text-white border border-success/60 shadow-md hover:shadow-lg hover:-translate-y-0.5"
               >
                 <i class="fas fa-check-square mr-2"> </i>
                 批量完成
               </button>
               <button id="batch-delete-btn"
-                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 bg-gradient-to-r from-warning/90 to-warning/85 text-white border border-warning/60 shadow-md hover:shadow-lg hover:-translate-y-0.5"
               >
                 <i class="fas fa-trash-alt mr-2"> </i>
                 批量删除
               </button>
             </div>
+
             <!-- 排序/筛选和视图切换 -->
             <div class="flex items-center gap-3">
               <!-- 排序/筛选下拉菜单 -->
-              <div class="relative">
+              <div class="relative" style="position: relative;">
                 <button
-                  class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                  class="btn-glass"
                   id="sort-filter-btn"
                 >
-                  <i class="fas fa-sort mr-2"> </i>
+                  <i class="fas fa-sort mr-2 text-primary"> </i>
                   排序
-                  <i class="fas fa-chevron-down ml-2 text-xs"> </i>
+                  <i class="fas fa-chevron-down ml-2 text-xs transition-transform duration-300" id="sort-filter-arrow"> </i>
                 </button>
-                <!-- 下拉菜单 (默认隐藏) -->
+                <!-- 下拉菜单 -->
                 <div
-                  class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-10 hidden"
+                  class="dropdown-menu"
                   id="sort-filter-menu"
+                  style="position: absolute; right: 0; top: 100%; margin-top: 0.5rem;"
                 >
                   <a
-                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    class="dropdown-item"
                     href="javascript:void(0);"
+                    data-sort="time"
                   >
-                    <i class="fas fa-clock mr-2 text-gray-500"> </i>
+                    <i class="fas fa-clock mr-2 text-primary"> </i>
                     按时间
                   </a>
                   <a
-                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    class="dropdown-item"
                     href="javascript:void(0);"
+                    data-sort="priority"
                   >
-                    <i class="fas fa-flag mr-2 text-gray-500"> </i>
+                    <i class="fas fa-flag mr-2 text-primary"> </i>
                     按优先级
                   </a>
                   <a
-                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    class="dropdown-item"
                     href="javascript:void(0);"
+                    data-sort="label"
                   >
-                    <i class="fas fa-tags mr-2 text-gray-500"> </i>
+                    <i class="fas fa-tags mr-2 text-primary"> </i>
                     按标签
                   </a>
                 </div>
               </div>
               <!-- 视图切换 -->
               <div
-                class="flex border border-gray-300 rounded-lg overflow-hidden"
+                class="flex glass-card rounded-2xl overflow-hidden border border-white/40"
               >
                 <button id="view-list-btn"
-                  class="px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  class="px-4 py-2 text-sm font-medium text-gray-500 hover:bg-primary/10 hover:text-primary transition-all duration-300"
                 >
                   <i class="fas fa-list"> </i>
                 </button>
                 <button id="view-grid-btn"
-                  class="px-4 py-2 text-sm font-medium text-primary bg-primary/5"
+                  class="px-4 py-2 text-sm font-medium text-primary bg-primary/10"
                 >
                   <i class="fas fa-th-large"> </i>
                 </button>
@@ -288,331 +588,144 @@
             </div>
           </div>
         </div>
-        <!-- [/MODULE] g4h_快捷操作栏 -- 包含批量操作按钮、排序/筛选下拉菜单和视图切换按钮 -->
+        <!-- [/MODULE] g4h_快捷操作栏 -->
+        
         <!-- 日历主区域 -->
-        <div class="calendar-container">
-          <div class="bg-white rounded-xl shadow-sm p-4 mb-4">
+        <div class="calendar-container fade-in">
+          <div class="glass-card rounded-2xl p-4 mb-4">
             <div class="flex items-center justify-between mb-2">
               <div>
                 <h2 class="text-lg font-semibold text-gray-800">已排任务</h2>
                 <p class="text-xs text-gray-500">点击任务可快速定位到对应日期</p>
               </div>
-              <button id="refresh-scheduled-btn" class="text-xs text-primary hover:text-primary/80">刷新</button>
+              <button id="refresh-scheduled-btn" class="text-xs text-primary hover:text-secondary transition-colors duration-300">
+                <i class="fas fa-sync-alt mr-1"></i>刷新
+              </button>
             </div>
-            <div id="scheduled-task-list" class="space-y-2 max-h-44 overflow-auto"></div>
+            <div id="scheduled-task-list" class="space-y-2 max-h-44 overflow-auto scrollbar-thin"></div>
           </div>
+          
           <!-- 月视图 -->
           <div class="calendar-view active" id="month-view">
             <div class="flex justify-between items-center mb-4">
               <button id="month-prev-btn"
-                class="text-gray-600 hover:text-primary transition-colors"
+                class="glass-card text-gray-600 hover:text-primary hover:border-primary/30 transition-all duration-300 p-2.5 rounded-2xl"
               >
                 <i class="fas fa-chevron-left text-xl"> </i>
               </button>
-              <h2 id="month-title" class="text-xl font-bold text-gray-800">2024年11月</h2>
+              <h2 id="month-title" class="text-xl font-bold text-gray-800"></h2>
               <button id="month-next-btn"
-                class="text-gray-600 hover:text-primary transition-colors"
+                class="glass-card text-gray-600 hover:text-primary hover:border-primary/30 transition-all duration-300 p-2.5 rounded-2xl"
               >
                 <i class="fas fa-chevron-right text-xl"> </i>
               </button>
             </div>
             <!-- 星期行 -->
-            <div class="grid grid-cols-7 gap-1 mb-2">
-              <div class="text-center text-sm font-medium text-gray-500">
-                周一
-              </div>
-              <div class="text-center text-sm font-medium text-gray-500">
-                周二
-              </div>
-              <div class="text-center text-sm font-medium text-gray-500">
-                周三
-              </div>
-              <div class="text-center text-sm font-medium text-gray-500">
-                周四
-              </div>
-              <div class="text-center text-sm font-medium text-gray-500">
-                周五
-              </div>
-              <div class="text-center text-sm font-medium text-gray-500">
-                周六
-              </div>
-              <div class="text-center text-sm font-medium text-gray-500">
-                周日
-              </div>
+            <div class="grid grid-cols-7 gap-2 mb-2">
+              <div class="text-center text-sm font-medium text-gray-500">周一</div>
+              <div class="text-center text-sm font-medium text-gray-500">周二</div>
+              <div class="text-center text-sm font-medium text-gray-500">周三</div>
+              <div class="text-center text-sm font-medium text-gray-500">周四</div>
+              <div class="text-center text-sm font-medium text-gray-500">周五</div>
+              <div class="text-center text-sm font-medium text-primary">周六</div>
+              <div class="text-center text-sm font-medium text-primary">周日</div>
             </div>
             <!-- 日期格子 -->
-            <div class="grid grid-cols-7 gap-1" id="month-grid">
+            <div class="grid grid-cols-7 gap-2" id="month-grid">
               <!-- 动态渲染每日格子 -->
-              <div class="bg-gray-100 rounded-lg p-2 text-gray-400">
-                <div class="text-right text-sm">29</div>
-              </div>
-              <div class="bg-gray-100 rounded-lg p-2 text-gray-400">
-                <div class="text-right text-sm">30</div>
-              </div>
-              <!-- 当月日期 -->
-              <div
-                class="bg-white rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div class="text-right text-sm font-medium">1</div>
-                <div class="flex flex-wrap gap-1 mt-1">
-                  <div class="w-2 h-2 bg-task-work rounded-full"></div>
-                </div>
-              </div>
-              <div
-                class="bg-white rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div class="text-right text-sm font-medium">2</div>
-                <div class="flex flex-wrap gap-1 mt-1">
-                  <div class="w-2 h-2 bg-task-study rounded-full"></div>
-                  <div class="w-2 h-2 bg-task-life rounded-full"></div>
-                </div>
-              </div>
-              <div
-                class="bg-white rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div class="text-right text-sm font-medium">3</div>
-              </div>
-              <div
-                class="bg-white rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div class="text-right text-sm font-medium">4</div>
-              </div>
-              <!-- 更多日期省略 -->
-              <div
-                class="bg-white rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div class="text-right text-sm font-medium">5</div>
-              </div>
-              <div
-                class="bg-white rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div class="text-right text-sm font-medium">6</div>
-              </div>
-              <div
-                class="bg-white rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div class="text-right text-sm font-medium">7</div>
-              </div>
-              <div
-                class="bg-white rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div class="text-right text-sm font-medium">8</div>
-              </div>
-              <div
-                class="bg-white rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div class="text-right text-sm font-medium">9</div>
-              </div>
-              <div
-                class="bg-white rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div class="text-right text-sm font-medium">10</div>
-              </div>
-              <div
-                class="bg-white rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div class="text-right text-sm font-medium">11</div>
-              </div>
             </div>
           </div>
+          
           <!-- 周视图 -->
           <div class="calendar-view hidden" id="week-view">
             <div class="flex justify-between items-center mb-4">
               <button id="week-prev-btn"
-                class="text-gray-600 hover:text-primary transition-colors"
+                class="glass-card text-gray-600 hover:text-primary hover:border-primary/30 transition-all duration-300 p-2.5 rounded-2xl"
               >
                 <i class="fas fa-chevron-left text-xl"> </i>
               </button>
-              <h2 class="text-xl font-bold text-gray-800">
-                2024年11月1日-11月7日
-              </h2>
+              <h2 class="text-xl font-bold text-gray-800"></h2>
               <button id="week-next-btn"
-                class="text-gray-600 hover:text-primary transition-colors"
+                class="glass-card text-gray-600 hover:text-primary hover:border-primary/30 transition-all duration-300 p-2.5 rounded-2xl"
               >
                 <i class="fas fa-chevron-right text-xl"> </i>
               </button>
             </div>
             <!-- 周视图内容 -->
-            <div class="grid grid-cols-7 gap-1">
-              <div class="bg-white rounded-lg p-2 shadow-sm">
-                <div class="text-center text-sm font-medium">周一</div>
-                <div class="text-center text-sm text-gray-500">11/1</div>
-                <div class="mt-2 space-y-2">
-                  <div class="bg-task-work text-white text-xs p-1 rounded">
-                    项目会议 9:00-10:00
-                  </div>
-                  <div class="bg-task-study text-white text-xs p-1 rounded">
-                    学习前端 14:00-16:00
-                  </div>
-                </div>
-              </div>
-              <div class="bg-white rounded-lg p-2 shadow-sm">
-                <div class="text-center text-sm font-medium">周二</div>
-                <div class="text-center text-sm text-gray-500">11/2</div>
-                <div class="mt-2 space-y-2">
-                  <div class="bg-task-life text-white text-xs p-1 rounded">
-                    健身 18:00-19:00
-                  </div>
-                </div>
-              </div>
-              <!-- 更多星期省略 -->
-              <div class="bg-white rounded-lg p-2 shadow-sm">
-                <div class="text-center text-sm font-medium">周三</div>
-                <div class="text-center text-sm text-gray-500">11/3</div>
-              </div>
-              <div class="bg-white rounded-lg p-2 shadow-sm">
-                <div class="text-center text-sm font-medium">周四</div>
-                <div class="text-center text-sm text-gray-500">11/4</div>
-              </div>
-              <div class="bg-white rounded-lg p-2 shadow-sm">
-                <div class="text-center text-sm font-medium">周五</div>
-                <div class="text-center text-sm text-gray-500">11/5</div>
-              </div>
-              <div class="bg-white rounded-lg p-2 shadow-sm">
-                <div class="text-center text-sm font-medium">周六</div>
-                <div class="text-center text-sm text-gray-500">11/6</div>
-              </div>
-              <div class="bg-white rounded-lg p-2 shadow-sm">
-                <div class="text-center text-sm font-medium">周日</div>
-                <div class="text-center text-sm text-gray-500">11/7</div>
-              </div>
-            </div>
+            <div class="grid grid-cols-7 gap-2" id="week-grid"></div>
           </div>
+          
           <!-- 日视图 -->
           <div class="calendar-view hidden" id="day-view">
             <div class="flex justify-between items-center mb-4">
               <button id="day-prev-btn"
-                class="text-gray-600 hover:text-primary transition-colors"
+                class="glass-card text-gray-600 hover:text-primary hover:border-primary/30 transition-all duration-300 p-2.5 rounded-2xl"
               >
                 <i class="fas fa-chevron-left text-xl"> </i>
               </button>
-              <h2 class="text-xl font-bold text-gray-800">
-                2024年11月1日 周一
-              </h2>
+              <h2 class="text-xl font-bold text-gray-800"></h2>
               <button id="day-next-btn"
-                class="text-gray-600 hover:text-primary transition-colors"
+                class="glass-card text-gray-600 hover:text-primary hover:border-primary/30 transition-all duration-300 p-2.5 rounded-2xl"
               >
                 <i class="fas fa-chevron-right text-xl"> </i>
               </button>
             </div>
             <!-- 日视图内容 -->
-            <div class="grid grid-cols-12 gap-1">
-              <div class="col-span-2">
-                <div class="space-y-4">
-                  <div class="text-sm text-gray-500">8:00</div>
-                  <div class="text-sm text-gray-500">9:00</div>
-                  <div class="text-sm text-gray-500">10:00</div>
-                  <div class="text-sm text-gray-500">11:00</div>
-                  <div class="text-sm text-gray-500">12:00</div>
-                  <div class="text-sm text-gray-500">13:00</div>
-                  <div class="text-sm text-gray-500">14:00</div>
-                  <div class="text-sm text-gray-500">15:00</div>
-                  <div class="text-sm text-gray-500">16:00</div>
-                  <div class="text-sm text-gray-500">17:00</div>
-                  <div class="text-sm text-gray-500">18:00</div>
-                  <div class="text-sm text-gray-500">19:00</div>
-                  <div class="text-sm text-gray-500">20:00</div>
-                  <div class="text-sm text-gray-500">21:00</div>
-                  <div class="text-sm text-gray-500">22:00</div>
-                </div>
-              </div>
-              <div class="col-span-10">
-                <div class="space-y-4">
-                  <div class="h-8"></div>
-                  <div class="bg-task-work text-white p-2 rounded-lg">
-                    项目会议 9:00-10:00
-                  </div>
-                  <div class="h-8"></div>
-                  <div class="h-8"></div>
-                  <div class="h-8"></div>
-                  <div class="h-8"></div>
-                  <div class="bg-task-study text-white p-2 rounded-lg">
-                    学习前端 14:00-16:00
-                  </div>
-                  <div class="h-8"></div>
-                  <div class="h-8"></div>
-                  <div class="h-8"></div>
-                  <div class="h-8"></div>
-                  <div class="h-8"></div>
-                  <div class="h-8"></div>
-                  <div class="h-8"></div>
-                  <div class="h-8"></div>
-                  <div class="h-8"></div>
-                </div>
-              </div>
-            </div>
+            <div class="grid grid-cols-12 gap-2" id="day-grid"></div>
           </div>
         </div>
+        
         <!-- 任务侧边栏 -->
-        <div class="bg-white rounded-xl shadow-sm p-6 mt-6">
+        <div class="glass-card rounded-2xl p-6 mt-6 fade-in">
           <h2 class="text-lg font-semibold text-gray-800 mb-4">待办任务池</h2>
-          <div class="space-y-3">
-            <div
-              class="bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-colors cursor-move task-draggable"
-              draggable="true"
-              data-task-id="t1"
-            >
-              <div class="font-medium">完成项目文档</div>
-              <div class="text-xs text-gray-500 mt-1">#工作</div>
-            </div>
-            <div
-              class="bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-colors cursor-move task-draggable"
-              draggable="true"
-              data-task-id="t2"
-            >
-              <div class="font-medium">阅读技术书籍</div>
-              <div class="text-xs text-gray-500 mt-1">#学习</div>
-            </div>
-            <div
-              class="bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-colors cursor-move task-draggable"
-              draggable="true"
-              data-task-id="t3"
-            >
-              <div class="font-medium">购买生活用品</div>
-              <div class="text-xs text-gray-500 mt-1">#生活</div>
-            </div>
+          <div class="space-y-3" id="task-pool">
+            <!-- 动态渲染任务 -->
           </div>
-          <button
-            class="mt-4 bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+          <a
+            href="待办页面.html"
+            class="mt-4 btn-primary w-full justify-center glow-effect"
           >
-            AI智能排程
-          </button>
+            <i class="fas fa-magic mr-2"> </i>
+            AI 智能排程
+          </a>
         </div>
+        
         <!-- 日历颜色标签 -->
-        <div class="bg-white rounded-xl shadow-sm p-6 mt-6">
+        <div class="glass-card rounded-2xl p-6 mt-6 fade-in">
           <h2 class="text-lg font-semibold text-gray-800 mb-4">任务分类</h2>
-          <div class="grid grid-cols-2 gap-2">
-            <div class="flex items-center">
-              <div class="w-3 h-3 bg-task-work rounded-full mr-2"></div>
-              <span class="text-sm"> 工作 </span>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="flex items-center space-x-2 p-2.5 rounded-xl hover:bg-primary/5 transition-colors cursor-pointer">
+              <div class="w-3 h-3 bg-task-work rounded-full shadow-md pulse-glow"></div>
+              <span class="text-sm font-medium text-gray-700">工作</span>
             </div>
-            <div class="flex items-center">
-              <div class="w-3 h-3 bg-task-study rounded-full mr-2"></div>
-              <span class="text-sm"> 学习 </span>
+            <div class="flex items-center space-x-2 p-2.5 rounded-xl hover:bg-study/5 transition-colors cursor-pointer">
+              <div class="w-3 h-3 bg-task-study rounded-full shadow-md pulse-glow"></div>
+              <span class="text-sm font-medium text-gray-700">学习</span>
             </div>
-            <div class="flex items-center">
-              <div class="w-3 h-3 bg-task-life rounded-full mr-2"></div>
-              <span class="text-sm"> 生活 </span>
+            <div class="flex items-center space-x-2 p-2.5 rounded-xl hover:bg-life/5 transition-colors cursor-pointer">
+              <div class="w-3 h-3 bg-task-life rounded-full shadow-md pulse-glow"></div>
+              <span class="text-sm font-medium text-gray-700">生活</span>
             </div>
-            <div class="flex items-center">
-              <div class="w-3 h-3 bg-task-health rounded-full mr-2"></div>
-              <span class="text-sm"> 健康 </span>
+            <div class="flex items-center space-x-2 p-2.5 rounded-xl hover:bg-health/5 transition-colors cursor-pointer">
+              <div class="w-3 h-3 bg-task-health rounded-full shadow-md pulse-glow"></div>
+              <span class="text-sm font-medium text-gray-700">健康</span>
             </div>
           </div>
         </div>
       </main>
-      <!-- [/MODULE] e3f_主内容区域 -- 包含日历主区域、任务侧边栏和任务详情卡片 -->
+      <!-- [/MODULE] e3f_主内容区域 -->
+      
       <!-- [MODULE] k6l_任务详情/编辑区 -->
       <aside
-        class="task-detail-panel hidden w-80 md:w-96 bg-white border-l border-gray-200 overflow-y-auto transition-all duration-300 z-20"
+        class="task-detail-panel hidden w-80 md:w-96 glass-strong border-l border-white/50 overflow-y-auto transition-all duration-400 z-20"
         id="task-detail-panel"
       >
         <div
-          class="p-4 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white z-10"
+          class="p-4 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white/75 backdrop-blur-2xl z-10"
         >
           <h2 class="text-lg font-semibold text-gray-800">任务详情</h2>
           <button
-            class="text-gray-500 hover:text-gray-700"
+            class="text-gray-500 hover:text-primary transition-all duration-300 transform hover:scale-110"
             id="close-detail-btn"
           >
             <i class="fas fa-times"> </i>
@@ -621,38 +734,33 @@
         <div class="p-4 space-y-6">
           <!-- 任务标题 -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">
               任务标题
             </label>
             <input id="detail-title"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+              class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none transition-all"
               type="text"
-              value="完成项目提案PPT"
             />
           </div>
           <!-- 描述/备注 -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">
               描述
             </label>
             <textarea id="detail-description"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+              class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none transition-all"
               placeholder="添加描述..."
               rows="4"
-            >
-        为新产品线准备详细的项目提案，包括市场分析、技术方案和预算规划。
-    </textarea
-            >
+            ></textarea>
           </div>
           <!-- 截止日期和时间 -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">
               截止日期和时间
             </label>
             <input id="detail-dueAt"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+              class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none transition-all"
               type="datetime-local"
-              value="2023-06-05T14:00"
             />
           </div>
           <!-- 重复设置 -->
@@ -661,7 +769,7 @@
               重复
             </label>
             <select
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+              class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none transition-all"
             >
               <option>不重复</option>
               <option>每天</option>
@@ -669,80 +777,6 @@
               <option>每月</option>
               <option>自定义</option>
             </select>
-            <!-- 每周重复选项 (默认隐藏) -->
-            <div class="mt-3 grid grid-cols-7 gap-1 hidden">
-              <label class="text-center">
-                <input checked class="sr-only" type="checkbox" />
-                <span
-                  class="inline-block w-8 h-8 flex items-center justify-center rounded-full bg-primary/10 text-primary text-xs"
-                >
-                  一
-                </span>
-              </label>
-              <label class="text-center">
-                <input checked class="sr-only" type="checkbox" />
-                <span
-                  class="inline-block w-8 h-8 flex items-center justify-center rounded-full bg-primary/10 text-primary text-xs"
-                >
-                  二
-                </span>
-              </label>
-              <label class="text-center">
-                <input checked class="sr-only" type="checkbox" />
-                <span
-                  class="inline-block w-8 h-8 flex items-center justify-center rounded-full bg-primary/10 text-primary text-xs"
-                >
-                  三
-                </span>
-              </label>
-              <label class="text-center">
-                <input checked class="sr-only" type="checkbox" />
-                <span
-                  class="inline-block w-8 h-8 flex items-center justify-center rounded-full bg-primary/10 text-primary text-xs"
-                >
-                  四
-                </span>
-              </label>
-              <label class="text-center">
-                <input checked class="sr-only" type="checkbox" />
-                <span
-                  class="inline-block w-8 h-8 flex items-center justify-center rounded-full bg-primary/10 text-primary text-xs"
-                >
-                  五
-                </span>
-              </label>
-              <label class="text-center">
-                <input class="sr-only" type="checkbox" />
-                <span
-                  class="inline-block w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 text-xs"
-                >
-                  六
-                </span>
-              </label>
-              <label class="text-center">
-                <input class="sr-only" type="checkbox" />
-                <span
-                  class="inline-block w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 text-xs"
-                >
-                  日
-                </span>
-              </label>
-            </div>
-            <!-- 结束重复选项 -->
-            <div class="mt-3 flex items-center">
-              <input
-                class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
-                id="end-repeat"
-                type="checkbox"
-              />
-              <label class="ml-2 block text-sm text-gray-700" for="end-repeat">
-                结束重复
-              </label>
-              <input
-                class="ml-3 px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                type="date"
-              />
-            </div>
           </div>
           <!-- 提醒设置 -->
           <div>
@@ -750,98 +784,64 @@
               提醒
             </label>
             <div class="space-y-2">
-              <label class="flex items-center">
+              <label class="flex items-center space-x-2 p-2.5 rounded-xl hover:bg-primary/5 transition-colors cursor-pointer">
                 <input
-                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300"
+                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
                   name="reminder"
                   type="radio"
                 />
-                <span class="ml-2 text-sm text-gray-700"> 准时 </span>
+                <span class="text-sm text-gray-700">准时</span>
               </label>
-              <label class="flex items-center">
+              <label class="flex items-center space-x-2 p-2.5 rounded-xl hover:bg-primary/5 transition-colors cursor-pointer">
                 <input
                   checked
-                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300"
+                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
                   name="reminder"
                   type="radio"
                 />
-                <span class="ml-2 text-sm text-gray-700"> 5分钟前 </span>
+                <span class="text-sm text-gray-700">5 分钟前</span>
               </label>
-              <label class="flex items-center">
+              <label class="flex items-center space-x-2 p-2.5 rounded-xl hover:bg-primary/5 transition-colors cursor-pointer">
                 <input
-                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300"
+                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
                   name="reminder"
                   type="radio"
                 />
-                <span class="ml-2 text-sm text-gray-700"> 15分钟前 </span>
+                <span class="text-sm text-gray-700">15 分钟前</span>
               </label>
-              <label class="flex items-center">
+              <label class="flex items-center space-x-2 p-2.5 rounded-xl hover:bg-primary/5 transition-colors cursor-pointer">
                 <input
-                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300"
+                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
                   name="reminder"
                   type="radio"
                 />
-                <span class="ml-2 text-sm text-gray-700"> 30分钟前 </span>
+                <span class="text-sm text-gray-700">30 分钟前</span>
               </label>
-              <label class="flex items-center">
+              <label class="flex items-center space-x-2 p-2.5 rounded-xl hover:bg-primary/5 transition-colors cursor-pointer">
                 <input
-                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300"
+                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
                   name="reminder"
                   type="radio"
                 />
-                <span class="ml-2 text-sm text-gray-700"> 1小时前 </span>
+                <span class="text-sm text-gray-700">1 小时前</span>
               </label>
-              <label class="flex items-center">
+              <label class="flex items-center space-x-2 p-2.5 rounded-xl hover:bg-primary/5 transition-colors cursor-pointer">
                 <input
-                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300"
+                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
                   name="reminder"
                   type="radio"
                 />
-                <span class="ml-2 text-sm text-gray-700"> 1天前 </span>
+                <span class="text-sm text-gray-700">1 天前</span>
               </label>
-              <label class="flex items-center">
+              <label class="flex items-center space-x-2 p-2.5 rounded-xl hover:bg-primary/5 transition-colors cursor-pointer">
                 <input
-                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300"
+                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
                   name="reminder"
                   type="radio"
                 />
-                <span class="ml-2 text-sm text-gray-700"> 自定义 </span>
+                <span class="text-sm text-gray-700">自定义</span>
               </label>
             </div>
-          </div>
-          <!-- 番茄专注设置 -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              番茄专注
-            </label>
-            <div class="flex items-center">
-              <button
-                class="px-3 py-1 border border-gray-300 rounded-l-lg bg-gray-50 text-gray-700 hover:bg-gray-100"
-              >
-                <i class="fas fa-minus"> </i>
-              </button>
-              <input
-                class="w-16 text-center px-3 py-1 border-t border-b border-gray-300 focus:outline-none"
-                max="10"
-                min="1"
-                type="number"
-                value="2"
-              />
-              <button
-                class="px-3 py-1 border border-gray-300 rounded-r-lg bg-gray-50 text-gray-700 hover:bg-gray-100"
-              >
-                <i class="fas fa-plus"> </i>
-              </button>
-              <span class="ml-2 text-sm text-gray-500">
-                个番茄 (25分钟/个)
-              </span>
-            </div>
-            <button
-              class="mt-3 w-full py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
-            >
-              <i class="fas fa-play mr-2"> </i>
-              开始专注
-            </button>
           </div>
           <!-- 子任务管理 -->
           <div>
@@ -849,93 +849,20 @@
               <label class="block text-sm font-medium text-gray-700">
                 子任务
               </label>
-              <button class="text-sm text-primary hover:text-primary/80">
+              <button class="text-sm text-primary hover:text-secondary transition-colors">
                 <i class="fas fa-check-square mr-1"> </i>
                 全部完成
               </button>
             </div>
-            <div class="space-y-2 mb-3">
-              <div class="flex items-center">
-                <input
-                  checked
-                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
-                  type="checkbox"
-                />
-                <input
-                  class="ml-2 flex-1 px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all line-through text-gray-500"
-                  type="text"
-                  value="收集市场数据"
-                />
-                <button class="ml-2 text-gray-400 hover:text-danger">
-                  <i class="fas fa-trash-alt"> </i>
-                </button>
-              </div>
-              <div class="flex items-center">
-                <input
-                  checked
-                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
-                  type="checkbox"
-                />
-                <input
-                  class="ml-2 flex-1 px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all line-through text-gray-500"
-                  type="text"
-                  value="分析竞争对手"
-                />
-                <button class="ml-2 text-gray-400 hover:text-danger">
-                  <i class="fas fa-trash-alt"> </i>
-                </button>
-              </div>
-              <div class="flex items-center">
-                <input
-                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
-                  type="checkbox"
-                />
-                <input
-                  class="ml-2 flex-1 px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                  type="text"
-                  value="制定技术方案"
-                />
-                <button class="ml-2 text-gray-400 hover:text-danger">
-                  <i class="fas fa-trash-alt"> </i>
-                </button>
-              </div>
-              <div class="flex items-center">
-                <input
-                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
-                  type="checkbox"
-                />
-                <input
-                  class="ml-2 flex-1 px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                  type="text"
-                  value="估算项目预算"
-                />
-                <button class="ml-2 text-gray-400 hover:text-danger">
-                  <i class="fas fa-trash-alt"> </i>
-                </button>
-              </div>
-              <div class="flex items-center">
-                <input
-                  class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
-                  type="checkbox"
-                />
-                <input
-                  class="ml-2 flex-1 px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                  type="text"
-                  value="制作演示PPT"
-                />
-                <button class="ml-2 text-gray-400 hover:text-danger">
-                  <i class="fas fa-trash-alt"> </i>
-                </button>
-              </div>
-            </div>
+            <div class="space-y-2 mb-3" id="subtask-list"></div>
             <div class="flex">
               <input
-                class="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                class="glass-input flex-1 px-4 py-2.5 rounded-l-xl focus:outline-none transition-all"
                 placeholder="添加子任务..."
                 type="text"
               />
               <button
-                class="px-4 py-2 bg-primary text-white rounded-r-lg hover:bg-primary/90 transition-colors"
+                class="px-4 py-2.5 btn-primary rounded-r-xl"
               >
                 <i class="fas fa-plus"> </i>
               </button>
@@ -946,253 +873,101 @@
             <label class="block text-sm font-medium text-gray-700 mb-2">
               标签
             </label>
-            <div class="flex flex-wrap gap-2 mb-3">
-              <span
-                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium tag-work"
-              >
-                工作
-                <button class="ml-1 text-task-work hover:text-task-work/70">
-                  <i class="fas fa-times-circle"> </i>
-                </button>
-              </span>
-              <span
-                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 cursor-pointer"
-              >
-                <i class="fas fa-plus mr-1"> </i>
-                添加 tag
-              </span>
-            </div>
-          </div>
-          <!-- 任务移动 -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              移动到
-            </label>
-            <select
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-            >
-              <option>所有任务</option>
-              <option>我的一天</option>
-              <option>重要任务</option>
-              <option>已计划</option>
-              <option>已分配给我</option>
-              <option>#工作</option>
-              <option>#学习</option>
-              <option>#生活</option>
-              <option>#健康</option>
-            </select>
+            <div class="flex flex-wrap gap-2 mb-3" id="tag-list"></div>
           </div>
           <!-- 保存/取消按钮 -->
           <div class="flex space-x-3 pt-4 border-t border-gray-200">
             <button
-              class="flex-1 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+              class="flex-1 py-2.5 glass-card rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all duration-300"
+              id="cancel-btn"
             >
               取消
             </button>
             <button
-              class="flex-1 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+              class="flex-1 py-2.5 btn-primary rounded-xl text-sm font-medium"
+              id="save-btn"
             >
               保存任务
             </button>
           </div>
         </div>
       </aside>
-      <!-- [/MODULE] k6l_任务详情/编辑区 -- 包含任务标题编辑、描述、截止日期、重复设置、提醒设置、番茄专注设置、子任务管理、标签管理、附件上传和任务移动功能 -->
-      <!-- [MODULE] u2v_专注历史 -->
-      <div class="w-64 bg-white shadow-lg rounded-xl p-4 hidden md:block">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4">最近完成</h3>
-        <div class="space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="text-sm text-gray-700"> 项目提案PPT </span>
-            <span class="text-xs text-gray-500"> 25分钟 </span>
-          </div>
-          <div class="flex items-center justify-between">
-            <span class="text-sm text-gray-700"> 学习React Hooks </span>
-            <span class="text-xs text-gray-500"> 25分钟 </span>
-          </div>
-          <div class="flex items-center justify-between">
-            <span class="text-sm text-gray-700"> 健身锻炼 </span>
-            <span class="text-xs text-gray-500"> 25分钟 </span>
-          </div>
-        </div>
-        <div class="mt-6">
-          <h3 class="text-sm font-medium text-gray-500 mb-2">今日专注时段</h3>
-          <div class="h-16 bg-gray-100 rounded-lg relative overflow-hidden">
-            <div class="absolute inset-0 flex items-center justify-around">
-              <div class="w-2 h-8 bg-primary rounded-full"></div>
-              <div class="w-2 h-8 bg-primary rounded-full"></div>
-              <div class="w-2 h-8 bg-primary rounded-full"></div>
-              <div class="w-2 h-4 bg-gray-300 rounded-full"></div>
-              <div class="w-2 h-4 bg-gray-300 rounded-full"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- [/MODULE] u2v_专注历史 -- 显示最近完成的番茄记录和今日专注时段分布 -->
+      <!-- [/MODULE] k6l_任务详情/编辑区 -->
     </div>
-    <!-- [MODULE] m7n_底部Tab栏 -->
+    
+    <!-- [MODULE] m7n_底部 Tab 栏 -->
     <footer
-      class="bg-white border-t border-gray-200 py-2 px-4 sticky bottom-0 z-20"
+      class="glass-tab py-3 px-4 sticky bottom-0 z-40"
     >
       <div class="container mx-auto flex justify-around items-center">
         <a
-          class="flex flex-col items-center text-gray-500 hover:text-primary"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1.5 rounded-2xl transition-all duration-300"
           href="待办页面.html"
         >
-          <i class="fas fa-list-alt text-xl"> </i>
-          <span class="text-xs mt-1"> 待办 </span>
+          <div class="relative">
+            <i class="fas fa-list-alt text-base"></i>
+          </div>
+          <span class="text-[10px] mt-1 font-semibold text-gray-700">待办</span>
+          <span class="tab-indicator"></span>
         </a>
-        <!-- 当前页：日历 -->
         <a
-          class="flex flex-col items-center text-primary"
+          class="tab-item active flex flex-col items-center text-primary px-2 py-1.5 rounded-2xl transition-all duration-300"
           href="日历页面.html"
         >
-          <i class="fas fa-calendar text-xl"> </i>
-          <span class="text-xs mt-1"> 日历 </span>
+          <div class="relative">
+            <i class="fas fa-calendar text-base"></i>
+            <span class="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-pulse pulse-glow"></span>
+          </div>
+          <span class="text-[10px] mt-1 font-semibold">日历</span>
+          <span class="tab-indicator"></span>
         </a>
         <a
-          class="flex flex-col items-center text-gray-500 hover:text-primary"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1.5 rounded-2xl transition-all duration-300"
           href="番茄钟页面.html"
         >
-          <i class="fas fa-clock text-xl"> </i>
-          <span class="text-xs mt-1"> 番茄钟 </span>
+          <div class="relative">
+            <i class="fas fa-clock text-base"></i>
+          </div>
+          <span class="text-[10px] mt-1 font-semibold text-gray-700">番茄钟</span>
+          <span class="tab-indicator"></span>
         </a>
         <a
-          class="flex flex-col items-center text-gray-500 hover:text-primary"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1.5 rounded-2xl transition-all duration-300"
           href="数据周报页面.html"
         >
-          <i class="fas fa-chart-line text-xl"> </i>
-          <span class="text-xs mt-1"> 数据周报 </span>
+          <div class="relative">
+            <i class="fas fa-chart-line text-base"></i>
+          </div>
+          <span class="text-[10px] mt-1 font-semibold text-gray-700">数据周报</span>
+          <span class="tab-indicator"></span>
         </a>
         <a
-          class="flex flex-col items-center text-gray-500 hover:text-primary"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1.5 rounded-2xl transition-all duration-300"
           href="打卡页面.html"
         >
-          <i class="fas fa-check-circle text-xl"> </i>
-          <span class="text-xs mt-1"> 打卡 </span>
+          <div class="relative">
+            <i class="fas fa-check-circle text-base"></i>
+          </div>
+          <span class="text-[10px] mt-1 font-semibold text-gray-700">打卡</span>
+          <span class="tab-indicator"></span>
         </a>
         <a
-          class="flex flex-col items-center text-gray-500 hover:text-primary"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1.5 rounded-2xl transition-all duration-300"
           href="个人中心页面.html"
         >
-          <i class="fas fa-user text-xl"> </i>
-          <span class="text-xs mt-1"> 个人中心 </span>
+          <div class="relative">
+            <i class="fas fa-user text-base"></i>
+          </div>
+          <span class="text-[10px] mt-1 font-semibold text-gray-700">我的</span>
+          <span class="tab-indicator"></span>
         </a>
       </div>
     </footer>
-    <!-- [/MODULE] m7n_底部Tab栏 -- 包含待办、日历、番茄钟、数据周报、打卡、个人中心六个Tab -->
-    <!-- [JSMOD] n8o_日期显示功能 -->
-    <script id="date-script">
-      // 设置当前日期显示
-      function setCurrentDate() {
-        var now = new Date();
-        var options = {
-          month: 'long',
-          day: 'numeric',
-          weekday: 'long'
-        };
-        var dateString = now.toLocaleDateString('zh-CN', options);
-        document.getElementById('current-date').textContent = "\u4ECA\u5929".concat(dateString);
-      }
+    <!-- [/MODULE] m7n_底部 Tab 栏 -->
+    
+    <!-- ✅ Toast 提示容器 -->
+    <div id="toast-container"></div>
 
-      // 页面加载时设置日期
-      window.addEventListener('load', setCurrentDate);
-    </script>
-    <!-- [/JSMOD] n8o_日期显示功能 -- 设置并显示当前日期 -->
-    <!-- [JSMOD] p9q_ECharts图表初始化 -->
-    <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
-    <script id="echarts-script">
-      window.addEventListener('load', function () {
-        // 任务完成趋势图
-        var taskTrendChart = echarts.init(document.getElementById('task-trend-chart'));
-        taskTrendChart.setOption({
-          xAxis: {
-            type: 'category',
-            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-          },
-          yAxis: {
-            type: 'value'
-          },
-          series: [{
-            data: [3, 6, 4, 5, 7, 2, 1],
-            type: 'line',
-            smooth: true
-          }]
-        });
-
-        // 任务分类统计饼图
-        var categoryPieChart = echarts.init(document.getElementById('category-pie-chart'));
-        categoryPieChart.setOption({
-          series: [{
-            type: 'pie',
-            radius: ['40%', '70%'],
-            data: [{
-              value: 12,
-              name: '工作'
-            }, {
-              value: 8,
-              name: '学习'
-            }, {
-              value: 5,
-              name: '生活'
-            }, {
-              value: 3,
-              name: '健康'
-            }]
-          }]
-        });
-
-        // 番茄专注分析柱状图
-        var focusBarChart = echarts.init(document.getElementById('focus-bar-chart'));
-        focusBarChart.setOption({
-          xAxis: {
-            type: 'category',
-            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-          },
-          yAxis: {
-            type: 'value'
-          },
-          series: [{
-            data: [4, 6, 5, 3, 7, 2, 5],
-            type: 'bar'
-          }]
-        });
-
-        // 专注时间段分布热力图
-        var focusHeatmap = echarts.init(document.getElementById('focus-heatmap'));
-        focusHeatmap.setOption({
-          xAxis: {
-            type: 'category',
-            data: ['0', '2', '4', '6', '8', '10', '12', '14', '16', '18', '20', '22']
-          },
-          yAxis: {
-            type: 'category',
-            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-          },
-          visualMap: {
-            min: 0,
-            max: 10,
-            calculable: true,
-            orient: 'horizontal',
-            left: 'center',
-            bottom: '10%'
-          },
-          series: [{
-            type: 'heatmap',
-            data: [[0, 0, 1], [1, 0, 0], [2, 0, 0], [3, 0, 0], [4, 0, 0], [5, 0, 2], [6, 0, 5], [7, 0, 3], [8, 0, 1], [9, 0, 0], [10, 0, 0], [11, 0, 0], [0, 1, 0], [1, 1, 0], [2, 1, 0], [3, 1, 0], [4, 1, 0], [5, 1, 3], [6, 1, 6], [7, 1, 4], [8, 1, 2], [9, 1, 0], [10, 1, 0], [11, 1, 0], [0, 2, 0], [1, 2, 0], [2, 2, 0], [3, 2, 0], [4, 2, 0], [5, 2, 2], [6, 2, 5], [7, 2, 3], [8, 2, 1], [9, 2, 0], [10, 2, 0], [11, 2, 0], [0, 3, 0], [1, 3, 0], [2, 3, 0], [3, 3, 0], [4, 3, 0], [5, 3, 4], [6, 3, 7], [7, 3, 5], [8, 3, 2], [9, 3, 0], [10, 3, 0], [11, 3, 0], [0, 4, 0], [1, 4, 0], [2, 4, 0], [3, 4, 0], [4, 4, 0], [5, 4, 3], [6, 4, 6], [7, 4, 4], [8, 4, 1], [9, 4, 0], [10, 4, 0], [11, 4, 0], [0, 5, 1], [1, 5, 0], [2, 5, 0], [3, 5, 0], [4, 5, 0], [5, 5, 1], [6, 5, 3], [7, 5, 2], [8, 5, 0], [9, 5, 0], [10, 5, 0], [11, 5, 0], [0, 6, 0], [1, 6, 0], [2, 6, 0], [3, 6, 0], [4, 6, 0], [5, 6, 2], [6, 6, 4], [7, 6, 3], [8, 6, 1], [9, 6, 0], [10, 6, 0], [11, 6, 0]]
-          }]
-        });
-
-        // 监听窗口大小变化，调整图表尺寸
-        window.addEventListener('resize', function () {
-          taskTrendChart.resize();
-          categoryPieChart.resize();
-          focusBarChart.resize();
-          focusHeatmap.resize();
-        });
-      });
-    </script>
-    <!-- [/JSMOD] p9q_ECharts图表初始化 -- 初始化所有ECharts图表并设置数据 -->
     <!-- [JSMOD] p9q_日历视图交互功能 -->
     <script id="calendar-script">
       document.addEventListener('DOMContentLoaded', function () {
@@ -1206,6 +981,8 @@
 
         var monthTitle = document.getElementById('month-title');
         var monthGrid = document.getElementById('month-grid');
+        var weekGrid = document.getElementById('week-grid');
+        var dayGrid = document.getElementById('day-grid');
         var weekTitle = document.querySelector('#week-view h2');
         var dayTitle = document.querySelector('#day-view h2');
         var detailPanel = document.getElementById('task-detail-panel');
@@ -1214,6 +991,39 @@
         var detailDescription = document.getElementById('detail-description');
         var detailDueAt = document.getElementById('detail-dueAt');
         var selectedTaskId = null;
+
+        // ✅ Toast 提示函数 - 右上角弹出
+        function showToast(message, type) {
+          if (type === void 0) type = 'info';
+          var toastContainer = document.getElementById('toast-container');
+          if (!toastContainer) return;
+          
+          var toast = document.createElement('div');
+          toast.className = 'toast ' + type;
+          var iconClass = 'fa-info-circle';
+          if (type === 'success') iconClass = 'fa-check-circle';
+          else if (type === 'error') iconClass = 'fa-exclamation-circle';
+          else if (type === 'warning') iconClass = 'fa-exclamation-triangle';
+          
+          toast.innerHTML = '<div class="flex items-center space-x-2"><i class="fas ' + iconClass + ' text-' + type + '"></i><span>' + message + '</span></div>';
+          
+          toastContainer.appendChild(toast);
+          
+          setTimeout(function() {
+            toast.classList.add('show');
+          }, 10);
+          
+          setTimeout(function() {
+            toast.classList.remove('show');
+            setTimeout(function() {
+              if (toast.parentNode) toast.remove();
+            }, 400);
+          }, 3000);
+        }
+
+        function generateId(prefix) {
+          return prefix + '_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        }
 
         function getDateKey(date) {
           var d = new Date(date);
@@ -1241,15 +1051,14 @@
         }
 
         function getDayColor(task) {
-          if (!task || !task.labels) return 'bg-gray-400';
+          if (!task || !task.labels) return 'bg-primary';
           if (task.labels.includes('工作')) return 'bg-task-work';
           if (task.labels.includes('学习')) return 'bg-task-study';
           if (task.labels.includes('生活')) return 'bg-task-life';
           if (task.labels.includes('健康')) return 'bg-task-health';
-          return 'bg-gray-400';
+          return 'bg-primary';
         }
 
-        // 显示友好的日期/时间字符串
         function formatDisplayDate(iso) {
           if (!iso) return '未设置日期';
           try {
@@ -1260,7 +1069,6 @@
           } catch (e) { return '未设置日期'; }
         }
 
-        // 将标签映射为小标签的样式类
         function getTagClass(tag) {
           if (!tag) return 'tag-work';
           var t = String(tag).trim().toLowerCase();
@@ -1269,6 +1077,12 @@
           if (t === '生活' || t === 'life') return 'tag-life';
           if (t === '健康' || t === 'health') return 'tag-health';
           return 'bg-gray-100 text-gray-700';
+        }
+
+        function isSameDay(date1, date2) {
+          return date1.getFullYear() === date2.getFullYear() &&
+                 date1.getMonth() === date2.getMonth() &&
+                 date1.getDate() === date2.getDate();
         }
 
         function renderScheduledTaskList() {
@@ -1288,15 +1102,15 @@
           list.innerHTML = '';
           tasks.forEach(function (task) {
             var item = document.createElement('div');
-            item.className = 'p-2 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary/5 cursor-pointer';
-            item.innerHTML = '<div class="flex justify-between items-center"><div class="text-sm font-medium text-gray-700">' + (task.title || '未命名任务') + '</div><div class="text-xs text-gray-500">' + formatDisplayDate(task.dueAt) + '</div></div><div class="text-xs"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ' + (task.labels && task.labels[0] ? getTagClass(task.labels[0]) : 'tag-work') + '"> ' + (task.labels && task.labels[0] ? task.labels[0] : '工作') + ' </span></div>';
+            item.className = 'p-2.5 rounded-xl border border-gray-200 hover:border-primary hover:bg-primary/5 cursor-pointer transition-all duration-300 scale-in';
+            item.innerHTML = '<div class="flex justify-between items-center"><div class="text-sm font-medium text-gray-700">' + (task.title || '未命名任务') + '</div><div class="text-xs text-gray-500">' + formatDisplayDate(task.dueAt) + '</div></div><div class="text-xs mt-1"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ' + (task.labels && task.labels[0] ? getTagClass(task.labels[0]) : 'tag-work') + '"> ' + (task.labels && task.labels[0] ? task.labels[0] : '工作') + ' </span></div>';
             item.addEventListener('click', function () {
               var due = new Date(task.dueAt || new Date());
               monthDate = new Date(due.getFullYear(), due.getMonth(), 1);
               calendarState.selectedDate = due;
               switchToView('month');
               renderMonthGrid();
-              showToast('已定位到 ' + getDateKey(due));
+              showToast('已定位到 ' + getDateKey(due), 'success');
             });
             list.appendChild(item);
           });
@@ -1326,24 +1140,22 @@
             });
 
             var cell = document.createElement('div');
-            cell.className = 'rounded-lg p-2 text-right text-sm transition-all border';
-            if (isCurrentMonth) {
-              cell.classList.add('bg-white', 'border-gray-200');
-            } else {
-              cell.classList.add('bg-gray-50', 'text-gray-400', 'border-gray-100');
+            cell.className = 'calendar-cell scale-in';
+            if (!isCurrentMonth) {
+              cell.classList.add('other-month');
             }
             if (isSameDay(date, new Date())) {
-              cell.classList.add('ring-2', 'ring-primary/60');
+              cell.classList.add('today');
             }
             cell.dataset.date = dateKey;
-            cell.innerHTML = "<div class='flex justify-between items-start'><span class='font-medium'>" + day + "</span><span class='text-xs text-gray-400'></span></div>";
+            cell.innerHTML = "<div class='flex justify-between items-start'><span class='font-medium'>" + day + "</span></div>";
 
             var dotContainer = document.createElement('div');
-            dotContainer.className = 'mt-1 flex flex-wrap gap-1';
+            dotContainer.className = 'mt-1.5 flex flex-wrap gap-1.5';
 
-              dayTasks.slice(0, 3).forEach(function (task) {
+            dayTasks.slice(0, 4).forEach(function (task) {
               var dot = document.createElement('span');
-              dot.className = 'w-2 h-2 rounded-full ' + getDayColor(task) + ' cursor-pointer';
+              dot.className = 'w-2.5 h-2.5 rounded-full shadow-sm ' + getDayColor(task) + ' cursor-pointer hover:scale-125 transition-transform duration-200';
               var timeStr = task.dueAt ? formatDisplayDate(task.dueAt) : '';
               var labels = (task.labels || []).join(', ');
               dot.title = (task.title || '') + (timeStr ? (' — ' + timeStr) : '') + (labels ? (' — ' + labels) : '');
@@ -1351,15 +1163,15 @@
               dot.addEventListener('click', function (e) {
                 e.stopPropagation();
                 openTaskDetail(task);
-                showToast('任务详情已打开');
+                showToast('任务详情已打开', 'info');
               });
               dotContainer.appendChild(dot);
             });
 
-            if (dayTasks.length > 3) {
+            if (dayTasks.length > 4) {
               var more = document.createElement('span');
               more.className = 'text-xs text-gray-400';
-              more.textContent = '...' + (dayTasks.length - 3);
+              more.textContent = '+' + (dayTasks.length - 4);
               dotContainer.appendChild(more);
             }
 
@@ -1375,26 +1187,10 @@
                 return t.id === taskId;
               });
               if (!task) return;
-              // 将时间设为当天的上午 09:00（可按需调整）
-              var newDue = new Date(this.dataset.date + 'T09:00:00').toISOString();
-              task.dueAt = newDue;
+              task.dueAt = new Date(this.dataset.date + 'T00:00:00').toISOString();
               AppState.save();
-              // 尝试同步到后端
-              apiRequest('/api/tasks/' + encodeURIComponent(task.id), {
-                method: 'PUT',
-                body: JSON.stringify({ dueAt: task.dueAt })
-              }).then(function (res) {
-                if (res && (res.status === 200 || res.status === 204)) {
-                  showToast('任务已安排并同步到服务器');
-                } else {
-                  showToast('任务已本地安排，未能同步到服务器', 'warning');
-                }
-              }).catch(function () {
-                showToast('任务已本地安排，网络错误未能同步', 'warning');
-              }).finally(function () {
-                renderMonthGrid();
-                if (typeof renderScheduledTaskList === 'function') renderScheduledTaskList();
-              });
+              showToast('任务已安排到该日', 'success');
+              renderMonthGrid();
             });
             cell.addEventListener('click', function () {
               var dateStr = this.dataset.date;
@@ -1403,12 +1199,100 @@
               });
               if (dayTasks2.length > 0) {
                 openTaskDetail(dayTasks2[0]);
-                showToast('已打开当日首个任务详情');
+                showToast('已打开当日首个任务详情', 'info');
               }
             });
 
             monthGrid.appendChild(cell);
           }
+        }
+
+        function renderWeekView() {
+          if (!weekGrid) return;
+          weekGrid.innerHTML = '';
+          
+          if (weekTitle) {
+            weekTitle.textContent = formatWeekRange(calendarState.selectedDate);
+          }
+          
+          var d = new Date(calendarState.selectedDate);
+          var day = d.getDay();
+          var monday = new Date(d);
+          monday.setDate(monday.getDate() - ((day + 6) % 7));
+          
+          for (var i = 0; i < 7; i++) {
+            var date = new Date(monday);
+            date.setDate(monday.getDate() + i);
+            var dateKey = getDateKey(date);
+            var dayTasks = AppState.tasks.filter(function (t) {
+              return t.dueAt && getDateKey(t.dueAt) === dateKey;
+            });
+            
+            var cell = document.createElement('div');
+            cell.className = 'glass-card rounded-2xl p-3 text-center card-hover scale-in';
+            if (isSameDay(date, new Date())) {
+              cell.classList.add('ring-2', 'ring-primary/40');
+            }
+            
+            var dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+            cell.innerHTML = '<div class="text-sm font-medium text-gray-500 mb-1.5">' + dayNames[date.getDay()] + '</div>' +
+                           '<div class="text-lg font-bold text-gray-800 mb-2.5">' + date.getDate() + '</div>' +
+                           '<div class="space-y-1.5"></div>';
+            
+            var taskContainer = cell.querySelector('.space-y-1.5');
+            dayTasks.slice(0, 3).forEach(function (task) {
+              var taskDiv = document.createElement('div');
+              taskDiv.className = 'text-xs p-1.5 rounded-lg ' + getDayColor(task) + ' text-white truncate cursor-pointer hover:scale-105 transition-transform duration-200 shadow-sm';
+              taskDiv.textContent = task.title || '未命名';
+              taskDiv.title = task.title || '';
+              taskDiv.addEventListener('click', function () {
+                openTaskDetail(task);
+              });
+              taskContainer.appendChild(taskDiv);
+            });
+            
+            weekGrid.appendChild(cell);
+          }
+        }
+
+        function renderDayView() {
+          if (!dayGrid) return;
+          dayGrid.innerHTML = '';
+          
+          if (dayTitle) {
+            dayTitle.textContent = formatDayTitle(calendarState.selectedDate);
+          }
+          
+          var dateKey = getDateKey(calendarState.selectedDate);
+          var dayTasks = AppState.tasks.filter(function (t) {
+            return t.dueAt && getDateKey(t.dueAt) === dateKey;
+          });
+          
+          var timeLabels = document.createElement('div');
+          timeLabels.className = 'col-span-2 space-y-4';
+          for (var hour = 8; hour <= 22; hour++) {
+            var timeDiv = document.createElement('div');
+            timeDiv.className = 'text-sm text-gray-500';
+            timeDiv.textContent = hour + ':00';
+            timeLabels.appendChild(timeDiv);
+          }
+          dayGrid.appendChild(timeLabels);
+          
+          var tasksContainer = document.createElement('div');
+          tasksContainer.className = 'col-span-10 space-y-2';
+          
+          dayTasks.forEach(function (task) {
+            var taskDiv = document.createElement('div');
+            taskDiv.className = 'p-3 rounded-xl ' + getDayColor(task) + ' text-white card-hover cursor-pointer shadow-md';
+            taskDiv.innerHTML = '<div class="font-medium">' + (task.title || '未命名任务') + '</div>' +
+                              '<div class="text-xs mt-1 opacity-80">' + formatDisplayDate(task.dueAt) + '</div>';
+            taskDiv.addEventListener('click', function () {
+              openTaskDetail(task);
+            });
+            tasksContainer.appendChild(taskDiv);
+          });
+          
+          dayGrid.appendChild(tasksContainer);
         }
 
         function openTaskDetail(task) {
@@ -1419,41 +1303,35 @@
             var d = task.dueAt ? new Date(task.dueAt) : new Date();
             detailDueAt.value = d.toISOString().slice(0, 16);
           }
-          if (detailPanel) detailPanel.classList.remove('hidden');
-        }
-
-        function renderWeekView(date) {
-          if (weekTitle) {
-            weekTitle.textContent = formatWeekRange(date);
-          }
-        }
-
-        function renderDayView(date) {
-          if (dayTitle) {
-            dayTitle.textContent = formatDayTitle(date);
+          if (detailPanel) {
+            detailPanel.classList.remove('hidden');
+            detailPanel.classList.add('slide-in-right');
           }
         }
 
         function switchToView(view) {
           calendarState.view = view;
           document.querySelectorAll('.view-btn').forEach(function (b) {
-            b.classList.remove('active', 'bg-primary', 'text-white');
-            b.classList.add('bg-gray-200', 'text-gray-700');
+            b.classList.remove('active', 'btn-primary');
+            b.classList.add('btn-glass');
           });
           var activeBtn = document.querySelector('.view-btn[data-view="' + view + '"]');
           if (activeBtn) {
-            activeBtn.classList.add('active', 'bg-primary', 'text-white');
-            activeBtn.classList.remove('bg-gray-200', 'text-gray-700');
+            activeBtn.classList.add('active', 'btn-primary');
+            activeBtn.classList.remove('btn-glass');
           }
           document.querySelectorAll('.calendar-view').forEach(function (v) {
             v.classList.add('hidden');
           });
           var viewEl = document.getElementById(view + '-view');
-          if (viewEl) viewEl.classList.remove('hidden');
+          if (viewEl) {
+            viewEl.classList.remove('hidden');
+            viewEl.classList.add('fade-in');
+          }
           if (view === 'week') {
-            renderWeekView(calendarState.selectedDate);
+            renderWeekView();
           } else if (view === 'day') {
-            renderDayView(calendarState.selectedDate);
+            renderDayView();
           }
         }
 
@@ -1468,7 +1346,7 @@
           var options = { month: 'long', day: 'numeric', weekday: 'long' };
           var currentDate = document.getElementById('current-date');
           if (currentDate) {
-            currentDate.textContent = '今天' + now.toLocaleDateString('zh-CN', options);
+            currentDate.textContent = now.toLocaleDateString('zh-CN', options);
           }
         }
 
@@ -1479,9 +1357,10 @@
           todayBtn.addEventListener('click', function () {
             monthDate = new Date();
             monthDate.setDate(1);
+            calendarState.selectedDate = new Date();
             switchToView('month');
             renderMonthGrid();
-            showToast('已回到今天');
+            showToast('已回到今天', 'success');
           });
         }
 
@@ -1491,12 +1370,14 @@
           prevBtn.addEventListener('click', function () {
             monthDate.setMonth(monthDate.getMonth() - 1);
             renderMonthGrid();
+            showToast('已切换到上个月', 'info');
           });
         }
         if (nextBtn) {
           nextBtn.addEventListener('click', function () {
             monthDate.setMonth(monthDate.getMonth() + 1);
             renderMonthGrid();
+            showToast('已切换到下个月', 'info');
           });
         }
 
@@ -1505,15 +1386,15 @@
         if (weekPrevBtn) {
           weekPrevBtn.addEventListener('click', function () {
             calendarState.selectedDate.setDate(calendarState.selectedDate.getDate() - 7);
-            renderWeekView(calendarState.selectedDate);
-            showToast('已切换到上一周');
+            renderWeekView();
+            showToast('已切换到上一周', 'info');
           });
         }
         if (weekNextBtn) {
           weekNextBtn.addEventListener('click', function () {
             calendarState.selectedDate.setDate(calendarState.selectedDate.getDate() + 7);
-            renderWeekView(calendarState.selectedDate);
-            showToast('已切换到下一周');
+            renderWeekView();
+            showToast('已切换到下一周', 'info');
           });
         }
 
@@ -1522,15 +1403,15 @@
         if (dayPrevBtn) {
           dayPrevBtn.addEventListener('click', function () {
             calendarState.selectedDate.setDate(calendarState.selectedDate.getDate() - 1);
-            renderDayView(calendarState.selectedDate);
-            showToast('已切换到上一天');
+            renderDayView();
+            showToast('已切换到上一天', 'info');
           });
         }
         if (dayNextBtn) {
           dayNextBtn.addEventListener('click', function () {
             calendarState.selectedDate.setDate(calendarState.selectedDate.getDate() + 1);
-            renderDayView(calendarState.selectedDate);
-            showToast('已切换到下一天');
+            renderDayView();
+            showToast('已切换到下一天', 'info');
           });
         }
 
@@ -1538,61 +1419,137 @@
         if (scheduledRefresh) {
           scheduledRefresh.addEventListener('click', function() {
             renderScheduledTaskList();
-            showToast('已刷新已排任务列表');
+            showToast('已刷新已排任务列表', 'success');
           });
         }
 
-        var addTaskBtn = document.getElementById('add-task-btn');
-        if (addTaskBtn) {
-          addTaskBtn.addEventListener('click', function () {
-            var title = prompt('请输入任务标题');
-            if (!title) {
-              showToast('任务标题不能为空');
+
+        // ✅ 批量完成按钮
+        var batchCompleteBtn = document.getElementById('batch-complete-btn');
+        if (batchCompleteBtn) {
+          batchCompleteBtn.addEventListener('click', function () {
+            var tasks = AppState.tasks || [];
+            if (tasks.length === 0) {
+              showToast('当前无任务', 'warning');
               return;
             }
-            var dateStr = prompt('请输入截止日期 (YYYY-MM-DD)', getDateKey(new Date()));
-            if (!dateStr) {
-              showToast('请填写有效日期');
-              return;
-            }
-            var due = new Date(dateStr + 'T09:00:00');
-            if (isNaN(due.getTime())) {
-              showToast('日期格式不正确');
-              return;
-            }
-            var task = {
-              id: generateId('t'),
-              title: title,
-              description: '',
-              dueAt: due.toISOString(),
-              status: 'pending',
-              priority: 'medium',
-              labels: ['工作'],
-              estimate: 1,
-              createdAt: new Date().toISOString(),
-              subTasks: []
-            };
-            AppState.tasks.push(task);
+            var count = 0;
+            tasks.forEach(function (t) {
+              if (t.status !== 'completed') {
+                t.status = 'completed';
+                count++;
+              }
+            });
             AppState.save();
             renderMonthGrid();
-            renderScheduledTaskList();
-            showToast('任务已创建并加入日历');
+            showToast('已完成 ' + count + ' 个任务', 'success');
           });
         }
 
-        document.querySelectorAll('.task-draggable').forEach(function (task) {
-          task.addEventListener('dragstart', function (e) {
-            var taskId = this.dataset.taskId;
-            if (!taskId) {
-              var title = this.textContent.trim();
-              var found = AppState.tasks.find(function (t) { return t.title && title.includes(t.title); });
-              taskId = found ? found.id : '';
-            }
-            if (taskId) {
-              e.dataTransfer.setData('task-id', taskId);
+        // ✅ 批量删除按钮
+        var batchDeleteBtn = document.getElementById('batch-delete-btn');
+        if (batchDeleteBtn) {
+          batchDeleteBtn.addEventListener('click', function () {
+            var before = AppState.tasks.length;
+            AppState.tasks = (AppState.tasks || []).filter(function (t) {
+              return t.status !== 'completed';
+            });
+            var after = AppState.tasks.length;
+            AppState.save();
+            renderMonthGrid();
+            showToast('已删除 ' + (before - after) + ' 个已完成任务', 'success');
+          });
+        }
+
+        // ✅ 排序下拉列表 - 修复层级问题
+        var sortFilterBtn = document.getElementById('sort-filter-btn');
+        var sortFilterMenu = document.getElementById('sort-filter-menu');
+        var sortFilterArrow = document.getElementById('sort-filter-arrow');
+        var sortFilterContainer = sortFilterBtn ? sortFilterBtn.parentElement : null;
+
+        if (sortFilterBtn && sortFilterMenu) {
+          sortFilterBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            
+            // 关闭其他下拉菜单
+            var otherMenus = document.querySelectorAll('.dropdown-menu');
+            otherMenus.forEach(function(menu) {
+              if (menu !== sortFilterMenu) {
+                menu.classList.remove('show');
+              }
+            });
+            
+            sortFilterMenu.classList.toggle('show');
+            if (sortFilterArrow) {
+              sortFilterArrow.style.transform = sortFilterMenu.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
             }
           });
-        });
+
+          sortFilterMenu.querySelectorAll('.dropdown-item').forEach(function (item) {
+            item.addEventListener('click', function (e) {
+              e.stopPropagation();
+              e.preventDefault();
+              var sortType = this.dataset.sort;
+              if (sortType === 'time') {
+                AppState.tasks.sort(function (a, b) {
+                  if (!a.dueAt) return 1;
+                  if (!b.dueAt) return -1;
+                  return new Date(a.dueAt) - new Date(b.dueAt);
+                });
+                showToast('已按时间排序', 'success');
+
+              } else if (sortType === 'priority') {
+                var order = { high: 1, medium: 2, low: 3 };
+                AppState.tasks.sort(function (a, b) {
+                  return (order[a.priority] || 4) - (order[b.priority] || 4);
+                });
+                showToast('已按优先级排序', 'success');
+              } else if (sortType === 'label') {
+                AppState.tasks.sort(function (a, b) {
+                  var la = (a.labels || [])[0] || '';
+                  var lb = (b.labels || [])[0] || '';
+                  return la.localeCompare(lb);
+                });
+                showToast('已按标签排序', 'success');
+              }
+              AppState.save();
+              sortFilterMenu.classList.remove('show');
+              if (sortFilterArrow) {
+                sortFilterArrow.style.transform = 'rotate(0deg)';
+              }
+              renderMonthGrid();
+            });
+          });
+
+          document.addEventListener('click', function (e) {
+            if (!sortFilterContainer || !sortFilterContainer.contains(e.target)) {
+              sortFilterMenu.classList.remove('show');
+              if (sortFilterArrow) {
+                sortFilterArrow.style.transform = 'rotate(0deg)';
+              }
+            }
+          });
+        }
+
+        // ✅ 用户菜单下拉 - 修复黑色边框
+        var userMenuBtn = document.getElementById('user-menu-btn');
+        var userDropdown = document.getElementById('user-dropdown');
+        var userMenuContainer = document.getElementById('user-menu-container');
+
+        if (userMenuBtn && userDropdown) {
+          userMenuBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            userDropdown.classList.toggle('show');
+          });
+
+          document.addEventListener('click', function (e) {
+            if (!userMenuContainer || !userMenuContainer.contains(e.target)) {
+              userDropdown.classList.remove('show');
+            }
+          });
+        }
 
         if (closeDetailBtn) {
           closeDetailBtn.addEventListener('click', function () {
@@ -1601,18 +1558,16 @@
         }
 
         window.renderMonthGrid = renderMonthGrid;
-        // 从后端加载任务并合并到本地状态
+        
+        // ✅ 从后端加载任务
         function parseTags(tags) {
           if (!tags && tags !== '') return [];
-          // If already an array
           if (Array.isArray(tags)) return tags.map(String).map(function(s){ return s.trim(); }).filter(Boolean);
-          // If it's an object with name fields
           if (typeof tags === 'object' && tags !== null) {
             try {
               return Object.values(tags).map(String).map(function(s){ return s.trim(); }).filter(Boolean);
             } catch (e) { return []; }
           }
-          // If it's a JSON string representing an array
           if (typeof tags === 'string') {
             var raw = tags.trim();
             if (raw === '') return [];
@@ -1620,9 +1575,7 @@
               var parsed = JSON.parse(raw);
               if (Array.isArray(parsed)) return parsed.map(String).map(function(s){ return s.trim(); }).filter(Boolean);
               if (typeof parsed === 'object' && parsed !== null) return Object.values(parsed).map(String).map(function(s){ return s.trim(); }).filter(Boolean);
-            } catch (e) {
-              // fallback to comma-separated
-            }
+            } catch (e) {}
             return raw.split(/[;,|]/).map(function(s){ return s.trim(); }).filter(Boolean);
           }
           return [];
@@ -1642,15 +1595,12 @@
                 if (typeof v === 'string') {
                   var s = v.trim();
                   if (s === '') return null;
-                  // ISO or common formats
                   var d = new Date(s);
                   if (!isNaN(d.getTime())) return d.toISOString();
-                  // try numeric string timestamp (seconds or ms)
                   var n = parseInt(s, 10);
                   if (!isNaN(n)) {
                     d = new Date(n);
                     if (!isNaN(d.getTime())) return d.toISOString();
-                    // try seconds -> ms
                     d = new Date(n * 1000);
                     if (!isNaN(d.getTime())) return d.toISOString();
                   }
@@ -1687,376 +1637,38 @@
         }).catch(function(){ /* ignore network errors */ }).finally(function(){
           renderMonthGrid();
           renderScheduledTaskList();
-          renderWeekView(calendarState.selectedDate);
-          renderDayView(calendarState.selectedDate);
+          renderWeekView();
+          renderDayView();
         });
       });
     </script>
-    <!-- [/JSMOD] p9q_日历视图交互功能 -- 实现视图切换、今日、月导航、任务拖拽持久化和日历渲染 -->
-    <!-- [JSMOD] p9q_任务卡片交互 -->
-    <script id="task-card-script">
-      // 任务卡片点击事件 - 显示详情面板
-      document.addEventListener('DOMContentLoaded', function () {
-        var taskCards = document.querySelectorAll('.task-card');
-        var detailPanel = document.getElementById('task-detail-panel');
-        var closeDetailBtn = document.getElementById('close-detail-btn');
-        taskCards.forEach(function (card) {
-          card.addEventListener('click', function (e) {
-            // 如果点击的是复选框或更多操作按钮，则不打开详情面板
-            if (e.target.classList.contains('task-checkbox') || e.target.closest('button')?.classList.contains('text-gray-400')) {
-              return;
-            }
-
-            // 在桌面端显示详情面板，移动端跳转至详情页
-            if (window.innerWidth >= 768) {
-              detailPanel.classList.remove('hidden');
-              // 滚动到顶部
-              detailPanel.scrollTop = 0;
-            } else {
-              // 移动端逻辑：使用底部提示代替阻断性弹窗
-              showToast('移动端已打开任务详情');
-            }
-          });
-        });
-
-        // 关闭详情面板
-        closeDetailBtn.addEventListener('click', function () {
-          detailPanel.classList.add('hidden');
-        });
-
-        // 任务复选框点击事件
-        var taskCheckboxes = document.querySelectorAll('.task-checkbox');
-        taskCheckboxes.forEach(function (checkbox) {
-          checkbox.addEventListener('click', function (e) {
-            e.stopPropagation(); // 阻止事件冒泡到任务卡片
-            var taskCard = this.closest('.task-card');
-            var taskTitle = taskCard.querySelector('h3');
-            if (this.checked) {
-              taskTitle.classList.add('line-through', 'text-gray-500');
-              // 更新底部统计
-              updateTaskStats(true);
-            } else {
-              taskTitle.classList.remove('line-through', 'text-gray-500');
-              // 更新底部统计
-              updateTaskStats(false);
-            }
-          });
-        });
-
-        // 更新任务统计（若页面无统计组件，则安全跳过）
-        function updateTaskStats(isCompleted) {
-          var statsText = document.querySelector('.text-gray-600 .text-primary');
-          var progressBar = document.querySelector('.bg-primary');
-          if (!statsText || !progressBar) {
-            return;
-          }
-          var currentCount = parseInt(statsText.textContent || '0', 10);
-          var totalCount = parseInt(
-            statsText.nextElementSibling
-              ? statsText.nextElementSibling.textContent
-              : '0',
-            10
-          );
-          if (!totalCount) {
-            return;
-          }
-          if (isCompleted) {
-            statsText.textContent = currentCount + 1;
-          } else {
-            statsText.textContent = Math.max(0, currentCount - 1);
-          }
-          var newPercentage =
-            (parseInt(statsText.textContent || '0', 10) / totalCount) * 100;
-          progressBar.style.width = "".concat(newPercentage, "%");
-        }
-      });
-    </script>
-    <!-- [/JSMOD] p9q_任务卡片交互 -- 处理任务卡片点击显示详情、复选框状态变化和底部统计更新 -->
-    <!-- [JSMOD] r0s_快捷操作功能 -->
-    <script id="quick-actions-script">
-      document.addEventListener('DOMContentLoaded', function () {
-        // 排序/筛选下拉菜单
-        var sortFilterBtn = document.getElementById('sort-filter-btn');
-        var sortFilterMenu = document.getElementById('sort-filter-menu');
-        if (sortFilterBtn && sortFilterMenu) {
-          sortFilterBtn.addEventListener('click', function () {
-            sortFilterMenu.classList.toggle('hidden');
-          });
-
-          // 排序选项
-          sortFilterMenu.querySelectorAll('a').forEach(function (item) {
-            item.addEventListener('click', function () {
-              var text = this.textContent.trim();
-              if (text.includes('按时间')) {
-                AppState.tasks.sort(function (a, b) {
-                  if (!a.dueAt) return 1;
-                  if (!b.dueAt) return -1;
-                  return new Date(a.dueAt) - new Date(b.dueAt);
-                });
-                showToast('已按时间排序');
-              } else if (text.includes('按优先级')) {
-                var order = { high: 1, medium: 2, low: 3, undefined: 4 };
-                AppState.tasks.sort(function (a, b) {
-                  return (order[a.priority] || 4) - (order[b.priority] || 4);
-                });
-                showToast('已按优先级排序');
-              } else if (text.includes('按标签')) {
-                AppState.tasks.sort(function (a, b) {
-                  var la = (a.labels || [])[0] || '';
-                  var lb = (b.labels || [])[0] || '';
-                  return la.localeCompare(lb);
-                });
-                showToast('已按标签排序');
-              }
-              AppState.save();
-              sortFilterMenu.classList.add('hidden');
-              renderMonthGrid && renderMonthGrid();
-            });
-          });
-
-          // 点击其他区域关闭下拉菜单
-          document.addEventListener('click', function (e) {
-            if (!sortFilterBtn.contains(e.target) && !sortFilterMenu.contains(e.target)) {
-              sortFilterMenu.classList.add('hidden');
-            }
-          });
-        }
-
-        var batchCompleteBtn = document.getElementById('batch-complete-btn');
-        var batchDeleteBtn = document.getElementById('batch-delete-btn');
-        var viewListBtn = document.getElementById('view-list-btn');
-        var viewGridBtn = document.getElementById('view-grid-btn');
-
-        if (batchCompleteBtn) {
-          batchCompleteBtn.addEventListener('click', function () {
-            var tasks = AppState.tasks || [];
-            if (tasks.length === 0) {
-              showToast('当前无任务');
-              return;
-            }
-            tasks.forEach(function (t) {
-              t.status = 'completed';
-            });
-            AppState.save();
-            showToast('已批量标记为完成');
-            renderMonthGrid && renderMonthGrid();
-          });
-        }
-
-        if (batchDeleteBtn) {
-          batchDeleteBtn.addEventListener('click', function () {
-            var before = AppState.tasks.length;
-            AppState.tasks = (AppState.tasks || []).filter(function (t) {
-              return t.status !== 'completed';
-            });
-            var after = AppState.tasks.length;
-            AppState.save();
-            showToast('已删除' + (before - after) + '个已完成任务');
-            renderMonthGrid && renderMonthGrid();
-          });
-        }
-
-        if (viewListBtn) {
-          viewListBtn.addEventListener('click', function () {
-            showToast('切换到列表视图');
-            viewListBtn.classList.add('text-primary', 'bg-primary/5');
-            viewListBtn.classList.remove('text-gray-500', 'hover:bg-gray-50');
-            viewGridBtn.classList.remove('text-primary', 'bg-primary/5');
-            viewGridBtn.classList.add('text-gray-500', 'hover:bg-gray-50');
-            
-            // 切换到列表视图显示
-            var calendarContainer = document.querySelector('.calendar-container');
-            if (calendarContainer) {
-              calendarContainer.style.display = 'none';
-            }
-            var listView = document.getElementById('list-view-container');
-            if (!listView) {
-              // 创建列表视图容器
-              listView = document.createElement('div');
-              listView.id = 'list-view-container';
-              listView.className = 'space-y-3';
-              calendarContainer.parentNode.insertBefore(listView, calendarContainer.nextSibling);
-            }
-            listView.classList.remove('hidden');
-            renderListView();
-          });
-        }
-
-        if (viewGridBtn) {
-          viewGridBtn.addEventListener('click', function () {
-            showToast('切换到卡片视图');
-            viewGridBtn.classList.add('text-primary', 'bg-primary/5');
-            viewGridBtn.classList.remove('text-gray-500', 'hover:bg-gray-50');
-            viewListBtn.classList.remove('text-primary', 'bg-primary/5');
-            viewListBtn.classList.add('text-gray-500', 'hover:bg-gray-50');
-            
-            // 切换到网格视图显示
-            var calendarContainer = document.querySelector('.calendar-container');
-            if (calendarContainer) {
-              calendarContainer.style.display = 'block';
-            }
-            var listView = document.getElementById('list-view-container');
-            if (listView) {
-              listView.classList.add('hidden');
-            }
-          });
-        }
-        
-        // 渲染列表视图
-        function renderListView() {
-          var listView = document.getElementById('list-view-container');
-          if (!listView) return;
-          
-          var tasks = AppState.tasks || [];
-          if (tasks.length === 0) {
-            listView.innerHTML = '<div class="text-center text-gray-500 py-8">暂无任务</div>';
-            return;
-          }
-          
-          var html = '';
-          tasks.forEach(function(task) {
-            var dateStr = task.dueAt ? getDateKey(new Date(task.dueAt)) : '未设置日期';
-            var priorityClass = 'priority-' + (task.priority || 'medium');
-            var tagLabel = task.labels && task.labels[0] ? task.labels[0] : '工作';
-            var tagClass = getTagClass(tagLabel);
-            
-            html += '<div class="task-card bg-white rounded-xl p-4 shadow-sm border-l-4 ' + priorityClass + ' card-hover">' +
-              '<div class="flex items-start justify-between">' +
-              '<div class="flex-1">' +
-              '<h3 class="font-medium text-gray-800">' + (task.title || '未命名任务') + '</h3>' +
-              '<p class="text-sm text-gray-500 mt-1"><i class="fas fa-calendar mr-2"></i>' + formatDisplayDate(task.dueAt) + '</p>' +
-              '</div>' +
-              '<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ' + tagClass + '">' +
-              ('#' + tagLabel) +
-              '</span>' +
-              '</div></div>';
-          });
-          
-          listView.innerHTML = html;
-        }
-
-      });
-    </script>
-    <!-- [/JSMOD] r0s_快捷操作功能 -- 处理排序筛选下拉菜单功能 -->
-    <!-- [JSMOD] t1u_番茄专注交互 -->
-    <script id="pomodoro-script">
-      document.addEventListener('DOMContentLoaded', function () {
-        // 若本页未渲染番茄计时器，则直接跳过该脚本
-        var timerDisplay = document.getElementById('timer-display');
-        if (!timerDisplay) {
-          return;
-        }
-        var timeLeft = 25 * 60;
-        var timerInterval;
-        var isRunning = false;
-        function updateTimer() {
-          var minutes = Math.floor(timeLeft / 60);
-          var seconds = timeLeft % 60;
-          timerDisplay.textContent = ""
-            .concat(minutes.toString().padStart(2, '0'), ":")
-            .concat(seconds.toString().padStart(2, '0'));
-        }
-        function startTimer() {
-          if (!isRunning) {
-            isRunning = true;
-            timerInterval = setInterval(function () {
-              timeLeft--;
-              updateTimer();
-              if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                isRunning = false;
-                showCompletionModal();
-              }
-            }, 1000);
-          }
-        }
-        function resetTimer() {
-          clearInterval(timerInterval);
-          isRunning = false;
-          timeLeft = 25 * 60;
-          updateTimer();
-        }
-
-        // 控制按钮事件（若存在控制按钮）
-        var startBtn = document.querySelector('button:has(.fa-play)');
-        var resetBtn = document.querySelector('button:has(.fa-redo)');
-        if (startBtn && resetBtn) {
-          startBtn.addEventListener('click', function () {
-            if (isRunning) {
-              clearInterval(timerInterval);
-              isRunning = false;
-              startBtn.innerHTML = '<i class="fas fa-play mr-2"></i> 开始';
-            } else {
-              startTimer();
-              startBtn.innerHTML = '<i class="fas fa-pause mr-2"></i> 暂停';
-            }
-          });
-          resetBtn.addEventListener('click', resetTimer);
-        }
-
-        // 专注模式切换（若存在模式按钮）
-        var modeBtns = document.querySelectorAll('.bg-primary, .bg-gray-200');
-        modeBtns.forEach(function (btn) {
-          btn.addEventListener('click', function () {
-            modeBtns.forEach(function (b) {
-              return b.classList.remove('bg-primary', 'text-white');
-            });
-            modeBtns.forEach(function (b) {
-              return b.classList.add('bg-gray-200', 'text-gray-700');
-            });
-            this.classList.remove('bg-gray-200', 'text-gray-700');
-            this.classList.add('bg-primary', 'text-white');
-          });
-        });
-
-        function showCompletionModal() {
-          alert('恭喜完成一个番茄！休息一下吧');
-        }
-      });
-    </script>
-    <!-- [/JSMOD] t1u_番茄专注交互 -- 处理计时器控制、模式切换和完成弹窗 -->
-    <!-- [JSMOD] r8s_分享和复制功能 -->
-    <script id="share-copy-script">
-      document.addEventListener('DOMContentLoaded', function () {
-        // 分享功能
-        document.querySelectorAll('.share-btn').forEach(function (btn) {
-          btn.addEventListener('click', function () {
-            alert('分享功能已触发');
-          });
-        });
-
-        // 复制功能
-        document.querySelectorAll('.copy-btn').forEach(function (btn) {
-          btn.addEventListener('click', function () {
-            var taskTitle = this.closest('.task-card').querySelector('h3').textContent;
-            navigator.clipboard.writeText(taskTitle).then(function () {
-              showToast('任务标题已复制到剪贴板');
-            });
-          });
-        });
-
-        // 删除功能
-        document.querySelectorAll('.delete-btn').forEach(function (btn) {
-          btn.addEventListener('click', function () {
-            var taskCard = this.closest('.task-card');
-            if (confirm('确定要删除这个任务吗？')) {
-              taskCard.remove();
-              showToast('任务已删除');
-            }
-          });
-        });
-      });
-    </script>
-    <!-- [/JSMOD] r8s_分享和复制功能 -- 处理分享、复制和删除待办功能 -->
+    <!-- [/JSMOD] p9q_日历视图交互功能 -->
+    
     <script>
       document.addEventListener('DOMContentLoaded', function () {
         AppState.init();
         renderHeader('calendar');
         renderFooter('calendar');
         bindGlobalLogout();
+        
+        // 绑定顶部退出登录按钮
+        var logoutBtnTop = document.getElementById('logout-btn-top');
+        if (logoutBtnTop) {
+          logoutBtnTop.addEventListener('click', function (e) {
+            e.preventDefault();
+            performLogout();
+          });
+        }
+        
+        // ✅ 处理添加任务按钮 - 跳转到待办页面并打开模态框
+        var addTaskBtn = document.getElementById('add-task-btn');
+        if (addTaskBtn) {
+          addTaskBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            window.location.href = '待办页面.html?openModal=new-task';
+          });
+        }
       });
     </script>
   </body>
 </html>
-
-
