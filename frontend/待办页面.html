@@ -2066,6 +2066,37 @@
       });
 
       // 绑定添加标签按钮
+
+      // 支持通过 URL 参数直接打开新建任务模态框（用于日历页跳转）
+      (function openModalFromQuery() {
+        var params;
+        try {
+          params = new URLSearchParams(window.location.search || '');
+        } catch (err) {
+          return;
+        }
+
+        if (params.get('openModal') !== 'new-task') return;
+
+        var openFromQuery = function () {
+          if (typeof window.openModalFunc === 'function') {
+            window.openModalFunc();
+          }
+          params.delete('openModal');
+          var cleanQuery = params.toString();
+          var cleanUrl = window.location.pathname + (cleanQuery ? ('?' + cleanQuery) : '') + window.location.hash;
+          window.history.replaceState({}, document.title, cleanUrl);
+        };
+
+        if (window.requestAnimationFrame) {
+          window.requestAnimationFrame(function () {
+            window.requestAnimationFrame(openFromQuery);
+          });
+        } else {
+          setTimeout(openFromQuery, 0);
+        }
+      })();
+
       var addTagBtn = document.getElementById('add-tag-btn');
       var addTagInline = document.getElementById('add-tag-inline');
       if (addTagBtn) {
