@@ -289,7 +289,7 @@
                   <input type="checkbox" id="remember-me" class="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary cursor-pointer" />
                   <label for="remember-me" class="ml-2 text-sm text-gray-600 cursor-pointer group-hover:text-gray-800 transition-colors duration-300">记住我</label>
                 </div>
-                <a href="javascript:void(0);" class="text-sm text-primary font-medium hover:text-primary/70 transition-colors duration-300">忘记密码？</a>
+                <a id="forgot-password-link" href="javascript:void(0);" class="text-sm text-primary font-medium hover:text-primary/70 transition-colors duration-300">忘记密码？</a>
               </div>
               
               <!-- 登录按钮 -->
@@ -345,6 +345,24 @@
         </div>
       </div>
     </div>
+
+    <div id="forgot-password-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+      <div class="w-full max-w-md bg-white/95 rounded-2xl shadow-2xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-bold text-gray-800">找回密码</h3>
+          <button id="forgot-password-close" type="button" class="text-gray-400 hover:text-gray-600">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <p class="text-sm text-gray-500 mb-4">请输入注册邮箱并设置新密码。</p>
+        <form id="forgot-password-form" class="space-y-3">
+          <input id="forgot-email" type="email" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl input-focus" placeholder="注册邮箱" required />
+          <input id="forgot-new-password" type="password" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl input-focus" placeholder="新密码（至少6位）" minlength="6" required />
+          <input id="forgot-confirm-password" type="password" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl input-focus" placeholder="确认新密码" minlength="6" required />
+          <button type="submit" class="w-full btn-primary">确认重置密码</button>
+        </form>
+      </div>
+    </div>
     
     <!-- JavaScript -->
     <script src="data.js"></script>
@@ -352,11 +370,20 @@
     <script src="components.js"></script>
     <script>
       document.addEventListener('DOMContentLoaded', function () {
-        // 若已存在 token，则验证并直接跳转到待办页，避免重复登录
+        // 登录页默认保持停留，便于测试（仅在 ?auto=1 时才自动跳转）
+        try {
+          var __skipAutoRedirect = sessionStorage.getItem('skipLoginAutoRedirect') === '1';
+          if (__skipAutoRedirect) sessionStorage.removeItem('skipLoginAutoRedirect');
+        } catch (e) { var __skipAutoRedirect = false; }
+        var __allowAutoRedirect = false;
+        try {
+          var __params = new URLSearchParams(window.location.search || '');
+          __allowAutoRedirect = __params.get('auto') === '1';
+        } catch (e) { __allowAutoRedirect = false; }
         try {
           var __tok = localStorage.getItem('token');
         } catch (e) { var __tok = null; }
-        if (__tok) {
+        if (__tok && !__skipAutoRedirect && __allowAutoRedirect) {
           apiRequest('/api/me', { method: 'GET' }).then(function (r) {
             if (r && r.status === 200 && r.body && r.body.code === 200) {
               safeNavigate('待办页面.html');
@@ -439,10 +466,78 @@
           });
         });
 
-        var forget = document.querySelector('a[href="javascript:void(0);"]');
-        if (forget) {
-          forget.addEventListener('click', function () {
-            showToast('请联系管理员或使用注册功能');
+        var forgotPasswordLink = document.getElementById('forgot-password-link');
+        var forgotPasswordModal = document.getElementById('forgot-password-modal');
+        var forgotPasswordClose = document.getElementById('forgot-password-close');
+        var forgotPasswordForm = document.getElementById('forgot-password-form');
+
+        function openForgotPasswordModal() {
+          if (!forgotPasswordModal) return;
+          forgotPasswordModal.classList.remove('hidden');
+          forgotPasswordModal.classList.add('flex');
+        }
+
+        function closeForgotPasswordModal() {
+          if (!forgotPasswordModal) return;
+          forgotPasswordModal.classList.add('hidden');
+          forgotPasswordModal.classList.remove('flex');
+        }
+
+        if (forgotPasswordLink) {
+          forgotPasswordLink.addEventListener('click', function () {
+            openForgotPasswordModal();
+          });
+        }
+
+        if (forgotPasswordClose) {
+          forgotPasswordClose.addEventListener('click', closeForgotPasswordModal);
+        }
+
+        if (forgotPasswordModal) {
+          forgotPasswordModal.addEventListener('click', function (e) {
+            if (e.target === forgotPasswordModal) closeForgotPasswordModal();
+          });
+        }
+
+        if (forgotPasswordForm) {
+          forgotPasswordForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var email = (document.getElementById('forgot-email').value || '').trim();
+            var newPassword = document.getElementById('forgot-new-password').value || '';
+            var confirmPassword = document.getElementById('forgot-confirm-password').value || '';
+
+            if (!email || !newPassword || !confirmPassword) {
+              showToast('请填写完整信息');
+              return;
+            }
+            if (newPassword.length < 6) {
+              showToast('新密码至少 6 位');
+              return;
+            }
+            if (newPassword !== confirmPassword) {
+              showToast('两次输入的新密码不一致');
+              return;
+            }
+
+            apiRequest('/api/auth/forgot-password', {
+              method: 'POST',
+              body: JSON.stringify({ email: email, newPassword: newPassword })
+            }).then(function (resp) {
+              if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+                showToast('密码已重置，请使用新密码登录');
+                closeForgotPasswordModal();
+                var accountInput = document.getElementById('login-account');
+                var passwordInput = document.getElementById('login-password');
+                if (accountInput) accountInput.value = email;
+                if (passwordInput) passwordInput.value = newPassword;
+              } else {
+                var msg = (resp && resp.body && resp.body.message) || '找回密码失败';
+                showToast(msg);
+              }
+            }).catch(function (err) {
+              console.error('forgot password error', err);
+              showToast('网络错误，找回密码失败');
+            });
           });
         }
       });

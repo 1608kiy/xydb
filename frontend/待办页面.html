@@ -1277,7 +1277,7 @@
               <i class="fas fa-cog mr-2.5 text-gray-500"></i>设置
             </a>
             <div class="border-t border-gray-100 my-1.5"></div>
-            <a href="登录页面.html">
+            <a href="登录页面.html" id="todo-logout-link">
               <i class="fas fa-sign-out-alt mr-2.5"></i>退出登录
             </a>
           </div>
@@ -3557,6 +3557,18 @@
           });
         }
       });
+
+      var todoLogoutLink = document.getElementById('todo-logout-link');
+      if (todoLogoutLink) {
+        todoLogoutLink.addEventListener('click', function (e) {
+          e.preventDefault();
+          if (window.AppState && typeof window.AppState.logout === 'function') {
+            window.AppState.logout();
+          }
+          showToast('已退出登录');
+          setTimeout(function () { safeNavigate('登录页面.html'); }, 250);
+        });
+      }
 
       // 绑定添加标签按钮
 

@@ -102,6 +102,8 @@ const AppState = {
   logout() {
     this.user = null;
     try { localStorage.removeItem('token'); } catch (e) {}
+    try { localStorage.removeItem('devSkipAuth'); } catch (e) {}
+    try { sessionStorage.setItem('skipLoginAutoRedirect', '1'); } catch (e) {}
     this.save();
   }
 };
