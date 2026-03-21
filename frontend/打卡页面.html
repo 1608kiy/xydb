@@ -172,7 +172,10 @@
             @apply h-10 rounded-lg flex flex-col items-center justify-center border text-xs transition-all duration-300 cursor-default select-none;
           }
           .calendar-day.today {
-            @apply border-blue-400 bg-gradient-to-br from-blue-400 to-cyan-400 text-white shadow-md;
+            border-color: rgba(96, 165, 250, 0.45);
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.78), rgba(59, 130, 246, 0.68));
+            color: rgba(248, 250, 252, 0.98);
+            box-shadow: 0 6px 14px rgba(59, 130, 246, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.24);
           }
           .calendar-day.checked {
             @apply border-teal-300 bg-gradient-to-br from-teal-50 to-cyan-50 text-teal-700 hover:shadow-sm;
@@ -213,13 +216,15 @@
           /* ✅ 打卡按钮 */
           .checkin-btn {
             @apply inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 select-none;
-            background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
-            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
+            color: rgba(248, 250, 252, 0.98);
+            background: linear-gradient(135deg, rgba(79, 116, 214, 0.9) 0%, rgba(101, 132, 220, 0.86) 100%);
+            border: 1px solid rgba(99, 120, 182, 0.34);
+            box-shadow: 0 5px 14px rgba(79, 99, 163, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.24);
           }
           .checkin-btn:hover {
-            background: linear-gradient(135deg, #5558E3 0%, #7C4FE8 100%);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
-            transform: translateY(-2px);
+            background: linear-gradient(135deg, rgba(72, 108, 205, 0.94) 0%, rgba(92, 124, 214, 0.9) 100%);
+            box-shadow: 0 7px 18px rgba(70, 90, 152, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+            transform: translateY(-1px);
           }
           .checkin-btn:active {
             transform: translateY(0);

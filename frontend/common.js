@@ -228,21 +228,17 @@ function ensureUnifiedPageTransitionStyle() {
   }
   html.unified-page-enter body {
     opacity: 0;
-    transform: translateY(8px) scale(0.995);
+    transform: none;
   }
   html.unified-page-ready body {
     opacity: 1;
-    transform: translateY(0) scale(1);
-    transition:
-      opacity var(--unified-page-transition-duration) var(--unified-page-transition-ease),
-      transform var(--unified-page-transition-duration) var(--unified-page-transition-ease);
+    transform: none;
+    transition: opacity var(--unified-page-transition-duration) var(--unified-page-transition-ease);
   }
   html.unified-page-leaving body {
     opacity: 0;
-    transform: translateY(10px) scale(0.995);
-    transition:
-      opacity var(--unified-page-transition-duration) var(--unified-page-transition-ease),
-      transform var(--unified-page-transition-duration) var(--unified-page-transition-ease);
+    transform: none;
+    transition: opacity var(--unified-page-transition-duration) var(--unified-page-transition-ease);
   }
   .view-btn,
   [data-view],
@@ -1185,6 +1181,8 @@ function syncUnifiedTopHeaderSpace() {
     var h = Math.ceil(header.getBoundingClientRect().height || 0);
     if (h > maxHeight) maxHeight = h;
   });
+  // Guardrail: avoid abnormal huge offset caused by browser/render quirks.
+  maxHeight = Math.max(48, Math.min(maxHeight, 120));
   if (maxHeight > 0) {
     document.documentElement.style.setProperty('--unified-top-header-space', String(maxHeight) + 'px');
   }
