@@ -1298,13 +1298,15 @@
           <div class="space-y-3" id="task-pool">
             <!-- 动态渲染任务 -->
           </div>
-          <a
-            href="待办页面.html"
+          <button
+            type="button"
+            id="ai-schedule-btn"
             class="mt-4 btn-primary w-full justify-center glow-effect"
           >
             <i class="fas fa-magic mr-2"> </i>
             AI 智能排程
-          </a>
+          </button>
+          <p id="ai-schedule-status" class="mt-2 text-xs text-gray-500">可接入 AI 自动为未排程任务分配日期时间</p>
         </div>
         
         <!-- 日历颜色标签 -->
@@ -1568,6 +1570,8 @@
         var selectedTaskId = null;
         var currentEditingTask = null;
         var taskPool = document.getElementById('task-pool');
+        var aiScheduleBtn = document.getElementById('ai-schedule-btn');
+        var aiScheduleStatus = document.getElementById('ai-schedule-status');
         var taskPoolView = 'grid';
 
         // ✅ Toast 提示函数 - 右上角弹出
@@ -2247,6 +2251,109 @@
             });
             taskPool.appendChild(item);
           });
+        }
+
+        function buildAiScheduleCandidates() {
+          return (AppState.tasks || []).filter(function (t) {
+            return t && t.status !== 'completed' && !t.dueAt;
+          }).slice(0, 12).map(function (t) {
+            return {
+              id: String(t.id || ''),
+              title: t.title || '未命名任务',
+              priority: t.priority || 'medium',
+              estimate: Number(t.estimate || 0),
+              labels: Array.isArray(t.labels) ? t.labels : []
+            };
+          });
+        }
+
+        function fallbackSchedule(tasks) {
+          var slots = ['09:00', '14:00', '19:00'];
+          var dayOffset = 0;
+          return tasks.map(function (t, idx) {
+            var now = new Date();
+            var date = new Date(now.getFullYear(), now.getMonth(), now.getDate() + dayOffset);
+            var time = slots[idx % slots.length];
+            if ((idx + 1) % slots.length === 0) dayOffset += 1;
+            return {
+              id: t.id,
+              date: date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0'),
+              time: time,
+              reason: '按优先级和任务数量自动分配'
+            };
+          });
+        }
+
+        function applyAiSchedulePlan(plans) {
+          var changed = 0;
+          var syncJobs = [];
+          (plans || []).forEach(function (plan) {
+            if (!plan || !plan.id || !plan.date || !plan.time) return;
+            var task = (AppState.tasks || []).find(function (t) { return String(t.id) === String(plan.id); });
+            if (!task) return;
+            var due = new Date(plan.date + 'T' + plan.time + ':00');
+            if (isNaN(due.getTime())) return;
+            task.dueAt = due.toISOString();
+            changed += 1;
+
+            syncJobs.push(
+              apiRequest('/api/tasks/' + task.id, {
+                method: 'PUT',
+                body: JSON.stringify({
+                  title: task.title || '',
+                  description: task.description || '',
+                  dueAt: task.dueAt,
+                  status: task.status || 'pending',
+                  priority: task.priority || 'medium',
+                  tags: Array.isArray(task.labels) ? task.labels.join(',') : '',
+                  pomodoroPlan: Number(task.estimate || 0)
+                })
+              }).catch(function () { return null; })
+            );
+          });
+
+          if (changed > 0) {
+            AppState.save();
+            renderMonthGrid();
+            renderScheduledTaskList();
+            renderWeekView();
+            renderDayView();
+          }
+
+          if (syncJobs.length) {
+            Promise.all(syncJobs).catch(function () { /* keep local result even if remote sync partially fails */ });
+          }
+          return Promise.resolve(changed);
+        }
+
+        function requestAiSchedule(tasks) {
+          if (!window.AiService || typeof window.AiService.chat !== 'function') {
+            return Promise.reject(new Error('ai-service-unavailable'));
+          }
+
+          var today = new Date();
+          var userPrompt = [
+            '你是任务排程助手。请为以下待办任务安排未来7天内的日期和时间。',
+            '要求：高优先级尽量安排在前两天；时间使用24小时制；返回纯JSON，不要解释。',
+            'JSON格式：{"plans":[{"id":"任务id","date":"YYYY-MM-DD","time":"HH:mm","reason":"一句话"}],"tips":["建议1","建议2"]}',
+            '今天日期：' + today.toISOString().slice(0, 10),
+            '任务列表：' + JSON.stringify(tasks)
+          ].join('\n');
+
+          var aiPromise = window.AiService.chat([
+            { role: 'system', content: '你是严谨的任务排程助手，只返回合法JSON。' },
+            { role: 'user', content: userPrompt }
+          ], { temperature: 0.3, maxTokens: 1000 }).then(function (content) {
+            var parsed = window.AiService.parseJson(content);
+            return Array.isArray(parsed.plans) ? parsed : { plans: [], tips: [] };
+          });
+
+          return Promise.race([
+            aiPromise,
+            new Promise(function (_, reject) {
+              setTimeout(function () { reject(new Error('ai-timeout')); }, 10000);
+            })
+          ]);
         }
 
         function renderScheduledTaskList() {
@@ -3140,6 +3247,43 @@
         }
 
         window.renderMonthGrid = renderMonthGrid;
+
+        if (aiScheduleBtn) {
+          aiScheduleBtn.addEventListener('click', function () {
+            var tasks = buildAiScheduleCandidates();
+            if (!tasks.length) {
+              showToast('暂无未排程任务', 'info');
+              return;
+            }
+
+            aiScheduleBtn.disabled = true;
+            if (aiScheduleStatus) aiScheduleStatus.textContent = '已本地预排程，AI 优化中...';
+
+            var localPlans = fallbackSchedule(tasks);
+            applyAiSchedulePlan(localPlans).then(function (changed) {
+              if (aiScheduleStatus) {
+                aiScheduleStatus.textContent = changed > 0
+                  ? ('已预排程 ' + changed + ' 个任务，等待 AI 优化')
+                  : '未生成可应用的预排程结果';
+              }
+            });
+
+            requestAiSchedule(tasks).then(function (result) {
+              return applyAiSchedulePlan(result.plans).then(function (changed) {
+                if (aiScheduleStatus) {
+                  aiScheduleStatus.textContent = changed > 0
+                    ? ('AI 优化完成：' + changed + ' 个任务')
+                    : 'AI 未返回可应用排程，已保留预排程结果';
+                }
+                showToast(changed > 0 ? ('AI 优化完成：' + changed + ' 个任务') : 'AI 未返回可用排程', changed > 0 ? 'success' : 'warning');
+              });
+            }).catch(function () {
+              showToast('AI 不可用，已保留本地预排程结果', 'warning');
+            }).finally(function () {
+              aiScheduleBtn.disabled = false;
+            });
+          });
+        }
         
         // ✅ 从后端加载任务
         function parseTags(tags) {

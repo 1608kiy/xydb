@@ -755,34 +755,19 @@
         
         <!-- 智能建议栏 -->
         <div class="card-shadow card-hover glass-strong rounded-2xl p-6 mb-6 fade-in">
-          <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-            <i class="fas fa-lightbulb text-yellow-500 mr-2 float"></i>
-            智能建议
-          </h2>
-          <div class="space-y-3">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-800 flex items-center">
+              <i class="fas fa-lightbulb text-yellow-500 mr-2 float"></i>
+              智能建议
+            </h2>
+            <button id="ai-suggestions-refresh" class="text-xs px-2.5 py-1 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all">
+              刷新建议
+            </button>
+          </div>
+          <div class="space-y-3" id="smart-suggestions-list">
             <div class="suggestion-card flex items-start">
               <i class="fas fa-lightbulb text-yellow-500 mt-1 mr-3 flex-shrink-0"></i>
-              <p class="text-gray-700 text-sm leading-relaxed">
-                您周二周三效率最高，建议把重要任务安排在这两天
-              </p>
-            </div>
-            <div class="suggestion-card flex items-start">
-              <i class="fas fa-lightbulb text-yellow-500 mt-1 mr-3 flex-shrink-0"></i>
-              <p class="text-gray-700 text-sm leading-relaxed">
-                您下午 3-5 点专注力下降，可以安排一些简单任务
-              </p>
-            </div>
-            <div class="suggestion-card flex items-start">
-              <i class="fas fa-lightbulb text-yellow-500 mt-1 mr-3 flex-shrink-0"></i>
-              <p class="text-gray-700 text-sm leading-relaxed">
-                您经常延期#工作类任务，考虑分解成更小的子任务
-              </p>
-            </div>
-            <div class="suggestion-card flex items-start">
-              <i class="fas fa-lightbulb text-yellow-500 mt-1 mr-3 flex-shrink-0"></i>
-              <p class="text-gray-700 text-sm leading-relaxed">
-                您连续专注 4 个番茄后效率下降，建议适当增加休息
-              </p>
+              <p class="text-gray-700 text-sm leading-relaxed">正在生成个性化建议...</p>
             </div>
           </div>
         </div>
@@ -1509,6 +1494,73 @@
         });
       }
 
+      function getDefaultSuggestions() {
+        return [
+          '您周二周三效率较高，建议将高优先级任务集中在这两天。',
+          '下午 3-5 点容易分心，建议安排低认知负荷任务。',
+          '对延期任务可拆解为 30 分钟以内的小步骤，执行成功率更高。',
+          '连续完成 4 个番茄后建议休息 15 分钟，避免效率衰减。'
+        ];
+      }
+
+      function renderSmartSuggestions(items) {
+        var list = document.getElementById('smart-suggestions-list');
+        if (!list) return;
+        var values = Array.isArray(items) && items.length ? items : getDefaultSuggestions();
+        list.innerHTML = values.map(function (text) {
+          return '<div class="suggestion-card flex items-start">' +
+            '<i class="fas fa-lightbulb text-yellow-500 mt-1 mr-3 flex-shrink-0"></i>' +
+            '<p class="text-gray-700 text-sm leading-relaxed">' + String(text || '') + '</p>' +
+            '</div>';
+        }).join('');
+      }
+
+      function buildReportAiContext() {
+        var selectedLabel = (document.getElementById('time-range-text') || {}).textContent || '本周';
+        selectedLabel = selectedLabel.trim() || '本周';
+        var range = getDateRangeByLabel(selectedLabel);
+        var completedTasks = getCompletedTasksInRange(range.start, range.end);
+        var focusSessions = getFocusSessionsInRange(range.start, range.end);
+        var overview = calculateOverview(completedTasks, focusSessions);
+        var slots = calculateTimeSlotsData(completedTasks);
+        return {
+          range: selectedLabel,
+          overview: overview,
+          completedTasks: completedTasks.length,
+          focusSessions: focusSessions.length,
+          slots: slots
+        };
+      }
+
+      function requestAiSmartSuggestions() {
+        if (!window.AiService || typeof window.AiService.chat !== 'function') {
+          return Promise.reject(new Error('ai-service-unavailable'));
+        }
+        var context = buildReportAiContext();
+        var prompt = [
+          '你是效率分析助手，请基于用户周报数据生成4条可执行建议。',
+          '要求：每条建议不超过30字，中文。返回纯JSON。',
+          '格式：{"suggestions":["建议1","建议2","建议3","建议4"]}',
+          '数据：' + JSON.stringify(context)
+        ].join('\n');
+
+        var aiPromise = window.AiService.chat([
+          { role: 'system', content: '你是严谨的数据分析助手，只返回JSON。' },
+          { role: 'user', content: prompt }
+        ], { temperature: 0.4, maxTokens: 500 }).then(function (content) {
+          var parsed = window.AiService.parseJson(content);
+          if (!parsed || !Array.isArray(parsed.suggestions)) throw new Error('invalid-ai-json');
+          return parsed.suggestions.slice(0, 4);
+        });
+
+        return Promise.race([
+          aiPromise,
+          new Promise(function (_, reject) {
+            setTimeout(function () { reject(new Error('ai-timeout')); }, 10000);
+          })
+        ]);
+      }
+
       function applyTimeRangeSelection(value) {
         var validValues = ['本周', '上周', '本月', '自定义'];
         var selected = validValues.indexOf(value) >= 0 ? value : '本周';
@@ -1585,8 +1637,31 @@
         Promise.resolve()
           .then(function () { return updateWeeklyStats({ sync: false }); })
           .then(function () { return updateWeeklyStats({ sync: true }); })
+          .then(function () {
+            return requestAiSmartSuggestions().then(function (items) {
+              renderSmartSuggestions(items);
+            }).catch(function () {
+              renderSmartSuggestions(getDefaultSuggestions());
+            });
+          })
           .catch(function (err) { console.error('updateWeeklyStats error:', err); })
           .finally(revealBottomTab);
+
+        var aiRefreshBtn = document.getElementById('ai-suggestions-refresh');
+        if (aiRefreshBtn) {
+          aiRefreshBtn.addEventListener('click', function () {
+            aiRefreshBtn.disabled = true;
+            requestAiSmartSuggestions().then(function (items) {
+              renderSmartSuggestions(items);
+              showToast('智能建议已更新', 'success');
+            }).catch(function () {
+              renderSmartSuggestions(getDefaultSuggestions());
+              showToast('AI 不可用，已展示默认建议', 'warning');
+            }).finally(function () {
+              aiRefreshBtn.disabled = false;
+            });
+          });
+        }
       });
 function exportReport() {
         showToast('报告导出功能正在开发中');

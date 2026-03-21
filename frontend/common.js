@@ -1449,6 +1449,92 @@ function checkAuthOnLoad(opts) {
   });
 }
 
+function getAiServiceConfig() {
+  var baseUrl = 'https://dashscope.aliyuncs.com/compatible-mode/v1';
+  var token = 'sk-b7e328d1e4dc46c2bafc2a0805b45157';
+  var model = 'qwen2.5-vl-72b-instruct';
+  try {
+    baseUrl = localStorage.getItem('aiApiBaseUrl') || baseUrl;
+    token = localStorage.getItem('aiApiToken') || token;
+    model = localStorage.getItem('aiApiModel') || model;
+  } catch (e) { /* ignore localStorage errors */ }
+  return {
+    baseUrl: String(baseUrl || '').replace(/\/$/, ''),
+    token: String(token || '').trim(),
+    model: String(model || 'qwen2.5-vl-72b-instruct').trim() || 'qwen2.5-vl-72b-instruct'
+  };
+}
+
+function callAiChatCompletion(messages, options) {
+  options = options || {};
+  var cfg = getAiServiceConfig();
+
+  function callDirectProvider() {
+    if (!cfg.token) {
+      return Promise.reject(new Error('ai-token-missing'));
+    }
+    var endpoint = cfg.baseUrl + '/chat/completions';
+    return fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + cfg.token
+      },
+      body: JSON.stringify({
+        model: options.model || cfg.model,
+        temperature: typeof options.temperature === 'number' ? options.temperature : 0.4,
+        max_tokens: typeof options.maxTokens === 'number' ? options.maxTokens : 800,
+        messages: Array.isArray(messages) ? messages : []
+      })
+    }).then(function (res) {
+      return res.json().catch(function () { return {}; }).then(function (body) {
+        if (!res.ok) {
+          var msg = body && body.error && body.error.message ? body.error.message : ('AI 请求失败: ' + res.status);
+          throw new Error(msg);
+        }
+        var content = body && body.choices && body.choices[0] && body.choices[0].message && body.choices[0].message.content;
+        if (!content) throw new Error('AI 返回内容为空');
+        return String(content);
+      });
+    });
+  }
+
+  return apiRequest('/api/ai/chat', {
+    method: 'POST',
+    body: JSON.stringify({
+      model: options.model || cfg.model,
+      temperature: typeof options.temperature === 'number' ? options.temperature : 0.4,
+      maxTokens: typeof options.maxTokens === 'number' ? options.maxTokens : 800,
+      messages: Array.isArray(messages) ? messages : []
+    })
+  }).then(function (res) {
+    if (res && res.status === 200 && res.body && res.body.code === 200 && res.body.data && res.body.data.content) {
+      return String(res.body.data.content);
+    }
+    var msg = res && res.body && res.body.message ? res.body.message : 'AI 代理请求失败';
+    throw new Error(msg);
+  }).catch(function () {
+    return callDirectProvider();
+  });
+}
+
+function parseAiJsonContent(content) {
+  var text = String(content || '').trim();
+  if (!text) throw new Error('AI 内容为空');
+
+  // Support markdown code fences.
+  var fence = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+  if (fence && fence[1]) text = fence[1].trim();
+
+  return JSON.parse(text);
+}
+
+window.AiService = {
+  getConfig: getAiServiceConfig,
+  chat: callAiChatCompletion,
+  parseJson: parseAiJsonContent
+};
+
 function getCheckinStats() {
   if (!AppState || !AppState.checkins) {
     return {
