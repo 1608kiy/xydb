@@ -1128,43 +1128,60 @@
       }
     }
 
-    .user-dropdown {
+    #user-dropdown.dropdown-menu {
       position: absolute;
       right: 0;
-      margin-top: 8px;
-      width: 200px;
+      width: 12rem;
+      border-radius: 0.5rem;
+      padding: 0.5rem 0;
       background: rgba(255, 255, 255, 0.92);
       backdrop-filter: blur(48px);
       -webkit-backdrop-filter: blur(48px);
       border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 12px;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-      padding: 8px 0;
-      z-index: 50;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.2s ease;
-      pointer-events: none;
+      z-index: 99999;
     }
 
-    .group:hover .user-dropdown {
-      opacity: 1;
-      visibility: visible;
-      pointer-events: auto;
-    }
-
-    .user-dropdown a {
+    #user-dropdown a {
       display: block;
-      padding: 8px 16px;
-      font-size: 14px;
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
       color: #374151;
       transition: all 0.2s ease;
       pointer-events: auto;
     }
 
-    .user-dropdown a:hover {
-      background-color: rgba(79, 70, 229, 0.1);
+    #user-dropdown a:hover {
+      background: rgba(79, 70, 229, 0.1);
       color: #4F46E5;
+    }
+
+    #user-dropdown a.text-danger {
+      color: #ef4444;
+    }
+
+    #user-dropdown a.text-danger:hover {
+      background: rgba(239, 68, 68, 0.12);
+      color: #ef4444;
+    }
+
+    body.theme-night #user-dropdown.dropdown-menu {
+      background: rgba(15, 23, 42, 0.94);
+      border-color: rgba(148, 163, 184, 0.28);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+    }
+
+    body.theme-night #user-dropdown a {
+      color: #e2e8f0;
+    }
+
+    body.theme-night #user-dropdown a:hover {
+      background: rgba(71, 85, 105, 0.5);
+      color: #f8fafc;
+    }
+
+    body.theme-night #user-dropdown .border-gray-200 {
+      border-color: rgba(148, 163, 184, 0.26) !important;
     }
 
     .card-shadow {
@@ -1258,27 +1275,23 @@
           <i class="fas fa-plus mr-2"></i>
           新建任务
         </button>
-        <div class="relative group">
-          <button class="flex items-center space-x-2 p-1.5 rounded-xl hover:bg-primary/10">
+        <div class="relative" id="user-menu-container">
+          <button class="flex items-center space-x-2 p-1.5 rounded-xl hover:bg-primary/10" id="user-menu-btn" type="button">
             <img alt="用户头像" class="w-10 h-10 rounded-full object-cover border-2 border-primary/40"
               src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png" />
             <span class="hidden lg:inline-block font-medium text-gray-700">张明</span>
-            <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform"></i>
+            <i class="fas fa-chevron-down text-xs text-gray-500 transition-transform" id="user-menu-arrow"></i>
           </button>
-          <div class="user-dropdown">
-            <div class="px-4 py-3 border-b border-gray-100">
-              <p class="font-medium text-gray-800">张明</p>
-              <p class="text-xs text-gray-500">zhangming@example.com</p>
-            </div>
-            <a href="个人中心页面.html">
-              <i class="fas fa-user mr-2.5 text-gray-500"></i>个人中心
+          <div class="dropdown-menu" id="user-dropdown" style="pointer-events: none;">
+            <a href="个人中心页面.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors" style="pointer-events: auto;">
+              <i class="fas fa-user mr-2 text-gray-500"></i>个人中心
             </a>
-            <a href="javascript:void(0);">
-              <i class="fas fa-cog mr-2.5 text-gray-500"></i>设置
+            <a href="javascript:void(0);" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors" style="pointer-events: auto;">
+              <i class="fas fa-cog mr-2 text-gray-500"></i>设置
             </a>
-            <div class="border-t border-gray-100 my-1.5"></div>
-            <a href="登录页面.html" id="todo-logout-link">
-              <i class="fas fa-sign-out-alt mr-2.5"></i>退出登录
+            <div class="border-t border-gray-200 my-1"></div>
+            <a href="登录页面.html" id="todo-logout-link" class="block px-4 py-2 text-sm text-danger hover:bg-danger/10 transition-colors" style="pointer-events: auto;">
+              <i class="fas fa-sign-out-alt mr-2"></i>退出登录
             </a>
           </div>
         </div>
@@ -3567,6 +3580,28 @@
           }
           showToast('已退出登录');
           setTimeout(function () { safeNavigate('登录页面.html'); }, 250);
+        });
+      }
+
+      var userMenuBtn = document.getElementById('user-menu-btn');
+      var userDropdown = document.getElementById('user-dropdown');
+      var userMenuContainer = document.getElementById('user-menu-container');
+      var userMenuArrow = document.getElementById('user-menu-arrow');
+      if (userMenuBtn && userDropdown && userMenuContainer) {
+        userMenuBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var isShow = userDropdown.classList.toggle('show');
+          if (userMenuArrow) {
+            userMenuArrow.style.transform = isShow ? 'rotate(180deg)' : 'rotate(0deg)';
+          }
+        });
+
+        document.addEventListener('click', function (e) {
+          if (!userMenuContainer.contains(e.target)) {
+            userDropdown.classList.remove('show');
+            if (userMenuArrow) userMenuArrow.style.transform = 'rotate(0deg)';
+          }
         });
       }
 

@@ -864,6 +864,52 @@
             border-bottom-left-radius: 1rem;
             border-bottom-right-radius: 1rem;
           }
+
+          #user-dropdown.dropdown-menu {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(48px);
+            -webkit-backdrop-filter: blur(48px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+          }
+
+          #user-dropdown .dropdown-item {
+            color: #374151;
+          }
+
+          #user-dropdown .dropdown-item:hover {
+            background: rgba(79, 70, 229, 0.1);
+            color: #4F46E5;
+          }
+
+          #user-dropdown .dropdown-item.text-danger {
+            color: #ef4444;
+          }
+
+          #user-dropdown .dropdown-item.text-danger:hover {
+            background: rgba(239, 68, 68, 0.12);
+            color: #ef4444;
+          }
+
+          body.theme-night #user-dropdown.dropdown-menu {
+            background: rgba(15, 23, 42, 0.94);
+            border-color: rgba(148, 163, 184, 0.28);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+          }
+
+          body.theme-night #user-dropdown .dropdown-item {
+            color: #e2e8f0;
+          }
+
+          body.theme-night #user-dropdown .dropdown-item:hover {
+            background: rgba(71, 85, 105, 0.5);
+            color: #f8fafc;
+          }
+
+          body.theme-night #user-dropdown .border-gray-200 {
+            border-color: rgba(148, 163, 184, 0.26) !important;
+          }
           
           /* ✅ Toast 提示样式 - 右上角弹出，配色协调 */
           .toast {
@@ -1041,22 +1087,21 @@
               <i class="fas fa-chevron-down text-xs text-gray-500"> </i>
             </button>
             <!-- 下拉菜单 -->
-            <div
-              class="dropdown-menu"
-              id="user-dropdown"
-            >
+            <div class="dropdown-menu" id="user-dropdown" style="pointer-events: none;">
               <a
                 class="dropdown-item"
                 href="个人中心页面.html"
+                style="pointer-events: auto;"
               >
-                <i class="fas fa-user mr-2 text-primary"> </i>
+                <i class="fas fa-user mr-2 text-gray-500"> </i>
                 个人中心
               </a>
               <a
                 class="dropdown-item"
                 href="javascript:void(0);"
+                style="pointer-events: auto;"
               >
-                <i class="fas fa-cog mr-2 text-primary"> </i>
+                <i class="fas fa-cog mr-2 text-gray-500"> </i>
                 设置
               </a>
               <div class="border-t border-gray-200 my-1"></div>
@@ -1064,6 +1109,7 @@
                 class="dropdown-item text-danger"
                 href="javascript:void(0);"
                 id="logout-btn-top"
+                style="pointer-events: auto;"
               >
                 <i class="fas fa-sign-out-alt mr-2"> </i>
                 退出登录

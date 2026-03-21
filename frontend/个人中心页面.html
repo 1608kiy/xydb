@@ -321,8 +321,7 @@
           body.theme-night .custom-select-trigger,
           body.theme-night .custom-select-dropdown,
           body.theme-night .modal-content,
-          body.theme-night .confirm-modal-card,
-          body.theme-night #dev-test-panel {
+          body.theme-night .confirm-modal-card {
             background: rgba(17, 24, 39, 0.72) !important;
             border-color: rgba(148, 163, 184, 0.24) !important;
             color: #e5e7eb !important;
@@ -464,20 +463,6 @@
     </header>
 
     <div class="flex flex-1 overflow-hidden">
-      <!-- 开发快速验收面板 (仅 local 使用) -->
-      <div id="dev-test-panel" class="fixed top-20 right-4 z-[2000] bg-white/90 p-3 rounded-xl shadow-lg w-64 hidden md:block">
-        <div class="flex items-center justify-between mb-2">
-          <strong class="text-sm">快速验收</strong>
-          <button onclick="toggleDevPanel()" class="text-xs text-gray-500">关闭</button>
-        </div>
-        <div class="space-y-2 text-xs">
-          <button class="w-full py-1 rounded bg-primary text-white text-[13px]" onclick="devLogin()">登录 test@test.com</button>
-          <button class="w-full py-1 rounded border text-[13px]" onclick="devFetchMe()">拉取 /api/me</button>
-          <button class="w-full py-1 rounded border text-[13px]" onclick="devUpdateNickname()">PUT /api/me 更新昵称</button>
-          <button class="w-full py-1 rounded border text-[13px]" onclick="devFetchTasks()">GET /api/tasks</button>
-          <pre id="dev-log" class="text-[12px] text-gray-700 max-h-36 overflow-auto mt-2 p-2 bg-gray-50 rounded"></pre>
-        </div>
-      </div>
       <!-- 主内容 -->
       <main class="flex-1 overflow-y-auto content-auto p-4 md:p-6 scrollbar-thin">
         <div
@@ -1131,48 +1116,6 @@
         </div>
       </main>
       <script>
-        function devLog(msg) {
-          var el = document.getElementById('dev-log');
-          if (!el) return;
-          el.textContent = (new Date().toISOString()) + ' ' + msg + '\n' + el.textContent;
-        }
-
-        function toggleDevPanel() {
-          var p = document.getElementById('dev-test-panel');
-          if (!p) return;
-          p.classList.toggle('hidden');
-        }
-
-        function devLogin() {
-          var email = prompt('测试登录邮箱', 'test@test.com');
-          var pwd = prompt('密码', 'password');
-          if (!email || !pwd) return;
-          apiRequest('/api/auth/login', { method: 'POST', body: JSON.stringify({ email: email, password: pwd }) }).then(function (r) {
-            devLog(JSON.stringify(r));
-            if (r.status === 200 && r.body && r.body.code === 200) {
-              var token = r.body.data.token;
-              if (token) localStorage.setItem('token', token);
-              showToast('登录成功');
-            } else {
-              showToast('登录失败', 'error');
-            }
-          }).catch(function (e) { devLog('err:' + e); showToast('网络错误', 'error'); });
-        }
-
-        function devFetchMe() {
-          apiRequest('/api/me', { method: 'GET' }).then(function (r) { devLog(JSON.stringify(r)); if (r.status === 200 && r.body && r.body.code === 200) populateProfile(r.body.data); else showToast('获取用户信息失败', 'error'); }).catch(function (e) { devLog('err:' + e); showToast('网络错误', 'error'); });
-        }
-
-        function devUpdateNickname() {
-          var nick = prompt('新的昵称', 'dev');
-          if (!nick) return;
-          apiRequest('/api/me', { method: 'PUT', body: JSON.stringify({ nickname: nick }) }).then(function (r) { devLog(JSON.stringify(r)); if (r.status === 200 && r.body && r.body.code === 200) populateProfile(r.body.data); else showToast('更新失败', 'error'); }).catch(function (e) { devLog('err:' + e); showToast('网络错误', 'error'); });
-        }
-
-        function devFetchTasks() {
-          apiRequest('/api/tasks', { method: 'GET' }).then(function (r) { devLog(JSON.stringify(r)); showToast('已拉取 /api/tasks'); }).catch(function (e) { devLog('err:' + e); showToast('网络错误', 'error'); });
-        }
-
         function populateProfile(user) {
           if (!user) return;
           try { document.getElementById('user-name').value = user.nickname || ''; } catch (e) {}
