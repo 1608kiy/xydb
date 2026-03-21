@@ -2515,7 +2515,7 @@
                            '<div class="text-lg font-bold text-gray-800 mb-2.5">' + date.getDate() + '</div>' +
                            '<div class="space-y-1.5"></div>';
             
-            var taskContainer = cell.querySelector('.space-y-1.5');
+            var taskContainer = cell.querySelector('[class~="space-y-1.5"]');
             dayTasks.slice(0, 3).forEach(function (task) {
               var taskDiv = document.createElement('div');
               taskDiv.className = 'text-xs p-1.5 rounded-lg ' + getDayColor(task) + ' text-white truncate cursor-pointer hover:scale-105 transition-transform duration-200 shadow-sm';

@@ -1451,7 +1451,7 @@ function checkAuthOnLoad(opts) {
 
 function getAiServiceConfig() {
   var baseUrl = 'https://dashscope.aliyuncs.com/compatible-mode/v1';
-  var token = 'sk-b7e328d1e4dc46c2bafc2a0805b45157';
+  var token = '';
   var model = 'qwen2.5-vl-72b-instruct';
   try {
     baseUrl = localStorage.getItem('aiApiBaseUrl') || baseUrl;

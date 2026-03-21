@@ -36,7 +36,7 @@ public class AiController {
     @Value("${ai.provider.model:qwen2.5-vl-72b-instruct}")
     private String defaultModel;
 
-    @Value("${ai.provider.api-token:sk-b7e328d1e4dc46c2bafc2a0805b45157}")
+    @Value("${ai.provider.api-token:}")
     private String providerApiToken;
 
     public AiController(UserService userService, ObjectMapper objectMapper) {

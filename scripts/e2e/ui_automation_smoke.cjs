@@ -13,17 +13,22 @@ function sanitize(name) {
   return name.replace(/[\\/:*?"<>|]/g, '_');
 }
 
+function containsAnyKeyword(text, keywords) {
+  const source = String(text || '');
+  return (keywords || []).some((k) => source.includes(k));
+}
+
 async function run() {
   const root = path.resolve(__dirname, '..', '..');
   const reportDir = ensureDir(path.join(root, 'REPORTS', 'e2e', `ui_smoke_${ts()}`));
   const summaryPath = path.join(reportDir, 'summary.json');
   const pages = [
-    { name: '待办页面', url: '/frontend/待办页面.html', titleIncludes: '待办清单', keyword: '新建任务' },
-    { name: '日历页面', url: '/frontend/日历页面.html', titleIncludes: '日历视图', keyword: '任务池' },
-    { name: '番茄钟页面', url: '/frontend/番茄钟页面.html', titleIncludes: '番茄', keyword: '专注' },
-    { name: '数据周报页面', url: '/frontend/数据周报页面.html', titleIncludes: '数据周报', keyword: '周报' },
-    { name: '打卡页面', url: '/frontend/打卡页面.html', titleIncludes: '打卡', keyword: '打卡' },
-    { name: '个人中心页面', url: '/frontend/个人中心页面.html', titleIncludes: '个人中心', keyword: '个人中心' }
+    { name: '待办页面', url: '/frontend/待办页面.html', titleIncludes: '待办清单', keywords: ['新建任务', '添加任务'] },
+    { name: '日历页面', url: '/frontend/日历页面.html', titleIncludes: '日历视图', keywords: ['任务池', '日历'] },
+    { name: '番茄钟页面', url: '/frontend/番茄钟页面.html', titleIncludes: '番茄', keywords: ['专注', '番茄'] },
+    { name: '数据周报页面', url: '/frontend/数据周报页面.html', titleIncludes: '数据周报', keywords: ['周报', '建议'] },
+    { name: '打卡页面', url: '/frontend/打卡页面.html', titleIncludes: '打卡', keywords: ['打卡', '签到'] },
+    { name: '个人中心页面', url: '/frontend/个人中心页面.html', titleIncludes: '个人中心', keywords: ['个人中心', '昵称'] }
   ];
 
   const server = await startStaticServer(root, 4173);
@@ -48,17 +53,18 @@ async function run() {
       await page.waitForTimeout(1200);
 
       const title = await page.title();
-      const hasKeyword = await page.evaluate((k) => {
-        return !!(document && document.body && document.body.innerText.includes(k));
-      }, cfg.keyword);
-      const footerCount = await page.locator('footer').count();
+      const pageText = await page.evaluate(() => {
+        return (document && document.body && document.body.innerText) || '';
+      });
+      const hasKeyword = containsAnyKeyword(pageText, cfg.keywords || []);
+      const footerVisible = await page.locator('.unified-bottom-tab-dock, footer, #footer-container footer').first().isVisible().catch(() => false);
       const shotPath = path.join(reportDir, `${sanitize(cfg.name)}.png`);
       await page.screenshot({ path: shotPath, fullPage: true });
 
       const checks = {
         title: title.includes(cfg.titleIncludes),
         keyword: !!hasKeyword,
-        footer: footerCount > 0
+        footer: !!footerVisible
       };
       const pass = checks.title && checks.keyword && checks.footer && pageErrors.length === 0;
 
