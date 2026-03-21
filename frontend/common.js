@@ -922,6 +922,22 @@ function ensureUnifiedDarkThemeStyle() {
     background: rgba(16, 185, 129, 0.18) !important;
     color: #A7F3D0 !important;
   }
+  html.unified-dark-mode.unified-page-checkin .bg-blue-50.text-blue-600 {
+    background: rgba(74, 108, 247, 0.14) !important;
+    color: #B7C8FF !important;
+    border: 1px solid rgba(74, 108, 247, 0.34) !important;
+  }
+  html.unified-dark-mode.unified-page-checkin .bg-teal-50.text-teal-600 {
+    background: rgba(16, 185, 129, 0.14) !important;
+    color: #A7F3D0 !important;
+    border: 1px solid rgba(16, 185, 129, 0.34) !important;
+  }
+  html.unified-dark-mode.unified-page-checkin .bg-blue-50.text-blue-600 .bg-blue-400 {
+    background-color: rgba(96, 165, 250, 0.86) !important;
+  }
+  html.unified-dark-mode.unified-page-checkin .bg-teal-50.text-teal-600 .bg-teal-500 {
+    background-color: rgba(45, 212, 191, 0.86) !important;
+  }
   html.unified-dark-mode.unified-page-checkin .calendar-day:hover:not(.empty):not(.today) {
     border-color: rgba(74, 108, 247, 0.55) !important;
     background: rgba(74, 108, 247, 0.18) !important;
@@ -2168,6 +2184,11 @@ function ensureUnifiedAvatarDropdownStyle() {
     transform: translateY(6px) scale(0.98) !important;
     transition: opacity 220ms ease, transform 220ms ease, visibility 0s linear 220ms !important;
     pointer-events: none !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.72) !important;
+    box-shadow: 0 18px 42px rgba(15, 23, 42, 0.14) !important;
   }
   .unified-avatar-trigger-group.unified-avatar-open .unified-avatar-menu {
     opacity: 1 !important;
@@ -2181,7 +2202,25 @@ function ensureUnifiedAvatarDropdownStyle() {
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
     line-height: 1.25rem;
+    color: #374151 !important;
     transition: color 180ms ease, background-color 180ms ease;
+  }
+  .unified-avatar-trigger-group .unified-avatar-menu a i {
+    color: #6b7280 !important;
+  }
+  .unified-avatar-trigger-group .unified-avatar-menu .text-gray-800 {
+    color: #1f2937 !important;
+  }
+  .unified-avatar-trigger-group .unified-avatar-menu .text-gray-700,
+  .unified-avatar-trigger-group .unified-avatar-menu .text-gray-600,
+  .unified-avatar-trigger-group .unified-avatar-menu .text-gray-500 {
+    color: #6b7280 !important;
+  }
+  .unified-avatar-trigger-group .unified-avatar-menu .border-t,
+  .unified-avatar-trigger-group .unified-avatar-menu .border-b,
+  .unified-avatar-trigger-group .unified-avatar-menu .border-gray-100,
+  .unified-avatar-trigger-group .unified-avatar-menu .border-gray-200 {
+    border-color: rgba(226, 232, 240, 0.75) !important;
   }
   .unified-avatar-trigger-group .unified-avatar-menu a:not(.text-danger):hover,
   .unified-avatar-trigger-group .unified-avatar-menu a:not(.text-danger):focus-visible {
@@ -2199,6 +2238,32 @@ function ensureUnifiedAvatarDropdownStyle() {
   .unified-avatar-trigger-group.unified-avatar-open .unified-avatar-chevron {
     transform: rotate(180deg) !important;
   }
+  html.unified-dark-mode .unified-avatar-trigger-group .unified-avatar-menu {
+    background: rgba(26, 33, 48, 0.96) !important;
+    border-color: var(--ud-border) !important;
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.34) !important;
+  }
+  html.unified-dark-mode .unified-avatar-trigger-group .unified-avatar-menu a {
+    color: var(--ud-text) !important;
+  }
+  html.unified-dark-mode .unified-avatar-trigger-group .unified-avatar-menu a i {
+    color: var(--ud-muted) !important;
+  }
+  html.unified-dark-mode .unified-avatar-trigger-group .unified-avatar-menu .text-gray-800,
+  html.unified-dark-mode .unified-avatar-trigger-group .unified-avatar-menu .text-gray-700,
+  html.unified-dark-mode .unified-avatar-trigger-group .unified-avatar-menu .font-medium {
+    color: var(--ud-title) !important;
+  }
+  html.unified-dark-mode .unified-avatar-trigger-group .unified-avatar-menu .text-gray-600,
+  html.unified-dark-mode .unified-avatar-trigger-group .unified-avatar-menu .text-gray-500 {
+    color: var(--ud-muted) !important;
+  }
+  html.unified-dark-mode .unified-avatar-trigger-group .unified-avatar-menu .border-t,
+  html.unified-dark-mode .unified-avatar-trigger-group .unified-avatar-menu .border-b,
+  html.unified-dark-mode .unified-avatar-trigger-group .unified-avatar-menu .border-gray-100,
+  html.unified-dark-mode .unified-avatar-trigger-group .unified-avatar-menu .border-gray-200 {
+    border-color: var(--ud-border) !important;
+  }
   `;
   document.head.appendChild(style);
 }
@@ -2206,13 +2271,16 @@ function ensureUnifiedAvatarDropdownStyle() {
 function applyUnifiedAvatarDropdownTheme() {
   var path = '';
   try { path = decodeURIComponent((window.location && window.location.pathname) || ''); } catch (e) { path = (window.location && window.location.pathname) || ''; }
+  var isUnifiedDark = document.documentElement && document.documentElement.classList.contains('unified-dark-mode');
 
   var theme = {
     bg: 'rgba(79, 70, 229, 0.14)',
     color: '#4F46E5'
   };
 
-  if (path.indexOf('番茄钟页面') !== -1) {
+  if (isUnifiedDark) {
+    theme = { bg: 'rgba(74, 108, 247, 0.2)', color: '#D9E2FF' };
+  } else if (path.indexOf('番茄钟页面') !== -1) {
     theme = { bg: 'rgba(255, 107, 107, 0.16)', color: '#FF6B6B' };
   } else if (path.indexOf('日历页面') !== -1) {
     theme = { bg: 'rgba(245, 158, 11, 0.16)', color: '#F59E0B' };
