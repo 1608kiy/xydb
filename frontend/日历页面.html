@@ -333,30 +333,177 @@
           .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
+            background: rgba(15, 23, 42, 0.35);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             z-index: 999;
             display: none;
             align-items: center;
             justify-content: center;
+            padding: 16px;
           }
           .modal-overlay:not(.hidden) {
             display: flex !important;
           }
           .modal-content {
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(48px);
-            -webkit-backdrop-filter: blur(48px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            border-radius: 24px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(165deg, rgba(255, 255, 255, 0.96), rgba(255, 250, 240, 0.9));
+            backdrop-filter: blur(42px);
+            -webkit-backdrop-filter: blur(42px);
+            border: 1px solid rgba(255, 255, 255, 0.68);
+            border-radius: 28px;
+            box-shadow: 0 28px 64px rgba(15, 23, 42, 0.2);
             padding: 24px;
             width: 100%;
             max-width: 512px;
             max-height: 90vh;
             overflow-y: auto;
-            animation: slideInRight 0.35s ease-out;
+            animation: taskDetailModalIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+          }
+          .modal-content::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+          }
+          body.task-modal-open {
+            overflow: hidden;
+          }
+          @keyframes taskDetailModalIn {
+            from { opacity: 0; transform: translateY(22px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+          }
+          .task-detail-section {
+            border: 1px solid rgba(251, 146, 60, 0.2);
+            background: rgba(255, 255, 255, 0.72);
+            border-radius: 16px;
+            padding: 12px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82);
+          }
+          .task-detail-scrollbar-hide {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+          }
+          .task-detail-scrollbar-hide::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+          }
+          .detail-datetime-shell { position: relative; }
+          .detail-datetime-trigger {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-radius: 14px;
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 247, 237, 0.86));
+            color: #374151;
+            font-size: 13px;
+            transition: all 0.25s ease;
+          }
+          .detail-datetime-trigger:hover {
+            border-color: rgba(245, 158, 11, 0.45);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.2);
+          }
+          .detail-datetime-trigger i:last-child { transition: transform 0.25s ease; }
+          .detail-datetime-shell.open .detail-datetime-trigger i:last-child { transform: rotate(180deg); }
+          .detail-datetime-panel {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: calc(100% + 8px);
+            z-index: 60;
+            border-radius: 14px;
+            padding: 12px;
+            border: 1px solid rgba(254, 215, 170, 0.92);
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 16px 34px rgba(251, 146, 60, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px) scale(0.98);
+            transition: all 0.26s ease;
+            pointer-events: none;
+          }
+          .detail-datetime-shell.open .detail-datetime-panel {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+          }
+          .detail-datetime-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+          }
+          .datetime-input {
+            width: 100%;
+            border: 1px solid rgba(209, 213, 219, 0.9);
+            border-radius: 12px;
+            padding: 8px 10px;
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.92);
+            transition: all 0.2s ease;
+          }
+          .datetime-input:focus {
+            outline: none;
+            border-color: rgba(245, 158, 11, 0.55);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.16);
+            transform: translateY(-1px);
+          }
+          .datetime-quick-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+          }
+          .datetime-quick-btn {
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            background: rgba(255, 237, 213, 0.7);
+            color: #c2410c;
+            border-radius: 999px;
+            padding: 5px 10px;
+            font-size: 11px;
+            transition: all 0.2s ease;
+          }
+          .datetime-quick-btn:hover {
+            background: rgba(254, 215, 170, 0.9);
+            transform: translateY(-1px);
+          }
+          .subtask-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(251, 146, 60, 0.22);
+            background: rgba(255, 255, 255, 0.74);
+            transition: all 0.2s ease;
+          }
+          .subtask-item:hover {
+            border-color: rgba(251, 146, 60, 0.42);
+            box-shadow: 0 6px 16px rgba(251, 146, 60, 0.16);
+            transform: translateY(-1px);
+          }
+          .subtask-action {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(209, 213, 219, 0.6);
+            background: rgba(255, 255, 255, 0.84);
+            color: #6B7280;
+            transition: all 0.2s ease;
+          }
+          .subtask-action:hover {
+            color: #F59E0B;
+            border-color: rgba(245, 158, 11, 0.36);
+            background: rgba(255, 237, 213, 0.82);
           }
 
           .calendar-nav-btn {
@@ -826,7 +973,7 @@
 
     <!-- [MODULE] k6l_任务详情/编辑区 -->
     <div id="task-detail-panel" class="modal-overlay hidden">
-      <div class="modal-content">
+      <div class="modal-content task-detail-scrollbar-hide">
         <div class="flex justify-between items-center mb-5">
           <h2 class="text-xl font-bold text-gray-800">
             <i class="fas fa-clipboard-list text-primary mr-2"></i>任务详情
@@ -847,22 +994,47 @@
             <textarea id="detail-description" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none transition-all resize-none" placeholder="添加描述..." rows="3"></textarea>
           </div>
 
-          <div>
+          <div class="task-detail-section">
             <label class="block text-sm font-medium text-gray-700 mb-1.5">截止日期和时间</label>
-            <input id="detail-dueAt" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none transition-all" type="datetime-local" />
+            <div class="detail-datetime-shell" id="detail-datetime-shell">
+              <button type="button" class="detail-datetime-trigger" id="detail-datetime-trigger">
+                <span id="detail-datetime-text">未设置截止时间</span>
+                <i class="fas fa-chevron-down text-xs text-gray-500"></i>
+              </button>
+              <div class="detail-datetime-panel" id="detail-datetime-panel">
+                <div class="detail-datetime-grid">
+                  <input class="datetime-input" id="detail-date-input" type="date" />
+                  <input class="datetime-input" id="detail-time-input" type="time" />
+                </div>
+                <div class="datetime-quick-actions">
+                  <button type="button" class="datetime-quick-btn" id="detail-datetime-today">今天</button>
+                  <button type="button" class="datetime-quick-btn" id="detail-datetime-tomorrow">明天</button>
+                  <button type="button" class="datetime-quick-btn" id="detail-datetime-clear">清空</button>
+                </div>
+              </div>
+            </div>
+            <input id="detail-dueAt" class="hidden" type="datetime-local" />
           </div>
 
-          <div class="rounded-xl border border-gray-200/70 bg-white/60 p-3">
+          <div class="task-detail-section">
             <div class="flex justify-between items-center mb-2.5">
               <label class="block text-sm font-medium text-gray-700">子任务</label>
-              <button class="text-sm text-primary hover:text-secondary transition-colors">
-                <i class="fas fa-check-square mr-1"></i>全部完成
-              </button>
+              <div class="flex items-center gap-2">
+                <button class="text-xs text-primary hover:text-secondary transition-colors" id="copy-subtasks-btn">
+                  <i class="fas fa-copy mr-1"></i>复制
+                </button>
+                <button class="text-xs text-primary hover:text-secondary transition-colors" id="share-subtasks-btn">
+                  <i class="fas fa-share-alt mr-1"></i>分享
+                </button>
+                <button class="text-xs text-primary hover:text-secondary transition-colors" id="complete-all-subtasks">
+                  <i class="fas fa-check-square mr-1"></i>全部完成
+                </button>
+              </div>
             </div>
-            <div class="space-y-2 mb-3 max-h-32 overflow-y-auto" id="subtask-list"></div>
+            <div class="space-y-2 mb-3 max-h-40 overflow-y-auto task-detail-scrollbar-hide" id="subtask-list"></div>
             <div class="flex">
-              <input class="glass-input flex-1 px-4 py-2.5 rounded-l-xl focus:outline-none transition-all" placeholder="添加子任务..." type="text" />
-              <button class="px-4 py-2.5 btn-primary rounded-r-xl">
+              <input id="new-subtask-input" class="glass-input flex-1 px-4 py-2.5 rounded-l-xl focus:outline-none transition-all" placeholder="添加子任务..." type="text" />
+              <button id="add-subtask-btn" class="px-4 py-2.5 btn-primary rounded-r-xl">
                 <i class="fas fa-plus"></i>
               </button>
             </div>
@@ -876,6 +1048,17 @@
           <div class="flex space-x-3 pt-4 border-t border-gray-200">
             <button class="flex-1 py-2.5 btn-soft-danger rounded-xl text-sm font-medium" id="cancel-btn">取消</button>
             <button class="flex-1 py-2.5 btn-primary rounded-xl text-sm font-medium" id="save-btn">保存任务</button>
+          </div>
+          <div class="grid grid-cols-3 gap-2 pt-1">
+            <button class="min-w-[80px] py-2.5 btn-glass text-primary inline-flex items-center justify-center gap-1.5 text-xs" id="share-task-btn">
+              <i class="fas fa-share-alt text-sm"></i><span>分享</span>
+            </button>
+            <button class="min-w-[80px] py-2.5 btn-glass inline-flex items-center justify-center gap-1.5 text-xs" id="copy-task-btn">
+              <i class="fas fa-copy text-sm"></i><span>复制</span>
+            </button>
+            <button class="min-w-[80px] py-2.5 btn-glass text-danger inline-flex items-center justify-center gap-1.5 text-xs" id="delete-task-btn">
+              <i class="fas fa-trash-alt text-sm"></i><span>删除</span>
+            </button>
           </div>
         </div>
       </div>
@@ -979,7 +1162,25 @@
         var detailTitle = document.getElementById('detail-title');
         var detailDescription = document.getElementById('detail-description');
         var detailDueAt = document.getElementById('detail-dueAt');
+        var subtaskList = document.getElementById('subtask-list');
+        var addSubtaskBtn = document.getElementById('add-subtask-btn');
+        var newSubtaskInput = document.getElementById('new-subtask-input');
+        var completeAllSubtasksBtn = document.getElementById('complete-all-subtasks');
+        var shareTaskBtn = document.getElementById('share-task-btn');
+        var copyTaskBtn = document.getElementById('copy-task-btn');
+        var deleteTaskBtn = document.getElementById('delete-task-btn');
+        var copySubtasksBtn = document.getElementById('copy-subtasks-btn');
+        var shareSubtasksBtn = document.getElementById('share-subtasks-btn');
+        var detailDatetimeShell = document.getElementById('detail-datetime-shell');
+        var detailDatetimeTrigger = document.getElementById('detail-datetime-trigger');
+        var detailDatetimeText = document.getElementById('detail-datetime-text');
+        var detailDateInput = document.getElementById('detail-date-input');
+        var detailTimeInput = document.getElementById('detail-time-input');
+        var quickTodayBtn = document.getElementById('detail-datetime-today');
+        var quickTomorrowBtn = document.getElementById('detail-datetime-tomorrow');
+        var quickClearBtn = document.getElementById('detail-datetime-clear');
         var selectedTaskId = null;
+        var currentEditingTask = null;
         var taskPool = document.getElementById('task-pool');
         var taskPoolView = 'grid';
 
@@ -989,6 +1190,249 @@
             window.__unifiedShowToast(message, type || 'info');
           }
         }
+
+        function escapeHtml(text) {
+          return String(text == null ? '' : text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+        }
+
+        function normalizeTaskSubtasks(task) {
+          if (!task) return [];
+          var raw = [];
+          if (Array.isArray(task.subtasks)) raw = task.subtasks;
+          else if (Array.isArray(task.subTasks)) raw = task.subTasks;
+          else raw = [];
+          return raw.map(function (s) {
+            if (typeof s === 'string') return { title: s, completed: false };
+            return {
+              title: (s && (s.title || s.text || s.name) ? String(s.title || s.text || s.name) : '').trim(),
+              completed: !!(s && (s.completed || s.done))
+            };
+          }).filter(function (s) { return !!s.title; });
+        }
+
+        function ensureTaskSubtasks(task) {
+          if (!task) return [];
+          var normalized = normalizeTaskSubtasks(task);
+          task.subtasks = normalized;
+          if (Object.prototype.hasOwnProperty.call(task, 'subTasks')) {
+            task.subTasks = normalized.slice();
+          }
+          return normalized;
+        }
+
+        function toLocalDatetimeValue(value) {
+          if (!value) return '';
+          var date = value instanceof Date ? value : new Date(value);
+          if (isNaN(date.getTime())) return '';
+          var y = date.getFullYear();
+          var m = String(date.getMonth() + 1).padStart(2, '0');
+          var d = String(date.getDate()).padStart(2, '0');
+          var hh = String(date.getHours()).padStart(2, '0');
+          var mm = String(date.getMinutes()).padStart(2, '0');
+          return y + '-' + m + '-' + d + 'T' + hh + ':' + mm;
+        }
+
+        function formatDatetimeDisplay(localValue) {
+          if (!localValue) return '未设置截止时间';
+          var date = new Date(localValue);
+          if (isNaN(date.getTime())) return '未设置截止时间';
+          var opts = { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
+          return date.toLocaleString('zh-CN', opts).replace(/\//g, '-');
+        }
+
+        function setDetailDatetimeFromValue(localValue) {
+          if (detailDueAt) detailDueAt.value = localValue || '';
+          if (detailDateInput) detailDateInput.value = localValue ? localValue.slice(0, 10) : '';
+          if (detailTimeInput) detailTimeInput.value = localValue ? localValue.slice(11, 16) : '';
+          if (detailDatetimeText) detailDatetimeText.textContent = formatDatetimeDisplay(localValue);
+        }
+
+        function updateDetailDatetimeFromSplitInputs() {
+          var dateVal = detailDateInput ? detailDateInput.value : '';
+          var timeVal = detailTimeInput ? detailTimeInput.value : '';
+          if (!dateVal) {
+            setDetailDatetimeFromValue('');
+            return;
+          }
+          if (!timeVal) timeVal = '09:00';
+          setDetailDatetimeFromValue(dateVal + 'T' + timeVal.slice(0, 5));
+        }
+
+        function closeDetailDatetimePanel() {
+          if (detailDatetimeShell) detailDatetimeShell.classList.remove('open');
+        }
+
+        function toggleDetailDatetimePanel(forceOpen) {
+          if (!detailDatetimeShell) return;
+          var shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : !detailDatetimeShell.classList.contains('open');
+          if (shouldOpen) detailDatetimeShell.classList.add('open');
+          else detailDatetimeShell.classList.remove('open');
+        }
+
+        function applyQuickDueDate(mode) {
+          var now = new Date();
+          if (mode === 'clear') {
+            setDetailDatetimeFromValue('');
+            closeDetailDatetimePanel();
+            return;
+          }
+          if (mode === 'tomorrow') now.setDate(now.getDate() + 1);
+          var y = now.getFullYear();
+          var m = String(now.getMonth() + 1).padStart(2, '0');
+          var d = String(now.getDate()).padStart(2, '0');
+          setDetailDatetimeFromValue(y + '-' + m + '-' + d + 'T09:00');
+          closeDetailDatetimePanel();
+        }
+
+        function copyTextToClipboard(text) {
+          var plain = String(text == null ? '' : text);
+          if (!plain) return Promise.reject(new Error('empty'));
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            return navigator.clipboard.writeText(plain);
+          }
+          return new Promise(function (resolve, reject) {
+            try {
+              var input = document.createElement('textarea');
+              input.value = plain;
+              input.setAttribute('readonly', 'readonly');
+              input.style.position = 'fixed';
+              input.style.opacity = '0';
+              document.body.appendChild(input);
+              input.select();
+              var ok = document.execCommand('copy');
+              input.remove();
+              if (ok) resolve();
+              else reject(new Error('copy-failed'));
+            } catch (err) {
+              reject(err);
+            }
+          });
+        }
+
+        function buildTaskExportText(task) {
+          if (!task) return '';
+          ensureTaskSubtasks(task);
+          var lines = [];
+          lines.push('任务：' + (task.title || '未命名'));
+          if (task.description) lines.push('描述：' + task.description);
+          lines.push('截止时间：' + (task.dueAt ? formatDatetimeDisplay(toLocalDatetimeValue(task.dueAt)) : '未设置'));
+          if (task.subtasks && task.subtasks.length) {
+            lines.push('子任务：');
+            task.subtasks.forEach(function (s, idx) {
+              lines.push('  ' + (idx + 1) + '. ' + (s.completed ? '[已完成] ' : '[待办] ') + s.title);
+            });
+          }
+          return lines.join('\n');
+        }
+
+        function shareOrCopyText(text, successMessage) {
+          if (navigator.share) {
+            return navigator.share({ title: '任务详情', text: text }).then(function () {
+              showToast(successMessage || '已分享任务', 'success');
+            }).catch(function () {
+              return copyTextToClipboard(text).then(function () {
+                showToast('已复制分享内容', 'success');
+              });
+            });
+          }
+          return copyTextToClipboard(text).then(function () {
+            showToast('已复制分享内容', 'success');
+          });
+        }
+
+        function syncCurrentSubtasksToServer() {
+          if (!currentEditingTask || !currentEditingTask.id) return Promise.resolve(true);
+          ensureTaskSubtasks(currentEditingTask);
+          var payload = currentEditingTask.subtasks.map(function (s) {
+            return { title: s.title || s.text || '', completed: !!s.completed };
+          });
+          return apiRequest('/api/tasks/' + currentEditingTask.id + '/subtasks', {
+            method: 'PUT',
+            body: JSON.stringify(payload)
+          }).then(function (resp) {
+            if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+              AppState.save();
+              return true;
+            }
+            throw new Error((resp && resp.body && resp.body.message) || '子任务同步失败');
+          });
+        }
+
+        function renderSubtasks() {
+          if (!subtaskList || !currentEditingTask) return;
+          ensureTaskSubtasks(currentEditingTask);
+          if (!currentEditingTask.subtasks.length) {
+            subtaskList.innerHTML = '<p class="text-sm text-gray-400 text-center py-4">暂无子任务</p>';
+            return;
+          }
+          var html = '';
+          currentEditingTask.subtasks.forEach(function (subtask, index) {
+            var title = escapeHtml(subtask.title || subtask.text || '');
+            html += '<div class="subtask-item">' +
+              '<input type="checkbox" class="w-4 h-4 rounded" ' + (subtask.completed ? 'checked' : '') + ' onchange="toggleSubtask(' + index + ')">' +
+              '<span class="flex-1 text-sm ' + (subtask.completed ? 'line-through text-gray-400' : '') + '">' + title + '</span>' +
+              '<button class="subtask-action" onclick="copySubtask(' + index + ')" title="复制子任务"><i class="fas fa-copy text-xs"></i></button>' +
+              '<button class="subtask-action" onclick="shareSubtask(' + index + ')" title="分享子任务"><i class="fas fa-share-alt text-xs"></i></button>' +
+              '<button class="subtask-action" onclick="deleteSubtask(' + index + ')" title="删除子任务"><i class="fas fa-times text-xs"></i></button>' +
+              '</div>';
+          });
+          subtaskList.innerHTML = html;
+        }
+
+        window.toggleSubtask = function (index) {
+          if (!currentEditingTask || !currentEditingTask.subtasks[index]) return;
+          currentEditingTask.subtasks[index].completed = !currentEditingTask.subtasks[index].completed;
+          syncCurrentSubtasksToServer().then(function () {
+            renderSubtasks();
+            renderMonthGrid();
+            renderScheduledTaskList();
+          }).catch(function (err) {
+            console.error(err);
+            currentEditingTask.subtasks[index].completed = !currentEditingTask.subtasks[index].completed;
+            renderSubtasks();
+            showToast('更新子任务失败', 'error');
+          });
+        };
+
+        window.deleteSubtask = function (index) {
+          if (!currentEditingTask || !currentEditingTask.subtasks[index]) return;
+          var backup = currentEditingTask.subtasks.slice();
+          currentEditingTask.subtasks.splice(index, 1);
+          syncCurrentSubtasksToServer().then(function () {
+            renderSubtasks();
+            renderMonthGrid();
+            renderScheduledTaskList();
+            showToast('✅ 子任务已删除', 'success');
+          }).catch(function (err) {
+            console.error(err);
+            currentEditingTask.subtasks = backup;
+            renderSubtasks();
+            showToast('删除子任务失败', 'error');
+          });
+        };
+
+        window.copySubtask = function (index) {
+          if (!currentEditingTask || !currentEditingTask.subtasks[index]) return;
+          var sub = currentEditingTask.subtasks[index];
+          copyTextToClipboard(sub.title || sub.text || '').then(function () {
+            showToast('📋 子任务已复制', 'success');
+          }).catch(function () {
+            showToast('复制子任务失败', 'error');
+          });
+        };
+
+        window.shareSubtask = function (index) {
+          if (!currentEditingTask || !currentEditingTask.subtasks[index]) return;
+          var sub = currentEditingTask.subtasks[index];
+          shareOrCopyText('子任务：' + (sub.title || sub.text || ''), '📤 子任务已分享').catch(function () {
+            showToast('分享子任务失败', 'error');
+          });
+        };
 
         function setCalendarChromeVisible(visible) {
           var selector = '.unified-top-header-dock, .unified-bottom-tab-dock, header.sticky.top-0, footer.glass-tab';
@@ -1012,6 +1456,10 @@
 
         function closeTaskDetailModal() {
           if (detailPanel) detailPanel.classList.add('hidden');
+          currentEditingTask = null;
+          selectedTaskId = null;
+          document.body.classList.remove('task-modal-open');
+          closeDetailDatetimePanel();
           setCalendarChromeVisible(true);
         }
 
@@ -1374,14 +1822,15 @@
 
         function openTaskDetail(task) {
           selectedTaskId = task.id;
+          currentEditingTask = task;
+          ensureTaskSubtasks(currentEditingTask);
           if (detailTitle) detailTitle.value = task.title || '';
           if (detailDescription) detailDescription.value = task.description || '';
-          if (detailDueAt) {
-            var d = task.dueAt ? new Date(task.dueAt) : new Date();
-            detailDueAt.value = d.toISOString().slice(0, 16);
-          }
+          setDetailDatetimeFromValue(toLocalDatetimeValue(task.dueAt || ''));
+          renderSubtasks();
           if (detailPanel) {
             detailPanel.classList.remove('hidden');
+            document.body.classList.add('task-modal-open');
             setCalendarChromeVisible(false);
           }
         }
@@ -1680,6 +2129,8 @@
               showToast('任务不存在或已删除', 'error');
               return;
             }
+            currentEditingTask = task;
+            ensureTaskSubtasks(currentEditingTask);
 
             var payload = {
               title: detailTitle ? detailTitle.value.trim() : task.title,
@@ -1696,6 +2147,11 @@
                 task.title = updated.title || payload.title || task.title;
                 task.description = updated.description || payload.description || task.description;
                 task.dueAt = updated.dueAt || payload.dueAt;
+                if (updated && (updated.subtasks || updated.subTasks)) {
+                  task.subtasks = normalizeTaskSubtasks(updated);
+                } else {
+                  ensureTaskSubtasks(task);
+                }
                 AppState.save();
                 renderMonthGrid();
                 renderScheduledTaskList();
@@ -1708,6 +2164,156 @@
               }
             }).catch(function () {
               showToast('网络错误，保存失败', 'error');
+            });
+          });
+        }
+
+        if (detailDatetimeTrigger) {
+          detailDatetimeTrigger.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleDetailDatetimePanel();
+          });
+        }
+        if (detailDateInput) detailDateInput.addEventListener('change', updateDetailDatetimeFromSplitInputs);
+        if (detailTimeInput) detailTimeInput.addEventListener('change', updateDetailDatetimeFromSplitInputs);
+        if (quickTodayBtn) quickTodayBtn.addEventListener('click', function () { applyQuickDueDate('today'); });
+        if (quickTomorrowBtn) quickTomorrowBtn.addEventListener('click', function () { applyQuickDueDate('tomorrow'); });
+        if (quickClearBtn) quickClearBtn.addEventListener('click', function () { applyQuickDueDate('clear'); });
+
+        document.addEventListener('click', function (e) {
+          if (detailDatetimeShell && !detailDatetimeShell.contains(e.target)) {
+            closeDetailDatetimePanel();
+          }
+        });
+
+        if (addSubtaskBtn && newSubtaskInput) {
+          var addSubtask = function () {
+            if (!currentEditingTask) return;
+            ensureTaskSubtasks(currentEditingTask);
+            var text = (newSubtaskInput.value || '').trim();
+            if (!text) return;
+            currentEditingTask.subtasks.push({ title: text, completed: false });
+            syncCurrentSubtasksToServer().then(function () {
+              AppState.save();
+              renderSubtasks();
+              renderMonthGrid();
+              renderScheduledTaskList();
+              newSubtaskInput.value = '';
+              showToast('✅ 子任务已添加', 'success');
+            }).catch(function (err) {
+              console.error(err);
+              currentEditingTask.subtasks.pop();
+              showToast('添加子任务失败', 'error');
+            });
+          };
+          addSubtaskBtn.addEventListener('click', addSubtask);
+          newSubtaskInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              addSubtask();
+            }
+          });
+        }
+
+        if (completeAllSubtasksBtn) {
+          completeAllSubtasksBtn.addEventListener('click', function () {
+            if (!currentEditingTask) return;
+            ensureTaskSubtasks(currentEditingTask);
+            if (!currentEditingTask.subtasks.length) {
+              showToast('暂无子任务可操作', 'warning');
+              return;
+            }
+            currentEditingTask.subtasks.forEach(function (s) { s.completed = true; });
+            syncCurrentSubtasksToServer().then(function () {
+              renderSubtasks();
+              renderMonthGrid();
+              renderScheduledTaskList();
+              showToast('✅ 所有子任务已标记完成', 'success');
+            }).catch(function (err) {
+              console.error(err);
+              showToast('批量更新子任务失败', 'error');
+            });
+          });
+        }
+
+        if (copySubtasksBtn) {
+          copySubtasksBtn.addEventListener('click', function () {
+            if (!currentEditingTask) return;
+            ensureTaskSubtasks(currentEditingTask);
+            if (!currentEditingTask.subtasks.length) {
+              showToast('暂无子任务可复制', 'warning');
+              return;
+            }
+            var lines = currentEditingTask.subtasks.map(function (s, idx) {
+              return (idx + 1) + '. ' + (s.completed ? '[已完成] ' : '[待办] ') + s.title;
+            }).join('\n');
+            copyTextToClipboard(lines).then(function () {
+              showToast('📋 子任务列表已复制', 'success');
+            }).catch(function () {
+              showToast('复制子任务失败', 'error');
+            });
+          });
+        }
+
+        if (shareSubtasksBtn) {
+          shareSubtasksBtn.addEventListener('click', function () {
+            if (!currentEditingTask) return;
+            ensureTaskSubtasks(currentEditingTask);
+            if (!currentEditingTask.subtasks.length) {
+              showToast('暂无子任务可分享', 'warning');
+              return;
+            }
+            var lines = currentEditingTask.subtasks.map(function (s, idx) {
+              return (idx + 1) + '. ' + (s.completed ? '[已完成] ' : '[待办] ') + s.title;
+            }).join('\n');
+            shareOrCopyText('子任务清单：\n' + lines, '📤 子任务列表已分享').catch(function () {
+              showToast('分享子任务失败', 'error');
+            });
+          });
+        }
+
+        if (shareTaskBtn) {
+          shareTaskBtn.addEventListener('click', function () {
+            if (!currentEditingTask) return;
+            shareOrCopyText(buildTaskExportText(currentEditingTask), '📤 任务已分享').catch(function () {
+              showToast('分享任务失败', 'error');
+            });
+          });
+        }
+
+        if (copyTaskBtn) {
+          copyTaskBtn.addEventListener('click', function () {
+            if (!currentEditingTask) return;
+            copyTextToClipboard(buildTaskExportText(currentEditingTask)).then(function () {
+              showToast('📋 任务内容已复制', 'success');
+            }).catch(function () {
+              showToast('复制任务失败', 'error');
+            });
+          });
+        }
+
+        if (deleteTaskBtn) {
+          deleteTaskBtn.addEventListener('click', function () {
+            if (!currentEditingTask || !selectedTaskId) return;
+            if (!confirm('确定要删除当前任务吗？')) return;
+            apiRequest('/api/tasks/' + selectedTaskId, { method: 'DELETE' }).then(function (resp) {
+              if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+                AppState.tasks = (AppState.tasks || []).filter(function (t) {
+                  return String(t.id) !== String(selectedTaskId);
+                });
+                AppState.save();
+                closeTaskDetailModal();
+                renderMonthGrid();
+                renderScheduledTaskList();
+                renderWeekView();
+                renderDayView();
+                showToast('🗑️ 任务已删除', 'success');
+              } else {
+                showToast((resp && resp.body && resp.body.message) || '删除失败', 'error');
+              }
+            }).catch(function () {
+              showToast('网络错误，删除任务失败', 'error');
             });
           });
         }
@@ -1770,20 +2376,21 @@
                 return parseTags(raw);
               }
 
-              AppState.tasks = (serverTasks || []).map(function(t){
-                return {
-                  id: String(t.id || t.taskId || ''),
-                  title: t.title || t.name || '',
-                  description: t.description || t.note || '',
-                  dueAt: parseDateVal(t.dueAt || t.dueAtStr || t.due_at || t.dueTime || t.startTime || t.startedAt),
-                  status: t.status || t.state || 'pending',
-                  priority: t.priority || 'medium',
-                  labels: normalizeTagsField(t),
-                  estimate: t.pomodoroPlan || t.estimate || t.estimatedPomodoros || 0,
-                  createdAt: parseDateVal(t.createdAt || t.created_at),
-                  updatedAt: parseDateVal(t.updatedAt || t.updated_at)
-                };
-              });
+                AppState.tasks = (serverTasks || []).map(function(t){
+                  return {
+                    id: String(t.id || t.taskId || ''),
+                    title: t.title || t.name || '',
+                    description: t.description || t.note || '',
+                    dueAt: parseDateVal(t.dueAt || t.dueAtStr || t.due_at || t.dueTime || t.startTime || t.startedAt),
+                    status: t.status || t.state || 'pending',
+                    priority: t.priority || 'medium',
+                    labels: normalizeTagsField(t),
+                    subtasks: normalizeTaskSubtasks(t),
+                    estimate: t.pomodoroPlan || t.estimate || t.estimatedPomodoros || 0,
+                    createdAt: parseDateVal(t.createdAt || t.created_at),
+                    updatedAt: parseDateVal(t.updatedAt || t.updated_at)
+                  };
+                });
               AppState.save && AppState.save();
             } catch (e) {
               console.warn('任务解析失败', e);
