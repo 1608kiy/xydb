@@ -1319,6 +1319,7 @@ function resolveApiBase() {
 // 全局 API 请求封装：自动携带 Authorization header（从 localStorage 读取 token）
 function apiRequest(path, options) {
   options = options || {};
+  var timeoutMs = typeof options.timeoutMs === 'number' ? options.timeoutMs : 10000;
   // 优先级：window.__API_BASE__ > localStorage.apiBase > 同源；同源失败时自动回退 localhost:8080
   var explicitBase = (window.__API_BASE__ || '').trim();
   var storedBase = '';
@@ -1333,10 +1334,19 @@ function apiRequest(path, options) {
   if (storedBase && candidateBases.indexOf(storedBase) === -1) candidateBases.push(storedBase);
 
   var protocol = (window.location && window.location.protocol) || '';
+  var hostname = ((window.location && window.location.hostname) || '').toLowerCase();
+  var isLocalRuntime = hostname === 'localhost' || hostname === '127.0.0.1';
+  var hasExplicitPort = /:\d+$/.test((window.location && window.location.host) || '');
   if (!explicitBase && !storedBase && (protocol === 'http:' || protocol === 'https:')) {
     candidateBases.push(window.location.origin);
   }
-  if (candidateBases.indexOf('http://localhost:8080') === -1) {
+  if (!isLocalRuntime && (protocol === 'http:' || protocol === 'https:')) {
+    var backupOrigin = hasExplicitPort
+      ? window.location.origin.replace(/:\d+$/, ':7833')
+      : window.location.origin + ':7833';
+    if (candidateBases.indexOf(backupOrigin) === -1) candidateBases.push(backupOrigin);
+  }
+  if (isLocalRuntime && candidateBases.indexOf('http://localhost:8080') === -1) {
     candidateBases.push('http://localhost:8080');
   }
 
@@ -1361,12 +1371,29 @@ function apiRequest(path, options) {
   function shouldFallback(resp) {
     if (!path || path.indexOf('/api/') !== 0) return false;
     if (!resp) return true;
+    if (resp.status === 401 || resp.status === 403) return false;
+    if (resp.status >= 500) return true;
     if (resp.status === 404 || resp.status === 405) return true;
     if (!resp.body) return true;
     // 非标准 Result 结构（例如静态服务返回 HTML）时允许回退重试
     if (typeof resp.body.code === 'undefined' && typeof resp.body.message === 'undefined') return true;
     return false;
   }
+
+  function fetchWithTimeout(url, reqOptions) {
+    if (!window.AbortController || !timeoutMs || timeoutMs <= 0) {
+      return fetch(url, reqOptions);
+    }
+    var controller = new AbortController();
+    var timer = setTimeout(function () {
+      try { controller.abort(); } catch (e) {}
+    }, timeoutMs);
+    var merged = Object.assign({}, reqOptions, { signal: controller.signal });
+    return fetch(url, merged).finally(function () {
+      clearTimeout(timer);
+    });
+  }
+
   var headers = options.headers || {};
   headers['Content-Type'] = headers['Content-Type'] || 'application/json';
   var token = localStorage.getItem('token');
@@ -1376,7 +1403,9 @@ function apiRequest(path, options) {
   options.headers = headers;
 
   if (path.startsWith('http')) {
-    return fetch(path, options).then(parseResponse);
+    return fetchWithTimeout(path, options).then(parseResponse).catch(function (err) {
+      return { status: 0, body: { message: err && err.name === 'AbortError' ? 'Request timeout' : 'Network error' } };
+    });
   }
 
   var idx = 0;
@@ -1386,12 +1415,15 @@ function apiRequest(path, options) {
     }
     var base = sanitizeBase(candidateBases[idx++]);
     var url = base + path;
-    return fetch(url, options).then(parseResponse).then(function (resp) {
+    return fetchWithTimeout(url, options).then(parseResponse).then(function (resp) {
       if (idx < candidateBases.length && shouldFallback(resp)) {
         return tryNext(resp);
       }
       return resp;
-    }).catch(function () {
+    }).catch(function (err) {
+      if (err && err.name === 'AbortError') {
+        return tryNext({ status: 0, body: { message: 'Request timeout' } });
+      }
       return tryNext(lastResp);
     });
   }
@@ -2020,6 +2052,131 @@ function ensureUnifiedTopHeaderStyle() {
   document.head.appendChild(style);
 }
 
+function ensureUnifiedMobileAdaptationStyle() {
+  if (document.getElementById('unified-mobile-adaptation-style')) return;
+  var style = document.createElement('style');
+  style.id = 'unified-mobile-adaptation-style';
+  style.textContent = `
+  @media (max-width: 768px) {
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden !important;
+    }
+    body {
+      min-width: 0;
+    }
+
+    .unified-top-header-dock .unified-top-header-shell .container,
+    .unified-top-header-dock .unified-top-header-shell > div:first-child {
+      padding: 8px 10px !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      flex-wrap: wrap !important;
+    }
+    .unified-top-header-dock .unified-top-header-shell .container > *,
+    .unified-top-header-dock .unified-top-header-shell > div:first-child > * {
+      min-width: 0;
+    }
+    .unified-top-header-dock .unified-top-header-shell .container > :nth-child(1),
+    .unified-top-header-dock .unified-top-header-shell > div:first-child > :nth-child(1) {
+      order: 1;
+      flex: 1 1 auto;
+    }
+    .unified-top-header-dock .unified-top-header-shell .container > :nth-child(3),
+    .unified-top-header-dock .unified-top-header-shell > div:first-child > :nth-child(3) {
+      order: 2;
+      flex: 0 0 auto;
+      margin-left: auto;
+    }
+    .unified-top-header-dock .unified-top-header-shell .container > :nth-child(2),
+    .unified-top-header-dock .unified-top-header-shell > div:first-child > :nth-child(2) {
+      order: 3;
+      flex: 1 1 100%;
+      width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 2px;
+    }
+    .unified-top-header-dock .unified-top-header-shell .container > :nth-child(2)::-webkit-scrollbar,
+    .unified-top-header-dock .unified-top-header-shell > div:first-child > :nth-child(2)::-webkit-scrollbar {
+      display: none;
+    }
+    .unified-top-header-dock .unified-top-header-shell h1,
+    .unified-top-header-dock .unified-top-header-shell .text-lg,
+    .unified-top-header-dock .unified-top-header-shell .text-xl {
+      font-size: 16px !important;
+      line-height: 1.25 !important;
+    }
+    .unified-top-header-dock .unified-top-header-shell .btn-primary,
+    .unified-top-header-dock .unified-top-header-shell .btn-glass,
+    .unified-top-header-dock .unified-top-header-shell .glass-card,
+    .unified-top-header-dock .unified-top-header-shell .custom-select-trigger {
+      padding: 6px 10px !important;
+      border-radius: 10px !important;
+      font-size: 12px !important;
+    }
+
+    .unified-bottom-tab-dock {
+      left: 0 !important;
+      right: 0 !important;
+      width: auto !important;
+      max-width: none !important;
+      transform: none !important;
+      padding: 0 8px;
+      bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    }
+    .unified-bottom-tab-dock.unified-bottom-tab-dock-hidden {
+      transform: translateY(10px) !important;
+    }
+    .unified-bottom-tab-dock .unified-tab-row {
+      width: 100% !important;
+      max-width: none !important;
+      justify-content: space-between !important;
+      gap: 2px !important;
+      padding: 8px 6px !important;
+      border-radius: 20px !important;
+    }
+    .unified-bottom-tab-dock .unified-tab-item {
+      flex: 1 1 0 !important;
+      min-width: 0 !important;
+      padding: 6px 2px !important;
+      border-radius: 12px !important;
+    }
+    .unified-bottom-tab-dock .unified-tab-label {
+      font-size: 10px !important;
+    }
+
+    main,
+    section,
+    article,
+    .glass-card,
+    .glass-max,
+    .chart-container,
+    .task-card,
+    .calendar-container {
+      min-width: 0 !important;
+      max-width: 100% !important;
+    }
+    main.overflow-x-visible,
+    main[style*="overflow-x: visible"] {
+      overflow-x: hidden !important;
+    }
+    img,
+    canvas,
+    svg {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+  `;
+  document.head.appendChild(style);
+}
+
 function syncUnifiedTopHeaderSpace() {
   var docks = document.querySelectorAll('.unified-top-header-dock .unified-top-header-shell');
   if (!docks.length) return;
@@ -2131,6 +2288,7 @@ function initUnifiedTopHeaders() {
 }
 
 ensureUnifiedTopHeaderStyle();
+ensureUnifiedMobileAdaptationStyle();
 ensureUnifiedDropdownTransitionStyle();
 initUnifiedDarkTheme();
 initUnifiedPageTransitions();

@@ -3,11 +3,10 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>日历视图 - 轻悦待办</title>
-    <script src="https://res.gemcoder.com/js/reload.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="data.js"></script>
-    <script src="common.js"></script>
-    <script src="components.js"></script>
+    <script defer src="https://cdn.tailwindcss.com"></script>
+    <script defer src="data.js"></script>
+    <script defer src="common.js"></script>
+    <script defer src="components.js"></script>
     <link
       href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
@@ -248,6 +247,11 @@
             background: rgba(255, 179, 71, 0.12);
             border-color: rgba(255, 179, 71, 0.38);
             box-shadow: 0 8px 18px rgba(255, 179, 71, 0.16);
+          }
+          .category-chip.active {
+            background: rgba(255, 179, 71, 0.2);
+            border-color: rgba(255, 179, 71, 0.52);
+            box-shadow: 0 10px 22px rgba(255, 179, 71, 0.22);
           }
           .category-chip-dot {
             @apply w-3 h-3 rounded-full;
@@ -1313,22 +1317,26 @@
         <div class="glass-card rounded-2xl p-6 mt-6 fade-in">
           <h2 class="text-lg font-semibold text-gray-800 mb-4">任务分类</h2>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div class="category-chip">
+            <button type="button" class="category-chip active" data-category="all">
+              <div class="category-chip-dot bg-primary"></div>
+              <span class="category-chip-label">全部</span>
+            </button>
+            <button type="button" class="category-chip" data-category="work">
               <div class="category-chip-dot bg-task-work"></div>
               <span class="category-chip-label">工作</span>
-            </div>
-            <div class="category-chip">
+            </button>
+            <button type="button" class="category-chip" data-category="study">
               <div class="category-chip-dot bg-task-study"></div>
               <span class="category-chip-label">学习</span>
-            </div>
-            <div class="category-chip">
+            </button>
+            <button type="button" class="category-chip" data-category="life">
               <div class="category-chip-dot bg-task-life"></div>
               <span class="category-chip-label">生活</span>
-            </div>
-            <div class="category-chip">
+            </button>
+            <button type="button" class="category-chip" data-category="health">
               <div class="category-chip-dot bg-task-health"></div>
               <span class="category-chip-label">健康</span>
-            </div>
+            </button>
           </div>
         </div>
       </main>
@@ -1572,7 +1580,10 @@
         var taskPool = document.getElementById('task-pool');
         var aiScheduleBtn = document.getElementById('ai-schedule-btn');
         var aiScheduleStatus = document.getElementById('ai-schedule-status');
+        var categoryChips = Array.prototype.slice.call(document.querySelectorAll('.category-chip[data-category]'));
         var taskPoolView = 'grid';
+        var activeCategory = 'all';
+        var viewSwitchTimer = null;
 
         // ✅ Toast 提示函数 - 右上角弹出
         function showToast(message, type) {
@@ -2117,6 +2128,17 @@
           return ''.concat(d.getFullYear(), '年', d.getMonth() + 1, '月', d.getDate(), '日 ', dayNames[d.getDay()]);
         }
 
+        function ensureValidDate(value, fallback) {
+          var d = value instanceof Date ? new Date(value.getTime()) : new Date(value);
+          if (isNaN(d.getTime())) return fallback instanceof Date ? new Date(fallback.getTime()) : new Date();
+          return d;
+        }
+
+        function ensureCalendarSelectedDate() {
+          calendarState.selectedDate = ensureValidDate(calendarState.selectedDate, new Date());
+          return calendarState.selectedDate;
+        }
+
         var TAG_META = {
           work: { key: 'work', label: '工作', className: 'tag-work', dotClass: 'bg-task-work', icon: 'fa-briefcase' },
           study: { key: 'study', label: '学习', className: 'tag-study', dotClass: 'bg-task-study', icon: 'fa-book' },
@@ -2191,6 +2213,25 @@
           return labels[0] || '工作';
         }
 
+        function isTaskInActiveCategory(task) {
+          if (activeCategory === 'all') return true;
+          return normalizeLabelKey(getPrimaryTaskLabel(task)) === activeCategory;
+        }
+
+        function getFilteredTasks(tasks) {
+          return (tasks || []).filter(function (t) {
+            return !!t && isTaskInActiveCategory(t);
+          });
+        }
+
+        function renderCategoryChips() {
+          categoryChips.forEach(function (chip) {
+            var key = chip.getAttribute('data-category') || 'all';
+            if (key === activeCategory) chip.classList.add('active');
+            else chip.classList.remove('active');
+          });
+        }
+
         function sortTaskPoolItems(a, b) {
           if (a.dueAt && b.dueAt) return new Date(a.dueAt) - new Date(b.dueAt);
           if (a.dueAt && !b.dueAt) return -1;
@@ -2201,9 +2242,9 @@
         function renderTaskPool() {
           if (!taskPool) return;
 
-          var poolTasks = (AppState.tasks || []).filter(function (t) {
+          var poolTasks = getFilteredTasks((AppState.tasks || []).filter(function (t) {
             return t && t.status !== 'completed';
-          }).sort(sortTaskPoolItems).slice(0, 18);
+          })).sort(sortTaskPoolItems).slice(0, 18);
 
           if (poolTasks.length === 0) {
             taskPool.className = 'space-y-2';
@@ -2359,9 +2400,9 @@
         function renderScheduledTaskList() {
           var list = document.getElementById('scheduled-task-list');
           if (!list) return;
-          var tasks = (AppState.tasks || []).filter(function (t) {
+          var tasks = getFilteredTasks((AppState.tasks || []).filter(function (t) {
             return t.dueAt;
-          }).sort(function (a, b) {
+          })).sort(function (a, b) {
             return new Date(a.dueAt) - new Date(b.dueAt);
           }).slice(0, 10);
 
@@ -2406,9 +2447,9 @@
             var day = date.getDate();
             var isCurrentMonth = date.getMonth() === month;
             var dateKey = getDateKey(date);
-            var dayTasks = AppState.tasks.filter(function (t) {
+            var dayTasks = getFilteredTasks(AppState.tasks.filter(function (t) {
               return t.dueAt && getDateKey(t.dueAt) === dateKey;
-            });
+            }));
 
             var cell = document.createElement('div');
             cell.className = 'calendar-cell scale-in';
@@ -2465,9 +2506,9 @@
             });
             cell.addEventListener('click', function () {
               var dateStr = this.dataset.date;
-              var dayTasks2 = AppState.tasks.filter(function (t) {
+              var dayTasks2 = getFilteredTasks(AppState.tasks.filter(function (t) {
                 return t.dueAt && getDateKey(t.dueAt) === dateStr;
-              });
+              }));
               if (dayTasks2.length > 0) {
                 openTaskDetail(dayTasks2[0]);
                 showToast('已打开当日首个任务详情', 'info');
@@ -2486,12 +2527,13 @@
         function renderWeekView() {
           if (!weekGrid) return;
           weekGrid.innerHTML = '';
+          var selected = ensureCalendarSelectedDate();
           
           if (weekTitle) {
-            weekTitle.textContent = formatWeekRange(calendarState.selectedDate);
+            weekTitle.textContent = formatWeekRange(selected);
           }
           
-          var d = new Date(calendarState.selectedDate);
+          var d = new Date(selected);
           var day = d.getDay();
           var monday = new Date(d);
           monday.setDate(monday.getDate() - ((day + 6) % 7));
@@ -2500,9 +2542,9 @@
             var date = new Date(monday);
             date.setDate(monday.getDate() + i);
             var dateKey = getDateKey(date);
-            var dayTasks = AppState.tasks.filter(function (t) {
+            var dayTasks = getFilteredTasks(AppState.tasks.filter(function (t) {
               return t.dueAt && getDateKey(t.dueAt) === dateKey;
-            });
+            }));
             
             var cell = document.createElement('div');
             cell.className = 'glass-card rounded-2xl p-3 text-center card-hover scale-in';
@@ -2534,15 +2576,16 @@
         function renderDayView() {
           if (!dayGrid) return;
           dayGrid.innerHTML = '';
+          var selected = ensureCalendarSelectedDate();
           
           if (dayTitle) {
-            dayTitle.textContent = formatDayTitle(calendarState.selectedDate);
+            dayTitle.textContent = formatDayTitle(selected);
           }
           
-          var dateKey = getDateKey(calendarState.selectedDate);
-          var dayTasks = AppState.tasks.filter(function (t) {
+          var dateKey = getDateKey(selected);
+          var dayTasks = getFilteredTasks(AppState.tasks.filter(function (t) {
             return t.dueAt && getDateKey(t.dueAt) === dateKey;
-          });
+          }));
           
           var timeLabels = document.createElement('div');
           timeLabels.className = 'col-span-2 space-y-4';
@@ -2590,6 +2633,10 @@
 
         function switchToView(view) {
           calendarState.view = view;
+          if (viewSwitchTimer) {
+            clearTimeout(viewSwitchTimer);
+            viewSwitchTimer = null;
+          }
           document.querySelectorAll('.view-btn').forEach(function (b) {
             b.classList.remove('active', 'btn-primary');
             b.classList.add('btn-glass');
@@ -2602,19 +2649,21 @@
           var currentView = null;
           document.querySelectorAll('.calendar-view').forEach(function (v) {
             if (!v.classList.contains('hidden')) currentView = v;
+            v.classList.remove('calendar-view-leave');
           });
           var viewEl = document.getElementById(view + '-view');
           if (viewEl && currentView && currentView !== viewEl) {
             currentView.classList.remove('calendar-view-enter');
             currentView.classList.add('calendar-view-leave');
-            setTimeout(function () {
+            viewSwitchTimer = setTimeout(function () {
               currentView.classList.remove('calendar-view-leave');
               currentView.classList.add('hidden');
               viewEl.classList.remove('hidden');
               viewEl.classList.remove('calendar-view-leave');
               viewEl.classList.add('calendar-view-enter');
-              setTimeout(function () {
+              viewSwitchTimer = setTimeout(function () {
                 viewEl.classList.remove('calendar-view-enter');
+                viewSwitchTimer = null;
               }, 340);
             }, 160);
           } else if (viewEl) {
@@ -2640,6 +2689,21 @@
             switchToView(btn.dataset.view);
           });
         });
+
+        categoryChips.forEach(function (chip) {
+          chip.addEventListener('click', function () {
+            activeCategory = chip.getAttribute('data-category') || 'all';
+            renderCategoryChips();
+            renderTaskPool();
+            renderScheduledTaskList();
+            renderMonthGrid();
+            renderWeekView();
+            renderDayView();
+            var label = chip.querySelector('.category-chip-label');
+            showToast('已筛选：' + (label ? label.textContent : '全部'), 'info');
+          });
+        });
+        renderCategoryChips();
 
         renderTaskPool();
 
@@ -2687,14 +2751,18 @@
         var weekNextBtn = document.getElementById('week-next-btn');
         if (weekPrevBtn) {
           weekPrevBtn.addEventListener('click', function () {
-            calendarState.selectedDate.setDate(calendarState.selectedDate.getDate() - 7);
+            var d = ensureCalendarSelectedDate();
+            d = new Date(d.getFullYear(), d.getMonth(), d.getDate() - 7);
+            calendarState.selectedDate = d;
             renderWeekView();
             showToast('已切换到上一周', 'info');
           });
         }
         if (weekNextBtn) {
           weekNextBtn.addEventListener('click', function () {
-            calendarState.selectedDate.setDate(calendarState.selectedDate.getDate() + 7);
+            var d = ensureCalendarSelectedDate();
+            d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 7);
+            calendarState.selectedDate = d;
             renderWeekView();
             showToast('已切换到下一周', 'info');
           });
@@ -2704,14 +2772,18 @@
         var dayNextBtn = document.getElementById('day-next-btn');
         if (dayPrevBtn) {
           dayPrevBtn.addEventListener('click', function () {
-            calendarState.selectedDate.setDate(calendarState.selectedDate.getDate() - 1);
+            var d = ensureCalendarSelectedDate();
+            d = new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1);
+            calendarState.selectedDate = d;
             renderDayView();
             showToast('已切换到上一天', 'info');
           });
         }
         if (dayNextBtn) {
           dayNextBtn.addEventListener('click', function () {
-            calendarState.selectedDate.setDate(calendarState.selectedDate.getDate() + 1);
+            var d = ensureCalendarSelectedDate();
+            d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
+            calendarState.selectedDate = d;
             renderDayView();
             showToast('已切换到下一天', 'info');
           });

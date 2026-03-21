@@ -3,8 +3,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>轻悦待办 - 注册</title>
-    <script src="https://res.gemcoder.com/js/reload.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
     <script>
       tailwind.config = {
@@ -335,6 +334,64 @@
       document.addEventListener('DOMContentLoaded', function () {
         AppState.init();
 
+        function isMobileNumber(v) {
+          return /^1\d{10}$/.test(String(v || '').trim());
+        }
+
+        function asBackendEmail(v) {
+          var raw = String(v || '').trim();
+          if (isMobileNumber(raw)) return raw + '@mobile.local';
+          return raw;
+        }
+
+        function randomMobile() {
+          var prefix = ['130','131','132','133','135','136','137','138','139','150','151','152','155','156','157','158','159','166','171','172','173','175','176','177','178','180','181','182','183','184','185','186','187','188','189','198','199'];
+          var p = prefix[Math.floor(Math.random() * prefix.length)] || '138';
+          var n = String(Math.floor(Math.random() * 100000000)).padStart(8, '0');
+          return p + n;
+        }
+
+        function randomPassword() {
+          return 'Qy_' + Date.now().toString(36) + '_A1!';
+        }
+
+        function socialRegisterAndLogin() {
+          var phone = randomMobile();
+          var email = phone + '@mobile.local';
+          var password = randomPassword();
+          var nickname = '用户' + phone.slice(-4);
+
+          function doLogin() {
+            return apiRequest('/api/auth/login', {
+              method: 'POST',
+              timeoutMs: 8000,
+              body: JSON.stringify({ email: email, password: password })
+            });
+          }
+
+          return apiRequest('/api/auth/register', {
+            method: 'POST',
+            timeoutMs: 8000,
+            body: JSON.stringify({ nickname: nickname, email: email, phone: phone, password: password })
+          }).then(function () {
+            return doLogin();
+          }).catch(function () {
+            return doLogin();
+          });
+        }
+
+        function authErrorMessage(resp, fallback) {
+          var status = resp && resp.status;
+          var msg = (resp && resp.body && resp.body.message) || '';
+          if (status === 504 || /timeout/i.test(msg)) {
+            return '服务响应超时，请重试（已自动切换备用线路）';
+          }
+          if (status >= 500) {
+            return '服务暂时不可用，请稍后再试';
+          }
+          return msg || fallback;
+        }
+
         var registerPassword = document.getElementById('register-password');
         var toggleRegisterPassword = document.getElementById('toggle-register-password');
         var passwordStrength = document.getElementById('password-strength');
@@ -386,12 +443,13 @@
           }
 
           var payload = {
-            nickname: account.includes('@') ? account.split('@')[0] : account,
-            email: account.includes('@') ? account : account,
+            nickname: account.includes('@') ? account.split('@')[0] : ('用户' + account.slice(-4)),
+            email: asBackendEmail(account),
+            phone: isMobileNumber(account) ? account : '',
             password: password
           };
 
-          apiRequest('/api/auth/register', { method: 'POST', body: JSON.stringify(payload) })
+          apiRequest('/api/auth/register', { method: 'POST', timeoutMs: 8000, body: JSON.stringify(payload) })
             .then(function (resp) {
               if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
                 var token = resp.body.data && resp.body.data.token;
@@ -402,31 +460,29 @@
                   return;
                 }
               }
-              var msg = (resp && resp.body && resp.body.message) || '注册失败';
+              var msg = authErrorMessage(resp, '注册失败');
               showToast(msg);
             }).catch(function (err) {
               console.error('register error', err);
-              showToast('网络错误，无法注册');
+              showToast('网络错误，无法注册，请稍后重试');
             });
         });
 
         document.querySelectorAll('.btn-social').forEach(function (button) {
           button.addEventListener('click', function () {
-            showToast('当前为演示模式，模拟注册成功');
-            AppState.user = {
-              id: generateId('u'),
-              name: '社交注册用户',
-              email: 'social@qingyue.com',
-              phone: '13800000002',
-              level: 1,
-              exp: 20,
-              avatar: 'https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png'
-            };
-            AppState.save && AppState.save();
-            try { localStorage.setItem('token', 'dev-' + Date.now()); localStorage.setItem('devSkipAuth', '1'); } catch (e) {}
-            setTimeout(function () {
-              safeNavigate('待办页面.html');
-            }, 500);
+            showToast('扫码注册中...');
+            socialRegisterAndLogin().then(function (resp) {
+              if (resp && resp.status === 200 && resp.body && resp.body.code === 200 && resp.body.data && resp.body.data.token) {
+                localStorage.setItem('token', resp.body.data.token);
+                try { localStorage.removeItem('devSkipAuth'); } catch (e) {}
+                showToast('扫码注册成功，已自动登录');
+                setTimeout(function () { safeNavigate('待办页面.html'); }, 400);
+                return;
+              }
+              showToast(authErrorMessage(resp, '扫码注册失败'));
+            }).catch(function () {
+              showToast('扫码注册失败，请稍后重试');
+            });
           });
         });
       });

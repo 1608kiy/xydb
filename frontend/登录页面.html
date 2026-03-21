@@ -3,8 +3,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>轻悦待办 - 登录</title>
-    <script src="https://res.gemcoder.com/js/reload.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.tailwindcss.com"></script>
     <link
       href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
@@ -438,6 +437,69 @@
 
         AppState.init();
 
+        function isMobileNumber(v) {
+          return /^1\d{10}$/.test(String(v || '').trim());
+        }
+
+        function normalizeLoginIdentifier(v) {
+          var raw = String(v || '').trim();
+          if (isMobileNumber(raw)) return raw + '@mobile.local';
+          return raw;
+        }
+
+        function randomMobile() {
+          var prefix = ['130','131','132','133','135','136','137','138','139','150','151','152','155','156','157','158','159','166','171','172','173','175','176','177','178','180','181','182','183','184','185','186','187','188','189','198','199'];
+          var p = prefix[Math.floor(Math.random() * prefix.length)] || '138';
+          var n = String(Math.floor(Math.random() * 100000000)).padStart(8, '0');
+          return p + n;
+        }
+
+        function randomPassword() {
+          return 'Qy_' + Date.now().toString(36) + '_A1!';
+        }
+
+        function backendRegisterAndLoginByPhone(phone) {
+          var email = phone + '@mobile.local';
+          var password = randomPassword();
+          var nickname = '用户' + phone.slice(-4);
+          var registerPayload = {
+            nickname: nickname,
+            email: email,
+            phone: phone,
+            password: password
+          };
+
+          function doLogin() {
+            return apiRequest('/api/auth/login', {
+              method: 'POST',
+              timeoutMs: 8000,
+              body: JSON.stringify({ email: email, password: password })
+            });
+          }
+
+          return apiRequest('/api/auth/register', {
+            method: 'POST',
+            timeoutMs: 8000,
+            body: JSON.stringify(registerPayload)
+          }).then(function () {
+            return doLogin();
+          }).catch(function () {
+            return doLogin();
+          });
+        }
+
+        function authErrorMessage(resp, fallback) {
+          var status = resp && resp.status;
+          var msg = (resp && resp.body && resp.body.message) || '';
+          if (status === 504 || /timeout/i.test(msg)) {
+            return '服务响应超时，请重试（已自动切换备用线路）';
+          }
+          if (status >= 500) {
+            return '服务暂时不可用，请稍后再试';
+          }
+          return msg || fallback;
+        }
+
         var heroThemeIcon = document.getElementById('hero-theme-icon');
         var syncHeroThemeIcon = function () {
           if (!heroThemeIcon || !document.body) return;
@@ -477,47 +539,48 @@
           }
 
           // 组装请求体：后端要求 email 字段
+          var normalizedAccount = normalizeLoginIdentifier(account);
           var payload = {
-            email: account.includes('@') ? account : account,
+            email: normalizedAccount,
             password: password
           };
 
-          apiRequest('/api/auth/login', { method: 'POST', body: JSON.stringify(payload) })
+          apiRequest('/api/auth/login', { method: 'POST', timeoutMs: 8000, body: JSON.stringify(payload) })
             .then(function (resp) {
               if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
                 var token = resp.body.data && resp.body.data.token;
                 if (token) {
                   localStorage.setItem('token', token);
+                  try { localStorage.removeItem('devSkipAuth'); } catch (e) {}
                   showToast('登录成功，正在跳转...');
                   setTimeout(function () { safeNavigate('待办页面.html'); }, 400);
                   return;
                 }
               }
-              var msg = (resp && resp.body && resp.body.message) || '登录失败，请检查账号密码';
+              var msg = authErrorMessage(resp, '登录失败，请检查账号密码');
               showToast(msg);
             }).catch(function (err) {
               console.error('login error', err);
-              showToast('网络错误，无法登录');
+              showToast('网络错误，无法登录，请稍后重试');
             });
         });
 
         document.querySelectorAll('.btn-social').forEach(function (button) {
           button.addEventListener('click', function () {
-            showToast('当前为演示模式，模拟登录成功');
-            AppState.user = {
-              id: 'u_' + Date.now(),
-              name: '社交用户',
-              email: 'social@qingyue.com',
-              phone: '13800000001',
-              level: 2,
-              exp: 120,
-              avatar: 'https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png'
-            };
-            AppState.save && AppState.save();
-            try { localStorage.setItem('token', 'dev-' + Date.now()); localStorage.setItem('devSkipAuth', '1'); } catch (e) {}
-            setTimeout(function () {
-              safeNavigate('待办页面.html');
-            }, 500);
+            var phone = randomMobile();
+            showToast('扫码登录中...');
+            backendRegisterAndLoginByPhone(phone).then(function (resp) {
+              if (resp && resp.status === 200 && resp.body && resp.body.code === 200 && resp.body.data && resp.body.data.token) {
+                localStorage.setItem('token', resp.body.data.token);
+                try { localStorage.removeItem('devSkipAuth'); } catch (e) {}
+                showToast('扫码登录成功，已自动创建账号');
+                setTimeout(function () { safeNavigate('待办页面.html'); }, 400);
+                return;
+              }
+              showToast((resp && resp.body && resp.body.message) || '扫码登录失败');
+            }).catch(function () {
+              showToast('扫码登录失败，请稍后重试');
+            });
           });
         });
 
@@ -576,6 +639,7 @@
 
             apiRequest('/api/auth/forgot-password', {
               method: 'POST',
+              timeoutMs: 8000,
               body: JSON.stringify({ email: email, newPassword: newPassword })
             }).then(function (resp) {
               if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
@@ -586,7 +650,7 @@
                 if (accountInput) accountInput.value = email;
                 if (passwordInput) passwordInput.value = newPassword;
               } else {
-                var msg = (resp && resp.body && resp.body.message) || '找回密码失败';
+                var msg = authErrorMessage(resp, '找回密码失败');
                 showToast(msg);
               }
             }).catch(function (err) {

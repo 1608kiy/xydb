@@ -3,8 +3,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>个人中心 - 轻悦待办</title>
-    <script src="https://res.gemcoder.com/js/reload.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.tailwindcss.com"></script>
     <script src="data.js"></script>
     <script src="common.js"></script>
     <script src="components.js"></script>
@@ -432,7 +431,7 @@
                 alt="用户头像"
                 class="w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300"
               />
-              <span class="hidden md:inline-block font-medium">张明</span>
+              <span class="hidden md:inline-block font-medium header-user-name">张明</span>
               <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform duration-300"></i>
             </button>
             <div
@@ -1583,10 +1582,19 @@
           dangerConfirmModal.setAttribute('aria-hidden', 'false');
         }
 
-        if (profileAvatar) profileAvatar.src = AppState.user?.avatar || profileAvatar.src;
-        if (userName) userName.value = AppState.user?.name || '轻悦用户';
-        if (userEmail) userEmail.textContent = AppState.user?.email || 'demo@qingyue.com';
-        if (userPhone) userPhone.textContent = maskPhoneNumber(AppState.user?.phone || '13800000000');
+        function syncProfileIdentityUi() {
+          var displayName = (AppState.user && AppState.user.name) || '轻悦用户';
+          var displayEmail = (AppState.user && AppState.user.email) || 'demo@qingyue.com';
+          var displayPhone = (AppState.user && AppState.user.phone) || '13800000000';
+          if (profileAvatar) profileAvatar.src = (AppState.user && AppState.user.avatar) || profileAvatar.src;
+          if (userName) userName.value = displayName;
+          if (userEmail) userEmail.textContent = displayEmail;
+          if (userPhone) userPhone.textContent = maskPhoneNumber(displayPhone);
+          var headerUserName = document.querySelector('.header-user-name');
+          if (headerUserName) headerUserName.textContent = displayName;
+        }
+
+        syncProfileIdentityUi();
 
         // 从后端拉取当前用户信息（若已登录）并覆盖本地展示
         apiRequest('/api/me').then(function(res) {
@@ -1600,10 +1608,7 @@
             AppState.user.avatar = u.avatarUrl || AppState.user.avatar;
             AppState.save && AppState.save();
 
-            if (profileAvatar) profileAvatar.src = AppState.user.avatar || profileAvatar.src;
-            if (userName) userName.value = AppState.user.name || userName.value;
-            if (userEmail) userEmail.textContent = AppState.user.email || userEmail.textContent;
-            if (userPhone) userPhone.textContent = maskPhoneNumber(AppState.user.phone || userPhone.textContent);
+            syncProfileIdentityUi();
           }
         }).catch(function(){ /* ignore */ });
 
@@ -1724,8 +1729,7 @@
               .then(function(res) {
                 if (res && res.status === 200) {
                   showToast('昵称已保存');
-                  var headerUserName = document.querySelector('.header-user-name');
-                  if (headerUserName) headerUserName.textContent = newName;
+                  syncProfileIdentityUi();
                 } else {
                   showToast('昵称保存失败', 'error');
                 }
