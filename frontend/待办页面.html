@@ -1214,6 +1214,7 @@
     var selectedBatchTasks = [];
     var currentMainFilter = 'all';
     var currentTagFilter = null;
+    var currentSearchKeyword = '';
     var currentSortMode = 'time';
     var pendingCreateQueue = [];
     var syncingPendingCreates = false;
@@ -1558,9 +1559,36 @@
       return String(task.tag || '') === String(currentTagFilter);
     }
 
+    function normalizeSearchText(value) {
+      return String(value || '').trim().toLowerCase();
+    }
+
+    function matchSearchFilter(task) {
+      var keyword = normalizeSearchText(currentSearchKeyword);
+      if (!keyword) return true;
+
+      var sourceParts = [
+        task && task.title,
+        task && task.description,
+        task && task.time,
+        task && task.priority,
+        task && task.tag,
+        getTagName(task && task.tag)
+      ];
+
+      if (task && Array.isArray(task.subtasks) && task.subtasks.length > 0) {
+        sourceParts.push(task.subtasks.map(function (s) {
+          return (s && (s.title || s.text)) || '';
+        }).join(' '));
+      }
+
+      var haystack = normalizeSearchText(sourceParts.join(' '));
+      return haystack.indexOf(keyword) > -1;
+    }
+
     function getFilteredTasks(list, isToday) {
       return (list || []).filter(function (task) {
-        return matchMainFilter(task, isToday) && matchTagFilter(task);
+        return matchMainFilter(task, isToday) && matchTagFilter(task) && matchSearchFilter(task);
       });
     }
 
@@ -2504,13 +2532,26 @@
       var searchInput = document.getElementById('search-input');
       var clearSearch = document.getElementById('clear-search');
       if (searchInput && clearSearch) {
+        currentSearchKeyword = searchInput.value || '';
         searchInput.addEventListener('input', function () {
           clearSearch.style.opacity = this.value ? '1' : '0';
+          currentSearchKeyword = this.value || '';
+          renderTaskLists();
         });
         clearSearch.addEventListener('click', function () {
           searchInput.value = '';
           clearSearch.style.opacity = '0';
+          currentSearchKeyword = '';
+          renderTaskLists();
           searchInput.focus();
+        });
+        searchInput.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && this.value) {
+            this.value = '';
+            clearSearch.style.opacity = '0';
+            currentSearchKeyword = '';
+            renderTaskLists();
+          }
         });
       }
 
