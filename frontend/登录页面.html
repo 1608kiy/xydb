@@ -211,7 +211,7 @@
         <div class="absolute inset-0 glass-strong rounded-3xl -z-10"></div>
         
         <!-- 太阳图标 - 保留弹跳动画 -->
-        <div class="text-6xl mb-6 icon-bounce">☀️</div>
+        <div id="hero-theme-icon" class="text-6xl mb-6 icon-bounce">☀️</div>
         
         <!-- 标题 - 取消渐变动画，使用纯色 -->
         <h1 class="text-[clamp(2rem,4vw,3.5rem)] font-bold mb-4 tracking-tight text-white">轻悦待办</h1>
@@ -301,7 +301,7 @@
                   <div class="w-full border-t border-gray-200"></div>
                 </div>
                 <div class="relative flex justify-center">
-                  <span class="px-4 bg-white/80 backdrop-blur-sm text-gray-400 text-sm rounded-full">其他登录方式</span>
+                  <span class="auth-alt-divider px-4 bg-white/95 backdrop-blur-sm text-gray-600 text-sm font-medium rounded-full border border-gray-200/80">其他登录方式</span>
                 </div>
               </div>
               
@@ -327,7 +327,7 @@
               
               <!-- 注册链接 -->
               <div class="text-center mt-6 pt-6 border-t border-gray-100">
-                <p class="text-sm text-gray-600">
+                <p class="auth-switch-note text-sm text-gray-700">
                   还没有账号？
                   <a href="注册页面.html" class="text-primary font-semibold hover:text-primary/70 transition-colors duration-300 inline-block hover:scale-105 transform">立即注册</a>
                 </p>
@@ -393,6 +393,17 @@
         }
 
         AppState.init();
+
+        var heroThemeIcon = document.getElementById('hero-theme-icon');
+        var syncHeroThemeIcon = function () {
+          if (!heroThemeIcon || !document.body) return;
+          heroThemeIcon.textContent = document.body.classList.contains('theme-night') ? '🌙' : '☀️';
+        };
+        syncHeroThemeIcon();
+        if (document.body && typeof MutationObserver !== 'undefined') {
+          var bodyClassObserver = new MutationObserver(syncHeroThemeIcon);
+          bodyClassObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        }
 
         var loginPassword = document.getElementById('login-password');
         var togglePassword = document.getElementById('toggle-password');

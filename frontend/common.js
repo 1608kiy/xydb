@@ -215,6 +215,751 @@ function isMobile() {
   return window.innerWidth < 768;
 }
 
+function getUnifiedPageKeyFromPath() {
+  var path = '';
+  try { path = decodeURIComponent((window.location && window.location.pathname) || ''); } catch (e) { path = (window.location && window.location.pathname) || ''; }
+  if (path.indexOf('待办页面') !== -1) return 'todo';
+  if (path.indexOf('日历页面') !== -1) return 'calendar';
+  if (path.indexOf('番茄钟页面') !== -1) return 'pomodoro';
+  if (path.indexOf('数据周报页面') !== -1) return 'report';
+  if (path.indexOf('打卡页面') !== -1) return 'checkin';
+  if (path.indexOf('个人中心页面') !== -1) return 'profile';
+  return '';
+}
+
+function shouldEnableUnifiedDarkMode(pageKey) {
+  return pageKey === 'todo' ||
+    pageKey === 'calendar' ||
+    pageKey === 'pomodoro' ||
+    pageKey === 'report' ||
+    pageKey === 'checkin' ||
+    pageKey === 'profile';
+}
+
+var UNIFIED_DARK_PAGE_CLASS_LIST = [
+  'unified-page-todo',
+  'unified-page-calendar',
+  'unified-page-pomodoro',
+  'unified-page-report',
+  'unified-page-checkin',
+  'unified-page-profile'
+];
+
+function applyUnifiedDarkModeClassByTheme(themeMode) {
+  var root = document.documentElement;
+  if (!root) return;
+
+  var pageKey = getUnifiedPageKeyFromPath();
+  var canUseUnifiedDark = shouldEnableUnifiedDarkMode(pageKey);
+
+  UNIFIED_DARK_PAGE_CLASS_LIST.forEach(function (cls) {
+    root.classList.remove(cls);
+  });
+
+  if (!canUseUnifiedDark) {
+    root.classList.remove('unified-dark-mode');
+    return;
+  }
+
+  root.classList.add('unified-page-' + pageKey);
+  if (themeMode === 'night') {
+    root.classList.add('unified-dark-mode');
+  } else {
+    root.classList.remove('unified-dark-mode');
+  }
+}
+
+function ensureUnifiedDarkThemeStyle() {
+  if (document.getElementById('unified-dark-theme-style')) return;
+  var style = document.createElement('style');
+  style.id = 'unified-dark-theme-style';
+  style.textContent = `
+  html.unified-dark-mode {
+    --ud-bg-start: #121826;
+    --ud-bg-end: #1A2130;
+    --ud-surface-rgb: 35, 43, 59;
+    --ud-surface: rgba(35, 43, 59, 0.8);
+    --ud-surface-soft: rgba(26, 33, 48, 0.78);
+    --ud-border: #2D3748;
+    --ud-title: #F0F2F5;
+    --ud-text: #B0B7C3;
+    --ud-muted: #717A8A;
+    --ud-accent: #4A6CF7;
+    --ud-work: #4A6CF7;
+    --ud-study: #8B5CF6;
+    --ud-life: #EC4899;
+    --ud-health: #10B981;
+    --ud-success: #10B981;
+    --ud-warning: #F59E0B;
+    --ud-danger: #EF4444;
+  }
+  html.unified-dark-mode body {
+    background: linear-gradient(135deg, var(--ud-bg-start) 0%, var(--ud-bg-end) 100%) !important;
+    color: var(--ud-text) !important;
+  }
+  html.unified-dark-mode .bg-orb {
+    opacity: 0.08 !important;
+    filter: blur(120px) saturate(80%) !important;
+  }
+  html.unified-dark-mode .glass,
+  html.unified-dark-mode .glass-strong,
+  html.unified-dark-mode .glass-max,
+  html.unified-dark-mode .glass-card,
+  html.unified-dark-mode .modal-content,
+  html.unified-dark-mode .confirm-modal-card,
+  html.unified-dark-mode .task-card,
+  html.unified-dark-mode .stat-card,
+  html.unified-dark-mode .chart-container,
+  html.unified-dark-mode .suggestion-card,
+  html.unified-dark-mode .tip-item,
+  html.unified-dark-mode .stat-row,
+  html.unified-dark-mode .achievement-row,
+  html.unified-dark-mode .user-card,
+  html.unified-dark-mode .setting-item,
+  html.unified-dark-mode .task-pool-item,
+  html.unified-dark-mode .stat-box,
+  html.unified-dark-mode .time-slot-card,
+  html.unified-dark-mode .social-icon,
+  html.unified-dark-mode .calendar-container,
+  html.unified-dark-mode .detail-datetime-panel {
+    background: var(--ud-surface) !important;
+    border-color: var(--ud-border) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  }
+  html.unified-dark-mode .glass-header,
+  html.unified-dark-mode .glass-tab,
+  html.unified-dark-mode .unified-top-header-dock .unified-top-header-shell,
+  html.unified-dark-mode .unified-bottom-tab-dock .unified-tab-row {
+    background: rgba(var(--ud-surface-rgb), 0.8) !important;
+    border-color: var(--ud-border) !important;
+    backdrop-filter: blur(20px) saturate(130%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(130%) !important;
+  }
+  html.unified-dark-mode .unified-bottom-tab-dock .unified-tab-row::before,
+  html.unified-dark-mode .unified-bottom-tab-dock .unified-tab-row::after {
+    opacity: 0.5 !important;
+  }
+  html.unified-dark-mode .unified-bottom-tab-dock .unified-tab-item {
+    color: var(--ud-text) !important;
+  }
+  html.unified-dark-mode .unified-bottom-tab-dock .unified-tab-item.active {
+    color: var(--ud-title) !important;
+    background: rgba(74, 108, 247, 0.18) !important;
+  }
+  html.unified-dark-mode .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon {
+    color: var(--ud-title) !important;
+    background: rgba(74, 108, 247, 0.28) !important;
+    box-shadow: 0 6px 14px rgba(74, 108, 247, 0.28) !important;
+  }
+  html.unified-dark-mode .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-label {
+    color: var(--ud-title) !important;
+    text-shadow: 0 0 8px rgba(74, 108, 247, 0.38);
+  }
+  html.unified-dark-mode .text-gray-900,
+  html.unified-dark-mode .text-gray-800,
+  html.unified-dark-mode .text-slate-900,
+  html.unified-dark-mode .text-slate-800,
+  html.unified-dark-mode .text-dark {
+    color: var(--ud-title) !important;
+  }
+  html.unified-dark-mode .text-gray-700,
+  html.unified-dark-mode .text-gray-600,
+  html.unified-dark-mode .text-slate-700,
+  html.unified-dark-mode .text-slate-600 {
+    color: var(--ud-text) !important;
+  }
+  html.unified-dark-mode .text-gray-500,
+  html.unified-dark-mode .text-gray-400,
+  html.unified-dark-mode .text-slate-500,
+  html.unified-dark-mode .text-slate-400 {
+    color: var(--ud-muted) !important;
+  }
+  html.unified-dark-mode .text-primary { color: var(--ud-accent) !important; }
+  html.unified-dark-mode .text-success { color: var(--ud-success) !important; }
+  html.unified-dark-mode .text-warning { color: var(--ud-warning) !important; }
+  html.unified-dark-mode .text-danger { color: var(--ud-danger) !important; }
+
+  html.unified-dark-mode .border-gray-100,
+  html.unified-dark-mode .border-gray-200,
+  html.unified-dark-mode .border-gray-300,
+  html.unified-dark-mode .border-gray-400,
+  html.unified-dark-mode .border-white,
+  html.unified-dark-mode .border-white\\/40,
+  html.unified-dark-mode .border-white\\/50,
+  html.unified-dark-mode .border-white\\/55,
+  html.unified-dark-mode .border-white\\/60,
+  html.unified-dark-mode .border-white\\/70 {
+    border-color: var(--ud-border) !important;
+  }
+  html.unified-dark-mode .bg-white,
+  html.unified-dark-mode .bg-white\\/50,
+  html.unified-dark-mode .bg-white\\/55,
+  html.unified-dark-mode .bg-white\\/60,
+  html.unified-dark-mode .bg-white\\/65,
+  html.unified-dark-mode .bg-white\\/70,
+  html.unified-dark-mode .bg-white\\/75,
+  html.unified-dark-mode .bg-white\\/80,
+  html.unified-dark-mode .bg-white\\/85,
+  html.unified-dark-mode .bg-white\\/90,
+  html.unified-dark-mode .bg-white\\/95,
+  html.unified-dark-mode .bg-gray-50,
+  html.unified-dark-mode .bg-gray-50\\/50,
+  html.unified-dark-mode .bg-gray-50\\/60,
+  html.unified-dark-mode .bg-gray-50\\/70,
+  html.unified-dark-mode .bg-gray-50\\/80,
+  html.unified-dark-mode .bg-gray-100,
+  html.unified-dark-mode .bg-gray-100\\/50,
+  html.unified-dark-mode .bg-gray-100\\/60,
+  html.unified-dark-mode .bg-gray-100\\/70,
+  html.unified-dark-mode .bg-gray-100\\/80 {
+    background: rgba(var(--ud-surface-rgb), 0.72) !important;
+  }
+  html.unified-dark-mode .bg-blue-100 { background: rgba(74, 108, 247, 0.2) !important; }
+  html.unified-dark-mode .bg-amber-100 { background: rgba(245, 158, 11, 0.22) !important; }
+  html.unified-dark-mode .bg-emerald-100 { background: rgba(16, 185, 129, 0.2) !important; }
+  html.unified-dark-mode .text-blue-700 { color: #AFC3FF !important; }
+  html.unified-dark-mode .text-amber-700 { color: #FCD34D !important; }
+  html.unified-dark-mode .text-emerald-700 { color: #86EFAC !important; }
+
+  html.unified-dark-mode input,
+  html.unified-dark-mode textarea,
+  html.unified-dark-mode select,
+  html.unified-dark-mode .glass-input,
+  html.unified-dark-mode .input-glass,
+  html.unified-dark-mode .modal-input,
+  html.unified-dark-mode .custom-select-trigger,
+  html.unified-dark-mode .custom-select-dropdown,
+  html.unified-dark-mode .custom-select-option,
+  html.unified-dark-mode .datetime-select-trigger,
+  html.unified-dark-mode .datetime-select-menu,
+  html.unified-dark-mode .task-select-dropdown {
+    background: var(--ud-surface-soft) !important;
+    color: var(--ud-title) !important;
+    border-color: var(--ud-border) !important;
+  }
+  html.unified-dark-mode input::placeholder,
+  html.unified-dark-mode textarea::placeholder {
+    color: var(--ud-muted) !important;
+  }
+  html.unified-dark-mode input:focus,
+  html.unified-dark-mode textarea:focus,
+  html.unified-dark-mode select:focus,
+  html.unified-dark-mode .glass-input:focus,
+  html.unified-dark-mode .input-glass:focus,
+  html.unified-dark-mode .datetime-select-trigger:hover {
+    border-color: rgba(74, 108, 247, 0.58) !important;
+    box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.16) !important;
+  }
+  html.unified-dark-mode .btn-primary,
+  html.unified-dark-mode .btn-primary-glass,
+  html.unified-dark-mode .checkin-btn,
+  html.unified-dark-mode .view-btn.active,
+  html.unified-dark-mode .mode-btn.active,
+  html.unified-dark-mode .priority-btn.active,
+  html.unified-dark-mode .tab-item.active {
+    background: var(--ud-accent) !important;
+    border-color: rgba(74, 108, 247, 0.85) !important;
+    color: var(--ud-title) !important;
+    box-shadow: 0 8px 20px rgba(74, 108, 247, 0.24) !important;
+  }
+  html.unified-dark-mode .btn-glass,
+  html.unified-dark-mode .btn-secondary-glass,
+  html.unified-dark-mode .mode-btn:not(.active),
+  html.unified-dark-mode .priority-btn,
+  html.unified-dark-mode .modal-priority-btn,
+  html.unified-dark-mode .datetime-quick-btn,
+  html.unified-dark-mode .datetime-calendar-action,
+  html.unified-dark-mode .datetime-calendar-nav,
+  html.unified-dark-mode .datetime-time-pill,
+  html.unified-dark-mode .calendar-nav-btn {
+    background: rgba(45, 55, 72, 0.78) !important;
+    color: var(--ud-text) !important;
+    border-color: var(--ud-border) !important;
+  }
+  html.unified-dark-mode button:hover,
+  html.unified-dark-mode .btn-primary:hover,
+  html.unified-dark-mode .btn-primary-glass:hover,
+  html.unified-dark-mode .checkin-btn:hover,
+  html.unified-dark-mode .tab-item:hover {
+    filter: brightness(1.1) !important;
+  }
+  html.unified-dark-mode .btn-primary:hover,
+  html.unified-dark-mode .btn-primary-glass:hover {
+    border-color: rgba(74, 108, 247, 0.92) !important;
+    box-shadow: 0 10px 24px rgba(74, 108, 247, 0.28) !important;
+  }
+  html.unified-dark-mode .btn-glass:hover,
+  html.unified-dark-mode .view-btn.btn-glass:hover,
+  html.unified-dark-mode .calendar-nav-btn:hover,
+  html.unified-dark-mode .btn-soft:hover,
+  html.unified-dark-mode .btn-soft-danger:hover,
+  html.unified-dark-mode .icon-soft-danger:hover {
+    background: rgba(45, 55, 72, 0.92) !important;
+    border-color: rgba(74, 108, 247, 0.48) !important;
+    color: var(--ud-title) !important;
+    box-shadow: 0 8px 20px rgba(74, 108, 247, 0.18) !important;
+  }
+  html.unified-dark-mode .type-btn:not(.selected) {
+    background: rgba(26, 33, 48, 0.72) !important;
+    border-color: var(--ud-border) !important;
+    color: var(--ud-text) !important;
+  }
+  html.unified-dark-mode .type-btn:not(.selected) i {
+    color: #90A0B8 !important;
+  }
+  html.unified-dark-mode .type-btn:not(.selected):hover {
+    background: rgba(74, 108, 247, 0.14) !important;
+    border-color: rgba(74, 108, 247, 0.46) !important;
+    color: var(--ud-title) !important;
+  }
+  html.unified-dark-mode .type-btn:not(.selected):hover i {
+    color: #CFE0FF !important;
+  }
+  html.unified-dark-mode button:active {
+    filter: brightness(0.95) !important;
+  }
+  html.unified-dark-mode .hover\\:bg-primary\\/5:hover,
+  html.unified-dark-mode .hover\\:bg-primary\\/10:hover,
+  html.unified-dark-mode .hover\\:bg-primary\\/15:hover,
+  html.unified-dark-mode .hover\\:bg-primary\\/20:hover {
+    background-color: rgba(74, 108, 247, 0.18) !important;
+  }
+  html.unified-dark-mode .hover\\:bg-danger\\/5:hover,
+  html.unified-dark-mode .hover\\:bg-danger\\/10:hover {
+    background-color: rgba(239, 68, 68, 0.16) !important;
+  }
+  html.unified-dark-mode .hover\\:bg-gray-50:hover,
+  html.unified-dark-mode .hover\\:bg-gray-100:hover,
+  html.unified-dark-mode .hover\\:bg-white:hover {
+    background-color: rgba(45, 55, 72, 0.82) !important;
+  }
+  html.unified-dark-mode [class*="hover:bg-primary/"]:hover {
+    background-color: rgba(74, 108, 247, 0.18) !important;
+  }
+  html.unified-dark-mode [class*="hover:bg-danger/"]:hover {
+    background-color: rgba(239, 68, 68, 0.16) !important;
+  }
+  html.unified-dark-mode [class*="hover:bg-gray-50"]:hover,
+  html.unified-dark-mode [class*="hover:bg-gray-100"]:hover,
+  html.unified-dark-mode [class*="hover:bg-white"]:hover {
+    background-color: rgba(45, 55, 72, 0.82) !important;
+  }
+  html.unified-dark-mode [class*="hover:border-primary"]:hover {
+    border-color: rgba(74, 108, 247, 0.52) !important;
+  }
+  html.unified-dark-mode [class*="hover:border-gray-"]:hover {
+    border-color: rgba(74, 85, 104, 0.75) !important;
+  }
+  html.unified-dark-mode [class*="hover:text-primary/"]:hover {
+    color: #D9E2FF !important;
+  }
+  html.unified-dark-mode [class*="hover:text-primary"]:hover {
+    color: #D9E2FF !important;
+  }
+  html.unified-dark-mode [class*="hover:text-secondary"]:hover {
+    color: #D9E2FF !important;
+  }
+  html.unified-dark-mode .hover\\:border-primary:hover {
+    border-color: rgba(74, 108, 247, 0.52) !important;
+  }
+  html.unified-dark-mode .hover\\:text-gray-700:hover,
+  html.unified-dark-mode .hover\\:text-gray-800:hover {
+    color: var(--ud-title) !important;
+  }
+  html.unified-dark-mode .btn-social {
+    background: rgba(35, 43, 59, 0.72) !important;
+    border-color: var(--ud-border) !important;
+  }
+  html.unified-dark-mode .btn-social:hover {
+    background: rgba(45, 55, 72, 0.9) !important;
+    border-color: rgba(74, 108, 247, 0.45) !important;
+  }
+  html.unified-dark-mode .btn-social .social-text {
+    color: var(--ud-text) !important;
+  }
+  html.unified-dark-mode .task-detail-section {
+    background: rgba(35, 43, 59, 0.78) !important;
+    border-color: var(--ud-border) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+  }
+  html.unified-dark-mode .task-detail-section .text-gray-700,
+  html.unified-dark-mode .task-detail-section .text-gray-600,
+  html.unified-dark-mode .task-detail-section .text-gray-500 {
+    color: var(--ud-text) !important;
+  }
+  html.unified-dark-mode .detail-datetime-trigger {
+    background: rgba(45, 55, 72, 0.78) !important;
+    border-color: var(--ud-border) !important;
+    color: var(--ud-title) !important;
+  }
+  html.unified-dark-mode .detail-datetime-trigger:hover {
+    background: rgba(45, 55, 72, 0.9) !important;
+    border-color: rgba(74, 108, 247, 0.52) !important;
+    box-shadow: 0 8px 20px rgba(74, 108, 247, 0.2) !important;
+  }
+  html.unified-dark-mode .detail-datetime-trigger i,
+  html.unified-dark-mode .detail-datetime-trigger i:last-child {
+    color: var(--ud-muted) !important;
+  }
+  html.unified-dark-mode .detail-datetime-panel {
+    background: rgba(26, 33, 48, 0.97) !important;
+    border-color: var(--ud-border) !important;
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.32) !important;
+  }
+  html.unified-dark-mode .datetime-select-trigger {
+    background: rgba(45, 55, 72, 0.84) !important;
+    border-color: var(--ud-border) !important;
+    color: var(--ud-title) !important;
+  }
+  html.unified-dark-mode .datetime-select-trigger:hover {
+    background: rgba(45, 55, 72, 0.92) !important;
+    border-color: rgba(74, 108, 247, 0.55) !important;
+    box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.16) !important;
+  }
+  html.unified-dark-mode .datetime-select-trigger i {
+    color: var(--ud-muted) !important;
+  }
+  html.unified-dark-mode .datetime-select-menu {
+    background: rgba(26, 33, 48, 0.98) !important;
+    border-color: var(--ud-border) !important;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35) !important;
+  }
+  html.unified-dark-mode .datetime-select-option {
+    color: var(--ud-text) !important;
+    background: transparent !important;
+  }
+  html.unified-dark-mode .datetime-select-option:hover {
+    background: rgba(74, 108, 247, 0.16) !important;
+    color: var(--ud-title) !important;
+  }
+  html.unified-dark-mode .datetime-select-option.active {
+    background: rgba(74, 108, 247, 0.24) !important;
+    color: #D9E2FF !important;
+  }
+  html.unified-dark-mode .datetime-calendar-weekday {
+    color: var(--ud-muted) !important;
+  }
+  html.unified-dark-mode .datetime-calendar-day {
+    color: var(--ud-text) !important;
+  }
+  html.unified-dark-mode .datetime-calendar-day:hover {
+    border-color: rgba(74, 108, 247, 0.45) !important;
+    background: rgba(74, 108, 247, 0.16) !important;
+    color: var(--ud-title) !important;
+  }
+  html.unified-dark-mode .datetime-calendar-day.today {
+    border-color: rgba(74, 108, 247, 0.65) !important;
+    background: rgba(74, 108, 247, 0.2) !important;
+    color: #D9E2FF !important;
+  }
+  html.unified-dark-mode .datetime-calendar-day.selected {
+    border-color: rgba(74, 108, 247, 0.9) !important;
+    background: rgba(74, 108, 247, 0.28) !important;
+    color: #EDF3FF !important;
+    box-shadow: 0 0 0 1px rgba(74, 108, 247, 0.35) !important;
+  }
+  html.unified-dark-mode .datetime-calendar-actions,
+  html.unified-dark-mode .datetime-time-options {
+    border-top-color: var(--ud-border) !important;
+  }
+  html.unified-dark-mode .datetime-calendar-action,
+  html.unified-dark-mode .datetime-time-pill,
+  html.unified-dark-mode .datetime-quick-btn,
+  html.unified-dark-mode .datetime-calendar-nav {
+    background: rgba(45, 55, 72, 0.84) !important;
+    border-color: var(--ud-border) !important;
+    color: var(--ud-text) !important;
+  }
+  html.unified-dark-mode .datetime-calendar-action:hover,
+  html.unified-dark-mode .datetime-time-pill:hover,
+  html.unified-dark-mode .datetime-quick-btn:hover,
+  html.unified-dark-mode .datetime-calendar-nav:hover {
+    background: rgba(74, 108, 247, 0.16) !important;
+    border-color: rgba(74, 108, 247, 0.52) !important;
+    color: var(--ud-title) !important;
+  }
+  html.unified-dark-mode .datetime-time-field {
+    background: rgba(45, 55, 72, 0.86) !important;
+    border-color: var(--ud-border) !important;
+    color: var(--ud-title) !important;
+  }
+  html.unified-dark-mode .datetime-time-field:focus {
+    border-color: rgba(74, 108, 247, 0.58) !important;
+    box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.16) !important;
+  }
+  html.unified-dark-mode .subtask-item {
+    background: rgba(45, 55, 72, 0.72) !important;
+    border-color: var(--ud-border) !important;
+  }
+  html.unified-dark-mode .subtask-item:hover {
+    background: rgba(45, 55, 72, 0.9) !important;
+    border-color: rgba(74, 108, 247, 0.48) !important;
+    box-shadow: 0 6px 16px rgba(74, 108, 247, 0.18) !important;
+  }
+  html.unified-dark-mode .subtask-action {
+    background: rgba(26, 33, 48, 0.86) !important;
+    border-color: var(--ud-border) !important;
+    color: var(--ud-muted) !important;
+  }
+  html.unified-dark-mode .subtask-action:hover {
+    background: rgba(74, 108, 247, 0.16) !important;
+    border-color: rgba(74, 108, 247, 0.45) !important;
+    color: #D9E2FF !important;
+  }
+  html.unified-dark-mode .subtask-compose {
+    background: rgba(45, 55, 72, 0.82) !important;
+    border-color: var(--ud-border) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+  }
+  html.unified-dark-mode .subtask-compose:focus-within {
+    border-color: rgba(74, 108, 247, 0.56) !important;
+    box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.16) !important;
+  }
+  html.unified-dark-mode .subtask-compose-input {
+    color: var(--ud-title) !important;
+  }
+  html.unified-dark-mode .subtask-compose-input::placeholder {
+    color: var(--ud-muted) !important;
+  }
+  html.unified-dark-mode .subtask-compose-btn {
+    background: var(--ud-accent) !important;
+    box-shadow: 0 8px 18px rgba(74, 108, 247, 0.24) !important;
+  }
+  html.unified-dark-mode .subtask-compose-btn:hover {
+    box-shadow: 0 12px 24px rgba(74, 108, 247, 0.32) !important;
+  }
+  html.unified-dark-mode .btn-soft-danger {
+    background: rgba(239, 68, 68, 0.14) !important;
+    border-color: rgba(239, 68, 68, 0.36) !important;
+    color: #FEB2B2 !important;
+    box-shadow: none !important;
+  }
+  html.unified-dark-mode .btn-soft-danger:hover {
+    background: rgba(239, 68, 68, 0.2) !important;
+    border-color: rgba(239, 68, 68, 0.5) !important;
+    color: #FECACA !important;
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.2) !important;
+  }
+  html.unified-dark-mode .glow-effect::before {
+    background: linear-gradient(45deg, rgba(74, 108, 247, 0.42), rgba(74, 108, 247, 0.2), rgba(74, 108, 247, 0.42)) !important;
+  }
+  html.unified-dark-mode .glow-effect:hover::before {
+    opacity: 0.72 !important;
+  }
+  html.unified-dark-mode .btn-primary.glow-effect::before,
+  html.unified-dark-mode .checkin-btn.glow-effect::before {
+    display: none !important;
+  }
+
+  html.unified-dark-mode .tag-work { background: rgba(74, 108, 247, 0.2) !important; color: #9DB2FF !important; border-color: rgba(74, 108, 247, 0.45) !important; }
+  html.unified-dark-mode .tag-study { background: rgba(139, 92, 246, 0.2) !important; color: #C9AEFF !important; border-color: rgba(139, 92, 246, 0.45) !important; }
+  html.unified-dark-mode .tag-life { background: rgba(236, 72, 153, 0.2) !important; color: #FFB8DF !important; border-color: rgba(236, 72, 153, 0.45) !important; }
+  html.unified-dark-mode .tag-health { background: rgba(16, 185, 129, 0.2) !important; color: #99F6D0 !important; border-color: rgba(16, 185, 129, 0.45) !important; }
+  html.unified-dark-mode .text-task-work { color: #9DB2FF !important; }
+  html.unified-dark-mode .text-task-study { color: #C9AEFF !important; }
+  html.unified-dark-mode .text-task-life { color: #FFB8DF !important; }
+  html.unified-dark-mode .text-task-health { color: #99F6D0 !important; }
+  html.unified-dark-mode .bg-task-work\\/10 { background: rgba(74, 108, 247, 0.16) !important; }
+  html.unified-dark-mode .bg-task-study\\/10 { background: rgba(139, 92, 246, 0.16) !important; }
+  html.unified-dark-mode .bg-task-life\\/10 { background: rgba(236, 72, 153, 0.16) !important; }
+  html.unified-dark-mode .bg-task-health\\/10 { background: rgba(16, 185, 129, 0.16) !important; }
+
+  html.unified-dark-mode.unified-page-todo aside {
+    background: rgba(26, 33, 48, 0.9) !important;
+    border-color: var(--ud-border) !important;
+  }
+  html.unified-dark-mode.unified-page-todo .sidebar-item {
+    color: var(--ud-text) !important;
+    border-color: transparent !important;
+  }
+  html.unified-dark-mode.unified-page-todo .sidebar-item:hover {
+    background: rgba(45, 55, 72, 0.78) !important;
+    color: var(--ud-title) !important;
+  }
+  html.unified-dark-mode.unified-page-todo .sidebar-item-active,
+  html.unified-dark-mode.unified-page-todo .sidebar-item.active {
+    background: rgba(35, 43, 59, 0.92) !important;
+    color: var(--ud-title) !important;
+    border-color: rgba(74, 108, 247, 0.38) !important;
+    box-shadow: inset 3px 0 0 var(--ud-accent);
+  }
+  html.unified-dark-mode.unified-page-todo .task-card {
+    background: rgba(35, 43, 59, 0.84) !important;
+    border-color: var(--ud-border) !important;
+  }
+
+  html.unified-dark-mode.unified-page-calendar .calendar-cell {
+    background: rgba(26, 33, 48, 0.86) !important;
+    border-color: var(--ud-border) !important;
+    color: var(--ud-text) !important;
+  }
+  html.unified-dark-mode.unified-page-calendar .calendar-cell.other-month {
+    color: var(--ud-muted) !important;
+    opacity: 0.78;
+  }
+  html.unified-dark-mode.unified-page-calendar .calendar-cell.today {
+    border-color: rgba(74, 108, 247, 0.75) !important;
+    background: rgba(74, 108, 247, 0.22) !important;
+    color: var(--ud-title) !important;
+  }
+  html.unified-dark-mode.unified-page-calendar .calendar-cell:hover {
+    background: rgba(45, 55, 72, 0.86) !important;
+    border-color: rgba(74, 108, 247, 0.46) !important;
+    box-shadow: 0 10px 24px rgba(74, 108, 247, 0.18) !important;
+    transform: translateY(-2px);
+  }
+  html.unified-dark-mode.unified-page-calendar .task-pool-item {
+    background: rgba(35, 43, 59, 0.82) !important;
+    border-color: var(--ud-border) !important;
+  }
+  html.unified-dark-mode.unified-page-calendar .category-chip {
+    background: rgba(45, 55, 72, 0.76) !important;
+    border-color: rgba(74, 108, 247, 0.2) !important;
+  }
+  html.unified-dark-mode.unified-page-calendar .category-chip:hover {
+    background: rgba(74, 108, 247, 0.18) !important;
+    border-color: rgba(74, 108, 247, 0.46) !important;
+    box-shadow: 0 8px 18px rgba(74, 108, 247, 0.18) !important;
+  }
+  html.unified-dark-mode.unified-page-calendar .category-chip-label {
+    color: var(--ud-text) !important;
+  }
+  html.unified-dark-mode.unified-page-calendar .category-chip:hover .category-chip-label {
+    color: var(--ud-title) !important;
+  }
+  html.unified-dark-mode.unified-page-calendar .category-chip-dot {
+    box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.68), 0 4px 12px rgba(0, 0, 0, 0.26) !important;
+  }
+  html.unified-dark-mode.unified-page-calendar .card-hover:hover {
+    box-shadow: 0 12px 30px rgba(74, 108, 247, 0.18) !important;
+  }
+  html.unified-dark-mode.unified-page-calendar .btn-primary,
+  html.unified-dark-mode.unified-page-calendar .btn-primary.glow-effect,
+  html.unified-dark-mode.unified-page-calendar .view-btn.active.btn-primary {
+    background: var(--ud-accent) !important;
+    border-color: rgba(74, 108, 247, 0.82) !important;
+    box-shadow: 0 8px 20px rgba(74, 108, 247, 0.24) !important;
+    color: var(--ud-title) !important;
+  }
+  html.unified-dark-mode.unified-page-calendar #today-btn.btn-primary,
+  html.unified-dark-mode.unified-page-calendar .view-btn.active.btn-primary {
+    filter: none !important;
+  }
+  html.unified-dark-mode.unified-page-calendar .btn-primary:hover,
+  html.unified-dark-mode.unified-page-calendar .view-btn.active.btn-primary:hover,
+  html.unified-dark-mode.unified-page-calendar .calendar-nav-btn:hover {
+    background: rgba(74, 108, 247, 0.26) !important;
+    border-color: rgba(74, 108, 247, 0.65) !important;
+    box-shadow: 0 10px 24px rgba(74, 108, 247, 0.24) !important;
+    color: var(--ud-title) !important;
+  }
+  html.unified-dark-mode.unified-page-calendar #detail-datetime-clear {
+    background: rgba(45, 55, 72, 0.84) !important;
+    border-color: var(--ud-border) !important;
+    color: var(--ud-text) !important;
+  }
+  html.unified-dark-mode.unified-page-calendar #detail-datetime-clear:hover {
+    background: rgba(74, 108, 247, 0.16) !important;
+    border-color: rgba(74, 108, 247, 0.52) !important;
+    color: var(--ud-title) !important;
+  }
+
+  html.unified-dark-mode.unified-page-pomodoro .task-card,
+  html.unified-dark-mode.unified-page-pomodoro #task-cards .task-card {
+    background: rgba(35, 43, 59, 0.84) !important;
+    border-color: var(--ud-border) !important;
+  }
+  html.unified-dark-mode.unified-page-pomodoro .mode-btn:not(.active) {
+    background: rgba(45, 55, 72, 0.82) !important;
+    color: var(--ud-text) !important;
+  }
+  html.unified-dark-mode.unified-page-pomodoro .stat-box {
+    background: rgba(45, 55, 72, 0.78) !important;
+    border-color: var(--ud-border) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+  }
+  html.unified-dark-mode.unified-page-pomodoro aside .p-4 > div {
+    background: rgba(35, 43, 59, 0.84) !important;
+    border-color: var(--ud-border) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+  }
+  html.unified-dark-mode.unified-page-pomodoro #mode-tip {
+    color: var(--ud-muted) !important;
+  }
+
+  html.unified-dark-mode.unified-page-report .chart-container,
+  html.unified-dark-mode.unified-page-report #task-trend-chart,
+  html.unified-dark-mode.unified-page-report #category-pie-chart,
+  html.unified-dark-mode.unified-page-report #focus-bar-chart,
+  html.unified-dark-mode.unified-page-report #focus-heatmap {
+    background: rgba(35, 43, 59, 0.8) !important;
+    border-color: var(--ud-border) !important;
+  }
+  html.unified-dark-mode.unified-page-report .stat-card .icon-wrapper {
+    background: rgba(45, 55, 72, 0.86) !important;
+    border: 1px solid var(--ud-border) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.24) !important;
+  }
+  html.unified-dark-mode.unified-page-report .stat-card .icon-wrapper .text-success { color: var(--ud-success) !important; }
+  html.unified-dark-mode.unified-page-report .stat-card .icon-wrapper .text-primary { color: var(--ud-accent) !important; }
+  html.unified-dark-mode.unified-page-report .stat-card .icon-wrapper .text-danger { color: var(--ud-danger) !important; }
+  html.unified-dark-mode.unified-page-report .stat-card .icon-wrapper .text-warning { color: var(--ud-warning) !important; }
+  html.unified-dark-mode.unified-page-report .stat-card .icon-wrapper .text-secondary { color: #BDA8FF !important; }
+
+  html.unified-dark-mode.unified-page-checkin .calendar-day {
+    border-color: var(--ud-border) !important;
+    background: rgba(26, 33, 48, 0.86) !important;
+    color: var(--ud-text) !important;
+  }
+  html.unified-dark-mode.unified-page-checkin .calendar-day.today {
+    border-color: rgba(74, 108, 247, 0.75) !important;
+    background: rgba(74, 108, 247, 0.24) !important;
+    color: var(--ud-title) !important;
+    box-shadow: 0 6px 14px rgba(74, 108, 247, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  }
+  html.unified-dark-mode.unified-page-checkin .calendar-day.checked {
+    border-color: rgba(16, 185, 129, 0.52) !important;
+    background: rgba(16, 185, 129, 0.18) !important;
+    color: #A7F3D0 !important;
+  }
+  html.unified-dark-mode.unified-page-checkin .calendar-day:hover:not(.empty):not(.today) {
+    border-color: rgba(74, 108, 247, 0.55) !important;
+    background: rgba(74, 108, 247, 0.18) !important;
+    color: var(--ud-title) !important;
+    box-shadow: 0 8px 16px rgba(74, 108, 247, 0.18) !important;
+  }
+  html.unified-dark-mode.unified-page-checkin .calendar-day.empty {
+    background: transparent !important;
+    color: var(--ud-muted) !important;
+  }
+  html.unified-dark-mode.unified-page-calendar .calendar-cell.today {
+    box-shadow: 0 6px 20px rgba(74, 108, 247, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  }
+
+  html.unified-dark-mode.unified-page-profile .custom-checkbox {
+    background: rgba(45, 55, 72, 0.85) !important;
+    border-color: var(--ud-border) !important;
+  }
+  html.unified-dark-mode.unified-page-profile .custom-checkbox:checked {
+    background: var(--ud-accent) !important;
+    border-color: var(--ud-accent) !important;
+  }
+  html.unified-dark-mode.unified-page-profile .theme-btn[data-theme="night"] {
+    background: var(--ud-accent) !important;
+    border-color: rgba(74, 108, 247, 0.82) !important;
+    color: var(--ud-title) !important;
+  }
+  `;
+  document.head.appendChild(style);
+}
+
+function initUnifiedDarkTheme() {
+  var pageKey = getUnifiedPageKeyFromPath();
+  if (!shouldEnableUnifiedDarkMode(pageKey)) return;
+  ensureUnifiedDarkThemeStyle();
+  applyUnifiedDarkModeClassByTheme(normalizeUnifiedThemeMode(resolveUnifiedThemeMode()));
+}
+
 var __unifiedPageTransitionLock = false;
 
 function ensureUnifiedPageTransitionStyle() {
@@ -1285,6 +2030,7 @@ function initUnifiedTopHeaders() {
 
 ensureUnifiedTopHeaderStyle();
 ensureUnifiedDropdownTransitionStyle();
+initUnifiedDarkTheme();
 initUnifiedPageTransitions();
 document.documentElement.classList.add('unified-top-preparing');
 
@@ -1578,6 +2324,42 @@ function ensureUnifiedThemeStyle() {
   body.theme-light {
     color-scheme: light;
   }
+  html:not(.unified-dark-mode) body.theme-light [class*="hover:bg-primary/"]:hover {
+    background-color: rgba(59, 130, 246, 0.12) !important;
+  }
+  html:not(.unified-dark-mode) body.theme-light [class*="hover:bg-danger/"]:hover {
+    background-color: rgba(239, 68, 68, 0.1) !important;
+  }
+  html:not(.unified-dark-mode) body.theme-light [class*="hover:bg-gray-50"]:hover,
+  html:not(.unified-dark-mode) body.theme-light [class*="hover:bg-gray-100"]:hover,
+  html:not(.unified-dark-mode) body.theme-light [class*="hover:bg-white"]:hover {
+    background-color: rgba(15, 23, 42, 0.05) !important;
+  }
+  html:not(.unified-dark-mode) body.theme-light [class*="hover:border-primary"]:hover {
+    border-color: rgba(59, 130, 246, 0.45) !important;
+  }
+  html:not(.unified-dark-mode) body.theme-light [class*="hover:border-gray-"]:hover {
+    border-color: rgba(148, 163, 184, 0.5) !important;
+  }
+  html:not(.unified-dark-mode) body.theme-light .btn-social {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-color: rgba(209, 213, 219, 0.9) !important;
+  }
+  html:not(.unified-dark-mode) body.theme-light .btn-social:hover {
+    background: rgba(255, 255, 255, 1) !important;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08) !important;
+  }
+  html:not(.unified-dark-mode) body.theme-light .btn-social .social-text {
+    color: #4b5563 !important;
+  }
+  html:not(.unified-dark-mode) body.theme-light .auth-alt-divider {
+    background: rgba(255, 255, 255, 0.98) !important;
+    color: #4b5563 !important;
+    border-color: rgba(209, 213, 219, 0.9) !important;
+  }
+  html:not(.unified-dark-mode) body.theme-light .auth-switch-note {
+    color: #374151 !important;
+  }
   body.theme-night {
     color-scheme: dark;
     --night-bg-0: #0b1220;
@@ -1732,6 +2514,7 @@ function ensureUnifiedThemeStyle() {
     box-shadow: none !important;
   }
   body.theme-night .hover\:bg-primary\/10:hover,
+  body.theme-night .hover\:bg-primary\/15:hover,
   body.theme-night .hover\:bg-primary\/20:hover,
   body.theme-night .bg-primary\/10,
   body.theme-night .bg-primary\/5,
@@ -1741,6 +2524,52 @@ function ensureUnifiedThemeStyle() {
   body.theme-night .bg-warning\/10,
   body.theme-night .bg-danger\/10 {
     background-color: rgba(71, 85, 105, 0.42) !important;
+  }
+  body.theme-night .hover\:bg-gray-50:hover,
+  body.theme-night .hover\:bg-gray-100:hover,
+  body.theme-night .hover\:bg-white:hover {
+    background-color: rgba(51, 65, 85, 0.66) !important;
+  }
+  body.theme-night [class*="hover:bg-primary/"]:hover {
+    background-color: rgba(71, 85, 105, 0.5) !important;
+  }
+  body.theme-night [class*="hover:bg-danger/"]:hover {
+    background-color: rgba(239, 68, 68, 0.16) !important;
+  }
+  body.theme-night [class*="hover:bg-gray-50"]:hover,
+  body.theme-night [class*="hover:bg-gray-100"]:hover,
+  body.theme-night [class*="hover:bg-white"]:hover {
+    background-color: rgba(51, 65, 85, 0.66) !important;
+  }
+  body.theme-night [class*="hover:border-primary"]:hover {
+    border-color: rgba(148, 163, 184, 0.46) !important;
+  }
+  body.theme-night [class*="hover:border-gray-"]:hover {
+    border-color: rgba(148, 163, 184, 0.46) !important;
+  }
+  body.theme-night [class*="hover:text-primary"]:hover {
+    color: #E2E8F0 !important;
+  }
+  body.theme-night [class*="hover:text-secondary"]:hover {
+    color: #E2E8F0 !important;
+  }
+  body.theme-night .btn-social {
+    background: rgba(30, 41, 59, 0.68) !important;
+    border-color: rgba(148, 163, 184, 0.35) !important;
+  }
+  body.theme-night .btn-social:hover {
+    background: rgba(51, 65, 85, 0.82) !important;
+  }
+  body.theme-night .btn-social .social-text {
+    color: var(--night-text-sub) !important;
+  }
+  body.theme-night .auth-alt-divider {
+    background: rgba(15, 23, 42, 0.62) !important;
+    color: #d1d5db !important;
+    border-color: rgba(148, 163, 184, 0.35) !important;
+  }
+  body.theme-night .auth-switch-note {
+    color: #d1d5db !important;
   }
   body.theme-night .text-primary,
   body.theme-night .text-secondary,
@@ -1797,8 +2626,14 @@ function resolveUnifiedThemeMode() {
 function applyUnifiedThemeMode(mode) {
   var normalized = normalizeUnifiedThemeMode(mode);
   var body = document.body;
+  applyUnifiedDarkModeClassByTheme(normalized);
   if (!body) return normalized;
+  var isUnifiedDark = document.documentElement.classList.contains('unified-dark-mode');
   body.classList.remove('theme-light', 'theme-dark', 'theme-night');
+  if (isUnifiedDark) {
+    body.classList.add('theme-light');
+    return normalized;
+  }
   body.classList.add(normalized === 'night' ? 'theme-night' : 'theme-light');
   return normalized;
 }
