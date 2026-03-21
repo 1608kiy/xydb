@@ -215,8 +215,194 @@ function isMobile() {
   return window.innerWidth < 768;
 }
 
+var __unifiedPageTransitionLock = false;
+
+function ensureUnifiedPageTransitionStyle() {
+  if (document.getElementById('unified-page-transition-style')) return;
+  var style = document.createElement('style');
+  style.id = 'unified-page-transition-style';
+  style.textContent = `
+  :root {
+    --unified-page-transition-duration: 260ms;
+    --unified-page-transition-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  html.unified-page-enter body {
+    opacity: 0;
+    transform: translateY(8px) scale(0.995);
+  }
+  html.unified-page-ready body {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition:
+      opacity var(--unified-page-transition-duration) var(--unified-page-transition-ease),
+      transform var(--unified-page-transition-duration) var(--unified-page-transition-ease);
+  }
+  html.unified-page-leaving body {
+    opacity: 0;
+    transform: translateY(10px) scale(0.995);
+    transition:
+      opacity var(--unified-page-transition-duration) var(--unified-page-transition-ease),
+      transform var(--unified-page-transition-duration) var(--unified-page-transition-ease);
+  }
+  .view-btn,
+  [data-view],
+  .priority-btn,
+  .modal-priority-btn,
+  .modal-tag-btn {
+    transition:
+      transform 220ms ease,
+      filter 220ms ease,
+      box-shadow 220ms ease;
+  }
+  .view-btn:hover,
+  [data-view]:hover,
+  .priority-btn:hover,
+  .modal-priority-btn:hover,
+  .modal-tag-btn:hover {
+    transform: translateY(-1px);
+    filter: saturate(1.06);
+  }
+  .unified-switch-enter {
+    animation: unifiedSwitchEnter 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @keyframes unifiedSwitchEnter {
+    from { opacity: 0; transform: translateY(10px) scale(0.995); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html.unified-page-ready body,
+    html.unified-page-leaving body,
+    html.unified-page-enter body {
+      transition: none !important;
+      transform: none !important;
+      opacity: 1 !important;
+    }
+    .unified-switch-enter {
+      animation: none !important;
+    }
+  }
+  `;
+  document.head.appendChild(style);
+}
+
+function markUnifiedPageEnter() {
+  var root = document.documentElement;
+  root.classList.add('unified-page-enter');
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      root.classList.add('unified-page-ready');
+      root.classList.remove('unified-page-enter');
+    });
+  });
+}
+
+function runUnifiedSwitchEnterAnimation(el) {
+  if (!el) return;
+  el.classList.remove('unified-switch-enter');
+  void el.offsetWidth;
+  el.classList.add('unified-switch-enter');
+}
+
+function navigateWithTransition(url) {
+  if (!url) return;
+  ensureUnifiedPageTransitionStyle();
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    window.location.href = url;
+    return;
+  }
+  if (__unifiedPageTransitionLock) return;
+  __unifiedPageTransitionLock = true;
+  var root = document.documentElement;
+  root.classList.add('unified-page-ready');
+  root.classList.add('unified-page-leaving');
+  window.setTimeout(function () {
+    window.location.href = url;
+  }, 220);
+}
+
+function initUnifiedPageTransitions() {
+  if (window.__unifiedPageTransitionsInited) return;
+  window.__unifiedPageTransitionsInited = true;
+  ensureUnifiedPageTransitionStyle();
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', markUnifiedPageEnter);
+  } else {
+    markUnifiedPageEnter();
+  }
+
+  document.addEventListener('click', function (e) {
+    if (e.defaultPrevented) return;
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var link = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+    if (!link) return;
+    if (link.hasAttribute('download')) return;
+    var target = (link.getAttribute('target') || '').toLowerCase();
+    if (target && target !== '_self') return;
+    var href = link.getAttribute('href') || '';
+    if (!href || href.charAt(0) === '#') return;
+    if (/^(mailto|tel|javascript):/i.test(href)) return;
+
+    var parsed;
+    try {
+      parsed = new URL(href, window.location.href);
+    } catch (err) {
+      return;
+    }
+    if (parsed.origin !== window.location.origin) return;
+    if (
+      parsed.pathname === window.location.pathname &&
+      parsed.search === window.location.search &&
+      parsed.hash &&
+      parsed.hash !== '#'
+    ) {
+      return;
+    }
+    e.preventDefault();
+    navigateWithTransition(parsed.href);
+  });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('.calendar-view:not(.hidden), .tab-pane:not(.hidden), .view-panel:not(.hidden)').forEach(function (el) {
+        runUnifiedSwitchEnterAnimation(el);
+      });
+      if (window.MutationObserver && document.body) {
+        var observer = new MutationObserver(function (mutations) {
+          mutations.forEach(function (mutation) {
+            if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') return;
+            var target = mutation.target;
+            if (!target || !target.matches) return;
+            if (!target.matches('.calendar-view, .tab-pane, .view-panel, [data-switch-panel]')) return;
+            if (target.classList.contains('hidden')) return;
+            runUnifiedSwitchEnterAnimation(target);
+          });
+        });
+        observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
+      }
+    });
+  } else {
+    document.querySelectorAll('.calendar-view:not(.hidden), .tab-pane:not(.hidden), .view-panel:not(.hidden)').forEach(function (el) {
+      runUnifiedSwitchEnterAnimation(el);
+    });
+    if (window.MutationObserver && document.body) {
+      var observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') return;
+          var target = mutation.target;
+          if (!target || !target.matches) return;
+          if (!target.matches('.calendar-view, .tab-pane, .view-panel, [data-switch-panel]')) return;
+          if (target.classList.contains('hidden')) return;
+          runUnifiedSwitchEnterAnimation(target);
+        });
+      });
+      observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
+    }
+  }
+}
+
 function safeNavigate(url) {
-  window.location.href = url;
+  navigateWithTransition(url);
 }
 
 function formatDateYMD(date) {
@@ -1101,6 +1287,7 @@ function initUnifiedTopHeaders() {
 
 ensureUnifiedTopHeaderStyle();
 ensureUnifiedDropdownTransitionStyle();
+initUnifiedPageTransitions();
 document.documentElement.classList.add('unified-top-preparing');
 
 if (document.readyState === 'loading') {
@@ -1156,8 +1343,20 @@ function ensureUnifiedDropdownTransitionStyle() {
     transform: translateY(0) !important;
     transition-delay: 0s !important;
   }
+  .datetime-select-menu.show {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+  .datetime-select-menu.date-calendar-menu.show {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  .datetime-select-menu.time-custom-menu.show {
+    overflow: hidden !important;
+  }
   .custom-select-dropdown .custom-select-option,
   .dropdown-menu .dropdown-item,
+  .dropdown-menu .datetime-select-option,
   .dropdown-menu > a,
   .unified-avatar-trigger-group .unified-avatar-menu a {
     opacity: 0;
@@ -1165,6 +1364,7 @@ function ensureUnifiedDropdownTransitionStyle() {
   }
   .custom-select-dropdown.show .custom-select-option,
   .dropdown-menu.show .dropdown-item,
+  .dropdown-menu.show .datetime-select-option,
   .dropdown-menu.show > a,
   .unified-avatar-trigger-group.unified-avatar-open .unified-avatar-menu a {
     animation: unifiedDropdownOptionSlideIn 0.3s ease-out forwards;

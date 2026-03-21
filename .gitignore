@@ -1,1 +1,4 @@
 tools/node/
+scripts/e2e/node_modules/
+scripts/e2e/package-lock.json
+scripts/e2e/test-results/

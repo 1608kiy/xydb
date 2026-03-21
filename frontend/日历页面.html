@@ -160,6 +160,20 @@
             from { opacity: 0; transform: translateX(40px); } 
             to { opacity: 1; transform: translateX(0); } 
           }
+          .calendar-view-enter {
+            animation: calendarViewEnter 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+          }
+          .calendar-view-leave {
+            animation: calendarViewLeave 0.2s ease forwards;
+          }
+          @keyframes calendarViewEnter {
+            from { opacity: 0; transform: translateY(10px) scale(0.99); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+          }
+          @keyframes calendarViewLeave {
+            from { opacity: 1; transform: translateY(0) scale(1); }
+            to { opacity: 0; transform: translateY(-6px) scale(0.995); }
+          }
           .float { 
             animation: float 4s ease-in-out infinite; 
           }
@@ -439,20 +453,273 @@
             grid-template-columns: 1fr 1fr;
             gap: 10px;
           }
-          .datetime-input {
+          .datetime-select-shell {
+            position: relative;
+          }
+          .datetime-select-trigger {
             width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             border: 1px solid rgba(209, 213, 219, 0.9);
             border-radius: 12px;
             padding: 8px 10px;
             font-size: 12px;
             background: rgba(255, 255, 255, 0.92);
             transition: all 0.2s ease;
+            color: #374151;
           }
-          .datetime-input:focus {
-            outline: none;
+          .datetime-select-trigger i {
+            color: #6B7280;
+            font-size: 10px;
+            transition: transform 0.2s ease;
+          }
+          .datetime-select-shell.open .datetime-select-trigger i {
+            transform: rotate(180deg);
+          }
+          .datetime-select-trigger:hover {
             border-color: rgba(245, 158, 11, 0.55);
             box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.16);
             transform: translateY(-1px);
+          }
+          .datetime-select-menu {
+            position: absolute !important;
+            left: 0 !important;
+            right: auto !important;
+            top: calc(100% + 6px) !important;
+            width: 100% !important;
+            padding: 6px !important;
+            max-height: 220px;
+            overflow-y: auto !important;
+            border-radius: 12px;
+            border: 1px solid rgba(254, 215, 170, 0.95);
+            background: rgba(255, 255, 255, 0.97);
+            box-shadow: 0 14px 30px rgba(245, 158, 11, 0.2);
+            z-index: 80;
+          }
+          .datetime-select-option {
+            width: 100%;
+            border: 0;
+            background: transparent;
+            text-align: left;
+            padding: 8px 10px;
+            font-size: 12px;
+            color: #374151;
+            transition: all 0.2s ease;
+            cursor: pointer;
+          }
+          .datetime-select-option:hover {
+            background: rgba(245, 158, 11, 0.1);
+            color: #9A3412;
+          }
+          .datetime-select-option.active {
+            background: rgba(245, 158, 11, 0.18);
+            color: #9A3412;
+            font-weight: 600;
+          }
+
+          .datetime-select-menu.date-calendar-menu {
+            width: min(320px, calc(100vw - 36px)) !important;
+            max-height: none !important;
+            padding: 8px !important;
+            overflow: hidden !important;
+          }
+          .datetime-select-menu.date-calendar-menu.show {
+            max-height: none !important;
+            overflow: visible !important;
+          }
+          .datetime-select-menu.time-custom-menu {
+            padding: 8px !important;
+            max-height: 320px !important;
+          }
+          .datetime-select-menu.time-custom-menu.show {
+            overflow: hidden !important;
+          }
+          .datetime-calendar {
+            animation: unifiedDropdownOptionSlideIn 0.26s ease-out both;
+          }
+          .datetime-calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            margin-bottom: 8px;
+          }
+          .datetime-calendar-navs {
+            display: inline-flex;
+            gap: 4px;
+          }
+          .datetime-calendar-nav {
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            border: 1px solid rgba(254, 215, 170, 0.9);
+            background: rgba(255, 255, 255, 0.92);
+            color: #C2410C;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            transition: all 0.2s ease;
+          }
+          .datetime-calendar-nav:hover {
+            border-color: rgba(245, 158, 11, 0.55);
+            box-shadow: 0 6px 16px rgba(245, 158, 11, 0.18);
+            transform: translateY(-1px);
+          }
+          .datetime-calendar-title {
+            border: 0;
+            background: transparent;
+            color: #9A3412;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            padding: 3px 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+          }
+          .datetime-calendar-title:hover {
+            background: rgba(255, 237, 213, 0.7);
+          }
+          .datetime-calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 4px;
+            margin-bottom: 4px;
+          }
+          .datetime-calendar-weekday {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6B7280;
+            padding: 4px 0;
+          }
+          .datetime-calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 4px;
+          }
+          .datetime-calendar-day {
+            border: 1px solid transparent;
+            background: transparent;
+            color: #1F2937;
+            border-radius: 8px;
+            min-height: 30px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+          }
+          .datetime-calendar-day:hover {
+            border-color: rgba(245, 158, 11, 0.35);
+            background: rgba(255, 237, 213, 0.75);
+            color: #9A3412;
+            transform: translateY(-1px);
+          }
+          .datetime-calendar-day.other-month {
+            opacity: 0.45;
+          }
+          .datetime-calendar-day.today {
+            border-color: rgba(245, 158, 11, 0.55);
+            background: rgba(255, 237, 213, 0.86);
+            color: #9A3412;
+          }
+          .datetime-calendar-day.selected {
+            border-color: rgba(245, 158, 11, 0.9);
+            background: rgba(245, 158, 11, 0.22);
+            color: #9A3412;
+            box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.35);
+            font-weight: 700;
+          }
+          .datetime-calendar-actions {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(254, 215, 170, 0.9);
+            display: flex;
+            justify-content: space-between;
+            gap: 6px;
+          }
+          .datetime-calendar-action {
+            border: 1px solid rgba(254, 215, 170, 0.9);
+            background: rgba(255, 255, 255, 0.92);
+            color: #C2410C;
+            border-radius: 999px;
+            font-size: 11px;
+            padding: 4px 10px;
+            transition: all 0.2s ease;
+          }
+          .datetime-calendar-action:hover {
+            border-color: rgba(245, 158, 11, 0.52);
+            background: rgba(255, 237, 213, 0.8);
+            transform: translateY(-1px);
+          }
+          .datetime-time-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            animation: unifiedDropdownOptionSlideIn 0.26s ease-out both;
+          }
+          .datetime-time-custom {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+          }
+          .datetime-time-field {
+            width: 52px;
+            height: 30px;
+            border-radius: 8px;
+            border: 1px solid rgba(254, 215, 170, 0.9);
+            background: rgba(255, 255, 255, 0.95);
+            text-align: center;
+            font-size: 12px;
+            color: #1F2937;
+            transition: all 0.2s ease;
+            outline: none;
+          }
+          .datetime-time-field:focus {
+            border-color: rgba(245, 158, 11, 0.58);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.14);
+          }
+          .datetime-time-sep {
+            color: #6B7280;
+            font-weight: 600;
+            font-size: 13px;
+          }
+          .datetime-time-pill {
+            border: 1px solid rgba(254, 215, 170, 0.9);
+            background: rgba(255, 255, 255, 0.92);
+            color: #C2410C;
+            border-radius: 999px;
+            font-size: 11px;
+            padding: 4px 10px;
+            transition: all 0.2s ease;
+          }
+          .datetime-time-pill:hover {
+            border-color: rgba(245, 158, 11, 0.52);
+            background: rgba(255, 237, 213, 0.8);
+            transform: translateY(-1px);
+          }
+          .datetime-time-quick-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+          }
+          .datetime-time-options {
+            border-top: 1px solid rgba(254, 215, 170, 0.9);
+            padding-top: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 4px;
+          }
+          .datetime-time-options .datetime-select-option {
+            border-radius: 8px;
+            text-align: center;
+            padding: 7px 8px;
+            font-size: 12px;
           }
           .datetime-quick-actions {
             margin-top: 10px;
@@ -504,6 +771,56 @@
             color: #F59E0B;
             border-color: rgba(245, 158, 11, 0.36);
             background: rgba(255, 237, 213, 0.82);
+          }
+
+          .subtask-compose {
+            display: flex;
+            align-items: center;
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: 16px;
+            padding: 4px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            transition: all 0.24s ease;
+          }
+          .subtask-compose:focus-within {
+            border-color: rgba(245, 158, 11, 0.52);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.14);
+          }
+          .subtask-compose-input {
+            flex: 1;
+            border: 0;
+            background: transparent;
+            padding: 9px 10px;
+            font-size: 14px;
+            color: #1F2937;
+            outline: none;
+          }
+          .subtask-compose-input::placeholder {
+            color: #9CA3AF;
+          }
+          .subtask-compose-btn {
+            width: 40px;
+            height: 40px;
+            border: 0;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #F59E0B, #FB923C);
+            color: #FFFFFF;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 8px 18px rgba(245, 158, 11, 0.24);
+          }
+          .subtask-compose-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 24px rgba(245, 158, 11, 0.3);
+          }
+          .subtask-compose-btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
           }
 
           .calendar-nav-btn {
@@ -1003,8 +1320,22 @@
               </button>
               <div class="detail-datetime-panel" id="detail-datetime-panel">
                 <div class="detail-datetime-grid">
-                  <input class="datetime-input" id="detail-date-input" type="date" />
-                  <input class="datetime-input" id="detail-time-input" type="time" />
+                  <div class="datetime-select-shell" id="detail-date-shell">
+                    <button type="button" class="datetime-select-trigger" id="detail-date-trigger">
+                      <span id="detail-date-text">选择日期</span>
+                      <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="datetime-select-menu dropdown-menu" id="detail-date-menu"></div>
+                    <input class="hidden" id="detail-date-input" type="date" />
+                  </div>
+                  <div class="datetime-select-shell" id="detail-time-shell">
+                    <button type="button" class="datetime-select-trigger" id="detail-time-trigger">
+                      <span id="detail-time-text">选择时间</span>
+                      <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="datetime-select-menu dropdown-menu" id="detail-time-menu"></div>
+                    <input class="hidden" id="detail-time-input" type="time" />
+                  </div>
                 </div>
                 <div class="datetime-quick-actions">
                   <button type="button" class="datetime-quick-btn" id="detail-datetime-today">今天</button>
@@ -1032,9 +1363,9 @@
               </div>
             </div>
             <div class="space-y-2 mb-3 max-h-40 overflow-y-auto task-detail-scrollbar-hide" id="subtask-list"></div>
-            <div class="flex">
-              <input id="new-subtask-input" class="glass-input flex-1 px-4 py-2.5 rounded-l-xl focus:outline-none transition-all" placeholder="添加子任务..." type="text" />
-              <button id="add-subtask-btn" class="px-4 py-2.5 btn-primary rounded-r-xl">
+            <div class="subtask-compose">
+              <input id="new-subtask-input" class="subtask-compose-input" placeholder="添加子任务..." type="text" maxlength="60" />
+              <button id="add-subtask-btn" class="subtask-compose-btn" type="button">
                 <i class="fas fa-plus"></i>
               </button>
             </div>
@@ -1162,6 +1493,7 @@
         var detailTitle = document.getElementById('detail-title');
         var detailDescription = document.getElementById('detail-description');
         var detailDueAt = document.getElementById('detail-dueAt');
+        var detailTagList = document.getElementById('tag-list');
         var subtaskList = document.getElementById('subtask-list');
         var addSubtaskBtn = document.getElementById('add-subtask-btn');
         var newSubtaskInput = document.getElementById('new-subtask-input');
@@ -1174,6 +1506,14 @@
         var detailDatetimeShell = document.getElementById('detail-datetime-shell');
         var detailDatetimeTrigger = document.getElementById('detail-datetime-trigger');
         var detailDatetimeText = document.getElementById('detail-datetime-text');
+        var detailDateShell = document.getElementById('detail-date-shell');
+        var detailTimeShell = document.getElementById('detail-time-shell');
+        var detailDateTrigger = document.getElementById('detail-date-trigger');
+        var detailTimeTrigger = document.getElementById('detail-time-trigger');
+        var detailDateMenu = document.getElementById('detail-date-menu');
+        var detailTimeMenu = document.getElementById('detail-time-menu');
+        var detailDateText = document.getElementById('detail-date-text');
+        var detailTimeText = document.getElementById('detail-time-text');
         var detailDateInput = document.getElementById('detail-date-input');
         var detailTimeInput = document.getElementById('detail-time-input');
         var quickTodayBtn = document.getElementById('detail-datetime-today');
@@ -1245,11 +1585,221 @@
           return date.toLocaleString('zh-CN', opts).replace(/\//g, '-');
         }
 
+        function formatDetailDateLabel(dateValue) {
+          if (!dateValue) return '选择日期';
+          var date = new Date(dateValue + 'T00:00:00');
+          if (isNaN(date.getTime())) return '选择日期';
+          var week = ['日', '一', '二', '三', '四', '五', '六'];
+          return dateValue.replace(/-/g, '/') + ' 周' + week[date.getDay()];
+        }
+
+        function formatDetailTimeLabel(timeValue) {
+          if (!timeValue) return '选择时间';
+          return String(timeValue).slice(0, 5);
+        }
+
+        var detailDateMenuView = null;
+
+        function parseDateValueYMD(value) {
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value || ''))) return null;
+          var parsed = new Date(String(value) + 'T00:00:00');
+          if (isNaN(parsed.getTime())) return null;
+          return parsed;
+        }
+
+        function toDateValueYMD(date) {
+          if (!(date instanceof Date) || isNaN(date.getTime())) return '';
+          var y = date.getFullYear();
+          var m = String(date.getMonth() + 1).padStart(2, '0');
+          var d = String(date.getDate()).padStart(2, '0');
+          return y + '-' + m + '-' + d;
+        }
+
+        function normalizeDateMenuMonth(date) {
+          if (!(date instanceof Date) || isNaN(date.getTime())) {
+            var now = new Date();
+            return new Date(now.getFullYear(), now.getMonth(), 1);
+          }
+          return new Date(date.getFullYear(), date.getMonth(), 1);
+        }
+
+        function shiftDateMenuMonth(baseDate, offset) {
+          var next = normalizeDateMenuMonth(baseDate);
+          next.setMonth(next.getMonth() + offset);
+          return normalizeDateMenuMonth(next);
+        }
+
+        function shiftDateMenuYear(baseDate, offset) {
+          var next = normalizeDateMenuMonth(baseDate);
+          next.setFullYear(next.getFullYear() + offset);
+          return normalizeDateMenuMonth(next);
+        }
+
+        function resolveDateMenuView(selectedValue, currentView, preferCurrent) {
+          if (preferCurrent && currentView instanceof Date && !isNaN(currentView.getTime())) {
+            return normalizeDateMenuMonth(currentView);
+          }
+          var selected = parseDateValueYMD(selectedValue);
+          if (selected) return new Date(selected.getFullYear(), selected.getMonth(), 1);
+          return normalizeDateMenuMonth(currentView);
+        }
+
+        function buildDateCalendarMenuHtml(selectedValue, viewDate) {
+          var monthView = normalizeDateMenuMonth(viewDate);
+          var title = monthView.getFullYear() + '年' + String(monthView.getMonth() + 1).padStart(2, '0') + '月';
+          var selected = selectedValue || '';
+          var today = toDateValueYMD(new Date());
+          var weekLabels = ['日', '一', '二', '三', '四', '五', '六'];
+
+          var firstOfMonth = new Date(monthView.getFullYear(), monthView.getMonth(), 1);
+          var gridStart = new Date(firstOfMonth);
+          gridStart.setDate(firstOfMonth.getDate() - firstOfMonth.getDay());
+
+          var dayCells = '';
+          for (var idx = 0; idx < 42; idx++) {
+            var cellDate = new Date(gridStart);
+            cellDate.setDate(gridStart.getDate() + idx);
+            var dateValue = toDateValueYMD(cellDate);
+            var classes = ['datetime-calendar-day'];
+            if (cellDate.getMonth() !== monthView.getMonth()) classes.push('other-month');
+            if (dateValue === today) classes.push('today');
+            if (dateValue === selected) classes.push('selected');
+            dayCells += '<button type="button" class="' + classes.join(' ') + '" data-date="' + dateValue + '">' + cellDate.getDate() + '</button>';
+          }
+
+          var weekdays = weekLabels.map(function (label) {
+            return '<div class="datetime-calendar-weekday">' + label + '</div>';
+          }).join('');
+
+          return '' +
+            '<div class="datetime-calendar">' +
+              '<div class="datetime-calendar-header">' +
+                '<div class="datetime-calendar-navs">' +
+                  '<button type="button" class="datetime-calendar-nav" data-calendar-action="change-year" data-step="-1" aria-label="上一年"><i class="fas fa-angle-double-left"></i></button>' +
+                  '<button type="button" class="datetime-calendar-nav" data-calendar-action="change-month" data-step="-1" aria-label="上个月"><i class="fas fa-angle-left"></i></button>' +
+                '</div>' +
+                '<button type="button" class="datetime-calendar-title" data-calendar-action="jump-current">' + title + '</button>' +
+                '<div class="datetime-calendar-navs">' +
+                  '<button type="button" class="datetime-calendar-nav" data-calendar-action="change-month" data-step="1" aria-label="下个月"><i class="fas fa-angle-right"></i></button>' +
+                  '<button type="button" class="datetime-calendar-nav" data-calendar-action="change-year" data-step="1" aria-label="下一年"><i class="fas fa-angle-double-right"></i></button>' +
+                '</div>' +
+              '</div>' +
+              '<div class="datetime-calendar-weekdays">' + weekdays + '</div>' +
+              '<div class="datetime-calendar-grid">' + dayCells + '</div>' +
+              '<div class="datetime-calendar-actions">' +
+                '<button type="button" class="datetime-calendar-action" data-calendar-action="pick-today">今天</button>' +
+                '<button type="button" class="datetime-calendar-action" data-calendar-action="clear-date">清空</button>' +
+              '</div>' +
+            '</div>';
+        }
+
+        function buildDetailTimeOptions() {
+          var options = [];
+          for (var hour = 0; hour < 24; hour++) {
+            for (var minute = 0; minute < 60; minute += 15) {
+              var value = String(hour).padStart(2, '0') + ':' + String(minute).padStart(2, '0');
+              options.push({ value: value, label: value });
+            }
+          }
+          return options;
+        }
+
+        function normalizeTimeValue(value) {
+          var raw = String(value || '').trim();
+          var match = raw.match(/^(\d{1,2}):(\d{1,2})/);
+          if (!match) return '';
+          var hour = parseInt(match[1], 10);
+          var minute = parseInt(match[2], 10);
+          if (isNaN(hour) || isNaN(minute)) return '';
+          if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return '';
+          return String(hour).padStart(2, '0') + ':' + String(minute).padStart(2, '0');
+        }
+
+        function buildTimeMenuHtml(selectedValue) {
+          var normalized = normalizeTimeValue(selectedValue) || '09:00';
+          var hour = normalized.slice(0, 2);
+          var minute = normalized.slice(3, 5);
+          var quickHours = ['08', '09', '12', '14', '18', '21'];
+          var quickMinutes = ['00', '15', '30', '45'];
+          var quickHourHtml = quickHours.map(function (h) {
+            return '<button type="button" class="datetime-time-pill" data-time-action="set-hour" data-hour="' + h + '">' + h + ' 时</button>';
+          }).join('');
+          var quickMinuteHtml = quickMinutes.map(function (m) {
+            return '<button type="button" class="datetime-time-pill" data-time-action="set-minute" data-minute="' + m + '">' + m + ' 分</button>';
+          }).join('');
+          var optionsHtml = buildDetailTimeOptions().map(function (opt) {
+            return '<button type="button" class="datetime-select-option' + (opt.value === normalized ? ' active' : '') + '" data-value="' + opt.value + '">' + opt.label + '</button>';
+          }).join('');
+          return '' +
+            '<div class="datetime-time-panel">' +
+              '<div class="datetime-time-custom">' +
+                '<input class="datetime-time-field" type="number" min="0" max="23" data-time-input="hour" value="' + hour + '" />' +
+                '<span class="datetime-time-sep">:</span>' +
+                '<input class="datetime-time-field" type="number" min="0" max="59" data-time-input="minute" value="' + minute + '" />' +
+                '<button type="button" class="datetime-time-pill" data-time-action="apply-custom">确定</button>' +
+                '<button type="button" class="datetime-time-pill" data-time-action="pick-now">现在</button>' +
+              '</div>' +
+              '<div class="datetime-time-quick-row">' + quickHourHtml + '</div>' +
+              '<div class="datetime-time-quick-row">' + quickMinuteHtml + '</div>' +
+              '<div class="datetime-time-options">' + optionsHtml + '</div>' +
+            '</div>';
+        }
+
+        function coerceTimeFromMenu(menu) {
+          if (!menu) return '';
+          var hourInput = menu.querySelector('[data-time-input="hour"]');
+          var minuteInput = menu.querySelector('[data-time-input="minute"]');
+          var hour = parseInt(hourInput ? hourInput.value : '', 10);
+          var minute = parseInt(minuteInput ? minuteInput.value : '', 10);
+          if (isNaN(hour) || isNaN(minute)) return '';
+          hour = Math.max(0, Math.min(23, hour));
+          minute = Math.max(0, Math.min(59, minute));
+          return String(hour).padStart(2, '0') + ':' + String(minute).padStart(2, '0');
+        }
+
+        function renderDetailDateMenu(keepView) {
+          if (!detailDateMenu || !detailDateInput) return;
+          var selected = detailDateInput.value || '';
+          detailDateMenuView = resolveDateMenuView(selected, detailDateMenuView, !!keepView);
+          detailDateMenu.classList.add('date-calendar-menu');
+          detailDateMenu.classList.remove('time-custom-menu');
+          detailDateMenu.innerHTML = buildDateCalendarMenuHtml(selected, detailDateMenuView);
+        }
+
+        function renderDetailTimeMenu() {
+          if (!detailTimeMenu || !detailTimeInput) return;
+          var selected = normalizeTimeValue(detailTimeInput.value || '');
+          detailTimeMenu.classList.remove('date-calendar-menu');
+          detailTimeMenu.classList.add('time-custom-menu');
+          detailTimeMenu.innerHTML = buildTimeMenuHtml(selected);
+        }
+
+        function toggleDatetimeSelectMenu(shell, menu, forceOpen) {
+          if (!shell || !menu) return;
+          var shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : !menu.classList.contains('show');
+          if (shouldOpen) {
+            menu.classList.add('show');
+            shell.classList.add('open');
+            return;
+          }
+          menu.classList.remove('show');
+          shell.classList.remove('open');
+        }
+
+        function closeDetailDateTimeMenus() {
+          toggleDatetimeSelectMenu(detailDateShell, detailDateMenu, false);
+          toggleDatetimeSelectMenu(detailTimeShell, detailTimeMenu, false);
+        }
+
         function setDetailDatetimeFromValue(localValue) {
           if (detailDueAt) detailDueAt.value = localValue || '';
           if (detailDateInput) detailDateInput.value = localValue ? localValue.slice(0, 10) : '';
           if (detailTimeInput) detailTimeInput.value = localValue ? localValue.slice(11, 16) : '';
           if (detailDatetimeText) detailDatetimeText.textContent = formatDatetimeDisplay(localValue);
+          if (detailDateText) detailDateText.textContent = formatDetailDateLabel(detailDateInput ? detailDateInput.value : '');
+          if (detailTimeText) detailTimeText.textContent = formatDetailTimeLabel(detailTimeInput ? detailTimeInput.value : '');
+          renderDetailDateMenu();
+          renderDetailTimeMenu();
         }
 
         function updateDetailDatetimeFromSplitInputs() {
@@ -1265,6 +1815,7 @@
 
         function closeDetailDatetimePanel() {
           if (detailDatetimeShell) detailDatetimeShell.classList.remove('open');
+          closeDetailDateTimeMenus();
         }
 
         function toggleDetailDatetimePanel(forceOpen) {
@@ -1434,6 +1985,30 @@
           });
         };
 
+        function renderDetailTags() {
+          if (!detailTagList || !currentEditingTask) return;
+          var currentLabel = getPrimaryTaskLabel(currentEditingTask);
+          var currentKey = normalizeLabelKey(currentLabel);
+          var html = '';
+          TAG_ORDER.forEach(function (meta) {
+            var activeClass = meta.key === currentKey ? ' ring-2 ring-primary' : '';
+            html += '<button type="button" class="px-3 py-1.5 rounded-full text-xs font-medium inline-flex items-center ' + meta.className + activeClass + '" onclick="window.changeDetailTag(\'' + meta.key + '\')"><i class="fas ' + meta.icon + ' mr-1"></i>' + escapeHtml(meta.label) + '</button>';
+          });
+          detailTagList.innerHTML = html;
+        }
+
+        window.changeDetailTag = function (tagKey) {
+          if (!currentEditingTask) return;
+          var meta = TAG_META[tagKey] || TAG_META.work;
+          currentEditingTask.labels = [meta.label];
+          renderDetailTags();
+          AppState.save();
+          renderMonthGrid();
+          renderScheduledTaskList();
+          renderWeekView();
+          renderDayView();
+        };
+
         function setCalendarChromeVisible(visible) {
           var selector = '.unified-top-header-dock, .unified-bottom-tab-dock, header.sticky.top-0, footer.glass-tab';
           document.querySelectorAll(selector).forEach(function (el) {
@@ -1492,13 +2067,39 @@
           return ''.concat(d.getFullYear(), '年', d.getMonth() + 1, '月', d.getDate(), '日 ', dayNames[d.getDay()]);
         }
 
+        var TAG_META = {
+          work: { key: 'work', label: '工作', className: 'tag-work', dotClass: 'bg-task-work', icon: 'fa-briefcase' },
+          study: { key: 'study', label: '学习', className: 'tag-study', dotClass: 'bg-task-study', icon: 'fa-book' },
+          life: { key: 'life', label: '生活', className: 'tag-life', dotClass: 'bg-task-life', icon: 'fa-home' },
+          health: { key: 'health', label: '健康', className: 'tag-health', dotClass: 'bg-task-health', icon: 'fa-heart' }
+        };
+        var TAG_ORDER = [TAG_META.work, TAG_META.study, TAG_META.life, TAG_META.health];
+
+        function normalizeLabelKey(label) {
+          var t = String(label == null ? '' : label).trim().toLowerCase();
+          if (t === '工作' || t === 'work') return 'work';
+          if (t === '学习' || t === 'study') return 'study';
+          if (t === '生活' || t === 'life') return 'life';
+          if (t === '健康' || t === 'health') return 'health';
+          return 'work';
+        }
+
+        function getTagMeta(label) {
+          var key = normalizeLabelKey(label);
+          return TAG_META[key] || TAG_META.work;
+        }
+
+        function normalizeTaskLabels(task) {
+          if (!task) return ['工作'];
+          var labels = parseTags(task.labels || task.tags || task.tag || []);
+          if (!labels.length) labels = ['工作'];
+          task.labels = labels;
+          return labels;
+        }
+
         function getDayColor(task) {
-          if (!task || !task.labels) return 'bg-primary';
-          if (task.labels.includes('工作')) return 'bg-task-work';
-          if (task.labels.includes('学习')) return 'bg-task-study';
-          if (task.labels.includes('生活')) return 'bg-task-life';
-          if (task.labels.includes('健康')) return 'bg-task-health';
-          return 'bg-primary';
+          var labels = normalizeTaskLabels(task);
+          return getTagMeta(labels[0]).dotClass;
         }
 
         function formatDisplayDate(iso) {
@@ -1512,13 +2113,11 @@
         }
 
         function getTagClass(tag) {
-          if (!tag) return 'tag-work';
-          var t = String(tag).trim().toLowerCase();
-          if (t === '工作' || t === 'work') return 'tag-work';
-          if (t === '学习' || t === 'study') return 'tag-study';
-          if (t === '生活' || t === 'life') return 'tag-life';
-          if (t === '健康' || t === 'health') return 'tag-health';
-          return 'bg-gray-100 text-gray-700';
+          return getTagMeta(tag).className;
+        }
+
+        function getTagIcon(tag) {
+          return getTagMeta(tag).icon;
         }
 
         function isSameDay(date1, date2) {
@@ -1538,9 +2137,8 @@
         }
 
         function getPrimaryTaskLabel(task) {
-          var labels = task && task.labels;
-          if (Array.isArray(labels) && labels.length > 0) return labels[0];
-          return '工作';
+          var labels = normalizeTaskLabels(task);
+          return labels[0] || '工作';
         }
 
         function sortTaskPoolItems(a, b) {
@@ -1824,10 +2422,12 @@
           selectedTaskId = task.id;
           currentEditingTask = task;
           ensureTaskSubtasks(currentEditingTask);
+          normalizeTaskLabels(currentEditingTask);
           if (detailTitle) detailTitle.value = task.title || '';
           if (detailDescription) detailDescription.value = task.description || '';
           setDetailDatetimeFromValue(toLocalDatetimeValue(task.dueAt || ''));
           renderSubtasks();
+          renderDetailTags();
           if (detailPanel) {
             detailPanel.classList.remove('hidden');
             document.body.classList.add('task-modal-open');
@@ -1846,13 +2446,34 @@
             activeBtn.classList.add('active', 'btn-primary');
             activeBtn.classList.remove('btn-glass');
           }
+          var currentView = null;
           document.querySelectorAll('.calendar-view').forEach(function (v) {
-            v.classList.add('hidden');
+            if (!v.classList.contains('hidden')) currentView = v;
           });
           var viewEl = document.getElementById(view + '-view');
-          if (viewEl) {
+          if (viewEl && currentView && currentView !== viewEl) {
+            currentView.classList.remove('calendar-view-enter');
+            currentView.classList.add('calendar-view-leave');
+            setTimeout(function () {
+              currentView.classList.remove('calendar-view-leave');
+              currentView.classList.add('hidden');
+              viewEl.classList.remove('hidden');
+              viewEl.classList.remove('calendar-view-leave');
+              viewEl.classList.add('calendar-view-enter');
+              setTimeout(function () {
+                viewEl.classList.remove('calendar-view-enter');
+              }, 340);
+            }, 160);
+          } else if (viewEl) {
+            document.querySelectorAll('.calendar-view').forEach(function (v) {
+              if (v !== viewEl) v.classList.add('hidden');
+            });
             viewEl.classList.remove('hidden');
-            viewEl.classList.add('fade-in');
+            viewEl.classList.remove('calendar-view-leave');
+            viewEl.classList.add('calendar-view-enter');
+            setTimeout(function () {
+              viewEl.classList.remove('calendar-view-enter');
+            }, 340);
           }
           if (view === 'week') {
             renderWeekView();
@@ -2131,11 +2752,16 @@
             }
             currentEditingTask = task;
             ensureTaskSubtasks(currentEditingTask);
+            normalizeTaskLabels(currentEditingTask);
+            var selectedLabels = (currentEditingTask.labels && currentEditingTask.labels.length ? currentEditingTask.labels.slice() : ['工作']);
 
             var payload = {
               title: detailTitle ? detailTitle.value.trim() : task.title,
               description: detailDescription ? detailDescription.value.trim() : task.description,
-              dueAt: detailDueAt && detailDueAt.value ? new Date(detailDueAt.value).toISOString() : null
+              dueAt: detailDueAt && detailDueAt.value ? new Date(detailDueAt.value).toISOString() : null,
+              labels: selectedLabels,
+              tags: selectedLabels,
+              tag: selectedLabels[0] || '工作'
             };
 
             apiRequest('/api/tasks/' + selectedTaskId, {
@@ -2147,6 +2773,8 @@
                 task.title = updated.title || payload.title || task.title;
                 task.description = updated.description || payload.description || task.description;
                 task.dueAt = updated.dueAt || payload.dueAt;
+                task.labels = (updated && (updated.labels || updated.tags || updated.tag)) ? parseTags(updated.labels || updated.tags || updated.tag) : selectedLabels;
+                if (!Array.isArray(task.labels) || !task.labels.length) task.labels = selectedLabels;
                 if (updated && (updated.subtasks || updated.subTasks)) {
                   task.subtasks = normalizeTaskSubtasks(updated);
                 } else {
@@ -2175,8 +2803,112 @@
             toggleDetailDatetimePanel();
           });
         }
-        if (detailDateInput) detailDateInput.addEventListener('change', updateDetailDatetimeFromSplitInputs);
-        if (detailTimeInput) detailTimeInput.addEventListener('change', updateDetailDatetimeFromSplitInputs);
+        if (detailDateTrigger) {
+          detailDateTrigger.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            renderDetailDateMenu();
+            toggleDatetimeSelectMenu(detailTimeShell, detailTimeMenu, false);
+            toggleDatetimeSelectMenu(detailDateShell, detailDateMenu);
+          });
+        }
+        if (detailTimeTrigger) {
+          detailTimeTrigger.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            renderDetailTimeMenu();
+            toggleDatetimeSelectMenu(detailDateShell, detailDateMenu, false);
+            toggleDatetimeSelectMenu(detailTimeShell, detailTimeMenu);
+          });
+        }
+        if (detailDateMenu) {
+          detailDateMenu.addEventListener('click', function (e) {
+            var pickDate = e.target.closest('[data-date]');
+            var actionBtn = e.target.closest('[data-calendar-action]');
+            if (!pickDate && !actionBtn) return;
+            e.preventDefault();
+            e.stopPropagation();
+            if (pickDate) {
+              if (detailDateInput) detailDateInput.value = pickDate.dataset.date || '';
+              detailDateMenuView = resolveDateMenuView(detailDateInput ? detailDateInput.value : '', detailDateMenuView);
+              updateDetailDatetimeFromSplitInputs();
+              toggleDatetimeSelectMenu(detailDateShell, detailDateMenu, false);
+              return;
+            }
+            var action = actionBtn.dataset.calendarAction || '';
+            var step = parseInt(actionBtn.dataset.step || '0', 10);
+            if (action === 'change-month' && step) {
+              detailDateMenuView = shiftDateMenuMonth(detailDateMenuView, step);
+              renderDetailDateMenu(true);
+              return;
+            }
+            if (action === 'change-year' && step) {
+              detailDateMenuView = shiftDateMenuYear(detailDateMenuView, step);
+              renderDetailDateMenu(true);
+              return;
+            }
+            if (action === 'jump-current') {
+              detailDateMenuView = normalizeDateMenuMonth(new Date());
+              renderDetailDateMenu(true);
+              return;
+            }
+            if (action === 'pick-today') {
+              if (detailDateInput) detailDateInput.value = toDateValueYMD(new Date());
+              detailDateMenuView = resolveDateMenuView(detailDateInput ? detailDateInput.value : '', detailDateMenuView);
+              updateDetailDatetimeFromSplitInputs();
+              toggleDatetimeSelectMenu(detailDateShell, detailDateMenu, false);
+              return;
+            }
+            if (action === 'clear-date') {
+              if (detailDateInput) detailDateInput.value = '';
+              updateDetailDatetimeFromSplitInputs();
+              toggleDatetimeSelectMenu(detailDateShell, detailDateMenu, false);
+            }
+          });
+        }
+        if (detailTimeMenu) {
+          detailTimeMenu.addEventListener('click', function (e) {
+            var option = e.target.closest('[data-value]');
+            var actionBtn = e.target.closest('[data-time-action]');
+            if (!option && !actionBtn) return;
+            e.preventDefault();
+            e.stopPropagation();
+            if (option) {
+              if (detailTimeInput) detailTimeInput.value = option.dataset.value || '';
+              updateDetailDatetimeFromSplitInputs();
+              toggleDatetimeSelectMenu(detailTimeShell, detailTimeMenu, false);
+              return;
+            }
+            var action = actionBtn.dataset.timeAction || '';
+            var hourInput = detailTimeMenu.querySelector('[data-time-input="hour"]');
+            var minuteInput = detailTimeMenu.querySelector('[data-time-input="minute"]');
+            if (action === 'set-hour' && hourInput) {
+              hourInput.value = actionBtn.dataset.hour || hourInput.value;
+              return;
+            }
+            if (action === 'set-minute' && minuteInput) {
+              minuteInput.value = actionBtn.dataset.minute || minuteInput.value;
+              return;
+            }
+            if (action === 'pick-now') {
+              var now = new Date();
+              if (detailTimeInput) detailTimeInput.value = normalizeTimeValue(now.getHours() + ':' + now.getMinutes());
+              updateDetailDatetimeFromSplitInputs();
+              toggleDatetimeSelectMenu(detailTimeShell, detailTimeMenu, false);
+              return;
+            }
+            if (action === 'apply-custom') {
+              var custom = coerceTimeFromMenu(detailTimeMenu);
+              if (!custom) {
+                showToast('请输入有效时间（00:00-23:59）', 'warning');
+                return;
+              }
+              if (detailTimeInput) detailTimeInput.value = custom;
+              updateDetailDatetimeFromSplitInputs();
+              toggleDatetimeSelectMenu(detailTimeShell, detailTimeMenu, false);
+            }
+          });
+        }
         if (quickTodayBtn) quickTodayBtn.addEventListener('click', function () { applyQuickDueDate('today'); });
         if (quickTomorrowBtn) quickTomorrowBtn.addEventListener('click', function () { applyQuickDueDate('tomorrow'); });
         if (quickClearBtn) quickClearBtn.addEventListener('click', function () { applyQuickDueDate('clear'); });
@@ -2184,16 +2916,50 @@
         document.addEventListener('click', function (e) {
           if (detailDatetimeShell && !detailDatetimeShell.contains(e.target)) {
             closeDetailDatetimePanel();
+            return;
           }
+          if (detailDateShell && !detailDateShell.contains(e.target)) toggleDatetimeSelectMenu(detailDateShell, detailDateMenu, false);
+          if (detailTimeShell && !detailTimeShell.contains(e.target)) toggleDatetimeSelectMenu(detailTimeShell, detailTimeMenu, false);
         });
 
         if (addSubtaskBtn && newSubtaskInput) {
+          var subtaskSubmitting = false;
+          var setSubtaskSubmitting = function (pending) {
+            subtaskSubmitting = !!pending;
+            addSubtaskBtn.disabled = !!pending;
+            newSubtaskInput.disabled = !!pending;
+          };
+          var normalizeSubtaskText = function (raw) {
+            return String(raw == null ? '' : raw).replace(/\s+/g, ' ').trim();
+          };
+          var hasDuplicateSubtask = function (task, title) {
+            var lower = String(title || '').toLowerCase();
+            return (task.subtasks || []).some(function (s) {
+              return String((s && (s.title || s.text)) || '').toLowerCase() === lower;
+            });
+          };
           var addSubtask = function () {
-            if (!currentEditingTask) return;
+            if (!currentEditingTask) {
+              showToast('请先打开任务详情', 'warning');
+              return;
+            }
+            if (subtaskSubmitting) return;
             ensureTaskSubtasks(currentEditingTask);
-            var text = (newSubtaskInput.value || '').trim();
-            if (!text) return;
+            var text = normalizeSubtaskText(newSubtaskInput.value);
+            if (!text) {
+              showToast('请输入子任务内容', 'warning');
+              return;
+            }
+            if (text.length > 60) {
+              showToast('子任务最多 60 个字符', 'warning');
+              return;
+            }
+            if (hasDuplicateSubtask(currentEditingTask, text)) {
+              showToast('该子任务已存在', 'warning');
+              return;
+            }
             currentEditingTask.subtasks.push({ title: text, completed: false });
+            setSubtaskSubmitting(true);
             syncCurrentSubtasksToServer().then(function () {
               AppState.save();
               renderSubtasks();
@@ -2205,6 +2971,8 @@
               console.error(err);
               currentEditingTask.subtasks.pop();
               showToast('添加子任务失败', 'error');
+            }).finally(function () {
+              setSubtaskSubmitting(false);
             });
           };
           addSubtaskBtn.addEventListener('click', addSubtask);
@@ -2224,6 +2992,11 @@
               showToast('暂无子任务可操作', 'warning');
               return;
             }
+            var backup = currentEditingTask.subtasks.map(function (s) { return !!s.completed; });
+            if (backup.every(function (v) { return v; })) {
+              showToast('子任务已全部完成', 'info');
+              return;
+            }
             currentEditingTask.subtasks.forEach(function (s) { s.completed = true; });
             syncCurrentSubtasksToServer().then(function () {
               renderSubtasks();
@@ -2232,6 +3005,8 @@
               showToast('✅ 所有子任务已标记完成', 'success');
             }).catch(function (err) {
               console.error(err);
+              currentEditingTask.subtasks.forEach(function (s, idx) { s.completed = !!backup[idx]; });
+              renderSubtasks();
               showToast('批量更新子任务失败', 'error');
             });
           });
@@ -2417,7 +3192,8 @@
           AppState.logout();
           showToast('已退出登录', 'success');
           setTimeout(function () {
-            window.location.href = '登录页面.html';
+            if (typeof safeNavigate === 'function') safeNavigate('登录页面.html');
+            else window.location.href = '登录页面.html';
           }, 300);
         }
         window.performLogout = performLogout;
@@ -2442,19 +3218,8 @@
             var baseHref = addTaskBtn.getAttribute('href') || '待办页面.html';
             var separator = baseHref.indexOf('?') === -1 ? '?' : '&';
             var targetUrl = baseHref + separator + 'openModal=new-task';
-
-            var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            if (prefersReducedMotion) {
-              window.location.href = targetUrl;
-              return;
-            }
-
-            document.body.style.transition = 'opacity 180ms ease, transform 180ms ease';
-            document.body.style.opacity = '0.92';
-            document.body.style.transform = 'translateY(4px)';
-            window.setTimeout(function () {
-              window.location.href = targetUrl;
-            }, 160);
+            if (typeof safeNavigate === 'function') safeNavigate(targetUrl);
+            else window.location.href = targetUrl;
           });
         }
       });

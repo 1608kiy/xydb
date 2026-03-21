@@ -1953,7 +1953,10 @@
           logoutBtn.addEventListener('click', function () {
             AppState.logout();
             showToast('已退出登录');
-            setTimeout(function () { window.location.href = '登录页面.html'; }, 300);
+            setTimeout(function () {
+              if (typeof safeNavigate === 'function') safeNavigate('登录页面.html');
+              else window.location.href = '登录页面.html';
+            }, 300);
           });
         }
 
@@ -1967,7 +1970,10 @@
               onConfirm: function () {
                 localStorage.clear();
                 showToast('账号已注销');
-                setTimeout(function () { window.location.href = '注册页面.html'; }, 400);
+                setTimeout(function () {
+                  if (typeof safeNavigate === 'function') safeNavigate('注册页面.html');
+                  else window.location.href = '注册页面.html';
+                }, 400);
               }
             });
           });

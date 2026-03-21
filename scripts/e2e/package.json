@@ -1,0 +1,14 @@
+{
+  "name": "xydb-e2e-tools",
+  "private": true,
+  "version": "1.0.0",
+  "description": "UI automation and frontend interaction scripts for local usage",
+  "scripts": {
+    "ui:auto": "node ui_automation_smoke.cjs",
+    "ui:interaction": "node frontend_interaction_flow.cjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.53.1"
+  }
+}
+
