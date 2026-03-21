@@ -3016,42 +3016,154 @@
     };
 
     window.confirmBatchComplete = function () {
-      if (selectedBatchTasks.length === 0) {
-        showToast('⚠️ 请先选择要完成的任务', 'error');
+      var targets = getBatchTargets();
+      if (targets.length === 0) {
+        showToast('⚠️ 当前没有可批量完成的任务', 'error');
         return;
       }
-      // 直接执行批量完成（无需二次确认）
-      selectedBatchTasks.forEach(function (item) {
-        var list = item.isToday ? tasks.today : tasks.tomorrow;
-        var task = list.find(function (t) { return t.id === item.id; });
-        if (task) task.completed = true;
+
+      var remoteUpdates = [];
+      targets.forEach(function (item) {
+        var found = findTaskByTarget(item);
+        if (!found || !found.task) return;
+        found.task.completed = true;
+        found.task.status = 'completed';
+        if (!isLocalTaskId(found.task.id)) {
+          remoteUpdates.push({ id: found.task.id, task: found.task, prevStatus: found.task.status, prevCompleted: found.task.completed });
+        }
       });
-      var count = selectedBatchTasks.length;
-      selectedBatchTasks = [];
-      renderTaskLists();
-      updateCountStats();
-      saveToLocalStorage();
-      showToast('✅ 已批量完成 ' + count + ' 个任务');
+
+      var done = function (failCount) {
+        selectedBatchTasks = [];
+        renderTaskLists();
+        updateCountStats();
+        saveToLocalStorage();
+        if (failCount > 0) {
+          showToast('已完成 ' + (targets.length - failCount) + ' 个任务，' + failCount + ' 个同步失败', 'warning');
+        } else {
+          showToast('✅ 已批量完成 ' + targets.length + ' 个任务');
+        }
+      };
+
+      if (remoteUpdates.length === 0) {
+        done(0);
+        return;
+      }
+
+      Promise.allSettled(remoteUpdates.map(function (item) {
+        return updateTaskStatusOnServer(item.id, 'completed');
+      })).then(function (results) {
+        var failCount = 0;
+        results.forEach(function (r, idx) {
+          if (r.status !== 'fulfilled') {
+            failCount++;
+            var backup = remoteUpdates[idx];
+            if (backup && backup.task) {
+              backup.task.status = 'pending';
+              backup.task.completed = false;
+            }
+          }
+        });
+        done(failCount);
+      }).catch(function () {
+        remoteUpdates.forEach(function (item) {
+          if (item && item.task) {
+            item.task.status = 'pending';
+            item.task.completed = false;
+          }
+        });
+        done(remoteUpdates.length);
+      });
     };
 
     window.confirmBatchDelete = function () {
-      if (selectedBatchTasks.length === 0) {
-        showToast('⚠️ 请先选择要删除的任务', 'error');
+      var targets = getBatchTargets();
+      if (targets.length === 0) {
+        showToast('⚠️ 当前没有可批量删除的任务', 'error');
         return;
       }
-      // 直接执行批量删除（无需二次确认）
-      selectedBatchTasks.forEach(function (item) {
-        var list = item.isToday ? tasks.today : tasks.tomorrow;
-        var index = list.findIndex(function (t) { return t.id === item.id; });
-        if (index > -1) list.splice(index, 1);
+
+      var remoteDeletes = [];
+      targets.forEach(function (item) {
+        var found = findTaskByTarget(item);
+        if (!found || !found.task) return;
+        if (isLocalTaskId(found.task.id)) {
+          removePendingByLocalId(found.task.id);
+          found.list.splice(found.index, 1);
+          return;
+        }
+        remoteDeletes.push({ id: found.task.id, list: found.list, index: found.index, task: found.task });
       });
-      var count = selectedBatchTasks.length;
-      selectedBatchTasks = [];
-      renderTaskLists();
-      updateCountStats();
-      saveToLocalStorage();
-      showToast('🗑️ 已批量删除 ' + count + ' 个任务');
+
+      var commitLocalDelete = function () {
+        selectedBatchTasks = [];
+        renderTaskLists();
+        updateCountStats();
+        saveToLocalStorage();
+      };
+
+      if (remoteDeletes.length === 0) {
+        commitLocalDelete();
+        showToast('🗑️ 已批量删除 ' + targets.length + ' 个任务');
+        return;
+      }
+
+      Promise.allSettled(remoteDeletes.map(function (item) {
+        return apiRequest('/api/tasks/' + item.id, { method: 'DELETE' });
+      })).then(function (results) {
+        var failCount = 0;
+        results.forEach(function (r, idx) {
+          if (r.status === 'fulfilled' && r.value && r.value.status === 200 && r.value.body && r.value.body.code === 200) {
+            var item = remoteDeletes[idx];
+            var removeIdx = item.list.findIndex(function (t) { return String(t.id) === String(item.id); });
+            if (removeIdx > -1) item.list.splice(removeIdx, 1);
+          } else {
+            failCount++;
+          }
+        });
+        commitLocalDelete();
+        if (failCount > 0) {
+          showToast('已删除 ' + (targets.length - failCount) + ' 个任务，' + failCount + ' 个删除失败', 'warning');
+        } else {
+          showToast('🗑️ 已批量删除 ' + targets.length + ' 个任务');
+        }
+      }).catch(function () {
+        commitLocalDelete();
+        showToast('批量删除请求失败，请重试', 'error');
+      });
     };
+
+    function findTaskByTarget(item) {
+      var list = item && item.isToday ? tasks.today : tasks.tomorrow;
+      if (!list) return null;
+      var index = list.findIndex(function (t) { return String(t.id) === String(item.id); });
+      if (index < 0) return null;
+      return { list: list, index: index, task: list[index] };
+    }
+
+    function getBatchTargets() {
+      if (selectedBatchTasks.length > 0) return selectedBatchTasks.slice();
+
+      var targets = [];
+      getFilteredTasks(tasks.today, true).forEach(function (t) {
+        targets.push({ id: t.id, isToday: true });
+      });
+      getFilteredTasks(tasks.tomorrow, false).forEach(function (t) {
+        targets.push({ id: t.id, isToday: false });
+      });
+      return targets;
+    }
+
+    function toggleBatchSelection(taskId, isToday) {
+      var idx = selectedBatchTasks.findIndex(function (t) {
+        return String(t.id) === String(taskId) && !!t.isToday === !!isToday;
+      });
+      if (idx > -1) {
+        selectedBatchTasks.splice(idx, 1);
+      } else {
+        selectedBatchTasks.push({ id: taskId, isToday: !!isToday });
+      }
+    }
 
     window.completeAllTasks = function () {
       var count = tasks.today.length + tasks.tomorrow.length;
@@ -3271,6 +3383,13 @@
 
           var taskId = this.dataset.taskId;
           var isToday = this.dataset.isToday === 'true';
+
+          if (e.ctrlKey || e.metaKey || e.shiftKey) {
+            toggleBatchSelection(taskId, isToday);
+            renderTaskLists();
+            return;
+          }
+
           var list = isToday ? tasks.today : tasks.tomorrow;
           var task = list.find(function (t) { return String(t.id) === String(taskId); });
           if (task) {

@@ -868,9 +868,31 @@
     <!-- [JSMOD] p9q_ECharts 图表初始化 -->
     <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
     <script id="echarts-script">
-      window.addEventListener('load', function () {
+      function initReportChartsOnce() {
+        if (window.__reportChartsInited) return;
+        window.__reportChartsInited = true;
+        if (!window.echarts) {
+          console.warn('ECharts 加载失败，图表已降级为文本提示');
+          ['task-trend-chart', 'category-pie-chart', 'focus-bar-chart', 'focus-heatmap'].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) {
+              el.innerHTML = '<div style="height:100%;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:13px;">图表组件加载失败，请刷新重试</div>';
+            }
+          });
+          return;
+        }
+
+        var taskTrendChartEl = document.getElementById('task-trend-chart');
+        var categoryPieChartEl = document.getElementById('category-pie-chart');
+        var focusBarChartEl = document.getElementById('focus-bar-chart');
+        var focusHeatmapEl = document.getElementById('focus-heatmap');
+        if (!taskTrendChartEl || !categoryPieChartEl || !focusBarChartEl || !focusHeatmapEl) {
+          console.warn('图表容器缺失，跳过图表初始化');
+          return;
+        }
+
         // 任务完成趋势图
-        var taskTrendChart = echarts.init(document.getElementById('task-trend-chart'));
+        var taskTrendChart = echarts.init(taskTrendChartEl);
         window.taskTrendChart = taskTrendChart;
         taskTrendChart.setOption({
           xAxis: {
@@ -916,7 +938,7 @@
         });
 
         // 任务分类统计饼图
-        var categoryPieChart = echarts.init(document.getElementById('category-pie-chart'));
+        var categoryPieChart = echarts.init(categoryPieChartEl);
         window.categoryPieChart = categoryPieChart;
         categoryPieChart.setOption({
           series: [{
@@ -941,7 +963,7 @@
         });
 
         // 番茄专注分析柱状图
-        var focusBarChart = echarts.init(document.getElementById('focus-bar-chart'));
+        var focusBarChart = echarts.init(focusBarChartEl);
         window.focusBarChart = focusBarChart;
         focusBarChart.setOption({
           xAxis: {
@@ -979,7 +1001,7 @@
         });
 
         // 专注时间段分布热力图
-        var focusHeatmap = echarts.init(document.getElementById('focus-heatmap'));
+        var focusHeatmap = echarts.init(focusHeatmapEl);
         window.focusHeatmap = focusHeatmap;
         focusHeatmap.setOption({
           tooltip: {
@@ -1058,7 +1080,14 @@
           focusBarChart.resize();
           focusHeatmap.resize();
         });
-      });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initReportChartsOnce);
+      } else {
+        initReportChartsOnce();
+      }
+      window.addEventListener('load', initReportChartsOnce);
     </script>
     <!-- [/JSMOD] p9q_ECharts 图表初始化 -->
     
@@ -1486,7 +1515,7 @@
             showUnifiedBottomTabDock();
           }
         }
-        setTimeout(revealBottomTab, 1800);
+        setTimeout(revealBottomTab, 220);
         window.addEventListener('load', revealBottomTab);
 
         var now = new Date();
@@ -1505,6 +1534,7 @@
         applyTimeRangeSelection(savedRange || '本周');
 
         Promise.resolve()
+          .then(function () { return updateWeeklyStats({ sync: false }); })
           .then(function () { return updateWeeklyStats({ sync: true }); })
           .catch(function (err) { console.error('updateWeeklyStats error:', err); })
           .finally(revealBottomTab);

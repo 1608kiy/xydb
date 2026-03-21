@@ -109,14 +109,7 @@
             box-shadow: 0 4px 24px rgba(79, 70, 229, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
           }
           .user-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #4F46E5, #7C3AED, #EC4899);
-            border-radius: 12px 12px 0 0;
+            content: none;
           }
           
           /* ✅ 统计卡片样式 */
@@ -307,6 +300,83 @@
             border: 1px solid rgba(255, 255, 255, 0.45);
             box-shadow: 0 20px 48px rgba(15, 23, 42, 0.2);
             animation: confirmModalIn 0.24s ease-out;
+          }
+
+          /* ✅ 暗夜模式 */
+          body.theme-night {
+            background: linear-gradient(135deg, #0b1220 0%, #111827 50%, #0f172a 100%) !important;
+            color: #e5e7eb;
+          }
+          body.theme-night .bg-orb {
+            opacity: 0.08;
+          }
+          body.theme-night .glass,
+          body.theme-night .glass-strong,
+          body.theme-night .glass-max,
+          body.theme-night .glass-header,
+          body.theme-night .glass-card,
+          body.theme-night .user-card,
+          body.theme-night .stat-card,
+          body.theme-night .setting-item,
+          body.theme-night .custom-select-trigger,
+          body.theme-night .custom-select-dropdown,
+          body.theme-night .modal-content,
+          body.theme-night .confirm-modal-card,
+          body.theme-night #dev-test-panel {
+            background: rgba(17, 24, 39, 0.72) !important;
+            border-color: rgba(148, 163, 184, 0.24) !important;
+            color: #e5e7eb !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.32);
+          }
+          body.theme-night .setting-item:hover {
+            background: rgba(30, 41, 59, 0.62) !important;
+          }
+          body.theme-night .text-gray-800,
+          body.theme-night .text-gray-700,
+          body.theme-night .text-gray-600 {
+            color: #e5e7eb !important;
+          }
+          body.theme-night .text-gray-500,
+          body.theme-night .text-gray-400 {
+            color: #94a3b8 !important;
+          }
+          body.theme-night .bg-white,
+          body.theme-night .bg-white\/70,
+          body.theme-night .bg-white\/80,
+          body.theme-night .bg-white\/85,
+          body.theme-night .bg-white\/90,
+          body.theme-night .bg-white\/95,
+          body.theme-night .bg-gray-50,
+          body.theme-night .bg-gray-100 {
+            background-color: rgba(30, 41, 59, 0.62) !important;
+            color: #e5e7eb !important;
+          }
+          body.theme-night .border-gray-100,
+          body.theme-night .border-gray-200,
+          body.theme-night .border-gray-300 {
+            border-color: rgba(148, 163, 184, 0.24) !important;
+          }
+          body.theme-night .custom-checkbox {
+            background: rgba(30, 41, 59, 0.9);
+            border-color: rgba(148, 163, 184, 0.5);
+          }
+          body.theme-night .custom-select-option {
+            color: #e5e7eb;
+          }
+          body.theme-night .custom-select-option:hover,
+          body.theme-night .custom-select-option.selected {
+            background: rgba(79, 70, 229, 0.26) !important;
+            color: #c7d2fe !important;
+          }
+          body.theme-night .glass-input,
+          body.theme-night .modal-input {
+            background: rgba(30, 41, 59, 0.85) !important;
+            border-color: rgba(148, 163, 184, 0.32) !important;
+            color: #e5e7eb !important;
+          }
+          body.theme-night .glass-input::placeholder,
+          body.theme-night .modal-input::placeholder {
+            color: #94a3b8 !important;
           }
           @keyframes confirmModalIn {
             from { opacity: 0; transform: translateY(10px) scale(0.98); }
@@ -788,13 +858,6 @@
                   </div>
                   <div class="flex flex-wrap gap-2">
                     <button
-                      id="theme-system-btn"
-                      data-theme="system"
-                      class="px-3 py-1.5 rounded-full border border-primary bg-primary text-white text-xs theme-btn transition-all duration-300 hover:shadow-lg"
-                    >
-                      跟随系统
-                    </button>
-                    <button
                       id="theme-light-btn"
                       data-theme="light"
                       class="px-3 py-1.5 rounded-full border border-gray-200 text-xs theme-btn transition-all duration-300 hover:bg-primary/10 hover:text-primary hover:shadow-md"
@@ -802,41 +865,12 @@
                       浅色
                     </button>
                     <button
-                      id="theme-dark-btn"
-                      data-theme="dark"
+                      id="theme-night-btn"
+                      data-theme="night"
                       class="px-3 py-1.5 rounded-full border border-gray-200 text-xs theme-btn transition-all duration-300 hover:bg-primary/10 hover:text-primary hover:shadow-md"
                     >
-                      深色
+                      暗夜模式
                     </button>
-                  </div>
-                  <div class="flex items-center space-x-2 mt-3">
-                    <span class="text-gray-500">主题色</span>
-                    <div class="flex space-x-1.5">
-                      <button
-                        id="color-blue-btn"
-                        data-color="blue"
-                        class="color-btn w-5 h-5 rounded-full bg-primary border-2 border-white shadow transition-all duration-300 hover:shadow-lg hover:scale-105"
-                        title="蓝色"
-                      ></button>
-                      <button
-                        id="color-purple-btn"
-                        data-color="purple"
-                        class="color-btn w-5 h-5 rounded-full bg-secondary/90 border-2 border-transparent hover:border-white shadow transition-all duration-300 hover:shadow-lg hover:scale-105"
-                        title="紫色"
-                      ></button>
-                      <button
-                        id="color-green-btn"
-                        data-color="green"
-                        class="color-btn w-5 h-5 rounded-full bg-success/90 border-2 border-transparent hover:border-white shadow transition-all duration-300 hover:shadow-lg hover:scale-105"
-                        title="绿色"
-                      ></button>
-                      <button
-                        id="color-pink-btn"
-                        data-color="pink"
-                        class="color-btn w-5 h-5 rounded-full bg-pink-500 border-2 border-transparent hover:border-white shadow transition-all duration-300 hover:shadow-lg hover:scale-105"
-                        title="粉色"
-                      ></button>
-                    </div>
                   </div>
                 </div>
 
@@ -1749,30 +1783,49 @@
 
         initializeSettings();
 
+        function normalizeThemeMode(mode) {
+          if (mode === 'dark' || mode === 'night') return 'night';
+          if (mode === 'system') {
+            var prefersDark = false;
+            try {
+              prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            } catch (e) {
+              prefersDark = false;
+            }
+            return prefersDark ? 'night' : 'light';
+          }
+          return 'light';
+        }
+
         function applyTheme(mode) {
           var body = document.body;
-          body.classList.remove('theme-light', 'theme-dark');
-          if (mode === 'dark') {
-            body.classList.add('theme-dark');
-          } else if (mode === 'light') {
+          body.classList.remove('theme-light', 'theme-night');
+          if (mode === 'night') {
+            body.classList.add('theme-night');
+          } else {
             body.classList.add('theme-light');
           }
         }
 
         var themeBtns = document.querySelectorAll('.theme-btn');
         var setThemeMode = function (mode) {
+          var normalized = normalizeThemeMode(mode);
           themeBtns.forEach(function (b) {
             b.classList.remove('bg-primary', 'text-white');
             b.classList.add('border-gray-200');
           });
-          var activeBtn = document.querySelector('.theme-btn[data-theme="' + mode + '"]');
+          var activeBtn = document.querySelector('.theme-btn[data-theme="' + normalized + '"]');
           if (activeBtn) {
             activeBtn.classList.add('bg-primary', 'text-white');
             activeBtn.classList.remove('border-gray-200');
           }
-          AppState.settings.theme = mode;
+          AppState.settings.theme = normalized;
           AppState.save();
-          applyTheme(mode);
+          if (typeof window.applyUnifiedThemeMode === 'function') {
+            window.applyUnifiedThemeMode(normalized);
+          } else {
+            applyTheme(normalized);
+          }
           if (hasShownThemeToast) {
             showToast('主题已设置');
           }
@@ -1785,26 +1838,10 @@
           });
         });
 
-        var colorBtns = document.querySelectorAll('.color-btn');
-        colorBtns.forEach(function (btn) {
-          btn.addEventListener('click', function () {
-            colorBtns.forEach(function (b) {
-              b.classList.remove('border-white');
-              b.classList.add('border-transparent');
-            });
-            this.classList.add('border-white');
-            this.classList.remove('border-transparent');
-            AppState.settings.themeColor = this.dataset.color;
-            AppState.save();
-            showToast('主题色已设置');
-          });
-        });
-
         if (AppState.settings?.theme) {
-          applyTheme(AppState.settings.theme);
           setThemeMode(AppState.settings.theme);
         } else {
-          setThemeMode('system');
+          setThemeMode('light');
         }
 
         var notifyTaskReminder = document.getElementById('notify-task-reminder');
@@ -2013,8 +2050,8 @@
       });
 
       function initializeSettings() {
-        var currentTheme = AppState.settings?.theme || 'system';
-        var currentColor = AppState.settings?.themeColor || 'blue';
+        var savedTheme = (AppState.settings && AppState.settings.theme) ? AppState.settings.theme : 'light';
+        var currentTheme = (savedTheme === 'night' || savedTheme === 'dark') ? 'night' : 'light';
 
         var themeBtns = document.querySelectorAll('.theme-btn');
         themeBtns.forEach(function (btn) {
@@ -2024,17 +2061,6 @@
           } else {
             btn.classList.remove('bg-primary', 'text-white');
             btn.classList.add('border-gray-200');
-          }
-        });
-
-        var colorBtns = document.querySelectorAll('.color-btn');
-        colorBtns.forEach(function (btn) {
-          if (btn.dataset.color === currentColor) {
-            btn.classList.add('border-white');
-            btn.classList.remove('border-transparent');
-          } else {
-            btn.classList.remove('border-white');
-            btn.classList.add('border-transparent');
           }
         });
 

@@ -24,8 +24,7 @@ const defaultState = {
   pomodoroSessions: [],
   checkins: [],
   settings: {
-    theme: 'system',
-    themeColor: 'blue',
+    theme: 'light',
     notifications: {
       taskReminder: true,
       pomodoroEnd: true,
