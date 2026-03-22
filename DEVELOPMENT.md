@@ -1,4 +1,4 @@
-# 项目开发文档（更新于 2026-03-20）
+# 项目开发文档（更新于 2026-03-22）
 
 本文档用于快速上手本仓库开发、联调和交付。
 
@@ -106,3 +106,75 @@ Invoke-WebRequest -Uri "http://localhost:8080/actuator/health" -UseBasicParsing
 1. 给排序与筛选状态增加持久化（刷新不丢状态）。
 2. 完成“已分配给我”真实后端字段对齐。
 3. 完善任务同步冲突策略（本地与远端并发修改）。
+
+## 10. 2026-03-21 开发记录
+
+### 10.1 今日目标与结果
+- 目标：修复登录页卡住/504、日历交互异常、昵称不同步、手机号与扫码登录链路不完整。
+- 结果：网页已恢复正常访问，登录链路增加超时与回退，核心业务页面可用性恢复。
+
+### 10.2 前端代码变更
+- 登录与注册链路增强：
+  - `frontend/登录页面.html`
+  - `frontend/注册页面.html`
+  - 新增手机号账号映射为 `手机号@mobile.local` 的兼容逻辑。
+  - “其他方式登录/扫码”改为真实后端 `register + login` 流程，不再仅本地模拟。
+  - 认证请求增加短超时（8s）与 504/timeout 友好提示。
+- 请求层稳定性增强：
+  - `frontend/common.js`
+  - `apiRequest` 增加默认超时（10s）与 `AbortController` 中断。
+  - `/api/*` 在 5xx（含 504）时自动回退候选基址。
+  - 生产环境加入 `:7833` 备用入口自动重试。
+- 日历页修复：
+  - `frontend/日历页面.html`
+  - 增加分类筛选（全部/工作/学习/生活/健康）并统一作用于月/周/日视图与任务池。
+  - 加入日期合法性保护、视图切换定时器防抖，修复切换卡死风险。
+- 个人中心昵称同步：
+  - `frontend/个人中心页面.html`
+  - 引入统一 `syncProfileIdentityUi()`，初始化、`/api/me` 回填、昵称保存后同步顶部展示。
+- 页面加载优化：
+  - 多页面移除 `reload.js`，Tailwind CDN 改为 `defer`，减少首屏阻塞。
+
+### 10.3 后端代码变更
+- 认证入参与落库：
+  - `backend/src/main/java/com/xydb/backend/dto/AuthRequest.java`
+  - 新增 `phone` 字段与手机号格式校验。
+  - `backend/src/main/java/com/xydb/backend/service/AuthService.java`
+  - 注册流程写入 `phone` 字段。
+- 数据源稳定性配置：
+  - `backend/src/main/resources/application.properties`
+  - 增加 Hikari 连接池超时、校验、保活与泄漏检测参数，降低后端请求悬挂概率。
+
+### 10.4 发布与版本记录
+- 已完成代码上传、服务重启与线上恢复。
+- GitHub 同步提交：`b0ad54d`（main）。
+
+## 11. 2026-03-22 开发记录
+
+### 11.1 今日目标与结果
+- 目标：修复日历页顶部“月/周/日视图”切换卡顿，降低数据周报页进入时等待感。
+- 结果：视图切换稳定性已增强，周报首屏改为“先渲染后同步”，可交互时间明显提前。
+
+### 11.2 前端代码变更
+- 日历视图稳定性与性能：
+  - `frontend/日历页面.html`
+  - 顶部视图按钮显式设置 `type="button"`，避免默认行为干扰点击切换。
+  - 视图切换事件增加 `preventDefault/stopPropagation`，减少误触发链路。
+  - `switchToView` 增加切换互斥锁与异常兜底，避免渲染异常导致假死。
+  - 周视图/日视图渲染改为按日期索引映射，减少重复过滤计算。
+- 数据周报首屏加载优化：
+  - `frontend/数据周报页面.html`
+  - 初始化流程改为：先执行本地统计渲染，再后台异步远端同步。
+  - AI 建议请求改为异步刷新，不再阻塞页面进入。
+
+### 11.3 回归与验证
+- 新增脚本：
+  - `scripts/e2e/calendar_report_smoke.cjs`
+  - `scripts/e2e/social_login_smoke.cjs`
+  - `scripts/e2e/tmp_checkin_console.cjs`
+- 校验结果：
+  - 社交登录冒烟通过（JWT 有效，未启用 devSkipAuth）。
+  - 打卡页中文展示正常，控制台错误数为 0。
+
+### 11.4 GitHub 记录
+- GitHub 同步提交：`4e97f3a`（main）。
