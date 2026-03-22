@@ -1457,7 +1457,7 @@ function checkAuthOnLoad(opts) {
     }
   } catch (e) { /* ignore localStorage errors */ }
 
-  // validate token by calling /api/me (non-blocking but will redirect on 401)
+  // validate token by calling /api/me. Only explicit auth failures (401/403) should force logout.
   return apiRequest('/api/me', { method: 'GET' }).then(function (resp) {
     if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
       // token valid
@@ -1483,20 +1483,22 @@ function checkAuthOnLoad(opts) {
       if (!silent) console.info('auth: token valid');
       return Promise.resolve(resp.body.data);
     }
-    // invalid token
-    if (!silent) console.warn('auth: token invalid or expired', resp);
-    try { localStorage.removeItem('token'); } catch (e) {}
-    if (window.AppState && typeof window.AppState.logout === 'function') window.AppState.logout();
-    if (redirect) safeNavigate('登录页面.html');
-    return Promise.reject(new Error('invalid-token'));
+    // Only explicit auth failures should clear token.
+    if (resp && (resp.status === 401 || resp.status === 403)) {
+      if (!silent) console.warn('auth: token invalid or expired', resp);
+      try { localStorage.removeItem('token'); } catch (e) {}
+      if (window.AppState && typeof window.AppState.logout === 'function') window.AppState.logout();
+      if (redirect) safeNavigate('登录页面.html');
+      return Promise.reject(new Error('invalid-token'));
+    }
+
+    // For network/service exceptions, keep local session to preserve local usability.
+    if (!silent) console.warn('auth: validation degraded, keeping local session', resp);
+    return Promise.resolve(window.AppState && window.AppState.user ? window.AppState.user : {});
   }).catch(function (err) {
-    // network or parse error: assume token might be invalid
-    if (!silent) console.warn('auth: validation failed', err);
-    // If status is 401 returned as body.status, handle similarly
-    try { localStorage.removeItem('token'); } catch (e) {}
-    if (window.AppState && typeof window.AppState.logout === 'function') window.AppState.logout();
-    if (redirect) safeNavigate('登录页面.html');
-    return Promise.reject(err || new Error('auth-check-failed'));
+    // Unexpected runtime error: keep local session to avoid blocking local pages.
+    if (!silent) console.warn('auth: validation failed, keeping local session', err);
+    return Promise.resolve(window.AppState && window.AppState.user ? window.AppState.user : {});
   });
 }
 
@@ -3044,6 +3046,13 @@ function refreshUnifiedUserIdentityUi() {
   var headerNames = document.querySelectorAll('.header-user-name');
   headerNames.forEach(function (el) {
     el.textContent = user.name;
+  });
+
+  var headerAvatars = document.querySelectorAll('.header-user-avatar');
+  headerAvatars.forEach(function (img) {
+    if (img && user.avatar) {
+      img.src = user.avatar;
+    }
   });
 
   var roots = document.querySelectorAll('.unified-top-header-shell, header.sticky.top-0, header');

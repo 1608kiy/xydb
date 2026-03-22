@@ -1276,9 +1276,9 @@
         </button>
         <div class="relative" id="user-menu-container">
           <button class="flex items-center space-x-2 p-1.5 rounded-xl hover:bg-primary/10" id="user-menu-btn" type="button">
-            <img alt="用户头像" class="w-10 h-10 rounded-full object-cover border-2 border-primary/40"
+            <img alt="用户头像" class="header-user-avatar w-10 h-10 rounded-full object-cover border-2 border-primary/40"
               src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png" />
-            <span class="hidden lg:inline-block font-medium text-gray-700">张明</span>
+            <span class="header-user-name hidden lg:inline-block font-medium text-gray-700">张明</span>
             <i class="fas fa-chevron-down text-xs text-gray-500 transition-transform" id="user-menu-arrow"></i>
           </button>
           <div class="dropdown-menu" id="user-dropdown" style="pointer-events: none;">
@@ -2486,7 +2486,11 @@
         } else {
           console.warn('获取任务失败', resp);
         }
-      }).catch(function (err) { console.error('fetchTasksFromServer error', err); });
+      }).catch(function (err) { 
+        console.error('fetchTasksFromServer error', err);
+        // 后端不可用时使用本地数据（已在 loadFromLocalStorage 中加载）
+        return Promise.resolve();
+      });
     }
 
     function updateTaskStatusOnServer(taskId, status) {

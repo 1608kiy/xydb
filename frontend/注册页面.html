@@ -342,6 +342,48 @@
       document.addEventListener('DOMContentLoaded', function () {
         AppState.init();
 
+        function shouldEnterLocalMode(resp) {
+          if (!resp) return true;
+          var status = Number(resp.status || 0);
+          if (status === 0 || status === 504) return true;
+          if (status >= 500) return true;
+          if (status === 404 || status === 405) return true;
+          var msg = String((resp.body && resp.body.message) || '').toLowerCase();
+          return msg.indexOf('timeout') !== -1 || msg.indexOf('network') !== -1;
+        }
+
+        function enterLocalMode(accountHint) {
+          var display = String(accountHint || '').trim();
+          if (!display) display = '本地用户';
+          var userName = display;
+          if (display.indexOf('@') > -1) {
+            userName = display.split('@')[0] || '本地用户';
+          }
+          if (/^1\d{10}$/.test(display)) {
+            userName = '用户' + display.slice(-4);
+          }
+
+          try {
+            localStorage.setItem('token', 'dev-local-' + Date.now());
+            localStorage.setItem('devSkipAuth', '1');
+            if (window.AppState) {
+              window.AppState.user = window.AppState.user || {};
+              window.AppState.user.name = userName;
+              if (display.indexOf('@') > -1) {
+                window.AppState.user.email = display;
+              }
+              if (/^1\d{10}$/.test(display)) {
+                window.AppState.user.phone = display;
+                window.AppState.user.email = display + '@mobile.local';
+              }
+              if (typeof window.AppState.save === 'function') window.AppState.save();
+            }
+          } catch (e) {}
+
+          showToast('服务繁忙，已切换本地快速登录');
+          setTimeout(function () { safeNavigate('待办页面.html'); }, 320);
+        }
+
         function isMobileNumber(v) {
           return /^1\d{10}$/.test(String(v || '').trim());
         }
@@ -381,10 +423,20 @@
             method: 'POST',
             timeoutMs: 8000,
             body: JSON.stringify({ nickname: nickname, email: email, phone: phone, password: password })
-          }).then(function () {
-            return doLogin();
-          }).catch(function () {
-            return doLogin();
+          }).then(function (resp) {
+            // 注册成功或账号已存在都尝试登录
+            if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+              return doLogin();
+            }
+            if (resp && resp.status > 0 && resp.status < 500) {
+              return doLogin();
+            }
+            throw new Error((resp && resp.body && resp.body.message) || '自动建号失败');
+          }).then(function (loginResp) {
+            if (loginResp && loginResp.status === 200 && loginResp.body && loginResp.body.code === 200 && loginResp.body.data && loginResp.body.data.token) {
+              return loginResp;
+            }
+            throw new Error((loginResp && loginResp.body && loginResp.body.message) || '自动登录失败');
           });
         }
 
@@ -502,16 +554,21 @@
                 var token = resp.body.data && resp.body.data.token;
                 if (token) {
                   localStorage.setItem('token', token);
+                  try { localStorage.removeItem('devSkipAuth'); } catch (e) {}
                   showToast('注册并登录成功，正在跳转...');
                   setTimeout(function () { safeNavigate('待办页面.html'); }, 400);
                   return;
                 }
               }
+              if (shouldEnterLocalMode(resp)) {
+                enterLocalMode(payload.email || payload.phone || account);
+                return;
+              }
               var msg = authErrorMessage(resp, '注册失败');
               showToast(msg);
             }).catch(function (err) {
               console.error('register error', err);
-              showToast('网络错误，无法注册，请稍后重试');
+              enterLocalMode(payload.email || payload.phone || account);
             });
         });
 
@@ -527,8 +584,9 @@
                 return;
               }
               showToast(authErrorMessage(resp, '扫码注册失败'));
-            }).catch(function () {
-              showToast('扫码注册失败，请稍后重试');
+            }).catch(function (err) {
+              console.error('social register error', err);
+              showToast((err && err.message) || '扫码注册失败，请稍后重试');
             });
           });
         });

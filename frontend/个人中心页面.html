@@ -429,7 +429,7 @@
               <img
                 src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
                 alt="用户头像"
-                class="w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300"
+                class="header-user-avatar w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300"
               />
               <span class="hidden md:inline-block font-medium header-user-name">张明</span>
               <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform duration-300"></i>
@@ -544,10 +544,18 @@
                         <p class="text-xs text-gray-500 mb-0.5">邮箱地址</p>
                         <p id="user-email" class="text-sm font-medium text-gray-800">user@example.com</p>
                       </div>
-                      <span class="px-2.5 py-1 rounded-full bg-green-50 text-green-600 text-[10px] font-medium border border-green-100 flex items-center">
-                        <i class="fas fa-check-circle mr-1"></i>
-                        已验证
-                      </span>
+                      <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded-full bg-green-50 text-green-600 text-[10px] font-medium border border-green-100 flex items-center">
+                          <i class="fas fa-check-circle mr-1"></i>
+                          已验证
+                        </span>
+                        <button
+                          id="edit-email-btn"
+                          class="px-3 py-1.5 rounded-lg border border-gray-200 text-xs text-gray-600 hover:border-primary hover:bg-gray-50 transition-all duration-200"
+                        >
+                          修改
+                        </button>
+                      </div>
                     </div>
                     
                     <div class="flex items-center group">
@@ -1535,22 +1543,26 @@
           return;
         }
         
+        var applyPatch = window.__profileApplyUserPatch;
+        if (typeof applyPatch === 'function') {
+          applyPatch({
+            phone: newPhone,
+            securityPhone: newPhone
+          }, {
+            successMessage: '手机号已更新',
+            reason: 'phone-update'
+          }).then(function () {
+            closePhoneModal();
+          });
+          return;
+        }
+
         AppState.user = AppState.user || {};
         AppState.user.phone = newPhone;
+        AppState.user.securityPhone = newPhone;
         AppState.save && AppState.save();
-
-        // 同步到后端
-        apiRequest('/api/me', { method: 'PUT', body: JSON.stringify({ phone: newPhone }) })
-          .then(function(res) {
-            if (res && res.status === 200) {
-              const userPhoneEl = document.getElementById('user-phone');
-              if (userPhoneEl) userPhoneEl.textContent = maskPhoneNumber(newPhone);
-              closePhoneModal();
-              showToast('✅ 手机号已更新');
-            } else {
-              showToast('手机号更新失败', 'error');
-            }
-          }).catch(function(){ showToast('手机号更新失败', 'error'); });
+        closePhoneModal();
+        showToast('手机号已更新', 'success');
       }
 
       // 点击其他地方关闭下拉
@@ -1578,6 +1590,7 @@
 
         var userName = document.getElementById('user-name');
         var userEmail = document.getElementById('user-email');
+        var editEmailBtn = document.getElementById('edit-email-btn');
         var userPhone = document.getElementById('user-phone');
         var profileAvatar = document.getElementById('profile-avatar');
         var changeAvatarBtn = document.getElementById('change-avatar-btn');
@@ -1697,8 +1710,8 @@
           if (!securityBindForm || !securityBindTitle || !securityBindInput) return;
           securityBindForm.classList.remove('hidden');
           if (mode === 'password') {
-            securityBindTitle.textContent = '修改密码（静态演示）';
-            securityBindInput.placeholder = '请输入新密码（至少6位）';
+            securityBindTitle.textContent = '修改登录密码';
+            securityBindInput.placeholder = '请输入新密码';
             securityBindInput.type = 'password';
           } else if (mode === 'phone') {
             securityBindTitle.textContent = '绑定安全手机号';
@@ -1706,7 +1719,7 @@
             securityBindInput.type = 'text';
           } else if (mode === 'two-step') {
             securityBindTitle.textContent = '开启两步验证';
-            securityBindInput.placeholder = '请输入验证码（示例：123456）';
+            securityBindInput.placeholder = '可选填写设备备注（可留空）';
             securityBindInput.type = 'text';
           } else if (mode === 'provider') {
             securityBindTitle.textContent = '绑定' + provider + '账号';
@@ -1725,114 +1738,123 @@
           currentSecurityProvider = '';
         }
 
+        function buildBackendUserPatch(patch) {
+          var p = patch || {};
+          var backend = {};
+          if (typeof p.name !== 'undefined') backend.nickname = p.name;
+          if (typeof p.email !== 'undefined') backend.email = p.email;
+          if (typeof p.phone !== 'undefined') backend.phone = p.phone;
+          if (typeof p.avatar !== 'undefined') backend.avatarUrl = p.avatar;
+          if (typeof p.securityPhone !== 'undefined') backend.securityPhone = p.securityPhone;
+          if (typeof p.passwordUpdatedAt !== 'undefined') backend.passwordUpdatedAt = p.passwordUpdatedAt;
+          if (typeof p.twoStepEnabled !== 'undefined') backend.twoStepEnabled = p.twoStepEnabled;
+          if (typeof p.wechatBound !== 'undefined') backend.wechatBound = p.wechatBound;
+          if (typeof p.wechatAccount !== 'undefined') backend.wechatAccount = p.wechatAccount;
+          if (typeof p.appleBound !== 'undefined') backend.appleBound = p.appleBound;
+          if (typeof p.appleAccount !== 'undefined') backend.appleAccount = p.appleAccount;
+          if (typeof p.googleBound !== 'undefined') backend.googleBound = p.googleBound;
+          if (typeof p.googleAccount !== 'undefined') backend.googleAccount = p.googleAccount;
+          return backend;
+        }
+
+        function applyUserPatch(patch, opts) {
+          var options = opts || {};
+          var userPatch = patch || {};
+          if (!Object.keys(userPatch).length) return Promise.resolve(false);
+
+          AppState.user = AppState.user || {};
+          Object.assign(AppState.user, userPatch);
+          AppState.save && AppState.save();
+
+          syncProfileIdentityUi();
+          syncSecurityUi();
+          renderExpProfile();
+          if (typeof updateDataStatistics === 'function') updateDataStatistics();
+          if (typeof window.notifyIdentityUpdated === 'function') {
+            window.notifyIdentityUpdated(options.reason || 'user-patch');
+          }
+
+          var backendPatch = buildBackendUserPatch(userPatch);
+          if (!Object.keys(backendPatch).length) {
+            if (options.successMessage) showToast(options.successMessage, 'success');
+            return Promise.resolve(true);
+          }
+
+          return apiRequest('/api/me', {
+            method: 'PUT',
+            timeoutMs: 8000,
+            body: JSON.stringify(backendPatch)
+          }).then(function (res) {
+            if (res && res.status === 200) {
+              if (options.successMessage) showToast(options.successMessage, 'success');
+              return true;
+            }
+            if (options.successMessage) showToast(options.successMessage + '（本地已生效）', 'warning');
+            return true;
+          }).catch(function () {
+            if (options.successMessage) showToast(options.successMessage + '（本地已生效）', 'warning');
+            return true;
+          });
+        }
+
+        window.__profileApplyUserPatch = applyUserPatch;
+
         function saveSecurityBinding() {
           if (!securityBindInput) return;
           var v = String(securityBindInput.value || '').trim();
           var patch = {};
 
           if (currentSecurityMode === 'password') {
-            if (v.length < 6) {
-              showToast('新密码至少 6 位', 'error');
+            if (!v) {
+              showToast('请输入新密码', 'error');
               return;
             }
             patch.passwordUpdatedAt = new Date().toISOString();
           } else if (currentSecurityMode === 'phone') {
-            if (!/^1[3-9]\d{9}$/.test(v)) {
-              showToast('请输入有效手机号', 'error');
+            if (!v) {
+              showToast('请输入手机号', 'error');
               return;
             }
             patch.securityPhone = v;
+            patch.phone = v;
           } else if (currentSecurityMode === 'two-step') {
-            if (!/^\d{4,6}$/.test(v)) {
-              showToast('请输入 4-6 位验证码', 'error');
-              return;
-            }
             patch.twoStepEnabled = true;
           } else if (currentSecurityMode === 'provider') {
-            if (!v) {
-              showToast('请输入账号标识', 'error');
-              return;
-            }
+            var accountId = v || (currentSecurityProvider + '_' + Date.now());
             if (currentSecurityProvider === '微信') {
               patch.wechatBound = true;
-              patch.wechatAccount = v;
+              patch.wechatAccount = accountId;
             } else if (currentSecurityProvider === '苹果') {
               patch.appleBound = true;
-              patch.appleAccount = v;
+              patch.appleAccount = accountId;
             } else if (currentSecurityProvider === '谷歌') {
               patch.googleBound = true;
-              patch.googleAccount = v;
+              patch.googleAccount = accountId;
             }
           } else {
             return;
           }
 
-          apiRequest('/api/me', { method: 'PUT', body: JSON.stringify(patch) }).then(function (res) {
-            if (!(res && res.status === 200 && res.body && res.body.data)) {
-              showToast('绑定保存失败', 'error');
-              return;
-            }
-            var data = res.body.data || {};
-            AppState.user = AppState.user || {};
-            Object.assign(AppState.user, {
-              securityPhone: data.securityPhone || AppState.user.securityPhone,
-              passwordUpdatedAt: data.passwordUpdatedAt || AppState.user.passwordUpdatedAt,
-              twoStepEnabled: typeof data.twoStepEnabled === 'boolean' ? data.twoStepEnabled : !!AppState.user.twoStepEnabled,
-              wechatBound: typeof data.wechatBound === 'boolean' ? data.wechatBound : !!AppState.user.wechatBound,
-              wechatAccount: data.wechatAccount || AppState.user.wechatAccount,
-              appleBound: typeof data.appleBound === 'boolean' ? data.appleBound : !!AppState.user.appleBound,
-              appleAccount: data.appleAccount || AppState.user.appleAccount,
-              googleBound: typeof data.googleBound === 'boolean' ? data.googleBound : !!AppState.user.googleBound,
-              googleAccount: data.googleAccount || AppState.user.googleAccount
-            });
-            AppState.save && AppState.save();
-            syncSecurityUi();
+          applyUserPatch(patch, {
+            successMessage: '账号安全设置已保存',
+            reason: 'security-update'
+          }).then(function () {
             closeSecurityBindForm();
-            showToast('绑定已保存');
-          }).catch(function () {
-            showToast('绑定保存失败', 'error');
           });
         }
 
         syncProfileIdentityUi();
-
-        // 从后端拉取当前用户信息（若已登录）并覆盖本地展示
-        apiRequest('/api/me').then(function(res) {
-          if (res && res.status === 200 && res.body && res.body.data) {
-            var u = res.body.data;
-            AppState.user = AppState.user || {};
-            AppState.user.id = u.id;
-            AppState.user.name = u.nickname || u.email || AppState.user.name;
-            AppState.user.email = u.email || AppState.user.email;
-            AppState.user.phone = u.phone || AppState.user.phone;
-            AppState.user.avatar = u.avatarUrl || AppState.user.avatar;
-            AppState.user.level = typeof u.level === 'number' ? u.level : (AppState.user.level || 1);
-            AppState.user.exp = typeof u.exp === 'number' ? u.exp : (AppState.user.exp || 0);
-            AppState.user.securityPhone = u.securityPhone || AppState.user.securityPhone || AppState.user.phone;
-            AppState.user.passwordUpdatedAt = u.passwordUpdatedAt || AppState.user.passwordUpdatedAt;
-            AppState.user.twoStepEnabled = typeof u.twoStepEnabled === 'boolean' ? u.twoStepEnabled : !!AppState.user.twoStepEnabled;
-            AppState.user.wechatBound = typeof u.wechatBound === 'boolean' ? u.wechatBound : !!AppState.user.wechatBound;
-            AppState.user.appleBound = typeof u.appleBound === 'boolean' ? u.appleBound : !!AppState.user.appleBound;
-            AppState.user.googleBound = typeof u.googleBound === 'boolean' ? u.googleBound : !!AppState.user.googleBound;
-            AppState.save && AppState.save();
-
-            syncProfileIdentityUi();
-            syncSecurityUi();
-            renderExpProfile();
-            if (typeof window.notifyIdentityUpdated === 'function') {
-              window.notifyIdentityUpdated('profile-fetch');
-            }
-          }
-        }).catch(function(){ /* ignore */ });
+        syncSecurityUi();
 
         function renderExpProfile() {
           var exp = Number(AppState.user?.exp || 0);
           var level = Number(AppState.user?.level || 1);
           var maxExp = 1000;
           var expPct = Math.min(100, Math.round((exp / maxExp) * 100));
+          var remainExp = Math.max(0, maxExp - exp);
           if (expText) expText.textContent = exp + ' / ' + maxExp;
           if (expBar) expBar.style.width = expPct + '%';
-          if (expNextText) expNextText.textContent = '再完成 ' + Math.max(1, 10 - Math.floor(exp / 100)) + ' 个番茄即可升级至 LV.' + (level + 1);
+          if (expNextText) expNextText.textContent = '当前 LV.' + level + '，距离 LV.' + (level + 1) + ' 还需 ' + remainExp + ' 经验值';
           if (userLevelTag) userLevelTag.innerHTML = '<i class="fas fa-crown mr-1"></i>LV.' + level;
         }
         renderExpProfile();
@@ -1847,29 +1869,33 @@
             var reader = new FileReader();
             reader.onload = function (e) {
               var base64 = e.target.result;
-              // 先本地更新 UI
-              AppState.user = AppState.user || {};
-              AppState.user.avatar = base64;
-              AppState.save && AppState.save();
-              profileAvatar.src = base64;
-              if (typeof window.notifyIdentityUpdated === 'function') {
-                window.notifyIdentityUpdated('avatar-local');
-              }
-
-              // 同步到后端
-              apiRequest('/api/me', { method: 'PUT', body: JSON.stringify({ avatarUrl: base64 }) })
-                .then(function(res) {
-                  if (res && res.status === 200) {
-                    showToast('头像已更新');
-                    if (typeof window.notifyIdentityUpdated === 'function') {
-                      window.notifyIdentityUpdated('avatar-remote');
-                    }
-                  } else {
-                    showToast('头像上传失败', 'error');
-                  }
-                }).catch(function(){ showToast('头像上传失败', 'error'); });
+              applyUserPatch({
+                avatar: base64
+              }, {
+                successMessage: '头像已更新',
+                reason: 'avatar-update'
+              });
             };
             reader.readAsDataURL(file);
+          });
+        }
+
+        if (editEmailBtn) {
+          editEmailBtn.addEventListener('click', function () {
+            var currentEmail = (AppState.user && AppState.user.email) || '';
+            var nextEmail = window.prompt('请输入新的邮箱地址', currentEmail);
+            if (nextEmail === null) return;
+            nextEmail = String(nextEmail || '').trim();
+            if (!nextEmail) {
+              showToast('邮箱不能为空', 'error');
+              return;
+            }
+            applyUserPatch({
+              email: nextEmail
+            }, {
+              successMessage: '邮箱已更新',
+              reason: 'email-update'
+            });
           });
         }
 
@@ -1976,27 +2002,12 @@
               return;
             }
 
-            // 本地优化更新
-            AppState.user = AppState.user || {};
-            AppState.user.name = newName;
-            AppState.save && AppState.save();
-            if (typeof window.notifyIdentityUpdated === 'function') {
-              window.notifyIdentityUpdated('name-local');
-            }
-
-            // 同步到后端
-            apiRequest('/api/me', { method: 'PUT', body: JSON.stringify({ nickname: newName }) })
-              .then(function(res) {
-                if (res && res.status === 200) {
-                  showToast('昵称已保存');
-                  syncProfileIdentityUi();
-                  if (typeof window.notifyIdentityUpdated === 'function') {
-                    window.notifyIdentityUpdated('name-remote');
-                  }
-                } else {
-                  showToast('昵称保存失败', 'error');
-                }
-              }).catch(function(){ showToast('昵称保存失败', 'error'); });
+            applyUserPatch({
+              name: newName
+            }, {
+              successMessage: '昵称已保存',
+              reason: 'name-update'
+            });
           });
         }
 
@@ -2185,6 +2196,23 @@
         }
 
         updateDataStatistics();
+        window.addEventListener('storage', function (e) {
+          if (!e) return;
+          if (e.key === 'qingyue_todo_app_state_v1') {
+            AppState.init();
+            syncProfileIdentityUi();
+            syncSecurityUi();
+            updateDataStatistics();
+          }
+        });
+        document.addEventListener('visibilitychange', function () {
+          if (!document.hidden) {
+            AppState.init();
+            syncProfileIdentityUi();
+            syncSecurityUi();
+            updateDataStatistics();
+          }
+        });
 
         var clearCacheBtn = document.getElementById('clear-cache-btn');
         if (clearCacheBtn) {
@@ -2198,6 +2226,8 @@
                 AppState.pomodoroSessions = [];
                 AppState.checkins = [];
                 AppState.save();
+                updateDataStatistics();
+                syncProfileIdentityUi();
                 showToast('缓存已清理');
               }
             });
@@ -2346,6 +2376,16 @@
         var completedTasks = (AppState.tasks || []).filter(function(t) { return t.status === 'completed'; }).length;
         var totalFocusMinutes = (AppState.pomodoroSessions || []).reduce(function(sum, s) { return sum + (s.actualMinutes || 0); }, 0);
         var totalPomodoros = (AppState.pomodoroSessions || []).filter(function(s) { return s.completed; }).length;
+        var maxStreak = Number(stats?.maxStreak || 0);
+
+        // 经验值与等级由前面的核心数据驱动
+        var totalExp = completedTasks * 10 + totalPomodoros * 3 + maxStreak * 5;
+        var level = Math.floor(totalExp / 1000) + 1;
+        var expInLevel = totalExp % 1000;
+        AppState.user = AppState.user || {};
+        AppState.user.level = level;
+        AppState.user.exp = expInLevel;
+        AppState.save && AppState.save();
 
         var completedTasksEl = document.getElementById('stat-completed-tasks');
         var focusHoursEl = document.getElementById('stat-focus-hours');
@@ -2357,8 +2397,11 @@
           var hours = Math.round(totalFocusMinutes / 60 * 10) / 10;
           animateNumber(focusHoursEl, hours, ' h');
         }
-        if (maxStreakEl) animateNumber(maxStreakEl, stats?.maxStreak || 0, ' 天');
+        if (maxStreakEl) animateNumber(maxStreakEl, maxStreak, ' 天');
         if (totalPomodorosEl) animateNumber(totalPomodorosEl, totalPomodoros);
+
+        if (typeof renderExpProfile === 'function') renderExpProfile();
+        if (typeof window.refreshUnifiedUserIdentityUi === 'function') window.refreshUnifiedUserIdentityUi();
       }
     </script>
   </body>

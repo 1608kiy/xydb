@@ -152,27 +152,9 @@
       }
 
       function syncReportStateFromServer() {
-        return Promise.all([apiRequest('/api/tasks'), apiRequest('/api/pomodoros')])
-          .then(function (results) {
-            var tRes = results[0];
-            var pRes = results[1];
-            try {
-              if (tRes && tRes.status === 200 && tRes.body && Array.isArray(tRes.body.data)) {
-                AppState.tasks = (tRes.body.data || []).map(normalizeTask);
-              }
-              if (pRes && pRes.status === 200 && pRes.body && Array.isArray(pRes.body.data)) {
-                AppState.pomodoroSessions = (pRes.body.data || []).map(normalizePomo);
-              }
-              if (typeof AppState.save === 'function') {
-                AppState.save();
-              }
-            } catch (e) {
-              console.warn('report parse failed', e);
-            }
-          })
-          .catch(function () {
-            // ignore network errors, use local cache
-          });
+        // 后端没有提供 /api/tasks 和 /api/pomodoros 接口，仅使用本地数据
+        return Promise.resolve();
+        // 本地数据已经及时编程加载到 AppState 中
       }
     </script>
     <style type="text/tailwindcss">
@@ -545,10 +527,10 @@
             <button class="flex items-center space-x-2 focus:outline-none cursor-pointer">
               <img
                 alt="用户头像"
-                class="w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300"
+                class="header-user-avatar w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300"
                 src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
               />
-              <span class="hidden md:inline-block font-medium text-sm"> 张明 </span>
+              <span class="header-user-name hidden md:inline-block font-medium text-sm"> 张明 </span>
               <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform duration-300"> </i>
             </button>
             <!-- 下拉菜单 (默认隐藏) -->
@@ -1635,15 +1617,24 @@
 
         Promise.resolve()
           .then(function () { return updateWeeklyStats({ sync: false }); })
-          .then(function () { return updateWeeklyStats({ sync: true }); })
           .then(function () {
-            return requestAiSmartSuggestions().then(function (items) {
-              renderSmartSuggestions(items);
-            }).catch(function () {
-              renderSmartSuggestions(getDefaultSuggestions());
-            });
+            // 后台刷新远端数据，避免阻塞进入页面。
+            Promise.resolve()
+              .then(function () { return updateWeeklyStats({ sync: true }); })
+              .catch(function (err) { console.error('updateWeeklyStats sync error:', err); });
+
+            // AI 建议异步渲染，不阻塞首屏可交互。
+            Promise.resolve()
+              .then(function () {
+                return requestAiSmartSuggestions().then(function (items) {
+                  renderSmartSuggestions(items);
+                }).catch(function () {
+                  renderSmartSuggestions(getDefaultSuggestions());
+                });
+              })
+              .catch(function (err) { console.error('requestAiSmartSuggestions error:', err); });
           })
-          .catch(function (err) { console.error('updateWeeklyStats error:', err); })
+          .catch(function (err) { console.error('updateWeeklyStats init error:', err); })
           .finally(revealBottomTab);
 
         var aiRefreshBtn = document.getElementById('ai-suggestions-refresh');

@@ -386,9 +386,9 @@
               <img
                 src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
                 alt="用户头像"
-                class="w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300"
+                class="header-user-avatar w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300"
               />
-              <span class="hidden md:inline-block font-medium">张明</span>
+              <span class="header-user-name hidden md:inline-block font-medium">张明</span>
               <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform duration-300"></i>
             </button>
             <div
@@ -1279,36 +1279,7 @@
               if (!Array.isArray(AppState.pomodoroSessions)) AppState.pomodoroSessions = [];
               AppState.pomodoroSessions.push(pomodoroSession);
               AppState.save();
-              // 同步到后端保存番茄记录
-              (function(session){
-                apiRequest('http://localhost:8080/api/pomodoros', {
-                  method: 'POST',
-                  body: JSON.stringify({
-                    taskId: session.taskId,
-                    mode: session.mode,
-                    plannedMinutes: session.plannedMinutes,
-                    actualMinutes: session.actualMinutes,
-                    startedAt: session.startedAt,
-                    endedAt: session.endedAt,
-                    completed: session.completed
-                  })
-                }).then(function(resp){
-                  if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
-                    var serverRec = resp.body.data;
-                    for (var i = 0; i < AppState.pomodoroSessions.length; i++) {
-                      if (AppState.pomodoroSessions[i].id === session.id) {
-                        AppState.pomodoroSessions[i] = serverRec;
-                        break;
-                      }
-                    }
-                    AppState.save();
-                  } else {
-                    console.warn('保存番茄记录到服务端失败', resp);
-                  }
-                }).catch(function(err){
-                  console.error('网络错误，保存番茄记录失败', err);
-                });
-              })(pomodoroSession);
+              // 仅保存到本地，后端不提供这个接口
               
               this.updateHistoryUI();
               this.updateStatsUI();

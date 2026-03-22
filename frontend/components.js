@@ -15,7 +15,7 @@ function renderHeader(activePage) {
         <a href="打卡页面.html" class="text-sm ${activePage === 'checkin' ? 'text-primary font-semibold' : 'text-gray-600 hover:text-primary'}">打卡</a>
         <a href="个人中心页面.html" class="text-sm ${activePage === 'profile' ? 'text-primary font-semibold' : 'text-gray-600 hover:text-primary'}">我的</a>
         <div class="relative group">
-          <button class="flex items-center gap-2 focus:outline-none"><img src="${user.avatar || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}" alt="avatar" class="w-8 h-8 rounded-full border border-gray-200" /><span class="hidden md:inline">${user.name}</span><i class="fas fa-chevron-down text-gray-500"></i></button>
+          <button class="flex items-center gap-2 focus:outline-none"><img src="${user.avatar || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}" alt="avatar" class="header-user-avatar w-8 h-8 rounded-full border border-gray-200" /><span class="header-user-name hidden md:inline">${user.name}</span><i class="fas fa-chevron-down text-gray-500"></i></button>
           <div class="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-lg p-2 hidden group-hover:block">
             <a href="个人中心页面.html" class="block px-2 py-1 text-sm text-gray-700 hover:bg-gray-100">个人中心</a>
             <a href="登录页面.html" class="block px-2 py-1 text-sm text-gray-700 hover:bg-gray-100" id="global-logout">退出登录</a>
