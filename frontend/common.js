@@ -1461,6 +1461,25 @@ function checkAuthOnLoad(opts) {
   return apiRequest('/api/me', { method: 'GET' }).then(function (resp) {
     if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
       // token valid
+      try {
+        var u = resp.body.data || {};
+        if (window.AppState) {
+          window.AppState.user = window.AppState.user || {};
+          window.AppState.user.id = u.id || window.AppState.user.id;
+          window.AppState.user.name = u.nickname || u.email || window.AppState.user.name;
+          window.AppState.user.email = u.email || window.AppState.user.email;
+          window.AppState.user.phone = u.phone || window.AppState.user.phone;
+          window.AppState.user.avatar = u.avatarUrl || window.AppState.user.avatar;
+          window.AppState.user.level = typeof u.level === 'number' ? u.level : (window.AppState.user.level || 1);
+          window.AppState.user.exp = typeof u.exp === 'number' ? u.exp : (window.AppState.user.exp || 0);
+          window.AppState.user.twoStepEnabled = typeof u.twoStepEnabled === 'boolean' ? u.twoStepEnabled : !!window.AppState.user.twoStepEnabled;
+          window.AppState.user.securityPhone = u.securityPhone || window.AppState.user.securityPhone || window.AppState.user.phone;
+          window.AppState.user.wechatBound = typeof u.wechatBound === 'boolean' ? u.wechatBound : !!window.AppState.user.wechatBound;
+          window.AppState.user.appleBound = typeof u.appleBound === 'boolean' ? u.appleBound : !!window.AppState.user.appleBound;
+          window.AppState.user.googleBound = typeof u.googleBound === 'boolean' ? u.googleBound : !!window.AppState.user.googleBound;
+          if (typeof window.AppState.save === 'function') window.AppState.save();
+        }
+      } catch (e) {}
       if (!silent) console.info('auth: token valid');
       return Promise.resolve(resp.body.data);
     }

@@ -769,7 +769,7 @@
                     </div>
                     <div>
                       <p class="font-medium text-gray-800">登录密码</p>
-                      <p class="text-xs text-gray-500">建议定期更换密码，提升账号安全性</p>
+                      <p class="text-xs text-gray-500" id="password-updated-tip">建议定期更换密码，提升账号安全性</p>
                     </div>
                   </div>
                   <button id="change-password-btn" class="text-primary text-xs font-medium px-3 py-1.5 rounded-lg hover:bg-primary/10 transition-all duration-200">
@@ -783,7 +783,7 @@
                     </div>
                     <div>
                       <p class="font-medium text-gray-800">绑定手机</p>
-                      <p class="text-xs text-gray-500">用于登录、找回密码和安全验证</p>
+                      <p class="text-xs text-gray-500" id="security-phone-tip">用于登录、找回密码和安全验证</p>
                     </div>
                   </div>
                   <button id="bind-phone-btn" class="text-primary text-xs font-medium px-3 py-1.5 rounded-lg hover:bg-primary/10 transition-all duration-200">修改</button>
@@ -795,7 +795,7 @@
                     </div>
                     <div>
                       <p class="font-medium text-gray-800">两步验证</p>
-                      <p class="text-xs text-gray-500">登录时需要额外验证码，强烈推荐开启</p>
+                      <p class="text-xs text-gray-500" id="two-step-status">登录时需要额外验证码，强烈推荐开启</p>
                     </div>
                   </div>
                   <button
@@ -818,18 +818,17 @@
                     </div>
                   </div>
                   <div class="flex space-x-3">
-                    <i
-                      class="fab fa-weixin social-icon weixin"
-                      title="微信已绑定"
-                    ></i>
-                    <i
-                      class="fab fa-apple social-icon apple"
-                      title="点击绑苹果"
-                    ></i>
-                    <i
-                      class="fab fa-google social-icon google"
-                      title="点击绑谷歌"
-                    ></i>
+                    <button id="bind-wechat-btn" class="social-icon weixin" title="点击绑定微信" type="button"><i class="fab fa-weixin"></i></button>
+                    <button id="bind-apple-btn" class="social-icon apple" title="点击绑定苹果" type="button"><i class="fab fa-apple"></i></button>
+                    <button id="bind-google-btn" class="social-icon google" title="点击绑定谷歌" type="button"><i class="fab fa-google"></i></button>
+                  </div>
+                </div>
+                <div id="security-bind-form" class="hidden mt-2 rounded-xl border border-gray-200 bg-white/70 p-3 space-y-2">
+                  <p id="security-bind-title" class="text-xs font-medium text-gray-700">账号安全绑定</p>
+                  <input id="security-bind-input" class="modal-input" type="text" placeholder="请输入绑定信息" />
+                  <div class="flex justify-end gap-2">
+                    <button id="security-bind-cancel" type="button" class="px-3 py-1.5 rounded-lg border border-gray-300 text-xs text-gray-600 hover:bg-gray-50">取消</button>
+                    <button id="security-bind-save" type="button" class="px-3 py-1.5 rounded-lg bg-primary text-white text-xs hover:bg-primary/90">保存绑定</button>
                   </div>
                 </div>
               </div>
@@ -1087,7 +1086,7 @@
                   </div>
                 </div>
               </div>
-              <div class="grid grid-cols-3 sm:grid-cols-4 gap-3 text-center">
+              <div class="grid grid-cols-3 sm:grid-cols-4 gap-3 text-center" id="achievement-grid">
                 <div class="achievement-badge unlocked group" data-category="newbie">
                   <div class="text-2xl mb-1 transition-all duration-300 group-hover:drop-shadow-lg">🌱</div>
                   <div class="text-xs font-medium text-gray-800">新手上路</div>
@@ -1104,6 +1103,16 @@
                     累计完成 100 个番茄
                   </div>
                 </div>
+                <div class="achievement-badge unlocked group" data-category="efficiency">
+                  <div class="text-2xl mb-1 transition-all duration-300 group-hover:drop-shadow-lg">⚡</div>
+                  <div class="text-xs font-medium text-gray-800">效率冲刺</div>
+                  <div class="text-[10px] text-gray-500 mt-0.5">单日完成 8 个任务</div>
+                </div>
+                <div class="achievement-badge unlocked group" data-category="persistence">
+                  <div class="text-2xl mb-1 transition-all duration-300 group-hover:drop-shadow-lg">📅</div>
+                  <div class="text-xs font-medium text-gray-800">连续签到 7 天</div>
+                  <div class="text-[10px] text-gray-500 mt-0.5">形成稳定习惯</div>
+                </div>
                 <div class="achievement-badge locked group" data-category="persistence">
                   <div class="text-2xl mb-1 transition-all duration-300 group-hover:drop-shadow-lg">⏰</div>
                   <div class="text-xs font-medium text-gray-800">早起打卡王</div>
@@ -1117,6 +1126,41 @@
                   <div class="text-[10px] text-gray-500 mt-0.5">
                     综合效率评分达到 A+
                   </div>
+                </div>
+                <div class="achievement-badge locked group" data-category="newbie">
+                  <div class="text-2xl mb-1 transition-all duration-300 group-hover:drop-shadow-lg">🧭</div>
+                  <div class="text-xs font-medium text-gray-800">路径探索者</div>
+                  <div class="text-[10px] text-gray-500 mt-0.5">使用全部 5 大功能页</div>
+                </div>
+                <div class="achievement-badge locked group" data-category="focus">
+                  <div class="text-2xl mb-1 transition-all duration-300 group-hover:drop-shadow-lg">🎯</div>
+                  <div class="text-xs font-medium text-gray-800">深度专注者</div>
+                  <div class="text-[10px] text-gray-500 mt-0.5">单次专注 120 分钟</div>
+                </div>
+                <div class="achievement-badge locked group" data-category="focus">
+                  <div class="text-2xl mb-1 transition-all duration-300 group-hover:drop-shadow-lg">🧠</div>
+                  <div class="text-xs font-medium text-gray-800">心流状态</div>
+                  <div class="text-[10px] text-gray-500 mt-0.5">连续 7 天有番茄记录</div>
+                </div>
+                <div class="achievement-badge locked group" data-category="efficiency">
+                  <div class="text-2xl mb-1 transition-all duration-300 group-hover:drop-shadow-lg">📈</div>
+                  <div class="text-xs font-medium text-gray-800">周报达人</div>
+                  <div class="text-[10px] text-gray-500 mt-0.5">连续 4 周达成目标</div>
+                </div>
+                <div class="achievement-badge locked group" data-category="persistence">
+                  <div class="text-2xl mb-1 transition-all duration-300 group-hover:drop-shadow-lg">🏅</div>
+                  <div class="text-xs font-medium text-gray-800">百日坚持</div>
+                  <div class="text-[10px] text-gray-500 mt-0.5">累计打卡 100 次</div>
+                </div>
+                <div class="achievement-badge locked group" data-category="efficiency">
+                  <div class="text-2xl mb-1 transition-all duration-300 group-hover:drop-shadow-lg">🚀</div>
+                  <div class="text-xs font-medium text-gray-800">任务清空者</div>
+                  <div class="text-[10px] text-gray-500 mt-0.5">一天内清空待办箱</div>
+                </div>
+                <div class="achievement-badge locked group" data-category="newbie">
+                  <div class="text-2xl mb-1 transition-all duration-300 group-hover:drop-shadow-lg">🎉</div>
+                  <div class="text-xs font-medium text-gray-800">满月庆典</div>
+                  <div class="text-[10px] text-gray-500 mt-0.5">注册满 30 天</div>
                 </div>
               </div>
             </section>
@@ -1553,6 +1597,17 @@
         var expBar = document.getElementById('exp-bar');
         var expNextText = document.getElementById('exp-next-text');
         var userLevelTag = document.getElementById('user-level-tag');
+        var passwordUpdatedTip = document.getElementById('password-updated-tip');
+        var securityPhoneTip = document.getElementById('security-phone-tip');
+        var twoStepStatus = document.getElementById('two-step-status');
+        var bindWechatBtn = document.getElementById('bind-wechat-btn');
+        var bindAppleBtn = document.getElementById('bind-apple-btn');
+        var bindGoogleBtn = document.getElementById('bind-google-btn');
+        var securityBindForm = document.getElementById('security-bind-form');
+        var securityBindTitle = document.getElementById('security-bind-title');
+        var securityBindInput = document.getElementById('security-bind-input');
+        var securityBindCancel = document.getElementById('security-bind-cancel');
+        var securityBindSave = document.getElementById('security-bind-save');
         var dangerConfirmModal = document.getElementById('danger-confirm-modal');
         var dangerConfirmTitle = document.getElementById('danger-confirm-title');
         var dangerConfirmDesc = document.getElementById('danger-confirm-desc');
@@ -1597,6 +1652,148 @@
           }
         }
 
+        var currentSecurityMode = '';
+        var currentSecurityProvider = '';
+
+        function safeFormatTime(ts) {
+          if (!ts) return '从未更新';
+          var d = new Date(ts);
+          if (isNaN(d.getTime())) return '从未更新';
+          return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        }
+
+        function syncSecurityUi() {
+          var u = AppState.user || {};
+          if (passwordUpdatedTip) {
+            passwordUpdatedTip.textContent = '最近更新时间：' + safeFormatTime(u.passwordUpdatedAt);
+          }
+          if (securityPhoneTip) {
+            var secPhone = u.securityPhone || u.phone || '';
+            securityPhoneTip.textContent = secPhone ? ('安全手机号：' + maskPhoneNumber(secPhone)) : '用于登录、找回密码和安全验证';
+          }
+          if (twoStepStatus) {
+            twoStepStatus.textContent = u.twoStepEnabled ? '状态：已开启（登录需二次验证）' : '状态：未开启，建议开启';
+          }
+          if (twoStepBtn) {
+            twoStepBtn.textContent = u.twoStepEnabled ? '已开启' : '去开启';
+            twoStepBtn.className = u.twoStepEnabled
+              ? 'px-3 py-1.5 rounded-lg border border-green-200 text-xs text-green-600 bg-green-50'
+              : 'px-3 py-1.5 rounded-lg border border-gray-200 text-xs text-gray-600 hover:border-primary hover:bg-gray-50 transition-all duration-200';
+          }
+
+          function syncProviderBtn(btn, bound, titleBound, titleUnbound) {
+            if (!btn) return;
+            btn.classList.toggle('opacity-60', !bound);
+            btn.title = bound ? titleBound : titleUnbound;
+          }
+          syncProviderBtn(bindWechatBtn, !!u.wechatBound, '微信已绑定', '点击绑定微信');
+          syncProviderBtn(bindAppleBtn, !!u.appleBound, '苹果已绑定', '点击绑定苹果');
+          syncProviderBtn(bindGoogleBtn, !!u.googleBound, '谷歌已绑定', '点击绑定谷歌');
+        }
+
+        function openSecurityBindForm(mode, provider) {
+          currentSecurityMode = mode || '';
+          currentSecurityProvider = provider || '';
+          if (!securityBindForm || !securityBindTitle || !securityBindInput) return;
+          securityBindForm.classList.remove('hidden');
+          if (mode === 'password') {
+            securityBindTitle.textContent = '修改密码（静态演示）';
+            securityBindInput.placeholder = '请输入新密码（至少6位）';
+            securityBindInput.type = 'password';
+          } else if (mode === 'phone') {
+            securityBindTitle.textContent = '绑定安全手机号';
+            securityBindInput.placeholder = '请输入 11 位手机号';
+            securityBindInput.type = 'text';
+          } else if (mode === 'two-step') {
+            securityBindTitle.textContent = '开启两步验证';
+            securityBindInput.placeholder = '请输入验证码（示例：123456）';
+            securityBindInput.type = 'text';
+          } else if (mode === 'provider') {
+            securityBindTitle.textContent = '绑定' + provider + '账号';
+            securityBindInput.placeholder = '请输入' + provider + '账号标识';
+            securityBindInput.type = 'text';
+          }
+          securityBindInput.value = '';
+          securityBindInput.focus();
+        }
+
+        function closeSecurityBindForm() {
+          if (!securityBindForm || !securityBindInput) return;
+          securityBindForm.classList.add('hidden');
+          securityBindInput.value = '';
+          currentSecurityMode = '';
+          currentSecurityProvider = '';
+        }
+
+        function saveSecurityBinding() {
+          if (!securityBindInput) return;
+          var v = String(securityBindInput.value || '').trim();
+          var patch = {};
+
+          if (currentSecurityMode === 'password') {
+            if (v.length < 6) {
+              showToast('新密码至少 6 位', 'error');
+              return;
+            }
+            patch.passwordUpdatedAt = new Date().toISOString();
+          } else if (currentSecurityMode === 'phone') {
+            if (!/^1[3-9]\d{9}$/.test(v)) {
+              showToast('请输入有效手机号', 'error');
+              return;
+            }
+            patch.securityPhone = v;
+          } else if (currentSecurityMode === 'two-step') {
+            if (!/^\d{4,6}$/.test(v)) {
+              showToast('请输入 4-6 位验证码', 'error');
+              return;
+            }
+            patch.twoStepEnabled = true;
+          } else if (currentSecurityMode === 'provider') {
+            if (!v) {
+              showToast('请输入账号标识', 'error');
+              return;
+            }
+            if (currentSecurityProvider === '微信') {
+              patch.wechatBound = true;
+              patch.wechatAccount = v;
+            } else if (currentSecurityProvider === '苹果') {
+              patch.appleBound = true;
+              patch.appleAccount = v;
+            } else if (currentSecurityProvider === '谷歌') {
+              patch.googleBound = true;
+              patch.googleAccount = v;
+            }
+          } else {
+            return;
+          }
+
+          apiRequest('/api/me', { method: 'PUT', body: JSON.stringify(patch) }).then(function (res) {
+            if (!(res && res.status === 200 && res.body && res.body.data)) {
+              showToast('绑定保存失败', 'error');
+              return;
+            }
+            var data = res.body.data || {};
+            AppState.user = AppState.user || {};
+            Object.assign(AppState.user, {
+              securityPhone: data.securityPhone || AppState.user.securityPhone,
+              passwordUpdatedAt: data.passwordUpdatedAt || AppState.user.passwordUpdatedAt,
+              twoStepEnabled: typeof data.twoStepEnabled === 'boolean' ? data.twoStepEnabled : !!AppState.user.twoStepEnabled,
+              wechatBound: typeof data.wechatBound === 'boolean' ? data.wechatBound : !!AppState.user.wechatBound,
+              wechatAccount: data.wechatAccount || AppState.user.wechatAccount,
+              appleBound: typeof data.appleBound === 'boolean' ? data.appleBound : !!AppState.user.appleBound,
+              appleAccount: data.appleAccount || AppState.user.appleAccount,
+              googleBound: typeof data.googleBound === 'boolean' ? data.googleBound : !!AppState.user.googleBound,
+              googleAccount: data.googleAccount || AppState.user.googleAccount
+            });
+            AppState.save && AppState.save();
+            syncSecurityUi();
+            closeSecurityBindForm();
+            showToast('绑定已保存');
+          }).catch(function () {
+            showToast('绑定保存失败', 'error');
+          });
+        }
+
         syncProfileIdentityUi();
 
         // 从后端拉取当前用户信息（若已登录）并覆盖本地展示
@@ -1609,23 +1806,36 @@
             AppState.user.email = u.email || AppState.user.email;
             AppState.user.phone = u.phone || AppState.user.phone;
             AppState.user.avatar = u.avatarUrl || AppState.user.avatar;
+            AppState.user.level = typeof u.level === 'number' ? u.level : (AppState.user.level || 1);
+            AppState.user.exp = typeof u.exp === 'number' ? u.exp : (AppState.user.exp || 0);
+            AppState.user.securityPhone = u.securityPhone || AppState.user.securityPhone || AppState.user.phone;
+            AppState.user.passwordUpdatedAt = u.passwordUpdatedAt || AppState.user.passwordUpdatedAt;
+            AppState.user.twoStepEnabled = typeof u.twoStepEnabled === 'boolean' ? u.twoStepEnabled : !!AppState.user.twoStepEnabled;
+            AppState.user.wechatBound = typeof u.wechatBound === 'boolean' ? u.wechatBound : !!AppState.user.wechatBound;
+            AppState.user.appleBound = typeof u.appleBound === 'boolean' ? u.appleBound : !!AppState.user.appleBound;
+            AppState.user.googleBound = typeof u.googleBound === 'boolean' ? u.googleBound : !!AppState.user.googleBound;
             AppState.save && AppState.save();
 
             syncProfileIdentityUi();
+            syncSecurityUi();
+            renderExpProfile();
             if (typeof window.notifyIdentityUpdated === 'function') {
               window.notifyIdentityUpdated('profile-fetch');
             }
           }
         }).catch(function(){ /* ignore */ });
 
-        var exp = Number(AppState.user?.exp || 0);
-        var level = Number(AppState.user?.level || 1);
-        var maxExp = 1000;
-        var expPct = Math.min(100, Math.round((exp / maxExp) * 100));
-        if (expText) expText.textContent = exp + ' / ' + maxExp;
-        if (expBar) expBar.style.width = expPct + '%';
-        if (expNextText) expNextText.textContent = '再完成 ' + Math.max(1, 10 - Math.floor(exp / 100)) + ' 个番茄即可升级至 LV.' + (level + 1);
-        if (userLevelTag) userLevelTag.innerHTML = '<i class="fas fa-crown mr-1"></i>LV.' + level;
+        function renderExpProfile() {
+          var exp = Number(AppState.user?.exp || 0);
+          var level = Number(AppState.user?.level || 1);
+          var maxExp = 1000;
+          var expPct = Math.min(100, Math.round((exp / maxExp) * 100));
+          if (expText) expText.textContent = exp + ' / ' + maxExp;
+          if (expBar) expBar.style.width = expPct + '%';
+          if (expNextText) expNextText.textContent = '再完成 ' + Math.max(1, 10 - Math.floor(exp / 100)) + ' 个番茄即可升级至 LV.' + (level + 1);
+          if (userLevelTag) userLevelTag.innerHTML = '<i class="fas fa-crown mr-1"></i>LV.' + level;
+        }
+        renderExpProfile();
 
         if (changeAvatarBtn && avatarFileInput && profileAvatar) {
           changeAvatarBtn.addEventListener('click', function () {
@@ -1669,12 +1879,47 @@
           });
         }
 
-        var showFeatureSoon = function () {
-          showToast('该功能需要后端支持，即将上线');
-        };
-        if (changePasswordBtn) changePasswordBtn.addEventListener('click', showFeatureSoon);
-        if (bindPhoneBtn) bindPhoneBtn.addEventListener('click', showFeatureSoon);
-        if (twoStepBtn) twoStepBtn.addEventListener('click', showFeatureSoon);
+        syncSecurityUi();
+        if (changePasswordBtn) {
+          changePasswordBtn.addEventListener('click', function () {
+            openSecurityBindForm('password');
+          });
+        }
+        if (bindPhoneBtn) {
+          bindPhoneBtn.addEventListener('click', function () {
+            openSecurityBindForm('phone');
+          });
+        }
+        if (twoStepBtn) {
+          twoStepBtn.addEventListener('click', function () {
+            if (AppState.user && AppState.user.twoStepEnabled) {
+              showToast('两步验证已开启');
+              return;
+            }
+            openSecurityBindForm('two-step');
+          });
+        }
+        if (bindWechatBtn) {
+          bindWechatBtn.addEventListener('click', function () {
+            openSecurityBindForm('provider', '微信');
+          });
+        }
+        if (bindAppleBtn) {
+          bindAppleBtn.addEventListener('click', function () {
+            openSecurityBindForm('provider', '苹果');
+          });
+        }
+        if (bindGoogleBtn) {
+          bindGoogleBtn.addEventListener('click', function () {
+            openSecurityBindForm('provider', '谷歌');
+          });
+        }
+        if (securityBindCancel) {
+          securityBindCancel.addEventListener('click', closeSecurityBindForm);
+        }
+        if (securityBindSave) {
+          securityBindSave.addEventListener('click', saveSecurityBinding);
+        }
 
         var exportState = function () {
           var data = localStorage.getItem('qingyue_todo_app_state_v1') || JSON.stringify(defaultState);

@@ -269,7 +269,15 @@
                     <i class="fas fa-eye-slash"> </i>
                   </button>
                 </div>
-                <div class="mt-2 text-xs" id="password-strength" aria-live="polite"></div>
+                <div class="mt-2 hidden" id="password-strength-wrap" aria-live="polite">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-[11px] text-gray-500">密码强度</span>
+                    <span class="text-[11px] font-medium text-gray-500" id="password-strength-label">待检测</span>
+                  </div>
+                  <div class="h-1.5 rounded-full bg-gray-200 overflow-hidden">
+                    <div id="password-strength-bar" class="h-full w-0 rounded-full transition-all duration-300 bg-red-400"></div>
+                  </div>
+                </div>
               </div>
               <div>
                 <label for="register-confirm" class="block text-sm font-medium text-gray-700 mb-2">确认密码</label>
@@ -394,21 +402,60 @@
 
         var registerPassword = document.getElementById('register-password');
         var toggleRegisterPassword = document.getElementById('toggle-register-password');
-        var passwordStrength = document.getElementById('password-strength');
+        var passwordStrengthWrap = document.getElementById('password-strength-wrap');
+        var passwordStrengthLabel = document.getElementById('password-strength-label');
+        var passwordStrengthBar = document.getElementById('password-strength-bar');
 
         function updateStrength() {
           var pwd = registerPassword.value;
           var score = 0;
           if (pwd.length >= 6) score++;
           if (/[0-9]/.test(pwd) && /[a-zA-Z]/.test(pwd)) score++;
-          if (pwd.length >= 10 && /[^a-zA-Z0-9]/.test(pwd)) score++;
+          if (/[A-Z]/.test(pwd) && /[^a-zA-Z0-9]/.test(pwd)) score++;
+          if (pwd.length >= 12) score++;
           if (!pwd) {
-            passwordStrength.textContent = '';
+            if (passwordStrengthWrap) passwordStrengthWrap.classList.add('hidden');
+            if (passwordStrengthLabel) {
+              passwordStrengthLabel.textContent = '待检测';
+              passwordStrengthLabel.className = 'text-[11px] font-medium text-gray-500';
+            }
+            if (passwordStrengthBar) {
+              passwordStrengthBar.style.width = '0%';
+              passwordStrengthBar.className = 'h-full w-0 rounded-full transition-all duration-300 bg-red-400';
+            }
             return;
           }
-          var text = score <= 1 ? '弱' : score === 2 ? '中' : '强';
-          passwordStrength.textContent = '密码强度：' + text;
-          passwordStrength.className = score <= 1 ? 'text-red-500' : score === 2 ? 'text-yellow-500' : 'text-green-500';
+          if (passwordStrengthWrap) passwordStrengthWrap.classList.remove('hidden');
+
+          var text = '弱';
+          var width = '25%';
+          var color = 'bg-red-400';
+          var textColor = 'text-red-500';
+          if (score === 2) {
+            text = '一般';
+            width = '50%';
+            color = 'bg-yellow-400';
+            textColor = 'text-yellow-500';
+          } else if (score === 3) {
+            text = '良好';
+            width = '75%';
+            color = 'bg-blue-500';
+            textColor = 'text-blue-500';
+          } else if (score >= 4) {
+            text = '很强';
+            width = '100%';
+            color = 'bg-green-500';
+            textColor = 'text-green-500';
+          }
+
+          if (passwordStrengthLabel) {
+            passwordStrengthLabel.textContent = text;
+            passwordStrengthLabel.className = 'text-[11px] font-medium ' + textColor;
+          }
+          if (passwordStrengthBar) {
+            passwordStrengthBar.style.width = width;
+            passwordStrengthBar.className = 'h-full rounded-full transition-all duration-300 ' + color;
+          }
         }
 
         registerPassword.addEventListener('input', updateStrength);

@@ -7,8 +7,8 @@ const defaultState = {
     name: '轻悦用户',
     email: 'demo@qingyue.com',
     phone: '13800000000',
-    level: 3,
-    exp: 860,
+    level: 1,
+    exp: 0,
     avatar: 'https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png'
   },
   tasks: [

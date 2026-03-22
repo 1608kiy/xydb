@@ -30,7 +30,10 @@ public class AuthService {
                 .nickname(req.getNickname())
                 .email(req.getEmail())
                 .password(passwordEncoder.encode(req.getPassword()))
-            .phone(req.getPhone())
+                .phone(req.getPhone())
+                .securityPhone(req.getPhone())
+                .level(1)
+                .exp(0)
                 .createdAt(LocalDateTime.now())
                 .build();
         userRepository.save(user);

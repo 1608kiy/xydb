@@ -2637,6 +2637,7 @@
             clearTimeout(viewSwitchTimer);
             viewSwitchTimer = null;
           }
+
           document.querySelectorAll('.view-btn').forEach(function (b) {
             b.classList.remove('active', 'btn-primary');
             b.classList.add('btn-glass');
@@ -2646,42 +2647,29 @@
             activeBtn.classList.add('active', 'btn-primary');
             activeBtn.classList.remove('btn-glass');
           }
-          var currentView = null;
-          document.querySelectorAll('.calendar-view').forEach(function (v) {
-            if (!v.classList.contains('hidden')) currentView = v;
-            v.classList.remove('calendar-view-leave');
-          });
+
           var viewEl = document.getElementById(view + '-view');
-          if (viewEl && currentView && currentView !== viewEl) {
-            currentView.classList.remove('calendar-view-enter');
-            currentView.classList.add('calendar-view-leave');
-            viewSwitchTimer = setTimeout(function () {
-              currentView.classList.remove('calendar-view-leave');
-              currentView.classList.add('hidden');
-              viewEl.classList.remove('hidden');
-              viewEl.classList.remove('calendar-view-leave');
-              viewEl.classList.add('calendar-view-enter');
-              viewSwitchTimer = setTimeout(function () {
-                viewEl.classList.remove('calendar-view-enter');
-                viewSwitchTimer = null;
-              }, 340);
-            }, 160);
-          } else if (viewEl) {
-            document.querySelectorAll('.calendar-view').forEach(function (v) {
-              if (v !== viewEl) v.classList.add('hidden');
-            });
-            viewEl.classList.remove('hidden');
-            viewEl.classList.remove('calendar-view-leave');
-            viewEl.classList.add('calendar-view-enter');
-            setTimeout(function () {
-              viewEl.classList.remove('calendar-view-enter');
-            }, 340);
-          }
-          if (view === 'week') {
-            renderWeekView();
-          } else if (view === 'day') {
-            renderDayView();
-          }
+          document.querySelectorAll('.calendar-view').forEach(function (v) {
+            v.classList.remove('calendar-view-enter', 'calendar-view-leave');
+            if (v !== viewEl) v.classList.add('hidden');
+          });
+
+          if (!viewEl) return;
+          viewEl.classList.remove('hidden');
+          viewEl.classList.add('calendar-view-enter');
+
+          requestAnimationFrame(function () {
+            if (view === 'week') {
+              renderWeekView();
+            } else if (view === 'day') {
+              renderDayView();
+            }
+          });
+
+          viewSwitchTimer = setTimeout(function () {
+            viewEl.classList.remove('calendar-view-enter');
+            viewSwitchTimer = null;
+          }, 220);
         }
 
         document.querySelectorAll('.view-btn').forEach(function (btn) {

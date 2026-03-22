@@ -34,5 +34,27 @@ public class User {
 
     private String avatarUrl;
 
+    private String securityPhone;
+
+    private LocalDateTime passwordUpdatedAt;
+
+    @Builder.Default
+    private Boolean twoStepEnabled = false;
+
+    @Builder.Default
+    private Boolean wechatBound = false;
+
+    private String wechatAccount;
+
+    @Builder.Default
+    private Boolean appleBound = false;
+
+    private String appleAccount;
+
+    @Builder.Default
+    private Boolean googleBound = false;
+
+    private String googleAccount;
+
     private LocalDateTime createdAt;
 }

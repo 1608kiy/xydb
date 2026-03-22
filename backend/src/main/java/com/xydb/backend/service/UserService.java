@@ -39,6 +39,15 @@ public class UserService {
             if (incoming.getNickname() != null) existing.setNickname(incoming.getNickname());
             if (incoming.getPhone() != null) existing.setPhone(incoming.getPhone());
             if (incoming.getAvatarUrl() != null) existing.setAvatarUrl(incoming.getAvatarUrl());
+            if (incoming.getSecurityPhone() != null) existing.setSecurityPhone(incoming.getSecurityPhone());
+            if (incoming.getPasswordUpdatedAt() != null) existing.setPasswordUpdatedAt(incoming.getPasswordUpdatedAt());
+            if (incoming.getTwoStepEnabled() != null) existing.setTwoStepEnabled(incoming.getTwoStepEnabled());
+            if (incoming.getWechatBound() != null) existing.setWechatBound(incoming.getWechatBound());
+            if (incoming.getWechatAccount() != null) existing.setWechatAccount(incoming.getWechatAccount());
+            if (incoming.getAppleBound() != null) existing.setAppleBound(incoming.getAppleBound());
+            if (incoming.getAppleAccount() != null) existing.setAppleAccount(incoming.getAppleAccount());
+            if (incoming.getGoogleBound() != null) existing.setGoogleBound(incoming.getGoogleBound());
+            if (incoming.getGoogleAccount() != null) existing.setGoogleAccount(incoming.getGoogleAccount());
             // 不允许在此处直接修改 email/password 等敏感字段
             return userRepository.save(existing);
         });
