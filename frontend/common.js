@@ -2981,3 +2981,181 @@ if (document.readyState === 'loading') {
 } else {
   initUnifiedThemeMode();
 }
+
+var UNIFIED_APP_STATE_KEY = 'qingyue_todo_app_state_v1';
+var UNIFIED_IDENTITY_SYNC_KEY = 'qingyue_identity_sync_tick';
+
+function getUnifiedStateSnapshot() {
+  var parsed = null;
+  try {
+    var raw = localStorage.getItem(UNIFIED_APP_STATE_KEY);
+    if (raw) parsed = JSON.parse(raw);
+  } catch (e) {
+    parsed = null;
+  }
+  return parsed || {};
+}
+
+function getUnifiedUserProfile() {
+  var fallback = {
+    name: '轻悦用户',
+    avatar: 'https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png'
+  };
+  var user = null;
+  try {
+    if (window.AppState && window.AppState.user) user = window.AppState.user;
+  } catch (e) {
+    user = null;
+  }
+  if (!user) {
+    var state = getUnifiedStateSnapshot();
+    user = state && state.user ? state.user : null;
+  }
+  return {
+    name: (user && user.name) || fallback.name,
+    avatar: (user && user.avatar) || fallback.avatar,
+    email: (user && user.email) || '',
+    phone: (user && user.phone) || ''
+  };
+}
+
+function refreshUnifiedUserIdentityUi() {
+  var user = getUnifiedUserProfile();
+
+  var headerNames = document.querySelectorAll('.header-user-name');
+  headerNames.forEach(function (el) {
+    el.textContent = user.name;
+  });
+
+  var roots = document.querySelectorAll('.unified-top-header-shell, header.sticky.top-0, header');
+  roots.forEach(function (root) {
+    var menus = root.querySelectorAll('div.user-dropdown, #user-dropdown, div.absolute.right-0');
+    menus.forEach(function (menu) {
+      if (!isAvatarMenu(menu)) return;
+      var group = menu.closest('.relative') || menu.parentElement;
+      if (!group) return;
+      var trigger = group.querySelector('button') || group.querySelector('[role="button"]');
+      if (!trigger) return;
+
+      var avatar = trigger.querySelector('img');
+      if (avatar && user.avatar) {
+        avatar.src = user.avatar;
+      }
+
+      var nameSpan = null;
+      var spans = trigger.querySelectorAll('span');
+      spans.forEach(function (span) {
+        if (nameSpan) return;
+        if (span.querySelector('*')) return;
+        var text = (span.textContent || '').trim();
+        if (!text) return;
+        nameSpan = span;
+      });
+      if (nameSpan) nameSpan.textContent = user.name;
+    });
+  });
+}
+
+function notifyIdentityUpdated(reason) {
+  try {
+    localStorage.setItem(UNIFIED_IDENTITY_SYNC_KEY, String(Date.now()));
+  } catch (e) {}
+
+  try {
+    var evt = new CustomEvent('qingyue:identity-updated', {
+      detail: { reason: reason || 'manual', ts: Date.now() }
+    });
+    window.dispatchEvent(evt);
+  } catch (e) {
+    // ignore browsers without CustomEvent constructor
+  }
+
+  refreshUnifiedUserIdentityUi();
+}
+
+function isUnifiedLogoutTarget(el) {
+  if (!el) return false;
+
+  var id = (el.id || '').trim();
+  if (
+    id === 'global-logout' ||
+    id === 'todo-logout-link' ||
+    id === 'logout-btn-top' ||
+    id === 'profile-logout'
+  ) {
+    return true;
+  }
+
+  var action = (el.getAttribute && el.getAttribute('data-action')) || '';
+  if (action === 'logout') return true;
+
+  var tag = (el.tagName || '').toUpperCase();
+  if (tag !== 'A') return false;
+
+  var href = (el.getAttribute('href') || '').trim();
+  var text = (el.textContent || '').replace(/\s+/g, '');
+  if (text.indexOf('退出登录') !== -1) return true;
+  if (href.indexOf('登录页面.html') !== -1) return true;
+
+  return false;
+}
+
+function performUnifiedLogoutFlow() {
+  if (window.AppState && typeof window.AppState.logout === 'function') {
+    window.AppState.logout();
+  }
+  if (typeof showToast === 'function') {
+    showToast('已退出登录');
+  }
+  setTimeout(function () {
+    safeNavigate('登录页面.html');
+  }, 250);
+}
+
+function initUnifiedLogoutBindings() {
+  if (document.documentElement.dataset.unifiedLogoutBound === '1') return;
+  document.documentElement.dataset.unifiedLogoutBound = '1';
+
+  document.addEventListener('click', function (e) {
+    if (e.defaultPrevented) return;
+    var trigger = e.target && e.target.closest
+      ? e.target.closest('a,button,[role="button"]')
+      : null;
+    if (!trigger) return;
+    if (!isUnifiedLogoutTarget(trigger)) return;
+
+    e.preventDefault();
+    performUnifiedLogoutFlow();
+  }, false);
+}
+
+function initUnifiedIdentitySync() {
+  refreshUnifiedUserIdentityUi();
+  initUnifiedLogoutBindings();
+  window.addEventListener('storage', function (e) {
+    if (!e) return;
+    if (e.key === UNIFIED_APP_STATE_KEY || e.key === UNIFIED_IDENTITY_SYNC_KEY) {
+      refreshUnifiedUserIdentityUi();
+    }
+  });
+  window.addEventListener('qingyue:identity-updated', function () {
+    refreshUnifiedUserIdentityUi();
+  });
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) refreshUnifiedUserIdentityUi();
+  });
+  window.addEventListener('load', refreshUnifiedUserIdentityUi);
+}
+
+if (typeof window !== 'undefined') {
+  window.refreshUnifiedUserIdentityUi = refreshUnifiedUserIdentityUi;
+  window.notifyIdentityUpdated = notifyIdentityUpdated;
+  window.performUnifiedLogoutFlow = performUnifiedLogoutFlow;
+  window.initUnifiedLogoutBindings = initUnifiedLogoutBindings;
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initUnifiedIdentitySync);
+} else {
+  initUnifiedIdentitySync();
+}

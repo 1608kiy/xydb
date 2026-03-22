@@ -51,12 +51,27 @@ function renderFooter(activePage) {
 }
 
 function bindGlobalLogout() {
-  const logoutBtn = document.getElementById('global-logout');
-  if (!logoutBtn) return;
-  logoutBtn.addEventListener('click', function (e) {
-    e.preventDefault();
-    AppState.logout();
-    showToast('已退出登录');
-    setTimeout(() => safeNavigate('登录页面.html'), 300);
+  if (typeof window.initUnifiedLogoutBindings === 'function') {
+    window.initUnifiedLogoutBindings();
+  }
+
+  const logoutTargets = document.querySelectorAll('#global-logout, #todo-logout-link, #logout-btn-top, #profile-logout');
+  logoutTargets.forEach(function (logoutBtn) {
+    if (!logoutBtn || logoutBtn.dataset.boundGlobalLogout === '1') return;
+    logoutBtn.dataset.boundGlobalLogout = '1';
+
+    logoutBtn.addEventListener('click', function (e) {
+      if (e.defaultPrevented) return;
+      e.preventDefault();
+
+      if (typeof window.performUnifiedLogoutFlow === 'function') {
+        window.performUnifiedLogoutFlow();
+        return;
+      }
+
+      AppState.logout();
+      showToast('已退出登录');
+      setTimeout(function () { safeNavigate('登录页面.html'); }, 300);
+    });
   });
 }

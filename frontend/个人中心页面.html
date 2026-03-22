@@ -1592,6 +1592,9 @@
           if (userPhone) userPhone.textContent = maskPhoneNumber(displayPhone);
           var headerUserName = document.querySelector('.header-user-name');
           if (headerUserName) headerUserName.textContent = displayName;
+          if (typeof window.refreshUnifiedUserIdentityUi === 'function') {
+            window.refreshUnifiedUserIdentityUi();
+          }
         }
 
         syncProfileIdentityUi();
@@ -1609,6 +1612,9 @@
             AppState.save && AppState.save();
 
             syncProfileIdentityUi();
+            if (typeof window.notifyIdentityUpdated === 'function') {
+              window.notifyIdentityUpdated('profile-fetch');
+            }
           }
         }).catch(function(){ /* ignore */ });
 
@@ -1636,12 +1642,18 @@
               AppState.user.avatar = base64;
               AppState.save && AppState.save();
               profileAvatar.src = base64;
+              if (typeof window.notifyIdentityUpdated === 'function') {
+                window.notifyIdentityUpdated('avatar-local');
+              }
 
               // 同步到后端
               apiRequest('/api/me', { method: 'PUT', body: JSON.stringify({ avatarUrl: base64 }) })
                 .then(function(res) {
                   if (res && res.status === 200) {
                     showToast('头像已更新');
+                    if (typeof window.notifyIdentityUpdated === 'function') {
+                      window.notifyIdentityUpdated('avatar-remote');
+                    }
                   } else {
                     showToast('头像上传失败', 'error');
                   }
@@ -1723,6 +1735,9 @@
             AppState.user = AppState.user || {};
             AppState.user.name = newName;
             AppState.save && AppState.save();
+            if (typeof window.notifyIdentityUpdated === 'function') {
+              window.notifyIdentityUpdated('name-local');
+            }
 
             // 同步到后端
             apiRequest('/api/me', { method: 'PUT', body: JSON.stringify({ nickname: newName }) })
@@ -1730,6 +1745,9 @@
                 if (res && res.status === 200) {
                   showToast('昵称已保存');
                   syncProfileIdentityUi();
+                  if (typeof window.notifyIdentityUpdated === 'function') {
+                    window.notifyIdentityUpdated('name-remote');
+                  }
                 } else {
                   showToast('昵称保存失败', 'error');
                 }
