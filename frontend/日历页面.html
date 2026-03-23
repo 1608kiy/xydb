@@ -1588,6 +1588,13 @@
         var activeCategory = 'all';
         var viewSwitchTimer = null;
         var isSwitchingView = false;
+        var CALENDAR_RENDER_TASK_LIMIT = 1200;
+        var DAY_VIEW_CARD_LIMIT = 120;
+        var calendarTaskMapCache = null;
+        var calendarTaskMapCacheCategory = '';
+        var calendarTaskMapCacheTaskCount = -1;
+        var calendarTaskOverflowWarned = false;
+        var dayViewRenderToken = 0;
 
         // ✅ Toast 提示函数 - 右上角弹出
         function showToast(message, type) {
@@ -1965,7 +1972,7 @@
           if (!currentEditingTask || !currentEditingTask.id) return Promise.resolve(true);
           ensureTaskSubtasks(currentEditingTask);
           // 后端不提供 /api/tasks/{id}/subtasks 接口，仅保存本地
-          AppState.save();
+          saveCalendarState();
           return Promise.resolve(true);
         }
 
@@ -2057,11 +2064,9 @@
           var meta = TAG_META[tagKey] || TAG_META.work;
           currentEditingTask.labels = [meta.label];
           renderDetailTags();
-          AppState.save();
-          renderMonthGrid();
+          saveCalendarState();
           renderScheduledTaskList();
-          renderWeekView();
-          renderDayView();
+          renderActiveCalendarView();
         };
 
         function setCalendarChromeVisible(visible) {
@@ -2209,13 +2214,104 @@
 
         function isTaskInActiveCategory(task) {
           if (activeCategory === 'all') return true;
-          return normalizeLabelKey(getPrimaryTaskLabel(task)) === activeCategory;
+          return taskMatchesActiveCategoryFast(task);
         }
 
         function getFilteredTasks(tasks) {
           return (tasks || []).filter(function (t) {
             return !!t && isTaskInActiveCategory(t);
           });
+        }
+
+        function invalidateCalendarTaskMapCache() {
+          calendarTaskMapCache = null;
+          calendarTaskMapCacheCategory = '';
+          calendarTaskMapCacheTaskCount = -1;
+          dayViewRenderToken += 1;
+        }
+
+        function saveCalendarState() {
+          invalidateCalendarTaskMapCache();
+          AppState.save();
+        }
+
+        function resolveTaskPrimaryLabelKeyFast(task) {
+          if (!task) return 'work';
+          var raw = null;
+          if (Array.isArray(task.labels)) raw = task.labels[0];
+          else if (task.label != null) raw = task.label;
+          else if (task.tag != null) raw = task.tag;
+          else if (Array.isArray(task.tags)) raw = task.tags[0];
+          else raw = task.tags;
+
+          if (raw == null) return 'work';
+          if (typeof raw === 'string') {
+            var text = raw.trim();
+            if (!text) return 'work';
+            var firstChar = text.charAt(0);
+            if (firstChar === '[' || firstChar === '{') {
+              try {
+                var parsed = JSON.parse(text);
+                if (Array.isArray(parsed) && parsed.length) return normalizeLabelKey(parsed[0]);
+                if (parsed && typeof parsed === 'object') {
+                  var vals = Object.values(parsed);
+                  if (vals.length) return normalizeLabelKey(vals[0]);
+                }
+              } catch (e) {}
+            }
+            return normalizeLabelKey(text);
+          }
+          if (Array.isArray(raw) && raw.length) return normalizeLabelKey(raw[0]);
+          if (raw && typeof raw === 'object') {
+            var keys = Object.values(raw);
+            if (keys.length) return normalizeLabelKey(keys[0]);
+          }
+          return normalizeLabelKey(String(raw));
+        }
+
+        function taskMatchesActiveCategoryFast(task) {
+          if (activeCategory === 'all') return true;
+          return resolveTaskPrimaryLabelKeyFast(task) === activeCategory;
+        }
+
+        function collectRenderableCalendarTasks(tasks) {
+          var limited = [];
+          var source = tasks || [];
+          for (var i = 0; i < source.length; i++) {
+            var task = source[i];
+            if (!task || !task.dueAt) continue;
+            if (!taskMatchesActiveCategoryFast(task)) continue;
+            var due = new Date(task.dueAt);
+            if (isNaN(due.getTime())) continue;
+            limited.push(task);
+            if (limited.length >= CALENDAR_RENDER_TASK_LIMIT) {
+              if (!calendarTaskOverflowWarned) {
+                calendarTaskOverflowWarned = true;
+                showToast('任务较多，已优先渲染最近 ' + CALENDAR_RENDER_TASK_LIMIT + ' 条，避免页面卡顿', 'warning');
+              }
+              break;
+            }
+          }
+          return limited;
+        }
+
+        function getTasksByDueDateCached() {
+          var taskCount = Array.isArray(AppState.tasks) ? AppState.tasks.length : 0;
+          if (
+            calendarTaskMapCache &&
+            calendarTaskMapCacheCategory === activeCategory &&
+            calendarTaskMapCacheTaskCount === taskCount
+          ) {
+            return calendarTaskMapCache;
+          }
+          var tasks = collectRenderableCalendarTasks(AppState.tasks || []);
+          calendarTaskMapCache = {
+            tasks: tasks,
+            map: buildTasksByDueDateMap(tasks)
+          };
+          calendarTaskMapCacheCategory = activeCategory;
+          calendarTaskMapCacheTaskCount = taskCount;
+          return calendarTaskMapCache;
         }
 
         function buildTasksByDueDateMap(tasks) {
@@ -2346,9 +2442,7 @@
         function renderScheduledTaskList() {
           var list = document.getElementById('scheduled-task-list');
           if (!list) return;
-          var tasks = getFilteredTasks((AppState.tasks || []).filter(function (t) {
-            return t.dueAt;
-          })).sort(function (a, b) {
+          var tasks = collectRenderableCalendarTasks(AppState.tasks || []).sort(function (a, b) {
             return new Date(a.dueAt) - new Date(b.dueAt);
           }).slice(0, 10);
 
@@ -2386,6 +2480,7 @@
           var firstWeekday = first.getDay();
           var startOffset = firstWeekday === 0 ? 6 : firstWeekday - 1;
           var startDate = new Date(year, month, 1 - startOffset);
+          var tasksByDate = getTasksByDueDateCached().map;
 
           for (var i = 0; i < 42; i++) {
             var date = new Date(startDate);
@@ -2393,9 +2488,7 @@
             var day = date.getDate();
             var isCurrentMonth = date.getMonth() === month;
             var dateKey = getDateKey(date);
-            var dayTasks = getFilteredTasks(AppState.tasks.filter(function (t) {
-              return t.dueAt && getDateKey(t.dueAt) === dateKey;
-            }));
+            var dayTasks = tasksByDate[dateKey] || [];
 
             var cell = document.createElement('div');
             cell.className = 'calendar-cell scale-in';
@@ -2446,15 +2539,16 @@
               });
               if (!task) return;
               task.dueAt = new Date(this.dataset.date + 'T00:00:00').toISOString();
-              AppState.save();
+              saveCalendarState();
               showToast('任务已安排到该日', 'success');
               renderMonthGrid();
+              renderScheduledTaskList();
+              renderWeekView();
+              renderDayView();
             });
             cell.addEventListener('click', function () {
               var dateStr = this.dataset.date;
-              var dayTasks2 = getFilteredTasks(AppState.tasks.filter(function (t) {
-                return t.dueAt && getDateKey(t.dueAt) === dateStr;
-              }));
+              var dayTasks2 = tasksByDate[dateStr] || [];
               if (dayTasks2.length > 0) {
                 openTaskDetail(dayTasks2[0]);
                 showToast('已打开当日首个任务详情', 'info');
@@ -2474,8 +2568,7 @@
           if (!weekGrid) return;
           weekGrid.innerHTML = '';
           var selected = ensureCalendarSelectedDate();
-          var allFilteredTasks = getFilteredTasks(AppState.tasks || []);
-          var tasksByDate = buildTasksByDueDateMap(allFilteredTasks);
+          var tasksByDate = getTasksByDueDateCached().map;
           
           if (weekTitle) {
             weekTitle.textContent = formatWeekRange(selected);
@@ -2521,10 +2614,10 @@
 
         function renderDayView() {
           if (!dayGrid) return;
+          var renderToken = ++dayViewRenderToken;
           dayGrid.innerHTML = '';
           var selected = ensureCalendarSelectedDate();
-          var allFilteredTasks = getFilteredTasks(AppState.tasks || []);
-          var tasksByDate = buildTasksByDueDateMap(allFilteredTasks);
+          var tasksByDate = getTasksByDueDateCached().map;
           
           if (dayTitle) {
             dayTitle.textContent = formatDayTitle(selected);
@@ -2545,19 +2638,60 @@
           
           var tasksContainer = document.createElement('div');
           tasksContainer.className = 'col-span-10 space-y-2';
-          
-          dayTasks.forEach(function (task) {
-            var taskDiv = document.createElement('div');
-            taskDiv.className = 'p-3 rounded-xl ' + getDayColor(task) + ' text-white card-hover cursor-pointer shadow-md';
-            taskDiv.innerHTML = '<div class="font-medium">' + (task.title || '未命名任务') + '</div>' +
-                              '<div class="text-xs mt-1 opacity-80">' + formatDisplayDate(task.dueAt) + '</div>';
-            taskDiv.addEventListener('click', function () {
-              openTaskDetail(task);
-            });
-            tasksContainer.appendChild(taskDiv);
-          });
+
+          if (!dayTasks.length) {
+            tasksContainer.innerHTML = '<div class="rounded-2xl border border-dashed border-primary/25 bg-primary/5 px-4 py-6 text-sm text-gray-500">当天暂无已安排任务</div>';
+            dayGrid.appendChild(tasksContainer);
+            return;
+          }
+
+          var visibleTasks = dayTasks.slice(0, DAY_VIEW_CARD_LIMIT);
+          var appendTaskCards = function (startIndex) {
+            if (renderToken !== dayViewRenderToken) return;
+            var fragment = document.createDocumentFragment();
+            var endIndex = Math.min(startIndex + 24, visibleTasks.length);
+            for (var i = startIndex; i < endIndex; i++) {
+              var task = visibleTasks[i];
+              var taskDiv = document.createElement('div');
+              taskDiv.className = 'p-3 rounded-xl ' + getDayColor(task) + ' text-white card-hover cursor-pointer shadow-md';
+              taskDiv.innerHTML = '<div class="font-medium">' + (task.title || '未命名任务') + '</div>' +
+                                '<div class="text-xs mt-1 opacity-80">' + formatDisplayDate(task.dueAt) + '</div>';
+              taskDiv.addEventListener('click', function (currentTask) {
+                return function () {
+                  openTaskDetail(currentTask);
+                };
+              }(task));
+              fragment.appendChild(taskDiv);
+            }
+            tasksContainer.appendChild(fragment);
+            if (endIndex < visibleTasks.length) {
+              setTimeout(function () {
+                appendTaskCards(endIndex);
+              }, 0);
+              return;
+            }
+            if (dayTasks.length > visibleTasks.length) {
+              var moreNotice = document.createElement('div');
+              moreNotice.className = 'rounded-2xl border border-warning/25 bg-warning/10 px-4 py-3 text-xs text-gray-500';
+              moreNotice.textContent = '当天任务较多，已优先展示前 ' + visibleTasks.length + ' 条，避免页面卡顿。';
+              tasksContainer.appendChild(moreNotice);
+            }
+          };
           
           dayGrid.appendChild(tasksContainer);
+          appendTaskCards(0);
+        }
+
+        function renderActiveCalendarView() {
+          if (calendarState.view === 'week') {
+            renderWeekView();
+            return;
+          }
+          if (calendarState.view === 'day') {
+            renderDayView();
+            return;
+          }
+          renderMonthGrid();
         }
 
         function openTaskDetail(task) {
@@ -2581,6 +2715,7 @@
           if (isSwitchingView) return;
           isSwitchingView = true;
           calendarState.view = view;
+          dayViewRenderToken += 1;
           if (viewSwitchTimer) {
             clearTimeout(viewSwitchTimer);
             viewSwitchTimer = null;
@@ -2607,15 +2742,14 @@
             return;
           }
           viewEl.classList.remove('hidden');
-          viewEl.classList.add('calendar-view-enter');
+          var shouldAnimateSwitch = (Array.isArray(AppState.tasks) ? AppState.tasks.length : 0) < 120;
+          if (shouldAnimateSwitch) {
+            viewEl.classList.add('calendar-view-enter');
+          }
 
-          requestAnimationFrame(function () {
+          setTimeout(function () {
             try {
-              if (view === 'week') {
-                renderWeekView();
-              } else if (view === 'day') {
-                renderDayView();
-              }
+              renderActiveCalendarView();
             } catch (err) {
               console.error('switchToView render error:', err);
               showToast('视图渲染失败，已恢复月视图', 'warning');
@@ -2634,14 +2768,17 @@
                 monthBtn.classList.add('active', 'btn-primary');
                 monthBtn.classList.remove('btn-glass');
               }
+            } finally {
+              isSwitchingView = false;
             }
-          });
+          }, 0);
 
-          viewSwitchTimer = setTimeout(function () {
-            viewEl.classList.remove('calendar-view-enter');
-            viewSwitchTimer = null;
-            isSwitchingView = false;
-          }, 220);
+          if (shouldAnimateSwitch) {
+            viewSwitchTimer = setTimeout(function () {
+              viewEl.classList.remove('calendar-view-enter');
+              viewSwitchTimer = null;
+            }, 220);
+          }
         }
 
         document.querySelectorAll('.view-btn').forEach(function (btn) {
@@ -2658,9 +2795,7 @@
             renderCategoryChips();
             renderTaskPool();
             renderScheduledTaskList();
-            renderMonthGrid();
-            renderWeekView();
-            renderDayView();
+            renderActiveCalendarView();
             var label = chip.querySelector('.category-chip-label');
             showToast('已筛选：' + (label ? label.textContent : '全部'), 'info');
           });
@@ -2776,8 +2911,9 @@
                 count++;
               }
             });
-            AppState.save();
-            renderMonthGrid();
+            saveCalendarState();
+            renderScheduledTaskList();
+            renderActiveCalendarView();
             showToast('已完成 ' + count + ' 个任务', 'success');
           });
         }
@@ -2803,8 +2939,9 @@
             AppState.tasks = currentTasks.filter(function (t) {
               return t.status !== 'completed';
             });
-            AppState.save();
-            renderMonthGrid();
+            saveCalendarState();
+            renderScheduledTaskList();
+            renderActiveCalendarView();
             showToast('已删除 ' + completedCount + ' 个已完成任务', 'success');
           });
         }
@@ -2861,12 +2998,13 @@
                 });
                 showToast('已按标签排序', 'success');
               }
-              AppState.save();
+              saveCalendarState();
               sortFilterMenu.classList.remove('show');
               if (sortFilterArrow) {
                 sortFilterArrow.style.transform = 'rotate(0deg)';
               }
-              renderMonthGrid();
+              renderScheduledTaskList();
+              renderActiveCalendarView();
             });
           });
 
@@ -2957,11 +3095,9 @@
             task.dueAt = payload.dueAt;
             task.labels = selectedLabels;
             ensureTaskSubtasks(task);
-            AppState.save();
-            renderMonthGrid();
+            saveCalendarState();
             renderScheduledTaskList();
-            renderWeekView();
-            renderDayView();
+            renderActiveCalendarView();
             closeTaskDetailModal();
             showToast('任务已保存', 'success');
           });
@@ -3132,10 +3268,9 @@
             currentEditingTask.subtasks.push({ title: text, completed: false });
             setSubtaskSubmitting(true);
             syncCurrentSubtasksToServer().then(function () {
-              AppState.save();
               renderSubtasks();
-              renderMonthGrid();
               renderScheduledTaskList();
+              renderActiveCalendarView();
               newSubtaskInput.value = '';
               showToast('✅ 子任务已添加', 'success');
             }).catch(function (err) {
@@ -3171,8 +3306,8 @@
             currentEditingTask.subtasks.forEach(function (s) { s.completed = true; });
             syncCurrentSubtasksToServer().then(function () {
               renderSubtasks();
-              renderMonthGrid();
               renderScheduledTaskList();
+              renderActiveCalendarView();
               showToast('✅ 所有子任务已标记完成', 'success');
             }).catch(function (err) {
               console.error(err);
@@ -3247,12 +3382,10 @@
             AppState.tasks = (AppState.tasks || []).filter(function (t) {
               return String(t.id) !== String(selectedTaskId);
             });
-            AppState.save();
+            saveCalendarState();
             closeTaskDetailModal();
-            renderMonthGrid();
             renderScheduledTaskList();
-            renderWeekView();
-            renderDayView();
+            renderActiveCalendarView();
             showToast('🗑️ 任务已删除', 'success');
           });
         }
@@ -3322,10 +3455,8 @@
         Promise.resolve().then(function() {
           // 仅渲染本地状态
         }).catch(function(){ /* ignore network errors */ }).finally(function(){
-          renderMonthGrid();
           renderScheduledTaskList();
-          renderWeekView();
-          renderDayView();
+          renderActiveCalendarView();
         });
       });
     </script>

@@ -265,7 +265,12 @@ async function handleApiRoute(route, state) {
 
 async function createBrowserContext(baseUrl) {
   const { chromium } = requirePlaywright();
-  const browser = await chromium.launch({ headless: true });
+  let browser;
+  try {
+    browser = await chromium.launch({ headless: true });
+  } catch (err) {
+    browser = await chromium.launch({ channel: 'msedge', headless: true });
+  }
   const context = await browser.newContext({
     baseURL: baseUrl,
     viewport: { width: 1440, height: 900 },
@@ -290,4 +295,3 @@ module.exports = {
   startStaticServer,
   ts
 };
-

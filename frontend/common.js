@@ -1055,9 +1055,14 @@ function markUnifiedPageEnter() {
 
 function runUnifiedSwitchEnterAnimation(el) {
   if (!el) return;
+  if (el.dataset && el.dataset.unifiedSwitchAnimating === '1') return;
+  if (el.dataset) el.dataset.unifiedSwitchAnimating = '1';
   el.classList.remove('unified-switch-enter');
   void el.offsetWidth;
   el.classList.add('unified-switch-enter');
+  window.setTimeout(function () {
+    if (el && el.dataset) delete el.dataset.unifiedSwitchAnimating;
+  }, 0);
 }
 
 function navigateWithTransition(url) {
@@ -1132,10 +1137,14 @@ function initUnifiedPageTransitions() {
             if (!target || !target.matches) return;
             if (!target.matches('.calendar-view, .tab-pane, .view-panel, [data-switch-panel]')) return;
             if (target.classList.contains('hidden')) return;
+            var oldClass = typeof mutation.oldValue === 'string' ? mutation.oldValue : '';
+            var wasHidden = /\bhidden\b/.test(oldClass);
+            if (!wasHidden) return;
+            if (target.dataset && target.dataset.unifiedSwitchAnimating === '1') return;
             runUnifiedSwitchEnterAnimation(target);
           });
         });
-        observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
+        observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'], attributeOldValue: true });
       }
     });
   } else {
@@ -1150,10 +1159,14 @@ function initUnifiedPageTransitions() {
           if (!target || !target.matches) return;
           if (!target.matches('.calendar-view, .tab-pane, .view-panel, [data-switch-panel]')) return;
           if (target.classList.contains('hidden')) return;
+          var oldClass = typeof mutation.oldValue === 'string' ? mutation.oldValue : '';
+          var wasHidden = /\bhidden\b/.test(oldClass);
+          if (!wasHidden) return;
+          if (target.dataset && target.dataset.unifiedSwitchAnimating === '1') return;
           runUnifiedSwitchEnterAnimation(target);
         });
       });
-      observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
+      observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'], attributeOldValue: true });
     }
   }
 }

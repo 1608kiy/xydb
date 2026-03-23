@@ -145,8 +145,69 @@ async function runTodoFlow(page) {
 }
 
 async function runCalendarFlow(page) {
+  const now = new Date();
+  const baseDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 0, 0);
+  const labels = ['工作', '学习', '生活', '健康'];
+  const stressState = {
+    user: {
+      id: 'e2e-user',
+      name: 'Codex E2E',
+      email: 'e2e@example.test',
+      phone: '13800000000',
+      level: 1,
+      exp: 0,
+      avatar: ''
+    },
+    tasks: Array.from({ length: 420 }, (_, index) => {
+      const due = new Date(baseDate.getTime());
+      due.setMinutes(baseDate.getMinutes() + index);
+      return {
+        id: `stress-${index + 1}`,
+        title: `日历压力任务-${index + 1}`,
+        description: '验证周视图/日视图切换不卡死',
+        priority: index % 3 === 0 ? 'high' : 'medium',
+        status: 'pending',
+        dueAt: due.toISOString(),
+        labels: [labels[index % labels.length]],
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString(),
+        subtasks: []
+      };
+    }),
+    pomodoroSessions: [],
+    checkins: [],
+    settings: {
+      theme: 'light',
+      notifications: { taskReminder: true, pomodoroEnd: true, dailyReport: false },
+      pomodoro: { focus: 25, shortBreak: 5, longBreak: 15, longBreakInterval: 4, autoStartBreak: true, autoStartNext: false, focusModeMute: true },
+      calendar: { weekStart: 'monday', defaultView: 'month', showLunar: true }
+    },
+    labels: [
+      { id: 'work', name: '工作', color: '#3B82F6' },
+      { id: 'study', name: '学习', color: '#8B5CF6' },
+      { id: 'life', name: '生活', color: '#EC4899' },
+      { id: 'health', name: '健康', color: '#10B981' }
+    ]
+  };
+
+  await page.addInitScript((state) => {
+    try {
+      localStorage.setItem('qingyue_todo_app_state_v1', JSON.stringify(state));
+    } catch (_) {}
+  }, stressState);
+
   await page.goto('/frontend/日历页面.html', { waitUntil: 'domcontentloaded', timeout: 45000 });
   await page.waitForTimeout(1400);
+
+  await page.locator('.view-btn[data-view="week"]').click();
+  await expectVisible(page.locator('#week-view:not(.hidden) #week-grid > *'), '周视图切换后未渲染');
+
+  await page.locator('.view-btn[data-view="day"]').click();
+  await expectVisible(page.locator('#day-view:not(.hidden) #day-grid'), '日视图切换后未渲染');
+  await expectVisible(page.locator('#day-view:not(.hidden) #day-grid .col-span-10 > *').first(), '日视图任务列表未渲染');
+
+  await page.locator('.view-btn[data-view="month"]').click();
+  await expectVisible(page.locator('#month-view:not(.hidden) #month-grid > *'), '月视图回切后未渲染');
 
   const poolItem = page.locator('#task-pool .task-pool-item, #task-pool .task-card').first();
   await expectVisible(poolItem, '日历页任务池为空或未渲染');
@@ -221,9 +282,9 @@ async function run() {
   } finally {
     result.finishedAt = new Date().toISOString();
     fs.writeFileSync(logPath, JSON.stringify(result, null, 2), 'utf8');
-    await context.close();
-    await browser.close();
-    await server.close();
+    try { await context.close(); } catch (_) {}
+    try { await browser.close(); } catch (_) {}
+    try { await server.close(); } catch (_) {}
   }
 
   if (!result.pass) {
