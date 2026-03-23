@@ -39,6 +39,15 @@ public class AiController {
     @Value("${ai.provider.api-token:}")
     private String providerApiToken;
 
+    @Value("${ai.provider.backup.base-url:https://api.deepseek.com/v1}")
+    private String backupProviderBaseUrl;
+
+    @Value("${ai.provider.backup.model:deepseek-chat}")
+    private String backupProviderModel;
+
+    @Value("${ai.provider.backup.api-token:}")
+    private String backupProviderApiToken;
+
     public AiController(UserService userService, ObjectMapper objectMapper) {
         this.userService = userService;
         this.objectMapper = objectMapper;
@@ -53,8 +62,9 @@ public class AiController {
         }
 
         try {
-            String token = String.valueOf(providerApiToken == null ? "" : providerApiToken).trim();
-            if (token.isEmpty()) {
+            String primaryToken = String.valueOf(providerApiToken == null ? "" : providerApiToken).trim();
+            String backupToken = String.valueOf(backupProviderApiToken == null ? "" : backupProviderApiToken).trim();
+            if (primaryToken.isEmpty() && backupToken.isEmpty()) {
                 return ResponseEntity.status(500).body(Result.fail(500, "AI token is not configured"));
             }
 
@@ -70,30 +80,23 @@ public class AiController {
             providerReq.put("max_tokens", pickInt(req.get("maxTokens"), 800));
             providerReq.put("messages", incomingMessages);
 
-            String normalizedBase = String.valueOf(providerBaseUrl == null ? "" : providerBaseUrl).replaceAll("/+$", "");
-            String endpoint = normalizedBase + "/chat/completions";
-
-            HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(endpoint))
-                .timeout(Duration.ofSeconds(25))
-                .header("Content-Type", "application/json")
-                .header("Authorization", "Bearer " + token)
-                .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(providerReq)))
-                .build();
-
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            int statusCode = response.statusCode();
-            String responseBody = response.body() == null ? "" : response.body();
-
-            if (statusCode < 200 || statusCode >= 300) {
-                String providerError = extractProviderErrorMessage(responseBody);
-                String msg = providerError == null || providerError.isBlank()
-                    ? "AI 请求失败: " + statusCode
-                    : providerError;
-                return ResponseEntity.status(502).body(Result.fail(502, msg));
+            ProviderCallResult providerResult = callProvider(providerBaseUrl, primaryToken, providerReq);
+            if (!providerResult.ok() && !backupToken.isEmpty()) {
+                Map<String, Object> backupReq = new LinkedHashMap<>(providerReq);
+                if (req.get("model") == null || String.valueOf(req.get("model")).trim().isEmpty()) {
+                    backupReq.put("model", backupProviderModel);
+                }
+                ProviderCallResult backupResult = callProvider(backupProviderBaseUrl, backupToken, backupReq);
+                if (backupResult.ok()) {
+                    providerResult = backupResult;
+                }
             }
 
-            JsonNode root = objectMapper.readTree(responseBody);
+            if (!providerResult.ok()) {
+                return ResponseEntity.status(502).body(Result.fail(502, providerResult.errorMessage()));
+            }
+
+            JsonNode root = objectMapper.readTree(providerResult.responseBody());
             JsonNode contentNode = root.path("choices").path(0).path("message").path("content");
             String content = contentNode.isMissingNode() || contentNode.isNull() ? "" : contentNode.asText("");
             if (content.isBlank()) {
@@ -104,9 +107,6 @@ public class AiController {
             data.put("content", content);
             data.put("model", root.path("model").asText(defaultModel));
             return ResponseEntity.ok(Result.ok(data));
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return ResponseEntity.status(500).body(Result.fail(500, "AI 请求被中断"));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Result.fail(500, "AI 请求异常: " + e.getMessage()));
         }
@@ -146,5 +146,54 @@ public class AiController {
         } catch (Exception ignored) {
         }
         return null;
+    }
+
+    private ProviderCallResult callProvider(String baseUrl, String token, Map<String, Object> providerReq) {
+        String normalizedToken = String.valueOf(token == null ? "" : token).trim();
+        if (normalizedToken.isEmpty()) {
+            return ProviderCallResult.fail("AI token is not configured");
+        }
+
+        try {
+            String normalizedBase = String.valueOf(baseUrl == null ? "" : baseUrl).replaceAll("/+$", "");
+            String endpoint = normalizedBase + "/chat/completions";
+
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(endpoint))
+                .timeout(Duration.ofSeconds(25))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + normalizedToken)
+                .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(providerReq)))
+                .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            int statusCode = response.statusCode();
+            String responseBody = response.body() == null ? "" : response.body();
+
+            if (statusCode < 200 || statusCode >= 300) {
+                String providerError = extractProviderErrorMessage(responseBody);
+                String msg = providerError == null || providerError.isBlank()
+                    ? "AI 请求失败: " + statusCode
+                    : providerError;
+                return ProviderCallResult.fail(msg);
+            }
+
+            return ProviderCallResult.ok(responseBody);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return ProviderCallResult.fail("AI 请求被中断");
+        } catch (Exception e) {
+            return ProviderCallResult.fail("AI 请求异常: " + e.getMessage());
+        }
+    }
+
+    private record ProviderCallResult(boolean ok, String responseBody, String errorMessage) {
+        static ProviderCallResult ok(String responseBody) {
+            return new ProviderCallResult(true, responseBody, "");
+        }
+
+        static ProviderCallResult fail(String errorMessage) {
+            return new ProviderCallResult(false, "", errorMessage);
+        }
     }
 }

@@ -1079,7 +1079,7 @@ function navigateWithTransition(url) {
   root.classList.add('unified-page-leaving');
   window.setTimeout(function () {
     window.location.href = url;
-  }, 220);
+  }, 120);
 }
 
 function initUnifiedPageTransitions() {

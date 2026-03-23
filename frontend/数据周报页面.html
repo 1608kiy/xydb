@@ -39,6 +39,7 @@
     <script id="report-data-fetch">
       try { document.documentElement.classList.add('defer-unified-tab'); } catch (e) {}
       if (typeof checkAuthOnLoad === 'function') { checkAuthOnLoad().catch(function(){}); }
+      window.__reportSyncNoop = true;
       // Fetch server data (tasks, pomodoros) and render aggregated weekly stats and charts
       function parseDateVal(v) {
         if (v === null || v === undefined || v === '') return null;
@@ -153,6 +154,7 @@
 
       function syncReportStateFromServer() {
         // 后端没有提供 /api/tasks 和 /api/pomodoros 接口，仅使用本地数据
+        window.__reportSyncNoop = true;
         return Promise.resolve();
         // 本地数据已经及时编程加载到 AppState 中
       }
@@ -1097,12 +1099,25 @@
         });
       }
 
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initReportChartsOnce);
-      } else {
-        initReportChartsOnce();
+      function scheduleReportChartsInit() {
+        if (window.__reportChartsInitScheduled) return;
+        window.__reportChartsInitScheduled = true;
+        var run = function () {
+          initReportChartsOnce();
+        };
+        if (window.requestIdleCallback) {
+          window.requestIdleCallback(run, { timeout: 1200 });
+        } else {
+          window.setTimeout(run, 160);
+        }
       }
-      window.addEventListener('load', initReportChartsOnce);
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', scheduleReportChartsInit);
+      } else {
+        scheduleReportChartsInit();
+      }
+      window.addEventListener('load', scheduleReportChartsInit);
     </script>
     <!-- [/JSMOD] p9q_ECharts 图表初始化 -->
     
@@ -1542,6 +1557,21 @@
         ]);
       }
 
+      function scheduleAiSuggestionsLoad() {
+        var run = function () {
+          return requestAiSmartSuggestions().then(function (items) {
+            renderSmartSuggestions(items);
+          }).catch(function () {
+            renderSmartSuggestions(getDefaultSuggestions());
+          });
+        };
+        if (window.requestIdleCallback) {
+          window.requestIdleCallback(function () { run(); }, { timeout: 1500 });
+        } else {
+          window.setTimeout(run, 300);
+        }
+      }
+
       function applyTimeRangeSelection(value) {
         var validValues = ['本周', '上周', '本月', '自定义'];
         var selected = validValues.indexOf(value) >= 0 ? value : '本周';
@@ -1618,21 +1648,15 @@
         Promise.resolve()
           .then(function () { return updateWeeklyStats({ sync: false }); })
           .then(function () {
-            // 后台刷新远端数据，避免阻塞进入页面。
-            Promise.resolve()
-              .then(function () { return updateWeeklyStats({ sync: true }); })
-              .catch(function (err) { console.error('updateWeeklyStats sync error:', err); });
+            // 仅在存在真实远端同步逻辑时再触发二次刷新，避免重复渲染。
+            if (!window.__reportSyncNoop) {
+              Promise.resolve()
+                .then(function () { return updateWeeklyStats({ sync: true }); })
+                .catch(function (err) { console.error('updateWeeklyStats sync error:', err); });
+            }
 
-            // AI 建议异步渲染，不阻塞首屏可交互。
-            Promise.resolve()
-              .then(function () {
-                return requestAiSmartSuggestions().then(function (items) {
-                  renderSmartSuggestions(items);
-                }).catch(function () {
-                  renderSmartSuggestions(getDefaultSuggestions());
-                });
-              })
-              .catch(function (err) { console.error('requestAiSmartSuggestions error:', err); });
+            // AI 建议在空闲时加载，降低与首屏渲染竞争。
+            scheduleAiSuggestionsLoad();
           })
           .catch(function (err) { console.error('updateWeeklyStats init error:', err); })
           .finally(revealBottomTab);
