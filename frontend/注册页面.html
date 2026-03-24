@@ -108,7 +108,7 @@
               border: 1px solid rgba(255, 255, 255, 0.3); 
               box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 0 30px rgba(255, 255, 255, 0.1); 
           }
-          
+
           .glass-input {
               background: rgba(249, 250, 251, 0.6);
               backdrop-filter: blur(10px);
@@ -217,7 +217,7 @@
         <div class="relative w-full max-w-md mb-8 group">
           <div class="absolute inset-0 bg-white/10 rounded-2xl blur-xl transform rotate-3 scale-105 group-hover:blur-2xl transition-all duration-500"></div>
           <div class="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <img src="https://design.gemcoder.com/staticResource/echoAiSystemImages/73a4ff2b7f782ef88489e4337041db67.png" alt="轻悦待办应用界面" class="w-full rounded-2xl shadow-2xl transform hover:scale-[1.02] transition-transform duration-500 relative z-10 image-tilt-float glow-border" />
+          <img id="auth-hero-preview" src="assets/xydb-auth-light.svg" alt="轻悦待办应用界面" class="w-full rounded-2xl shadow-2xl transform hover:scale-[1.02] transition-transform duration-500 relative z-10 image-tilt-float glow-border" />
         </div>
         
         <!-- 用户统计 -->
@@ -341,6 +341,23 @@
     <script>
       document.addEventListener('DOMContentLoaded', function () {
         AppState.init();
+        var authHeroPreview = document.getElementById('auth-hero-preview');
+        var syncAuthHeroPreview = function () {
+          if (!authHeroPreview || !document.body || !document.documentElement) return;
+          var isDark = document.body.classList.contains('theme-night') || document.documentElement.classList.contains('unified-dark-mode');
+          authHeroPreview.src = isDark ? 'assets/xydb-auth-dark.svg' : 'assets/xydb-auth-light.svg';
+        };
+        syncAuthHeroPreview();
+        if (typeof MutationObserver !== 'undefined') {
+          if (document.body) {
+            var registerBodyClassObserver = new MutationObserver(syncAuthHeroPreview);
+            registerBodyClassObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+          }
+          if (document.documentElement) {
+            var registerRootClassObserver = new MutationObserver(syncAuthHeroPreview);
+            registerRootClassObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+          }
+        }
 
         function shouldEnterLocalMode(resp) {
           if (!resp) return true;
