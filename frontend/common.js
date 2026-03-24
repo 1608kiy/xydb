@@ -344,16 +344,16 @@ function ensureUnifiedDarkThemeStyle() {
   }
   html.unified-dark-mode .unified-bottom-tab-dock .unified-tab-item.active {
     color: var(--ud-title) !important;
-    background: rgba(74, 108, 247, 0.18) !important;
+    background: transparent !important;
   }
   html.unified-dark-mode .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon {
     color: var(--ud-title) !important;
-    background: rgba(74, 108, 247, 0.28) !important;
-    box-shadow: 0 6px 14px rgba(74, 108, 247, 0.28) !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: none !important;
   }
   html.unified-dark-mode .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-label {
     color: var(--ud-title) !important;
-    text-shadow: 0 0 8px rgba(74, 108, 247, 0.38);
+    text-shadow: none;
   }
   html.unified-dark-mode .text-gray-900,
   html.unified-dark-mode .text-gray-800,
@@ -455,12 +455,16 @@ function ensureUnifiedDarkThemeStyle() {
   html.unified-dark-mode .checkin-btn,
   html.unified-dark-mode .view-btn.active,
   html.unified-dark-mode .mode-btn.active,
-  html.unified-dark-mode .priority-btn.active,
-  html.unified-dark-mode .tab-item.active {
+  html.unified-dark-mode .priority-btn.active {
     background: var(--ud-accent) !important;
     border-color: rgba(74, 108, 247, 0.85) !important;
     color: var(--ud-title) !important;
     box-shadow: 0 8px 20px rgba(74, 108, 247, 0.24) !important;
+  }
+  html.unified-dark-mode footer.glass-tab .tab-item.active {
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
   }
   html.unified-dark-mode .btn-glass,
   html.unified-dark-mode .btn-secondary-glass,
