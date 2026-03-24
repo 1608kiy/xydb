@@ -152,10 +152,46 @@
           
           /* ===== 输入框图标样式 - 更明显 ===== */
           .input-icon {
-              @apply text-gray-500 text-lg transition-all duration-300;
+              @apply text-slate-700 transition-all duration-200;
+              z-index: 2;
+              pointer-events: none;
+          }
+          .input-icon i {
+              width: 2rem;
+              height: 2rem;
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              border-radius: 0.65rem;
+              border: 1px solid #cbd5e1;
+              background: #f3f6fb;
+              box-shadow: none;
+              font-size: 0.95rem;
+              color: #64748b;
+          }
+          .group:hover .input-icon i {
+              border-color: #cbd5e1;
+              background: #f3f6fb;
           }
           .group:focus-within .input-icon {
-              @apply text-primary text-xl;
+              @apply text-slate-700;
+          }
+          .group:focus-within .input-icon i {
+              transform: none;
+              border-color: #cbd5e1;
+              background: #f3f6fb;
+              box-shadow: none;
+          }
+          body.theme-night .input-icon,
+          html.unified-dark-mode .input-icon {
+              color: #e2e8f0 !important;
+          }
+          body.theme-night .input-icon i,
+          html.unified-dark-mode .input-icon i {
+              border-color: #94a3b8;
+              background: #334155;
+              box-shadow: none;
+              color: #f8fafc;
           }
           
           /* ===== 社交按钮优化 - 图标 + 文字 ===== */
