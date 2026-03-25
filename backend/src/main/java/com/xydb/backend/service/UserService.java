@@ -1,9 +1,15 @@
 package com.xydb.backend.service;
 
 import com.xydb.backend.model.User;
+import com.xydb.backend.repository.CheckinRepository;
+import com.xydb.backend.repository.PomodoroRepository;
+import com.xydb.backend.repository.SubTaskRepository;
+import com.xydb.backend.repository.TagRepository;
+import com.xydb.backend.repository.TaskRepository;
 import com.xydb.backend.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,9 +17,24 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final TaskRepository taskRepository;
+    private final SubTaskRepository subTaskRepository;
+    private final PomodoroRepository pomodoroRepository;
+    private final TagRepository tagRepository;
+    private final CheckinRepository checkinRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,
+                       TaskRepository taskRepository,
+                       SubTaskRepository subTaskRepository,
+                       PomodoroRepository pomodoroRepository,
+                       TagRepository tagRepository,
+                       CheckinRepository checkinRepository) {
         this.userRepository = userRepository;
+        this.taskRepository = taskRepository;
+        this.subTaskRepository = subTaskRepository;
+        this.pomodoroRepository = pomodoroRepository;
+        this.tagRepository = tagRepository;
+        this.checkinRepository = checkinRepository;
     }
 
     public Optional<User> getCurrentUser(){
@@ -66,11 +87,28 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    @Transactional
     public boolean deleteUserById(Long id) {
-        if (!userRepository.existsById(id)) {
+        Optional<User> maybeUser = userRepository.findById(id);
+        if (maybeUser.isEmpty()) {
             return false;
         }
-        userRepository.deleteById(id);
+
+        User user = maybeUser.get();
+        // Clear dependent data first to avoid FK constraint violations.
+        checkinRepository.deleteByUserId(id);
+        tagRepository.deleteByUserId(id);
+        pomodoroRepository.deleteByUser(user);
+
+        List<com.xydb.backend.model.Task> tasks = taskRepository.findByUser(user);
+        for (com.xydb.backend.model.Task task : tasks) {
+            pomodoroRepository.deleteByTask(task);
+            if (task.getId() != null) {
+                subTaskRepository.deleteByTaskId(task.getId());
+            }
+        }
+        taskRepository.deleteByUser(user);
+        userRepository.delete(user);
         return true;
     }
 }

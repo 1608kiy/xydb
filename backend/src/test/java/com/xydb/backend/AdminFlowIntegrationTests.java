@@ -62,6 +62,45 @@ class AdminFlowIntegrationTests {
                 .andExpect(jsonPath("$.code").value(200));
 
         String normalToken = loginAndGetToken(email, "P@ssw0rd");
+
+        mockMvc.perform(post("/api/tasks")
+                        .header("Authorization", "Bearer " + normalToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{" +
+                                "\"title\":\"t1\"," +
+                                "\"description\":\"to delete\"" +
+                                "}"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/checkins")
+                        .header("Authorization", "Bearer " + normalToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{" +
+                                "\"type\":\"daily\"," +
+                                "\"note\":\"checkin\"" +
+                                "}"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/tags")
+                        .header("Authorization", "Bearer " + normalToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{" +
+                                "\"name\":\"tag-a\"," +
+                                "\"color\":\"#22c55e\"" +
+                                "}"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/pomodoros")
+                        .header("Authorization", "Bearer " + normalToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{" +
+                                "\"mode\":\"focus\"," +
+                                "\"plannedMinutes\":25," +
+                                "\"actualMinutes\":25," +
+                                "\"completed\":true" +
+                                "}"))
+                .andExpect(status().isOk());
+
         mockMvc.perform(get("/api/admin/users")
                         .header("Authorization", "Bearer " + normalToken))
                 .andExpect(status().isForbidden())
