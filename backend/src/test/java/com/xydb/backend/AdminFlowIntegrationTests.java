@@ -29,6 +29,13 @@ class AdminFlowIntegrationTests {
     @Autowired
     private ObjectMapper objectMapper;
 
+        @Test
+        void unauthenticatedUserShouldNotAccessAdminApis() throws Exception {
+                mockMvc.perform(get("/api/admin/users"))
+                                .andExpect(status().isUnauthorized())
+                                .andExpect(jsonPath("$.code").value(401));
+        }
+
     @Test
     void adminLoginAndAdminApisShouldWork() throws Exception {
         String adminToken = loginAndGetToken("admin", "admin");

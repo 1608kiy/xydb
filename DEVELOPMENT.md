@@ -78,8 +78,15 @@ Invoke-WebRequest -Uri "http://localhost:8080/actuator/health" -UseBasicParsing
 ## 6. 联调脚本
 - `scripts/run_regression.ps1`：回归入口
 - `scripts/verify_api.ps1`：API 冒烟
+- `scripts/run_graduation_suite.ps1`：毕业设计验收套件（输出 JSON + Markdown 结构化报告）
 - `backend/check_reports.ps1`：报表接口检查
 - `backend/scripts/stop_java.ps1`：释放 Java 占用进程
+
+示例：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\run_graduation_suite.ps1
+```
 
 ## 7. 常见问题
 
