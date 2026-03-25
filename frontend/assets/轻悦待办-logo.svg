@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" fill="none">
+  <defs>
+    <linearGradient id="qyLogoBg" x1="30" y1="24" x2="286" y2="292" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F59D42"/>
+      <stop offset="1" stop-color="#B85A00"/>
+    </linearGradient>
+    <linearGradient id="qyLogoArc" x1="102" y1="74" x2="216" y2="190" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF8ED"/>
+      <stop offset="1" stop-color="#FFE6C4"/>
+    </linearGradient>
+    <linearGradient id="qyLogoText" x1="344" y1="84" x2="952" y2="250" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4B3218"/>
+      <stop offset="1" stop-color="#7C4F21"/>
+    </linearGradient>
+    <filter id="qyLogoShadow" x="0" y="0" width="340" height="320" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="14" stdDeviation="12" flood-color="#B66717" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <g filter="url(#qyLogoShadow)">
+    <rect x="28" y="28" width="252" height="252" rx="72" fill="url(#qyLogoBg)"/>
+    <path d="M196 88L129 155L98 124" stroke="#FFF8ED" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M187 170C175.1 186.3 154.8 197 132.1 197C96 197 66.7 167.7 66.7 131.6C66.7 95.5 96 66.2 132.1 66.2C157.7 66.2 179.7 80.8 190.6 102" stroke="url(#qyLogoArc)" stroke-width="22" stroke-linecap="round"/>
+    <circle cx="70" cy="74" r="8.5" fill="#FFD49F"/>
+    <circle cx="202" cy="58" r="11" fill="#FFDDB1"/>
+  </g>
+  <text x="344" y="178" fill="url(#qyLogoText)" font-family="HarmonyOS Sans SC, Microsoft YaHei, sans-serif" font-size="124" font-weight="800" letter-spacing="7">轻悦待办</text>
+  <text x="350" y="236" fill="#9A7B5C" font-family="Segoe UI, Arial, sans-serif" font-size="36" font-weight="700" letter-spacing="5">QINGYUE TODO</text>
+</svg>
