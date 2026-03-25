@@ -53,13 +53,22 @@
       <section class="glass-panel rounded-2xl p-5 shadow-2xl">
         <div class="mb-4 flex items-center justify-between">
           <h2 class="text-lg font-semibold">用户管理</h2>
-          <span id="user-count" class="rounded-full border border-cyan-300/40 bg-cyan-300/10 px-3 py-1 text-xs text-cyan-200">总用户 0</span>
+          <div class="flex items-center gap-2">
+            <span id="selected-count" class="rounded-full border border-rose-300/40 bg-rose-300/10 px-3 py-1 text-xs text-rose-200">已选 0</span>
+            <button id="batch-delete-users" class="rounded-xl bg-rose-500/85 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-400 disabled:cursor-not-allowed disabled:opacity-50" disabled>
+              <i class="fas fa-trash mr-1"></i>批量删除
+            </button>
+            <span id="user-count" class="rounded-full border border-cyan-300/40 bg-cyan-300/10 px-3 py-1 text-xs text-cyan-200">总用户 0</span>
+          </div>
         </div>
 
         <div class="overflow-x-auto rounded-xl border border-slate-600/60">
           <table class="min-w-full text-sm">
             <thead class="bg-slate-900/70 text-slate-200">
               <tr>
+                <th class="px-4 py-3 text-left">
+                  <input id="select-all-users" type="checkbox" class="h-4 w-4 rounded border-slate-500 bg-slate-800" />
+                </th>
                 <th class="px-4 py-3 text-left">ID</th>
                 <th class="px-4 py-3 text-left">昵称</th>
                 <th class="px-4 py-3 text-left">邮箱</th>
@@ -71,7 +80,7 @@
             </thead>
             <tbody id="users-tbody" class="divide-y divide-slate-700/70 bg-slate-900/35">
               <tr>
-                <td colspan="7" class="px-4 py-6 text-center text-slate-300">正在加载用户数据...</td>
+                <td colspan="8" class="px-4 py-6 text-center text-slate-300">正在加载用户数据...</td>
               </tr>
             </tbody>
           </table>
@@ -86,8 +95,13 @@
         var ADMIN_EMAIL = 'admin@xydb.local';
         var usersTbody = document.getElementById('users-tbody');
         var userCount = document.getElementById('user-count');
+        var selectedCount = document.getElementById('selected-count');
+        var selectAllUsers = document.getElementById('select-all-users');
+        var batchDeleteBtn = document.getElementById('batch-delete-users');
         var refreshBtn = document.getElementById('refresh-users');
         var logoutBtn = document.getElementById('admin-logout');
+        var selectedUserIds = new Set();
+        var currentUsers = [];
 
         function escapeHtml(text) {
           return String(text == null ? '' : text)
@@ -100,15 +114,24 @@
 
         function renderUsers(users) {
           var list = Array.isArray(users) ? users : [];
+          currentUsers = list;
           userCount.textContent = '总用户 ' + list.length;
 
+          var validIds = new Set(list.filter(function (u) { return !u.admin; }).map(function (u) { return String(u.id); }));
+          Array.from(selectedUserIds).forEach(function (id) {
+            if (!validIds.has(String(id))) selectedUserIds.delete(String(id));
+          });
+          syncSelectionUI();
+
           if (!list.length) {
-            usersTbody.innerHTML = '<tr><td colspan="7" class="px-4 py-6 text-center text-slate-300">暂无用户数据</td></tr>';
+            usersTbody.innerHTML = '<tr><td colspan="8" class="px-4 py-6 text-center text-slate-300">暂无用户数据</td></tr>';
             return;
           }
 
           usersTbody.innerHTML = list.map(function (u) {
             var isAdmin = !!u.admin;
+            var userId = String(u.id);
+            var checked = selectedUserIds.has(userId) ? 'checked' : '';
             var roleBadge = isAdmin
               ? '<span class="rounded-full bg-emerald-400/20 px-2 py-1 text-xs text-emerald-300">管理员</span>'
               : '<span class="rounded-full bg-slate-500/25 px-2 py-1 text-xs text-slate-200">普通用户</span>';
@@ -118,6 +141,9 @@
 
             return [
               '<tr class="admin-table-row">',
+              '<td class="px-4 py-3">' + (isAdmin
+                ? '<span class="text-xs text-slate-500">-</span>'
+                : '<input type="checkbox" data-id="' + userId + '" class="select-user h-4 w-4 rounded border-slate-500 bg-slate-800" ' + checked + ' />') + '</td>',
               '<td class="px-4 py-3">' + escapeHtml(u.id) + '</td>',
               '<td class="px-4 py-3">' + escapeHtml(u.nickname || '-') + '</td>',
               '<td class="px-4 py-3">' + escapeHtml(u.email || '-') + '</td>',
@@ -128,10 +154,27 @@
               '</tr>'
             ].join('');
           }).join('');
+
+          syncSelectionUI();
+        }
+
+        function syncSelectionUI() {
+          if (selectedCount) selectedCount.textContent = '已选 ' + selectedUserIds.size;
+          if (batchDeleteBtn) batchDeleteBtn.disabled = selectedUserIds.size === 0;
+
+          if (selectAllUsers) {
+            var selectable = currentUsers.filter(function (u) { return !u.admin; });
+            var selectableCount = selectable.length;
+            var selectedCountValue = selectable.filter(function (u) {
+              return selectedUserIds.has(String(u.id));
+            }).length;
+            selectAllUsers.checked = selectableCount > 0 && selectedCountValue === selectableCount;
+            selectAllUsers.indeterminate = selectedCountValue > 0 && selectedCountValue < selectableCount;
+          }
         }
 
         function loadUsers() {
-          usersTbody.innerHTML = '<tr><td colspan="7" class="px-4 py-6 text-center text-slate-300">正在加载用户数据...</td></tr>';
+          usersTbody.innerHTML = '<tr><td colspan="8" class="px-4 py-6 text-center text-slate-300">正在加载用户数据...</td></tr>';
           return apiRequest('/api/admin/users', { method: 'GET', timeoutMs: 10000 }).then(function (resp) {
             if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
               renderUsers(resp.body.data || []);
@@ -144,11 +187,11 @@
             }
             var msg = (resp && resp.body && resp.body.message) || '加载用户失败';
             showToast(msg);
-            usersTbody.innerHTML = '<tr><td colspan="7" class="px-4 py-6 text-center text-rose-300">' + escapeHtml(msg) + '</td></tr>';
+            usersTbody.innerHTML = '<tr><td colspan="8" class="px-4 py-6 text-center text-rose-300">' + escapeHtml(msg) + '</td></tr>';
           }).catch(function (err) {
             console.error('load users error', err);
             showToast('网络错误，加载用户失败');
-            usersTbody.innerHTML = '<tr><td colspan="7" class="px-4 py-6 text-center text-rose-300">网络错误，请稍后重试</td></tr>';
+            usersTbody.innerHTML = '<tr><td colspan="8" class="px-4 py-6 text-center text-rose-300">网络错误，请稍后重试</td></tr>';
           });
         }
 
@@ -160,6 +203,7 @@
             timeoutMs: 10000
           }).then(function (resp) {
             if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+              selectedUserIds.delete(String(userId));
               showToast('用户删除成功', 'success');
               loadUsers();
               return;
@@ -172,13 +216,76 @@
           });
         }
 
+        function batchDeleteUsers() {
+          var ids = Array.from(selectedUserIds).map(function (v) { return Number(v); }).filter(function (v) { return Number.isFinite(v) && v > 0; });
+          if (!ids.length) {
+            showToast('请先选择要删除的用户');
+            return;
+          }
+          if (!confirm('确认批量删除选中的 ' + ids.length + ' 个用户？该操作不可恢复。')) return;
+
+          apiRequest('/api/admin/users/batch-delete', {
+            method: 'POST',
+            timeoutMs: 20000,
+            body: JSON.stringify({ ids: ids })
+          }).then(function (resp) {
+            if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+              var data = resp.body.data || {};
+              selectedUserIds.clear();
+              var msg = '批量删除完成：成功 ' + (data.deleted || 0) + '，跳过管理员 ' + (data.skippedAdmin || 0) + '，不存在 ' + (data.notFound || 0);
+              showToast(msg, 'success');
+              loadUsers();
+              return;
+            }
+            var message = (resp && resp.body && resp.body.message) || '批量删除失败';
+            showToast(message);
+          }).catch(function (err) {
+            console.error('batch delete users error', err);
+            showToast('网络错误，批量删除失败');
+          });
+        }
+
         usersTbody.addEventListener('click', function (e) {
           var target = e.target;
           if (!(target instanceof HTMLElement)) return;
+          var checkbox = target.closest('.select-user');
+          if (checkbox) {
+            var cb = checkbox;
+            var id = cb.getAttribute('data-id');
+            if (id) {
+              if (cb.checked) {
+                selectedUserIds.add(String(id));
+              } else {
+                selectedUserIds.delete(String(id));
+              }
+              syncSelectionUI();
+            }
+            return;
+          }
           var btn = target.closest('.delete-user');
           if (!btn) return;
           deleteUser(btn.getAttribute('data-id'));
         });
+
+        if (selectAllUsers) {
+          selectAllUsers.addEventListener('change', function () {
+            var checked = !!selectAllUsers.checked;
+            currentUsers.forEach(function (u) {
+              if (u.admin) return;
+              var id = String(u.id);
+              if (checked) {
+                selectedUserIds.add(id);
+              } else {
+                selectedUserIds.delete(id);
+              }
+            });
+            renderUsers(currentUsers);
+          });
+        }
+
+        if (batchDeleteBtn) {
+          batchDeleteBtn.addEventListener('click', batchDeleteUsers);
+        }
 
         refreshBtn.addEventListener('click', function () {
           loadUsers();

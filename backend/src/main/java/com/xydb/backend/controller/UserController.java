@@ -7,14 +7,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -72,6 +75,57 @@ public class UserController {
                 }
                 return ResponseEntity.ok(Result.ok());
             }).orElseGet(() -> ResponseEntity.status(404).body(Result.fail(404, "用户不存在")));
+        }).orElseGet(() -> ResponseEntity.status(401).body(Result.fail(401, "Unauthorized")));
+    }
+
+    @PostMapping("/admin/users/batch-delete")
+    public ResponseEntity batchDeleteUsersForAdmin(@RequestBody Map<String, List<Long>> payload) {
+        return userService.getCurrentUser().map(current -> {
+            if (!userService.isAdmin(current)) {
+                return ResponseEntity.status(403).body(Result.fail(403, "Forbidden"));
+            }
+
+            List<Long> ids = payload == null ? null : payload.get("ids");
+            if (ids == null || ids.isEmpty()) {
+                return ResponseEntity.badRequest().body(Result.fail(400, "请选择至少一个用户"));
+            }
+
+            Set<Long> uniqueIds = ids.stream()
+                    .filter(id -> id != null && id > 0)
+                    .collect(Collectors.toSet());
+            if (uniqueIds.isEmpty()) {
+                return ResponseEntity.badRequest().body(Result.fail(400, "无效的用户ID列表"));
+            }
+
+            int deleted = 0;
+            int skippedAdmin = 0;
+            int notFound = 0;
+            List<Long> failedIds = new ArrayList<>();
+
+            for (Long id : uniqueIds) {
+                User target = userService.findById(id).orElse(null);
+                if (target == null) {
+                    notFound++;
+                    continue;
+                }
+                if (userService.isAdmin(target)) {
+                    skippedAdmin++;
+                    continue;
+                }
+                boolean ok = userService.deleteUserById(id);
+                if (ok) {
+                    deleted++;
+                } else {
+                    failedIds.add(id);
+                }
+            }
+
+            Map<String, Object> summary = new LinkedHashMap<>();
+            summary.put("deleted", deleted);
+            summary.put("skippedAdmin", skippedAdmin);
+            summary.put("notFound", notFound);
+            summary.put("failedIds", failedIds);
+            return ResponseEntity.ok(Result.ok(summary));
         }).orElseGet(() -> ResponseEntity.status(401).body(Result.fail(401, "Unauthorized")));
     }
 

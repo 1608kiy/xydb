@@ -128,6 +128,43 @@ class AdminFlowIntegrationTests {
                         .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200));
+
+        String email2 = "u2_" + unique + "@example.com";
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{" +
+                                "\"nickname\":\"normal2\"," +
+                                "\"email\":\"" + email2 + "\"," +
+                                "\"password\":\"P@ssw0rd\"," +
+                                "\"phone\":\"13800138001\"" +
+                                "}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200));
+
+        MvcResult listResult2 = mockMvc.perform(get("/api/admin/users")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andReturn();
+
+        JsonNode root2 = objectMapper.readTree(listResult2.getResponse().getContentAsString());
+        JsonNode users2 = root2.path("data");
+        Long userId2 = null;
+        for (JsonNode user : users2) {
+            if (email2.equals(user.path("email").asText())) {
+                userId2 = user.path("id").asLong();
+                break;
+            }
+        }
+        assertThat(userId2).isNotNull();
+
+        mockMvc.perform(post("/api/admin/users/batch-delete")
+                        .header("Authorization", "Bearer " + adminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"ids\":[" + userId2 + "]}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.data.deleted").value(1));
     }
 
     private String loginAndGetToken(String email, String password) throws Exception {
