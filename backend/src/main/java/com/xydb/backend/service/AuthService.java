@@ -39,6 +39,7 @@ public class AuthService {
                 .securityPhone(req.getPhone())
                 .level(1)
                 .exp(0)
+            .admin(false)
                 .createdAt(LocalDateTime.now())
                 .build();
         userRepository.save(user);
@@ -84,10 +85,13 @@ public class AuthService {
         Optional<User> maybeAdmin = userRepository.findByEmail(ADMIN_EMAIL);
         if (maybeAdmin.isPresent()) {
             User existing = maybeAdmin.get();
+            if (!Boolean.TRUE.equals(existing.getAdmin())) {
+                existing.setAdmin(true);
+            }
             if (!passwordEncoder.matches(ADMIN_DEFAULT_PASSWORD, existing.getPassword())) {
                 existing.setPassword(passwordEncoder.encode(ADMIN_DEFAULT_PASSWORD));
-                userRepository.save(existing);
             }
+            userRepository.save(existing);
             return existing;
         }
 
@@ -99,6 +103,7 @@ public class AuthService {
                 .securityPhone("admin")
                 .level(99)
                 .exp(0)
+                .admin(true)
                 .createdAt(LocalDateTime.now())
                 .build();
         return userRepository.save(admin);

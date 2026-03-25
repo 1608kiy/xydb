@@ -102,7 +102,8 @@ public class DevSecurityConfig {
     }
 
     private List<SimpleGrantedAuthority> authoritiesFor(User user) {
-        if (user != null && AuthService.ADMIN_EMAIL.equalsIgnoreCase(user.getEmail())) {
+        if (user != null && (Boolean.TRUE.equals(user.getAdmin())
+                || AuthService.ADMIN_EMAIL.equalsIgnoreCase(user.getEmail()))) {
             return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
         }
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));

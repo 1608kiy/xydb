@@ -153,6 +153,36 @@
         </div>
       </section>
 
+      <section class="glass-panel mb-6 rounded-2xl p-5 shadow-2xl">
+        <div class="mb-3 flex items-center justify-between">
+          <h2 class="text-lg font-semibold">创建管理员账号</h2>
+          <p class="text-xs text-slate-400">用于分配后台管理权限</p>
+        </div>
+        <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
+          <label>
+            <span class="mb-1 block text-xs text-slate-300">昵称</span>
+            <input id="new-admin-nickname" type="text" placeholder="例如：运营管理员" class="w-full rounded-xl border border-slate-600 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 outline-none ring-cyan-400 transition focus:ring" />
+          </label>
+          <label>
+            <span class="mb-1 block text-xs text-slate-300">邮箱</span>
+            <input id="new-admin-email" type="email" placeholder="admin2@example.com" class="w-full rounded-xl border border-slate-600 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 outline-none ring-cyan-400 transition focus:ring" />
+          </label>
+          <label>
+            <span class="mb-1 block text-xs text-slate-300">密码</span>
+            <input id="new-admin-password" type="password" placeholder="至少 6 位" class="w-full rounded-xl border border-slate-600 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 outline-none ring-cyan-400 transition focus:ring" />
+          </label>
+          <label>
+            <span class="mb-1 block text-xs text-slate-300">手机号</span>
+            <input id="new-admin-phone" type="text" placeholder="可选：11位手机号" class="w-full rounded-xl border border-slate-600 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 outline-none ring-cyan-400 transition focus:ring" />
+          </label>
+          <div class="flex items-end">
+            <button id="create-admin-user" class="w-full rounded-xl bg-emerald-500/85 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-emerald-400">
+              <i class="fas fa-user-shield mr-2"></i>创建管理员
+            </button>
+          </div>
+        </div>
+      </section>
+
       <section class="glass-panel rounded-2xl p-5 shadow-2xl">
         <div class="mb-4 flex items-center justify-between">
           <h2 class="text-lg font-semibold">用户管理</h2>
@@ -254,6 +284,11 @@
         var batchDeleteBtn = document.getElementById('batch-delete-users');
         var refreshBtn = document.getElementById('refresh-users');
         var logoutBtn = document.getElementById('admin-logout');
+        var createAdminBtn = document.getElementById('create-admin-user');
+        var newAdminNicknameInput = document.getElementById('new-admin-nickname');
+        var newAdminEmailInput = document.getElementById('new-admin-email');
+        var newAdminPasswordInput = document.getElementById('new-admin-password');
+        var newAdminPhoneInput = document.getElementById('new-admin-phone');
         var searchInput = document.getElementById('search-keyword');
         var roleFilter = document.getElementById('role-filter');
         var levelFilter = document.getElementById('level-filter');
@@ -538,6 +573,58 @@
           detailModal.classList.add('hidden');
         }
 
+        function createAdminUser() {
+          var nickname = String((newAdminNicknameInput && newAdminNicknameInput.value) || '').trim();
+          var email = String((newAdminEmailInput && newAdminEmailInput.value) || '').trim();
+          var password = String((newAdminPasswordInput && newAdminPasswordInput.value) || '');
+          var phone = String((newAdminPhoneInput && newAdminPhoneInput.value) || '').trim();
+
+          if (!nickname || !email || !password) {
+            showToast('请填写昵称、邮箱和密码');
+            return;
+          }
+          if (password.length < 6) {
+            showToast('管理员密码至少 6 位');
+            return;
+          }
+          if (phone && !/^1\d{10}$/.test(phone)) {
+            showToast('手机号格式不正确');
+            return;
+          }
+
+          createAdminBtn.disabled = true;
+          apiRequest('/api/admin/users/create-admin', {
+            method: 'POST',
+            timeoutMs: 15000,
+            body: JSON.stringify({
+              nickname: nickname,
+              email: email,
+              password: password,
+              phone: phone
+            })
+          }).then(function (resp) {
+            if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+              showToast('管理员账号创建成功', 'success');
+              addLog('success', '创建管理员成功', '邮箱：' + email);
+              if (newAdminNicknameInput) newAdminNicknameInput.value = '';
+              if (newAdminEmailInput) newAdminEmailInput.value = '';
+              if (newAdminPasswordInput) newAdminPasswordInput.value = '';
+              if (newAdminPhoneInput) newAdminPhoneInput.value = '';
+              loadUsers();
+              return;
+            }
+            var msg = (resp && resp.body && resp.body.message) || '创建管理员失败';
+            showToast(msg);
+            addLog('error', '创建管理员失败', msg);
+          }).catch(function (err) {
+            console.error('create admin error', err);
+            showToast('网络错误，创建管理员失败');
+            addLog('error', '创建管理员失败', '网络错误，请稍后重试');
+          }).finally(function () {
+            createAdminBtn.disabled = false;
+          });
+        }
+
         function deleteUser(userId) {
           if (!userId) return;
           if (!confirm('确认删除该用户？该操作不可恢复。')) return;
@@ -641,6 +728,10 @@
           batchDeleteBtn.addEventListener('click', batchDeleteUsers);
         }
 
+        if (createAdminBtn) {
+          createAdminBtn.addEventListener('click', createAdminUser);
+        }
+
         if (searchInput) {
           searchInput.addEventListener('input', function () {
             applyFiltersAndRender(true);
@@ -727,7 +818,8 @@
 
         checkAuthOnLoad({ redirect: true, silent: true }).then(function (me) {
           var email = String((me && me.email) || '').toLowerCase();
-          if (email !== ADMIN_EMAIL) {
+          var isAdmin = !!(me && me.admin) || email === ADMIN_EMAIL;
+          if (!isAdmin) {
             showToast('仅管理员可访问后台页面');
             addLog('warning', '访问受限', '当前账号无管理员权限');
             setTimeout(function () { safeNavigate('待办页面.html'); }, 400);

@@ -1,8 +1,10 @@
 package com.xydb.backend.controller;
 
+import com.xydb.backend.dto.AdminCreateUserRequest;
 import com.xydb.backend.service.UserService;
 import com.xydb.backend.model.User;
 import com.xydb.backend.util.Result;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -129,6 +131,27 @@ public class UserController {
         }).orElseGet(() -> ResponseEntity.status(401).body(Result.fail(401, "Unauthorized")));
     }
 
+    @PostMapping("/admin/users/create-admin")
+    public ResponseEntity createAdminUser(@Valid @RequestBody AdminCreateUserRequest req) {
+        return userService.getCurrentUser().map(current -> {
+            if (!userService.isAdmin(current)) {
+                return ResponseEntity.status(403).body(Result.fail(403, "Forbidden"));
+            }
+            try {
+                User created = userService.createAdminUser(
+                        req.getNickname(),
+                        req.getEmail(),
+                        req.getPassword(),
+                        req.getPhone());
+                return ResponseEntity.ok(Result.ok(toSafeUserView(created)));
+            } catch (IllegalArgumentException ex) {
+                return ResponseEntity.badRequest().body(Result.fail(400, ex.getMessage()));
+            } catch (Exception ex) {
+                return ResponseEntity.status(500).body(Result.fail(500, "创建管理员失败"));
+            }
+        }).orElseGet(() -> ResponseEntity.status(401).body(Result.fail(401, "Unauthorized")));
+    }
+
     private Map<String, Object> toSafeUserView(User user) {
         Map<String, Object> view = new LinkedHashMap<>();
         view.put("id", user.getId());
@@ -137,6 +160,7 @@ public class UserController {
         view.put("phone", user.getPhone());
         view.put("level", user.getLevel());
         view.put("exp", user.getExp());
+        view.put("adminFlag", user.getAdmin());
         view.put("createdAt", user.getCreatedAt());
         view.put("admin", userService.isAdmin(user));
         return view;

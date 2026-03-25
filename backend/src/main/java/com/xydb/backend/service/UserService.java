@@ -7,10 +7,12 @@ import com.xydb.backend.repository.SubTaskRepository;
 import com.xydb.backend.repository.TagRepository;
 import com.xydb.backend.repository.TaskRepository;
 import com.xydb.backend.repository.UserRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,19 +24,22 @@ public class UserService {
     private final PomodoroRepository pomodoroRepository;
     private final TagRepository tagRepository;
     private final CheckinRepository checkinRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository,
                        TaskRepository taskRepository,
                        SubTaskRepository subTaskRepository,
                        PomodoroRepository pomodoroRepository,
                        TagRepository tagRepository,
-                       CheckinRepository checkinRepository) {
+                       CheckinRepository checkinRepository,
+                       BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.taskRepository = taskRepository;
         this.subTaskRepository = subTaskRepository;
         this.pomodoroRepository = pomodoroRepository;
         this.tagRepository = tagRepository;
         this.checkinRepository = checkinRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Optional<User> getCurrentUser(){
@@ -76,7 +81,27 @@ public class UserService {
     }
 
     public boolean isAdmin(User user) {
-        return user != null && AuthService.ADMIN_EMAIL.equalsIgnoreCase(user.getEmail());
+        return user != null && (Boolean.TRUE.equals(user.getAdmin())
+                || AuthService.ADMIN_EMAIL.equalsIgnoreCase(user.getEmail()));
+    }
+
+    @Transactional
+    public User createAdminUser(String nickname, String email, String rawPassword, String phone) {
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new IllegalArgumentException("Email already registered");
+        }
+        User user = User.builder()
+                .nickname(nickname)
+                .email(email)
+                .password(passwordEncoder.encode(rawPassword))
+                .phone(phone)
+                .securityPhone(phone)
+                .level(99)
+                .exp(0)
+                .admin(true)
+                .createdAt(LocalDateTime.now())
+                .build();
+        return userRepository.save(user);
     }
 
     public List<User> listAllUsers() {

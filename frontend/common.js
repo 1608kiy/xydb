@@ -1303,16 +1303,24 @@ function getWeeklyStats() {
   };
 }
 
+function normalizeApiBaseCandidate(base) {
+  var value = String(base == null ? '' : base).trim();
+  if (!value) return '';
+  var lowered = value.toLowerCase();
+  if (lowered === 'undefined' || lowered === 'null') return '';
+  return value.replace(/\/$/, '');
+}
+
 function resolveApiBase() {
-  var explicitBase = window.__API_BASE__;
+  var explicitBase = normalizeApiBaseCandidate(window.__API_BASE__);
   if (explicitBase) {
-    return String(explicitBase).replace(/\/$/, '');
+    return explicitBase;
   }
 
   try {
-    var storedBase = localStorage.getItem('apiBase');
+    var storedBase = normalizeApiBaseCandidate(localStorage.getItem('apiBase'));
     if (storedBase) {
-      return String(storedBase).replace(/\/$/, '');
+      return storedBase;
     }
   } catch (e) { /* ignore localStorage read errors */ }
 
@@ -1338,10 +1346,10 @@ function apiRequest(path, options) {
   options = options || {};
   var timeoutMs = typeof options.timeoutMs === 'number' ? options.timeoutMs : 10000;
   // 优先级：window.__API_BASE__ > localStorage.apiBase > 同源；同源失败时自动回退 localhost:8080
-  var explicitBase = (window.__API_BASE__ || '').trim();
+  var explicitBase = normalizeApiBaseCandidate(window.__API_BASE__);
   var storedBase = '';
   try {
-    storedBase = (localStorage.getItem('apiBase') || '').trim();
+    storedBase = normalizeApiBaseCandidate(localStorage.getItem('apiBase'));
   } catch (e) {
     storedBase = '';
   }

@@ -53,6 +53,42 @@ class AdminFlowIntegrationTests {
     }
 
     @Test
+    void adminCanCreateAnotherAdminAndNewAdminCanAccessAdminApis() throws Exception {
+        String unique = String.valueOf(System.currentTimeMillis());
+        String adminEmail2 = "subadmin_" + unique + "@xydb.local";
+        String adminPassword2 = "Admin#123456";
+
+        String adminToken = loginAndGetToken("admin", "admin");
+        mockMvc.perform(post("/api/admin/users/create-admin")
+                        .header("Authorization", "Bearer " + adminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{" +
+                                "\"nickname\":\"sub-admin\"," +
+                                "\"email\":\"" + adminEmail2 + "\"," +
+                                "\"password\":\"" + adminPassword2 + "\"," +
+                                "\"phone\":\"13800138009\"" +
+                                "}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.data.email").value(adminEmail2))
+                .andExpect(jsonPath("$.data.admin").value(true));
+
+        String subAdminToken = loginAndGetToken(adminEmail2, adminPassword2);
+
+        mockMvc.perform(get("/api/me")
+                        .header("Authorization", "Bearer " + subAdminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.data.email").value(adminEmail2))
+                .andExpect(jsonPath("$.data.admin").value(true));
+
+        mockMvc.perform(get("/api/admin/users")
+                        .header("Authorization", "Bearer " + subAdminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200));
+    }
+
+    @Test
     void normalUserShouldNotAccessAdminApisAndAdminCanDeleteNormalUser() throws Exception {
         String unique = String.valueOf(System.currentTimeMillis());
         String email = "u" + unique + "@example.com";

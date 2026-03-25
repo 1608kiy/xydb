@@ -32,6 +32,9 @@ public class User {
     @Builder.Default
     private Integer exp = 0;
 
+    @Builder.Default
+    private Boolean admin = false;
+
     private String avatarUrl;
 
     private String securityPhone;
