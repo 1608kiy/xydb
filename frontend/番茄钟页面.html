@@ -1478,7 +1478,7 @@
           }
         }
 
-        new PomodoroTimer();
+        window.__pomodoroTimerInstance = new PomodoroTimer();
         renderHeader('pomodoro');
         renderFooter('pomodoro');
         bindGlobalLogout();
