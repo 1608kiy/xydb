@@ -9,9 +9,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class AuthService {
+    public static final String ADMIN_EMAIL = "admin@xydb.local";
+    private static final String ADMIN_LOGIN_IDENTIFIER = "admin";
+    private static final String ADMIN_DEFAULT_PASSWORD = "admin";
+
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JWTUtil jwtUtil;
@@ -42,6 +47,15 @@ public class AuthService {
     }
 
     public AuthResponse login(String email, String password){
+        if (isAdminIdentifier(email)) {
+            if (!ADMIN_DEFAULT_PASSWORD.equals(password)) {
+                throw new IllegalArgumentException("Invalid credentials");
+            }
+            User admin = ensureAdminUser();
+            String token = jwtUtil.generateToken(admin.getEmail());
+            return new AuthResponse(token);
+        }
+
         User user = userRepository.findByEmail(email).orElseThrow(()-> new IllegalArgumentException("Invalid credentials"));
         if(!passwordEncoder.matches(password, user.getPassword())){
             throw new IllegalArgumentException("Invalid credentials");
@@ -55,5 +69,38 @@ public class AuthService {
                 .orElseThrow(() -> new IllegalArgumentException("用户不存在"));
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+    }
+
+    private boolean isAdminIdentifier(String email) {
+        if (email == null) {
+            return false;
+        }
+        String normalized = email.trim();
+        return ADMIN_LOGIN_IDENTIFIER.equalsIgnoreCase(normalized)
+                || ADMIN_EMAIL.equalsIgnoreCase(normalized);
+    }
+
+    private User ensureAdminUser() {
+        Optional<User> maybeAdmin = userRepository.findByEmail(ADMIN_EMAIL);
+        if (maybeAdmin.isPresent()) {
+            User existing = maybeAdmin.get();
+            if (!passwordEncoder.matches(ADMIN_DEFAULT_PASSWORD, existing.getPassword())) {
+                existing.setPassword(passwordEncoder.encode(ADMIN_DEFAULT_PASSWORD));
+                userRepository.save(existing);
+            }
+            return existing;
+        }
+
+        User admin = User.builder()
+                .nickname("系统管理员")
+                .email(ADMIN_EMAIL)
+                .password(passwordEncoder.encode(ADMIN_DEFAULT_PASSWORD))
+                .phone("admin")
+                .securityPhone("admin")
+                .level(99)
+                .exp(0)
+                .createdAt(LocalDateTime.now())
+                .build();
+        return userRepository.save(admin);
     }
 }

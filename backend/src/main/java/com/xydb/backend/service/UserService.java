@@ -5,6 +5,7 @@ import com.xydb.backend.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -51,5 +52,25 @@ public class UserService {
             // 不允许在此处直接修改 email/password 等敏感字段
             return userRepository.save(existing);
         });
+    }
+
+    public boolean isAdmin(User user) {
+        return user != null && AuthService.ADMIN_EMAIL.equalsIgnoreCase(user.getEmail());
+    }
+
+    public List<User> listAllUsers() {
+        return userRepository.findAll();
+    }
+
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
+    }
+
+    public boolean deleteUserById(Long id) {
+        if (!userRepository.existsById(id)) {
+            return false;
+        }
+        userRepository.deleteById(id);
+        return true;
     }
 }

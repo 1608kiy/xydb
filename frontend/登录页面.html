@@ -429,6 +429,11 @@
         if (__tok && !__skipAutoRedirect && __allowAutoRedirect) {
           apiRequest('/api/me', { method: 'GET' }).then(function (r) {
             if (r && r.status === 200 && r.body && r.body.code === 200) {
+              var me = (r.body && r.body.data) || {};
+              if (String(me.email || '').toLowerCase() === 'admin@xydb.local') {
+                safeNavigate('后台管理页面.html');
+                return;
+              }
               safeNavigate('待办页面.html');
               return;
             }
@@ -441,8 +446,13 @@
           return /^1\d{10}$/.test(String(v || '').trim());
         }
 
+        function isAdminAccount(v) {
+          return String(v || '').trim().toLowerCase() === 'admin';
+        }
+
         function normalizeLoginIdentifier(v) {
           var raw = String(v || '').trim();
+          if (isAdminAccount(raw)) return 'admin@xydb.local';
           if (isMobileNumber(raw)) return raw + '@mobile.local';
           return raw;
         }
@@ -596,15 +606,17 @@
           var account = document.getElementById('login-account').value.trim();
           var password = document.getElementById('login-password').value;
 
-          var emailMobileRegex = /^(\S+@\S+\.\S+|1\d{10})$/;
+          var emailMobileRegex = /^(\S+@\S+\.\S+|1\d{10}|admin)$/i;
           if (!account || !password) {
             showToast('请输入账号和密码');
             return;
           }
           if (!emailMobileRegex.test(account)) {
-            showToast('请输入有效的邮箱或手机号');
+            showToast('请输入有效的邮箱、手机号或管理员账号');
             return;
           }
+
+          var isAdminInput = isAdminAccount(account);
 
           // 组装请求体：后端要求 email 字段
           var normalizedAccount = normalizeLoginIdentifier(account);
@@ -621,7 +633,9 @@
                   localStorage.setItem('token', token);
                   try { localStorage.removeItem('devSkipAuth'); } catch (e) {}
                   showToast('登录成功，正在跳转...');
-                  setTimeout(function () { safeNavigate('待办页面.html'); }, 400);
+                  setTimeout(function () {
+                    safeNavigate(isAdminInput ? '后台管理页面.html' : '待办页面.html');
+                  }, 400);
                   return;
                 }
               }

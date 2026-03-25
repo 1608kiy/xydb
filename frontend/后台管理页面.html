@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>轻悦待办 - 后台管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+      body {
+        background:
+          radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.18), transparent 38%),
+          radial-gradient(circle at 90% 10%, rgba(34, 197, 94, 0.16), transparent 34%),
+          linear-gradient(135deg, #0f172a 0%, #111827 42%, #1f2937 100%);
+        min-height: 100vh;
+      }
+
+      .glass-panel {
+        background: rgba(15, 23, 42, 0.76);
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        backdrop-filter: blur(18px);
+      }
+
+      .admin-table-row {
+        transition: background-color 0.2s ease;
+      }
+
+      .admin-table-row:hover {
+        background: rgba(15, 23, 42, 0.52);
+      }
+    </style>
+  </head>
+  <body class="text-slate-100">
+    <main class="mx-auto max-w-6xl px-4 py-8 md:px-6 lg:py-12">
+      <header class="glass-panel mb-6 rounded-2xl p-5 shadow-2xl">
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p class="text-xs uppercase tracking-[0.28em] text-cyan-300">XYDB Admin Console</p>
+            <h1 class="mt-2 text-3xl font-bold">后台管理中心</h1>
+            <p class="mt-1 text-sm text-slate-300">管理员账号可查看并管理平台用户</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="refresh-users" class="rounded-xl bg-cyan-500/85 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-cyan-400">
+              <i class="fas fa-rotate mr-2"></i>刷新列表
+            </button>
+            <button id="admin-logout" class="rounded-xl bg-rose-500/85 px-4 py-2 text-sm font-semibold hover:bg-rose-400">
+              <i class="fas fa-right-from-bracket mr-2"></i>退出登录
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <section class="glass-panel rounded-2xl p-5 shadow-2xl">
+        <div class="mb-4 flex items-center justify-between">
+          <h2 class="text-lg font-semibold">用户管理</h2>
+          <span id="user-count" class="rounded-full border border-cyan-300/40 bg-cyan-300/10 px-3 py-1 text-xs text-cyan-200">总用户 0</span>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-slate-600/60">
+          <table class="min-w-full text-sm">
+            <thead class="bg-slate-900/70 text-slate-200">
+              <tr>
+                <th class="px-4 py-3 text-left">ID</th>
+                <th class="px-4 py-3 text-left">昵称</th>
+                <th class="px-4 py-3 text-left">邮箱</th>
+                <th class="px-4 py-3 text-left">手机号</th>
+                <th class="px-4 py-3 text-left">等级</th>
+                <th class="px-4 py-3 text-left">身份</th>
+                <th class="px-4 py-3 text-left">操作</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody" class="divide-y divide-slate-700/70 bg-slate-900/35">
+              <tr>
+                <td colspan="7" class="px-4 py-6 text-center text-slate-300">正在加载用户数据...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="data.js"></script>
+    <script src="common.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        var ADMIN_EMAIL = 'admin@xydb.local';
+        var usersTbody = document.getElementById('users-tbody');
+        var userCount = document.getElementById('user-count');
+        var refreshBtn = document.getElementById('refresh-users');
+        var logoutBtn = document.getElementById('admin-logout');
+
+        function escapeHtml(text) {
+          return String(text == null ? '' : text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+        }
+
+        function renderUsers(users) {
+          var list = Array.isArray(users) ? users : [];
+          userCount.textContent = '总用户 ' + list.length;
+
+          if (!list.length) {
+            usersTbody.innerHTML = '<tr><td colspan="7" class="px-4 py-6 text-center text-slate-300">暂无用户数据</td></tr>';
+            return;
+          }
+
+          usersTbody.innerHTML = list.map(function (u) {
+            var isAdmin = !!u.admin;
+            var roleBadge = isAdmin
+              ? '<span class="rounded-full bg-emerald-400/20 px-2 py-1 text-xs text-emerald-300">管理员</span>'
+              : '<span class="rounded-full bg-slate-500/25 px-2 py-1 text-xs text-slate-200">普通用户</span>';
+            var action = isAdmin
+              ? '<span class="text-xs text-slate-400">系统保留</span>'
+              : '<button data-id="' + String(u.id) + '" class="delete-user rounded-lg bg-rose-500/85 px-3 py-1 text-xs font-semibold hover:bg-rose-400">删除</button>';
+
+            return [
+              '<tr class="admin-table-row">',
+              '<td class="px-4 py-3">' + escapeHtml(u.id) + '</td>',
+              '<td class="px-4 py-3">' + escapeHtml(u.nickname || '-') + '</td>',
+              '<td class="px-4 py-3">' + escapeHtml(u.email || '-') + '</td>',
+              '<td class="px-4 py-3">' + escapeHtml(u.phone || '-') + '</td>',
+              '<td class="px-4 py-3">' + escapeHtml(u.level || 0) + '</td>',
+              '<td class="px-4 py-3">' + roleBadge + '</td>',
+              '<td class="px-4 py-3">' + action + '</td>',
+              '</tr>'
+            ].join('');
+          }).join('');
+        }
+
+        function loadUsers() {
+          usersTbody.innerHTML = '<tr><td colspan="7" class="px-4 py-6 text-center text-slate-300">正在加载用户数据...</td></tr>';
+          return apiRequest('/api/admin/users', { method: 'GET', timeoutMs: 10000 }).then(function (resp) {
+            if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+              renderUsers(resp.body.data || []);
+              return;
+            }
+            if (resp && (resp.status === 401 || resp.status === 403)) {
+              showToast('权限不足，请重新登录管理员账号');
+              setTimeout(function () { safeNavigate('登录页面.html'); }, 400);
+              return;
+            }
+            var msg = (resp && resp.body && resp.body.message) || '加载用户失败';
+            showToast(msg);
+            usersTbody.innerHTML = '<tr><td colspan="7" class="px-4 py-6 text-center text-rose-300">' + escapeHtml(msg) + '</td></tr>';
+          }).catch(function (err) {
+            console.error('load users error', err);
+            showToast('网络错误，加载用户失败');
+            usersTbody.innerHTML = '<tr><td colspan="7" class="px-4 py-6 text-center text-rose-300">网络错误，请稍后重试</td></tr>';
+          });
+        }
+
+        function deleteUser(userId) {
+          if (!userId) return;
+          if (!confirm('确认删除该用户？该操作不可恢复。')) return;
+          apiRequest('/api/admin/users/' + encodeURIComponent(String(userId)), {
+            method: 'DELETE',
+            timeoutMs: 10000
+          }).then(function (resp) {
+            if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+              showToast('用户删除成功', 'success');
+              loadUsers();
+              return;
+            }
+            var msg = (resp && resp.body && resp.body.message) || '删除失败';
+            showToast(msg);
+          }).catch(function (err) {
+            console.error('delete user error', err);
+            showToast('网络错误，删除失败');
+          });
+        }
+
+        usersTbody.addEventListener('click', function (e) {
+          var target = e.target;
+          if (!(target instanceof HTMLElement)) return;
+          var btn = target.closest('.delete-user');
+          if (!btn) return;
+          deleteUser(btn.getAttribute('data-id'));
+        });
+
+        refreshBtn.addEventListener('click', function () {
+          loadUsers();
+        });
+
+        logoutBtn.addEventListener('click', function () {
+          try {
+            localStorage.removeItem('token');
+            localStorage.removeItem('devSkipAuth');
+          } catch (e) {}
+          safeNavigate('登录页面.html');
+        });
+
+        checkAuthOnLoad({ redirect: true, silent: true }).then(function (me) {
+          var email = String((me && me.email) || '').toLowerCase();
+          if (email !== ADMIN_EMAIL) {
+            showToast('仅管理员可访问后台页面');
+            setTimeout(function () { safeNavigate('待办页面.html'); }, 400);
+            return;
+          }
+          loadUsers();
+        });
+      });
+    </script>
+  </body>
+</html>
