@@ -3020,6 +3020,547 @@ if (document.readyState === 'loading') {
   initUnifiedThemeMode();
 }
 
+var UNIFIED_UI_PREF_KEY = 'qingyue_ui_preferences_v1';
+
+function getUnifiedUiPreferenceDefaults() {
+  return {
+    theme: resolveUnifiedThemeMode(),
+    fontScale: 100,
+    reduceMotion: false,
+    hideHeaderBadges: false
+  };
+}
+
+function clampUnifiedFontScale(value) {
+  var n = Number(value);
+  if (!isFinite(n)) return 100;
+  return Math.max(90, Math.min(115, Math.round(n / 5) * 5));
+}
+
+function normalizeUnifiedUiPreferences(raw) {
+  var defaults = getUnifiedUiPreferenceDefaults();
+  var src = raw || {};
+  return {
+    theme: normalizeUnifiedThemeMode(src.theme || defaults.theme),
+    fontScale: clampUnifiedFontScale(src.fontScale),
+    reduceMotion: !!src.reduceMotion,
+    hideHeaderBadges: !!src.hideHeaderBadges
+  };
+}
+
+function getUnifiedUiPreferences() {
+  var parsed = null;
+  try {
+    var raw = localStorage.getItem(UNIFIED_UI_PREF_KEY);
+    if (raw) parsed = JSON.parse(raw);
+  } catch (e) {
+    parsed = null;
+  }
+
+  var fromState = null;
+  try {
+    if (window.AppState && window.AppState.settings && window.AppState.settings.uiPreferences) {
+      fromState = window.AppState.settings.uiPreferences;
+    }
+  } catch (e) {
+    fromState = null;
+  }
+
+  return normalizeUnifiedUiPreferences(Object.assign({}, parsed || {}, fromState || {}));
+}
+
+function saveUnifiedUiPreferences(prefs) {
+  var normalized = normalizeUnifiedUiPreferences(prefs);
+  try {
+    localStorage.setItem(UNIFIED_UI_PREF_KEY, JSON.stringify(normalized));
+  } catch (e) {}
+
+  try {
+    if (window.AppState && window.AppState.settings) {
+      window.AppState.settings.uiPreferences = Object.assign({}, normalized);
+      if (typeof window.AppState.save === 'function') window.AppState.save();
+    }
+  } catch (e) {}
+
+  return normalized;
+}
+
+function applyUnifiedUiPreferences(prefs) {
+  var normalized = normalizeUnifiedUiPreferences(prefs);
+  var root = document.documentElement;
+  if (root) {
+    root.style.fontSize = String(normalized.fontScale) + '%';
+    root.classList.toggle('unified-reduce-motion', !!normalized.reduceMotion);
+    root.classList.toggle('unified-hide-header-badges', !!normalized.hideHeaderBadges);
+  }
+  window.setUnifiedThemeMode(normalized.theme);
+  return normalized;
+}
+
+function ensureUnifiedSettingsPanelStyle() {
+  if (document.getElementById('unified-settings-panel-style')) return;
+  var style = document.createElement('style');
+  style.id = 'unified-settings-panel-style';
+  style.textContent = `
+  .unified-hide-header-badges .badge-count {
+    display: none !important;
+  }
+  .unified-reduce-motion *,
+  .unified-reduce-motion *::before,
+  .unified-reduce-motion *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .unified-settings-mask {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.46);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    z-index: 100050;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .unified-settings-mask.open {
+    display: flex;
+  }
+  .unified-settings-panel {
+    width: min(560px, 100%);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.68);
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 26px 60px rgba(15, 23, 42, 0.24);
+    overflow: hidden;
+  }
+  .unified-settings-head {
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+  }
+  .unified-settings-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #0f172a;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .unified-settings-close {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    border: 1px solid rgba(203, 213, 225, 0.7);
+    color: #64748b;
+    background: rgba(255, 255, 255, 0.85);
+  }
+  .unified-settings-body {
+    padding: 18px 20px 16px;
+    display: grid;
+    gap: 14px;
+  }
+  .unified-setting-row {
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 14px;
+    padding: 12px;
+    background: rgba(248, 250, 252, 0.72);
+  }
+  .unified-setting-row-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .unified-setting-name {
+    color: #0f172a;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .unified-setting-desc {
+    color: #64748b;
+    font-size: 12px;
+    margin-top: 2px;
+  }
+  .unified-theme-switch {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+  }
+  .unified-theme-option {
+    border: 1px solid rgba(203, 213, 225, 0.8);
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 7px 12px;
+    font-size: 13px;
+    color: #475569;
+    cursor: pointer;
+  }
+  .unified-theme-option.active {
+    border-color: rgba(79, 70, 229, 0.5);
+    background: rgba(79, 70, 229, 0.12);
+    color: #4338ca;
+    font-weight: 600;
+  }
+  .unified-setting-range {
+    width: 100%;
+    margin-top: 10px;
+    accent-color: #4f46e5;
+  }
+  .unified-toggle {
+    position: relative;
+    width: 46px;
+    height: 26px;
+    border-radius: 999px;
+    border: 1px solid rgba(203, 213, 225, 0.85);
+    background: rgba(226, 232, 240, 0.9);
+    transition: background-color 220ms ease, border-color 220ms ease;
+    cursor: pointer;
+  }
+  .unified-toggle::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    top: 2px;
+    left: 2px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.22);
+    transition: transform 220ms ease;
+  }
+  .unified-toggle.on {
+    background: rgba(79, 70, 229, 0.2);
+    border-color: rgba(79, 70, 229, 0.55);
+  }
+  .unified-toggle.on::after {
+    transform: translateX(20px);
+  }
+  .unified-settings-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 2px;
+  }
+  .unified-settings-btn {
+    border: 1px solid rgba(203, 213, 225, 0.8);
+    background: rgba(255, 255, 255, 0.95);
+    color: #475569;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .unified-settings-btn.primary {
+    border-color: rgba(79, 70, 229, 0.5);
+    background: rgba(79, 70, 229, 0.12);
+    color: #4338ca;
+    font-weight: 600;
+  }
+  html.unified-dark-mode .unified-settings-panel {
+    background: rgba(26, 33, 48, 0.96);
+    border-color: var(--ud-border);
+  }
+  html.unified-dark-mode .unified-settings-head {
+    border-bottom-color: var(--ud-border);
+  }
+  html.unified-dark-mode .unified-settings-title,
+  html.unified-dark-mode .unified-setting-name {
+    color: var(--ud-title);
+  }
+  html.unified-dark-mode .unified-setting-desc {
+    color: var(--ud-muted);
+  }
+  html.unified-dark-mode .unified-settings-close,
+  html.unified-dark-mode .unified-theme-option,
+  html.unified-dark-mode .unified-settings-btn {
+    background: rgba(45, 55, 72, 0.86);
+    border-color: var(--ud-border);
+    color: var(--ud-text);
+  }
+  html.unified-dark-mode .unified-theme-option.active,
+  html.unified-dark-mode .unified-settings-btn.primary {
+    background: rgba(74, 108, 247, 0.24);
+    border-color: rgba(74, 108, 247, 0.58);
+    color: #d9e2ff;
+  }
+  html.unified-dark-mode .unified-setting-row {
+    background: rgba(35, 43, 59, 0.8);
+    border-color: var(--ud-border);
+  }
+  html.unified-dark-mode .unified-toggle {
+    background: rgba(45, 55, 72, 0.88);
+    border-color: var(--ud-border);
+  }
+  html.unified-dark-mode .unified-toggle.on {
+    background: rgba(74, 108, 247, 0.28);
+    border-color: rgba(74, 108, 247, 0.62);
+  }
+  @media (max-width: 640px) {
+    .unified-settings-mask {
+      padding: 10px;
+      align-items: flex-end;
+    }
+    .unified-settings-panel {
+      border-radius: 18px 18px 0 0;
+      width: 100%;
+    }
+  }
+  `;
+  document.head.appendChild(style);
+}
+
+function ensureUnifiedSettingsPanelDom() {
+  var existing = document.getElementById('unified-settings-mask');
+  if (existing) return existing;
+
+  var mask = document.createElement('div');
+  mask.id = 'unified-settings-mask';
+  mask.className = 'unified-settings-mask';
+  mask.innerHTML = `
+  <div class="unified-settings-panel" role="dialog" aria-modal="true" aria-labelledby="unified-settings-title">
+    <div class="unified-settings-head">
+      <div class="unified-settings-title" id="unified-settings-title"><i class="fas fa-sliders-h"></i><span>头部设置</span></div>
+      <button type="button" class="unified-settings-close" data-action="close-unified-settings" aria-label="关闭设置"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="unified-settings-body">
+      <div class="unified-setting-row">
+        <div class="unified-setting-row-top">
+          <div>
+            <div class="unified-setting-name">主题模式</div>
+            <div class="unified-setting-desc">切换浅色/夜间模式</div>
+          </div>
+        </div>
+        <div class="unified-theme-switch">
+          <button type="button" class="unified-theme-option" data-theme-value="light">浅色</button>
+          <button type="button" class="unified-theme-option" data-theme-value="night">夜间</button>
+        </div>
+      </div>
+
+      <div class="unified-setting-row">
+        <div class="unified-setting-row-top">
+          <div>
+            <div class="unified-setting-name">字体比例 <span id="unified-font-scale-value">100%</span></div>
+            <div class="unified-setting-desc">统一调整全站文字尺寸</div>
+          </div>
+        </div>
+        <input id="unified-font-scale-range" class="unified-setting-range" type="range" min="90" max="115" step="5" value="100" />
+      </div>
+
+      <div class="unified-setting-row">
+        <div class="unified-setting-row-top">
+          <div>
+            <div class="unified-setting-name">减少动效</div>
+            <div class="unified-setting-desc">降低动画与过渡效果，减轻视觉干扰</div>
+          </div>
+          <button type="button" class="unified-toggle" id="unified-reduce-motion-toggle" aria-label="切换减少动效"></button>
+        </div>
+      </div>
+
+      <div class="unified-setting-row">
+        <div class="unified-setting-row-top">
+          <div>
+            <div class="unified-setting-name">隐藏头部提醒红点</div>
+            <div class="unified-setting-desc">仅隐藏红点，不影响功能本身</div>
+          </div>
+          <button type="button" class="unified-toggle" id="unified-hide-badges-toggle" aria-label="切换提醒红点"></button>
+        </div>
+      </div>
+
+      <div class="unified-settings-actions">
+        <button type="button" class="unified-settings-btn" id="unified-settings-reset-btn">恢复默认</button>
+        <button type="button" class="unified-settings-btn" id="unified-settings-profile-btn">高级设置</button>
+        <button type="button" class="unified-settings-btn primary" id="unified-settings-save-btn">保存并应用</button>
+      </div>
+    </div>
+  </div>
+  `;
+  document.body.appendChild(mask);
+  return mask;
+}
+
+function isUnifiedHeaderSettingsTarget(el) {
+  if (!el) return false;
+  var action = el.getAttribute ? (el.getAttribute('data-action') || '') : '';
+  if (action === 'open-settings') return true;
+
+  var inHeader = !!(el.closest && el.closest('.unified-top-header-shell, header.sticky.top-0, header'));
+  if (!inHeader) return false;
+
+  var inDropdown = !!(el.closest && el.closest('.unified-avatar-menu, #user-dropdown, .dropdown-menu'));
+  if (!inDropdown) return false;
+
+  var txt = (el.textContent || '').replace(/\s+/g, '');
+  if (txt.indexOf('设置') === -1) return false;
+
+  var logoutText = txt.indexOf('退出登录') !== -1;
+  if (logoutText) return false;
+  return true;
+}
+
+function updateUnifiedSettingsPanelUi(prefs) {
+  var normalized = normalizeUnifiedUiPreferences(prefs);
+  var mask = ensureUnifiedSettingsPanelDom();
+  if (!mask) return;
+
+  var themeButtons = mask.querySelectorAll('.unified-theme-option');
+  themeButtons.forEach(function (btn) {
+    var mode = btn.getAttribute('data-theme-value');
+    btn.classList.toggle('active', mode === normalized.theme);
+  });
+
+  var range = mask.querySelector('#unified-font-scale-range');
+  var fontText = mask.querySelector('#unified-font-scale-value');
+  if (range) range.value = String(normalized.fontScale);
+  if (fontText) fontText.textContent = String(normalized.fontScale) + '%';
+
+  var motionToggle = mask.querySelector('#unified-reduce-motion-toggle');
+  if (motionToggle) motionToggle.classList.toggle('on', !!normalized.reduceMotion);
+
+  var badgeToggle = mask.querySelector('#unified-hide-badges-toggle');
+  if (badgeToggle) badgeToggle.classList.toggle('on', !!normalized.hideHeaderBadges);
+
+  mask.dataset.uiPrefs = JSON.stringify(normalized);
+}
+
+function readDraftUnifiedSettingsPrefs() {
+  var mask = ensureUnifiedSettingsPanelDom();
+  if (!mask) return getUnifiedUiPreferences();
+  try {
+    if (mask.dataset.uiPrefs) {
+      return normalizeUnifiedUiPreferences(JSON.parse(mask.dataset.uiPrefs));
+    }
+  } catch (e) {}
+  return getUnifiedUiPreferences();
+}
+
+function openUnifiedSettingsPanel() {
+  ensureUnifiedSettingsPanelStyle();
+  var prefs = getUnifiedUiPreferences();
+  updateUnifiedSettingsPanelUi(prefs);
+
+  var mask = ensureUnifiedSettingsPanelDom();
+  if (!mask) return;
+  mask.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeUnifiedSettingsPanel() {
+  var mask = document.getElementById('unified-settings-mask');
+  if (!mask) return;
+  mask.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function bindUnifiedSettingsPanelEvents() {
+  if (document.documentElement.dataset.unifiedSettingsBound === '1') return;
+  document.documentElement.dataset.unifiedSettingsBound = '1';
+
+  document.addEventListener('click', function (e) {
+    var trigger = e.target && e.target.closest ? e.target.closest('a,button,[role="button"]') : null;
+    if (!trigger) return;
+
+    if (isUnifiedHeaderSettingsTarget(trigger)) {
+      e.preventDefault();
+      openUnifiedSettingsPanel();
+      return;
+    }
+
+    if (trigger.getAttribute('data-action') === 'close-unified-settings') {
+      e.preventDefault();
+      closeUnifiedSettingsPanel();
+      return;
+    }
+
+    if (trigger.matches('.unified-theme-option')) {
+      var mode = trigger.getAttribute('data-theme-value') || 'light';
+      var draft = readDraftUnifiedSettingsPrefs();
+      draft.theme = mode;
+      updateUnifiedSettingsPanelUi(draft);
+      return;
+    }
+
+    if (trigger.id === 'unified-reduce-motion-toggle') {
+      var draftMotion = readDraftUnifiedSettingsPrefs();
+      draftMotion.reduceMotion = !draftMotion.reduceMotion;
+      updateUnifiedSettingsPanelUi(draftMotion);
+      return;
+    }
+
+    if (trigger.id === 'unified-hide-badges-toggle') {
+      var draftBadges = readDraftUnifiedSettingsPrefs();
+      draftBadges.hideHeaderBadges = !draftBadges.hideHeaderBadges;
+      updateUnifiedSettingsPanelUi(draftBadges);
+      return;
+    }
+
+    if (trigger.id === 'unified-settings-reset-btn') {
+      var defaults = getUnifiedUiPreferenceDefaults();
+      defaults.theme = 'light';
+      defaults.fontScale = 100;
+      updateUnifiedSettingsPanelUi(defaults);
+      return;
+    }
+
+    if (trigger.id === 'unified-settings-profile-btn') {
+      closeUnifiedSettingsPanel();
+      safeNavigate('个人中心页面.html');
+      return;
+    }
+
+    if (trigger.id === 'unified-settings-save-btn') {
+      var draftSave = readDraftUnifiedSettingsPrefs();
+      var saved = saveUnifiedUiPreferences(draftSave);
+      applyUnifiedUiPreferences(saved);
+      if (typeof showToast === 'function') showToast('设置已保存', 'success');
+      closeUnifiedSettingsPanel();
+    }
+  });
+
+  document.addEventListener('input', function (e) {
+    var target = e.target;
+    if (!target || target.id !== 'unified-font-scale-range') return;
+    var draft = readDraftUnifiedSettingsPrefs();
+    draft.fontScale = clampUnifiedFontScale(target.value);
+    updateUnifiedSettingsPanelUi(draft);
+  });
+
+  document.addEventListener('click', function (e) {
+    var mask = document.getElementById('unified-settings-mask');
+    if (!mask || !mask.classList.contains('open')) return;
+    if (e.target === mask) closeUnifiedSettingsPanel();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    var mask = document.getElementById('unified-settings-mask');
+    if (mask && mask.classList.contains('open')) {
+      closeUnifiedSettingsPanel();
+    }
+  });
+}
+
+function initUnifiedHeaderSettings() {
+  ensureUnifiedSettingsPanelStyle();
+  ensureUnifiedSettingsPanelDom();
+  bindUnifiedSettingsPanelEvents();
+  applyUnifiedUiPreferences(getUnifiedUiPreferences());
+}
+
+if (typeof window !== 'undefined') {
+  window.openUnifiedSettingsPanel = openUnifiedSettingsPanel;
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initUnifiedHeaderSettings);
+} else {
+  initUnifiedHeaderSettings();
+}
+
 var UNIFIED_APP_STATE_KEY = 'qingyue_todo_app_state_v1';
 var UNIFIED_IDENTITY_SYNC_KEY = 'qingyue_identity_sync_tick';
 
