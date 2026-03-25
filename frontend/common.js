@@ -3745,3 +3745,25 @@ if (document.readyState === 'loading') {
 } else {
   initUnifiedIdentitySync();
 }
+
+// ✅ 跨页面数据同步：监听 localStorage 变化
+if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+  window.addEventListener('storage', function (e) {
+    if (!e.key || e.key !== 'qingyue_todo_app_state_v1') return; // 只关注 AppState 更新
+    
+    // 当 AppState 在另一个标签页被更新时，重新加载到当前页面的 AppState
+    if (typeof AppState !== 'undefined' && AppState.init) {
+      try {
+        AppState.init();
+        
+        // 触发一个自定义事件，让各页面知道数据已更新
+        if (typeof window.CustomEvent !== 'undefined') {
+          var evt = new CustomEvent('appstate-updated', { detail: { key: e.key } });
+          window.dispatchEvent(evt);
+        }
+      } catch (err) {
+        console.warn('跨页面同步失败:', err);
+      }
+    }
+  }, false);
+}

@@ -1676,6 +1676,15 @@
             });
           });
         }
+        
+        // ✅ 监听其他页面的 AppState 更新（跨页面同步）
+        window.addEventListener('appstate-updated', function (e) {
+          updateWeeklyStats({ sync: false }).then(function () {
+            showToast('📊 数据周报已刷新', 'info');
+          }).catch(function (err) {
+            console.error('刷新数据周报失败:', err);
+          });
+        }, false);
       });
 function exportReport() {
         showToast('报告导出功能正在开发中');

@@ -3424,6 +3424,14 @@
 
         window.renderMonthGrid = renderMonthGrid;
 
+        // ✅ 监听其他页面的 AppState 更新（跨页面同步）
+        window.addEventListener('appstate-updated', function (e) {
+          invalidateCalendarTaskMapCache();
+          renderScheduledTaskList();
+          renderActiveCalendarView();
+          showToast('📅 任务列表已刷新', 'info');
+        }, false);
+
         if (aiScheduleBtn) {
           aiScheduleBtn.addEventListener('click', function () {
             var tasks = buildAiScheduleCandidates();

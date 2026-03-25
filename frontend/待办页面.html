@@ -2326,9 +2326,12 @@
     }
 
     function saveToLocalStorage() {
+      // 统一使用 AppState 保存，确保跨页面同步
       try {
-        localStorage.setItem('todoTasks', JSON.stringify(tasks));
-        localStorage.setItem('todoTags', JSON.stringify(tags));
+        // 将当前页面的任务合并回 AppState
+        var allTasks = (tasks.today || []).concat(tasks.tomorrow || []);
+        AppState.tasks = allTasks;
+        AppState.save();
       } catch (e) { console.error('保存失败:', e); }
     }
 
@@ -2454,7 +2457,10 @@
         updateSyncStatusBadge();
         renderTaskLists();
         updateCountStats();
-        saveToLocalStorage();
+        // 同步 AppState 确保跨页面更新
+        var allTasks = (tasks.today || []).concat(tasks.tomorrow || []);
+        AppState.tasks = allTasks;
+        AppState.save();
         if (!silent && succeeded > 0) {
           showToast('已自动同步 ' + succeeded + ' 条离线任务');
         }
@@ -2555,16 +2561,24 @@
     }
 
     function loadFromLocalStorage() {
+      // 统一从 AppState 加载，保证数据一致性
       try {
-        var saved = localStorage.getItem('todoTasks');
-        if (saved) tasks = JSON.parse(saved);
-        var savedTags = localStorage.getItem('todoTags');
-        if (savedTags) tags = JSON.parse(savedTags);
-        if (!tasks || typeof tasks !== 'object') tasks = { today: [], tomorrow: [] };
+        var allTasks = AppState.tasks || [];
+        var todayStr = new Date().toISOString().slice(0, 10);
+        tasks = { today: [], tomorrow: [] };
+        
+        allTasks.forEach(function (t) {
+          ensureTaskSubtasks(t);
+          var due = t.dueAt ? t.dueAt.split('T')[0] : null;
+          if (due === todayStr) {
+            tasks.today.push(t);
+          } else {
+            tasks.tomorrow.push(t);
+          }
+        });
+        
         if (!Array.isArray(tasks.today)) tasks.today = [];
         if (!Array.isArray(tasks.tomorrow)) tasks.tomorrow = [];
-        tasks.today.forEach(function (t) { ensureTaskSubtasks(t); });
-        tasks.tomorrow.forEach(function (t) { ensureTaskSubtasks(t); });
       } catch (e) { console.error('加载失败:', e); }
     }
 

@@ -1483,6 +1483,17 @@
         renderFooter('pomodoro');
         bindGlobalLogout();
       });
+      
+      // ✅ 监听其他页面的 AppState 更新（跨页面同步）
+      window.addEventListener('appstate-updated', function (e) {
+        if (window.__pomodoroTimerInstance) {
+          window.__pomodoroTimerInstance.syncTasksFromAppState();
+          window.__pomodoroTimerInstance.renderTasks();
+          if (window.__unifiedShowToast) {
+            window.__unifiedShowToast('🍅 任务列表已刷新', 'info');
+          }
+        }
+      }, false);
     </script>
   </body>
 </html>
