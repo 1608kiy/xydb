@@ -1563,6 +1563,9 @@
     <!-- [JSMOD] p9q_日历视图交互功能 -->
     <script id="calendar-script">
       document.addEventListener('DOMContentLoaded', function () {
+        if (typeof AppState !== 'undefined' && AppState && typeof AppState.init === 'function') {
+          AppState.init();
+        }
         var monthDate = new Date();
         monthDate.setDate(1);
 

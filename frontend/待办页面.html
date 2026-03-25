@@ -1879,6 +1879,12 @@
       }
     }
 
+    function getSharedAppState() {
+      if (typeof AppState !== 'undefined' && AppState) return AppState;
+      if (typeof window !== 'undefined' && window.AppState) return window.AppState;
+      return null;
+    }
+
     function escapeHtml(text) {
       return String(text == null ? '' : text)
         .replace(/&/g, '&amp;')
@@ -2331,9 +2337,10 @@
       try {
         // 将当前页面的任务合并回 AppState
         var allTasks = (tasks.today || []).concat(tasks.tomorrow || []);
-        if (window.AppState && typeof window.AppState.save === 'function') {
-          window.AppState.tasks = allTasks;
-          window.AppState.save();
+        var sharedState = getSharedAppState();
+        if (sharedState && typeof sharedState.save === 'function') {
+          sharedState.tasks = allTasks;
+          sharedState.save();
         } else {
           // 回退到旧 key，避免 data.js 异常时无法保存
           localStorage.setItem('todoTasks', JSON.stringify(tasks));
@@ -2571,8 +2578,9 @@
       // 统一从 AppState 加载，保证数据一致性
       try {
         var allTasks = [];
-        if (window.AppState && Array.isArray(window.AppState.tasks)) {
-          allTasks = window.AppState.tasks;
+        var sharedState = getSharedAppState();
+        if (sharedState && Array.isArray(sharedState.tasks)) {
+          allTasks = sharedState.tasks;
         } else {
           var saved = localStorage.getItem('todoTasks');
           if (saved) {
@@ -2714,7 +2722,8 @@
 
     function isAssignedTask(task) {
       if (!task) return false;
-      var me = (window.AppState && window.AppState.user && window.AppState.user.id) ? String(window.AppState.user.id) : '';
+      var sharedState = getSharedAppState();
+      var me = (sharedState && sharedState.user && sharedState.user.id) ? String(sharedState.user.id) : '';
       var assigneeId = task.assigneeId ? String(task.assigneeId) : '';
       if (task.assignedToMe === true) return true;
       if (task.assignee === 'me') return true;
@@ -3588,8 +3597,9 @@
     // 页面初始化
     document.addEventListener('DOMContentLoaded', function () {
       if (typeof checkAuthOnLoad === 'function') { checkAuthOnLoad().catch(function(){}); }
-      if (window.AppState && typeof window.AppState.init === 'function') {
-        window.AppState.init();
+      var sharedState = getSharedAppState();
+      if (sharedState && typeof sharedState.init === 'function') {
+        sharedState.init();
       }
       loadFromLocalStorage();
       loadPendingQueue();
@@ -3639,8 +3649,9 @@
       if (todoLogoutLink) {
         todoLogoutLink.addEventListener('click', function (e) {
           e.preventDefault();
-          if (window.AppState && typeof window.AppState.logout === 'function') {
-            window.AppState.logout();
+          var sharedState = getSharedAppState();
+          if (sharedState && typeof sharedState.logout === 'function') {
+            sharedState.logout();
           }
           showToast('已退出登录');
           setTimeout(function () { safeNavigate('登录页面.html'); }, 250);
