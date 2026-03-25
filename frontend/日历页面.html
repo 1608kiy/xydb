@@ -2431,17 +2431,101 @@
         }
 
         function buildAiScheduleCandidates() {
-          return (AppState.tasks || []).filter(function (t) {
-            return t && t.status !== 'completed' && !t.dueAt;
-          }).slice(0, 12).map(function (t) {
+          var pendingTasks = (AppState.tasks || []).filter(function (t) {
+            return t && String(t.status || '').toLowerCase() !== 'completed';
+          });
+
+          var unscheduled = pendingTasks.filter(function (t) { return !t.dueAt; });
+          var source = unscheduled.length ? unscheduled : pendingTasks;
+
+          if (aiScheduleStatus) {
+            aiScheduleStatus.textContent = unscheduled.length
+              ? '优先为未排程任务分配日期时间'
+              : '未发现未排程任务，将智能重排现有任务时间';
+          }
+
+          return source.slice(0, 12).map(function (t) {
             return {
               id: String(t.id || ''),
               title: t.title || '',
               priority: t.priority || 'medium',
+              dueAt: t.dueAt || null,
               estimate: Number(t.estimate || 0),
               labels: Array.isArray(t.labels) ? t.labels : []
             };
           });
+        }
+
+        function toIsoFromDateAndTime(dateValue, timeValue) {
+          if (!dateValue) return null;
+          var time = normalizeTimeValue(timeValue || '09:00') || '09:00';
+          var local = new Date(dateValue + 'T' + time + ':00');
+          if (isNaN(local.getTime())) return null;
+          return local.toISOString();
+        }
+
+        function fallbackSchedule(tasks) {
+          var list = Array.isArray(tasks) ? tasks.slice() : [];
+          if (!list.length) return [];
+
+          var now = new Date();
+          var base = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 0, 0, 0);
+          var priorityWeight = { high: 0, medium: 1, low: 2 };
+
+          list.sort(function (a, b) {
+            var pa = priorityWeight[String((a && a.priority) || 'medium').toLowerCase()];
+            var pb = priorityWeight[String((b && b.priority) || 'medium').toLowerCase()];
+            if (pa !== pb) return pa - pb;
+            return String((a && a.title) || '').localeCompare(String((b && b.title) || ''));
+          });
+
+          return list.map(function (task, index) {
+            var due = task && task.dueAt ? new Date(task.dueAt) : null;
+            var useExisting = due && !isNaN(due.getTime());
+            var slot = useExisting ? due : new Date(base.getTime() + index * 90 * 60 * 1000);
+
+            var d = slot.getFullYear() + '-' + String(slot.getMonth() + 1).padStart(2, '0') + '-' + String(slot.getDate()).padStart(2, '0');
+            var t = String(slot.getHours()).padStart(2, '0') + ':' + String(slot.getMinutes()).padStart(2, '0');
+
+            return {
+              id: String((task && task.id) || ''),
+              date: d,
+              time: t,
+              reason: useExisting ? '保留原时间并微调优先级' : '按优先级自动分配时间'
+            };
+          });
+        }
+
+        function applyAiSchedulePlan(plans) {
+          var entries = Array.isArray(plans) ? plans : [];
+          if (!entries.length) return Promise.resolve(0);
+
+          var changed = 0;
+          entries.forEach(function (plan) {
+            if (!plan) return;
+            var id = String(plan.id || '').trim();
+            if (!id) return;
+
+            var task = (AppState.tasks || []).find(function (t) {
+              return String((t && t.id) || '') === id;
+            });
+            if (!task) return;
+
+            var nextIso = toIsoFromDateAndTime(plan.date, plan.time);
+            if (!nextIso) return;
+
+            if (String(task.dueAt || '') !== String(nextIso)) {
+              task.dueAt = nextIso;
+              changed += 1;
+            }
+          });
+
+          if (changed > 0) {
+            saveCalendarState();
+            renderScheduledTaskList();
+            renderActiveCalendarView();
+          }
+          return Promise.resolve(changed);
         }
 
         function requestAiSchedule(tasks) {
