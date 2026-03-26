@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" fill="none">
+  <defs>
+    <linearGradient id="bgDark" x1="120" y1="40" x2="1320" y2="860" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B1220"/>
+      <stop offset="1" stop-color="#111A2F"/>
+    </linearGradient>
+    <linearGradient id="panelDark" x1="220" y1="180" x2="1220" y2="780" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#17233A"/>
+      <stop offset="1" stop-color="#1B2B47"/>
+    </linearGradient>
+    <linearGradient id="titleDark" x1="260" y1="110" x2="760" y2="110" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#93C5FD"/>
+      <stop offset="1" stop-color="#A5B4FC"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1440" height="900" fill="url(#bgDark)"/>
+  <circle cx="170" cy="120" r="130" fill="#1D4ED8" fill-opacity="0.24"/>
+  <circle cx="1290" cy="760" r="180" fill="#312E81" fill-opacity="0.28"/>
+  <circle cx="1210" cy="130" r="90" fill="#0EA5E9" fill-opacity="0.2"/>
+
+  <text x="220" y="120" fill="url(#titleDark)" font-family="Segoe UI, Arial, sans-serif" font-size="48" font-weight="800">XYDB Smart Planner</text>
+  <text x="220" y="160" fill="#B6C4DA" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="500">
+    Todo · Calendar · Pomodoro · Weekly Report · Check-in · Profile
+  </text>
+
+  <rect x="200" y="200" width="1040" height="560" rx="28" fill="url(#panelDark)" stroke="#334155" stroke-width="2"/>
+
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <rect x="250" y="250" width="290" height="140" rx="20" fill="#1E2A46" stroke="#364A72"/>
+    <circle cx="300" cy="300" r="20" fill="#818CF8"/>
+    <text x="335" y="292" fill="#E2E8F0" font-size="26" font-weight="700">Todo</text>
+    <text x="335" y="322" fill="#9FB2CD" font-size="18">Task focus and execution</text>
+
+    <rect x="575" y="250" width="290" height="140" rx="20" fill="#152C3E" stroke="#2C4E68"/>
+    <circle cx="625" cy="300" r="20" fill="#22D3EE"/>
+    <text x="660" y="292" fill="#E2E8F0" font-size="26" font-weight="700">Calendar</text>
+    <text x="660" y="322" fill="#9FB2CD" font-size="18">Visual timeline planning</text>
+
+    <rect x="900" y="250" width="290" height="140" rx="20" fill="#2B2634" stroke="#51446A"/>
+    <circle cx="950" cy="300" r="20" fill="#FB923C"/>
+    <text x="985" y="292" fill="#E2E8F0" font-size="26" font-weight="700">Pomodoro</text>
+    <text x="985" y="322" fill="#9FB2CD" font-size="18">Deep-work time blocks</text>
+
+    <rect x="250" y="430" width="290" height="140" rx="20" fill="#152F2B" stroke="#2D5B55"/>
+    <circle cx="300" cy="480" r="20" fill="#34D399"/>
+    <text x="335" y="472" fill="#E2E8F0" font-size="26" font-weight="700">Check-in</text>
+    <text x="335" y="502" fill="#9FB2CD" font-size="18">Habit consistency tracking</text>
+
+    <rect x="575" y="430" width="290" height="140" rx="20" fill="#332631" stroke="#5F4257"/>
+    <circle cx="625" cy="480" r="20" fill="#F87171"/>
+    <text x="660" y="472" fill="#E2E8F0" font-size="26" font-weight="700">Weekly Report</text>
+    <text x="660" y="502" fill="#9FB2CD" font-size="18">Insights and performance</text>
+
+    <rect x="900" y="430" width="290" height="140" rx="20" fill="#27264A" stroke="#47467B"/>
+    <circle cx="950" cy="480" r="20" fill="#A78BFA"/>
+    <text x="985" y="472" fill="#E2E8F0" font-size="26" font-weight="700">Profile</text>
+    <text x="985" y="502" fill="#9FB2CD" font-size="18">Account and preferences</text>
+  </g>
+
+  <rect x="250" y="620" width="940" height="90" rx="16" fill="#1C2B45" stroke="#355078"/>
+  <text x="285" y="675" fill="#D7E4F8" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700">
+    Focus every day, deliver every week.
+  </text>
+</svg>

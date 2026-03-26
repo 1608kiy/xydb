@@ -1,0 +1,788 @@
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>轻悦待办 - 登录</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#4F46E5',
+              secondary: '#10B981',
+              accent: '#F59E0B',
+              danger: '#EF4444',
+              dark: '#1F2937',
+              light: '#F3F4F6'
+            },
+            fontFamily: {
+              inter: ['Inter', 'system-ui', 'sans-serif']
+            }
+          }
+        }
+      };
+    </script>
+    <style type="text/tailwindcss">
+      @layer utilities {
+          .text-shadow { text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+          .bg-gradient-full { background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+          .card-hover { @apply transition-all duration-500 hover:shadow-2xl hover:-translate-y-1; }
+          .input-focus { @apply focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all duration-300; }
+          .btn-primary { @apply bg-primary text-white font-medium py-3 px-4 rounded-xl transition-all duration-300 hover:bg-primary/90 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]; }
+          .btn-social { @apply flex flex-col items-center justify-center py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-300 hover:scale-105 active:scale-95; }
+          .form-enter { animation: formSlideIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
+          @keyframes formSlideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+          .icon-bounce { animation: iconBounce 2s ease-in-out infinite; }
+          @keyframes iconBounce { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-10deg); } 75% { transform: rotate(10deg); } }
+          .avatar-float { animation: avatarFloat 3s ease-in-out infinite; }
+          @keyframes avatarFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+          
+          /* ===== 动画效果 ===== */
+          .orb-float { animation: orbFloat 8s ease-in-out infinite; }
+          @keyframes orbFloat { 
+              0%, 100% { transform: translate(0, 0) scale(1); } 
+              25% { transform: translate(20px, -30px) scale(1.1); } 
+              50% { transform: translate(-10px, 20px) scale(0.95); } 
+              75% { transform: translate(15px, 10px) scale(1.05); } 
+          }
+          
+          .pulse-glow { animation: pulseGlow 3s ease-in-out infinite; }
+          @keyframes pulseGlow { 
+              0%, 100% { opacity: 0.3; transform: scale(1); } 
+              50% { opacity: 0.6; transform: scale(1.1); } 
+          }
+          
+          .gradient-flow { animation: gradientFlow 6s linear infinite; }
+          @keyframes gradientFlow { 
+              0% { background-position: 0% 50%; } 
+              50% { background-position: 100% 50%; } 
+              100% { background-position: 0% 50%; } 
+          }
+          
+          .particle-float { animation: particleFloat 15s linear infinite; }
+          @keyframes particleFloat { 
+              0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 
+              10% { opacity: 1; } 
+              90% { opacity: 1; } 
+              100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; } 
+          }
+          
+          .card-glow { animation: cardGlow 4s ease-in-out infinite; }
+          @keyframes cardGlow { 
+              0%, 100% { box-shadow: 0 0 30px rgba(79, 70, 229, 0.3); } 
+              50% { box-shadow: 0 0 50px rgba(124, 58, 237, 0.5); } 
+          }
+          
+          /* ===== 标题渐变 - 柔和色调 ===== */
+          .text-gradient-soft { 
+              background: linear-gradient(90deg, #e0e7ff, #c4b5fd, #e0e7ff, #a5f3fc, #e0e7ff); 
+              background-size: 300% auto; 
+              -webkit-background-clip: text; 
+              -webkit-text-fill-color: transparent; 
+              animation: gradientFlow 5s linear infinite; 
+          }
+          
+          /* ===== 图片轻微倾斜浮动 ===== */
+          .image-tilt-float { animation: imageTiltFloat 6s ease-in-out infinite; }
+          @keyframes imageTiltFloat { 
+              0%, 100% { transform: rotate(-2deg) translateY(0); } 
+              25% { transform: rotate(-1deg) translateY(-8px); } 
+              50% { transform: rotate(0deg) translateY(-5px); } 
+              75% { transform: rotate(1deg) translateY(-8px); } 
+          }
+          
+          /* ===== 毛玻璃增强 - 卡片透明度优化 ===== */
+          .glass-strong { 
+              background: rgba(255, 255, 255, 0.15); 
+              backdrop-filter: blur(20px); 
+              -webkit-backdrop-filter: blur(20px); 
+              border: 1px solid rgba(255, 255, 255, 0.2); 
+          }
+          
+          .glass-card { 
+              background: rgba(255, 255, 255, 0.85); 
+              backdrop-filter: blur(40px); 
+              -webkit-backdrop-filter: blur(40px); 
+              border: 1px solid rgba(255, 255, 255, 0.3); 
+              box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 0 30px rgba(255, 255, 255, 0.1); 
+          }
+
+          .glass-input {
+              background: rgba(249, 250, 251, 0.6);
+              backdrop-filter: blur(10px);
+              -webkit-backdrop-filter: blur(10px);
+          }
+          
+          /* 按钮光效 */
+          .btn-glow { 
+              position: relative; 
+              overflow: hidden; 
+          }
+          .btn-glow::before { 
+              content: ''; 
+              position: absolute; 
+              top: 0; left: -100%; 
+              width: 100%; height: 100%; 
+              background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); 
+              transition: left 0.5s; 
+          }
+          .btn-glow:hover::before { left: 100%; }
+          
+          /* 光晕边框 */
+          .glow-border {
+              position: relative;
+          }
+          .glow-border::after {
+              content: '';
+              position: absolute;
+              inset: -2px;
+              background: linear-gradient(45deg, #4F46E5, #7C3AED, #a5f3fc, #4F46E5);
+              background-size: 400% 400%;
+              border-radius: inherit;
+              z-index: -1;
+              animation: gradientFlow 3s ease infinite;
+              filter: blur(10px);
+              opacity: 0.5;
+          }
+          
+          /* ===== 输入框图标样式 - 更明显 ===== */
+          .input-icon {
+              @apply text-slate-700 transition-all duration-200;
+              z-index: 2;
+              pointer-events: none;
+          }
+          .input-icon i {
+              width: 2rem;
+              height: 2rem;
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              border-radius: 0.65rem;
+              border: 1px solid #cbd5e1;
+              background: #f3f6fb;
+              box-shadow: none;
+              font-size: 0.95rem;
+              color: #64748b;
+          }
+          .group:hover .input-icon i {
+              border-color: #cbd5e1;
+              background: #f3f6fb;
+          }
+          .group:focus-within .input-icon {
+              @apply text-slate-700;
+          }
+          .group:focus-within .input-icon i {
+              transform: none;
+              border-color: #cbd5e1;
+              background: #f3f6fb;
+              box-shadow: none;
+          }
+          body.theme-night .input-icon,
+          html.unified-dark-mode .input-icon {
+              color: #e2e8f0 !important;
+          }
+          body.theme-night .input-icon i,
+          html.unified-dark-mode .input-icon i {
+              border-color: #94a3b8;
+              background: #334155;
+              box-shadow: none;
+              color: #f8fafc;
+          }
+          
+          /* ===== 社交按钮优化 - 图标 + 文字 ===== */
+          .btn-social {
+              @apply flex flex-col items-center justify-center py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-300 hover:scale-105 active:scale-95;
+          }
+          .btn-social .social-icon {
+              @apply text-xl mb-1 transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-lg;
+          }
+          .btn-social .social-text {
+              @apply text-xs text-gray-600 font-medium;
+          }
+
+            body.theme-night #forgot-password-modal {
+              background: rgba(2, 6, 23, 0.7);
+            }
+
+            body.theme-night #forgot-password-modal > div {
+              background: rgba(15, 23, 42, 0.94) !important;
+              border: 1px solid rgba(148, 163, 184, 0.3);
+              box-shadow: 0 20px 42px rgba(0, 0, 0, 0.46);
+            }
+
+            body.theme-night #forgot-password-modal h3 {
+              color: #f8fafc !important;
+            }
+
+            body.theme-night #forgot-password-modal p,
+            body.theme-night #forgot-password-modal .text-gray-500,
+            body.theme-night #forgot-password-close {
+              color: #94a3b8 !important;
+            }
+
+            body.theme-night #forgot-password-close:hover {
+              color: #e2e8f0 !important;
+            }
+
+            body.theme-night #forgot-password-modal input {
+              background: rgba(30, 41, 59, 0.78) !important;
+              border-color: rgba(148, 163, 184, 0.32) !important;
+              color: #e2e8f0 !important;
+            }
+
+            body.theme-night #forgot-password-modal input::placeholder {
+              color: #94a3b8 !important;
+            }
+
+            body.theme-night #forgot-password-modal .btn-primary {
+              background: linear-gradient(135deg, #3b4f6c 0%, #31435f 100%) !important;
+              border: 1px solid rgba(148, 163, 184, 0.34);
+              color: #f8fafc !important;
+            }
+
+            body.theme-night #forgot-password-modal .btn-primary:hover {
+              background: linear-gradient(135deg, #475f81 0%, #3a5273 100%) !important;
+            }
+          
+      }
+    </style>
+  </head>
+  <body class="font-inter min-h-screen flex flex-col overflow-hidden relative">
+    <!-- 全屏渐变背景 -->
+    <div class="bg-gradient-full"></div>
+    
+    <!-- ===== 装饰性光斑 - 柔和色调 ===== -->
+    <div class="fixed top-20 left-10 w-72 h-72 bg-white/5 rounded-full blur-3xl pointer-events-none orb-float"></div>
+    <div class="fixed bottom-20 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none orb-float" style="animation-delay: -2s;"></div>
+    <div class="fixed top-1/2 left-1/2 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none pulse-glow"></div>
+    <div class="fixed top-40 right-20 w-48 h-48 bg-secondary/10 rounded-full blur-3xl pointer-events-none orb-float" style="animation-delay: -4s;"></div>
+    <div class="fixed bottom-40 left-20 w-56 h-56 bg-secondary/10 rounded-full blur-3xl pointer-events-none orb-float" style="animation-delay: -6s;"></div>
+    <div class="fixed top-1/3 left-1/4 w-40 h-40 bg-white/8 rounded-full blur-2xl pointer-events-none orb-float" style="animation-delay: -8s;"></div>
+    <div class="fixed bottom-1/3 right-1/4 w-32 h-32 bg-primary/15 rounded-full blur-2xl pointer-events-none pulse-glow" style="animation-delay: -1s;"></div>
+    <!-- 新增背景光斑 -->
+    <div class="fixed top-0 left-1/2 w-80 h-80 bg-primary/5 rounded-full blur-3xl pointer-events-none orb-float" style="animation-delay: -3s;"></div>
+    <div class="fixed bottom-0 left-1/3 w-60 h-60 bg-secondary/8 rounded-full blur-3xl pointer-events-none pulse-glow" style="animation-delay: -5s;"></div>
+    
+    <!-- ===== 网格背景纹理 ===== -->
+    <div class="fixed inset-0 pointer-events-none opacity-5" style="background-image: radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px); background-size: 30px 30px;"></div>
+    
+    <!-- ===== 粒子漂浮效果 ===== -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden">
+        <div class="absolute w-1 h-1 bg-white/40 rounded-full particle-float" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="absolute w-1 h-1 bg-white/40 rounded-full particle-float" style="left: 20%; animation-delay: 2s;"></div>
+        <div class="absolute w-1 h-1 bg-white/40 rounded-full particle-float" style="left: 30%; animation-delay: 4s;"></div>
+        <div class="absolute w-1 h-1 bg-white/40 rounded-full particle-float" style="left: 40%; animation-delay: 6s;"></div>
+        <div class="absolute w-1 h-1 bg-white/40 rounded-full particle-float" style="left: 50%; animation-delay: 8s;"></div>
+        <div class="absolute w-1 h-1 bg-white/40 rounded-full particle-float" style="left: 60%; animation-delay: 10s;"></div>
+        <div class="absolute w-1 h-1 bg-white/40 rounded-full particle-float" style="left: 70%; animation-delay: 12s;"></div>
+        <div class="absolute w-1 h-1 bg-white/40 rounded-full particle-float" style="left: 80%; animation-delay: 14s;"></div>
+    </div>
+    
+    <div class="flex-1 flex flex-col md:flex-row relative z-10">
+      <!-- 左侧欢迎区域 -->
+      <div class="hidden md:flex md:w-1/2 lg:w-5/12 p-8 lg:p-12 pt-14 lg:pt-18 flex-col justify-start items-center text-white">
+        <!-- 光晕背景 -->
+        <div class="absolute inset-0 glass-strong rounded-3xl -z-10"></div>
+        
+        <!-- 太阳图标 - 保留弹跳动画 -->
+        <div id="hero-theme-icon" class="text-6xl mb-6 icon-bounce">☀️</div>
+        
+        <!-- 标题 - 取消渐变动画，使用纯色 -->
+        <h1 class="text-[clamp(2rem,4vw,3.5rem)] font-bold mb-4 tracking-tight text-white">轻悦待办</h1>
+        <p class="text-lg lg:text-xl text-center mb-8 max-w-md text-white/90">专注每一天，高效每一刻</p>
+        
+        <!-- 应用界面展示 - 轻微倾斜浮动动画 -->
+        <div class="relative w-full max-w-md mb-8 group">
+          <div class="absolute inset-0 bg-white/10 rounded-2xl blur-xl transform rotate-3 scale-105 group-hover:blur-2xl transition-all duration-500"></div>
+          <div class="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <img id="auth-hero-preview" src="assets/xydb-auth-light.svg" alt="轻悦待办应用界面" class="w-full rounded-2xl shadow-2xl transform hover:scale-[1.02] transition-transform duration-500 relative z-10 image-tilt-float glow-border" />
+        </div>
+        
+        <!-- 用户统计 -->
+        <div class="text-center">
+          <p class="mb-4 text-sm lg:text-base text-white/80">已有超过 100 万人使用轻悦待办提升效率</p>
+          <div class="flex justify-center">
+            <div class="flex -space-x-3">
+              <img src="https://design.gemcoder.com/staticResource/echoAiSystemImages/5789ae6a9dfaeb368ba279d92fd58c77.png" alt="用户头像" class="w-10 h-10 rounded-full border-2 border-white/50 avatar-float" style="animation-delay: 0s;" />
+              <img src="https://design.gemcoder.com/staticResource/echoAiSystemImages/d27cfa0599490bdc19cd197ce549a2cd.png" alt="用户头像" class="w-10 h-10 rounded-full border-2 border-white/50 avatar-float" style="animation-delay: 0.2s;" />
+              <img src="https://design.gemcoder.com/staticResource/echoAiSystemImages/ab41ca8361c02f52ff523a0ebeff3591.png" alt="用户头像" class="w-10 h-10 rounded-full border-2 border-white/50 avatar-float" style="animation-delay: 0.4s;" />
+              <div class="w-10 h-10 rounded-full border-2 border-white/50 bg-white/20 flex items-center justify-center text-xs font-medium backdrop-blur-sm pulse-glow">+10k</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 右侧登录表单区域 -->
+      <div class="w-full md:w-1/2 lg:w-7/12 flex items-center justify-center p-6 lg:p-12">
+        <div class="w-full max-w-md">
+          <!-- 登录卡片 - 优化透明度 -->
+          <div class="glass-card rounded-3xl shadow-2xl card-hover p-8 lg:p-10 form-enter">
+            <!-- Logo 和标题 (移动端显示) -->
+            <div class="md:hidden text-center mb-6">
+              <div class="text-4xl mb-3 icon-bounce">☀️</div>
+              <h2 class="text-2xl font-bold text-dark mb-1">轻悦待办</h2>
+              <p class="text-gray-500 text-sm">专注每一天，高效每一刻</p>
+            </div>
+            
+            <!-- 标题 - 优化层次 -->
+            <div class="mb-8 hidden md:block">
+              <h2 class="text-3xl font-bold text-gray-800 mb-2">欢迎回来 👋</h2>
+              <p class="text-gray-500 text-sm">登录后开启高效的一天</p>
+            </div>
+            
+            <!-- 登录表单 -->
+            <form id="login-form" class="space-y-5" action="待办页面.html" method="GET">
+              <!-- 账号输入 -->
+              <div>
+                <label for="login-account" class="block text-sm font-medium text-gray-700 mb-2">手机号/邮箱</label>
+                <div class="relative group">
+                  <span class="absolute inset-y-0 left-0 flex items-center pl-4 input-icon">
+                    <i class="fas fa-user"> </i>
+                  </span>
+                  <input type="text" id="login-account" class="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl input-focus glass-input hover:border-gray-300" placeholder="请输入手机号或邮箱" required />
+                </div>
+              </div>
+              
+              <!-- 密码输入 -->
+              <div>
+                <label for="login-password" class="block text-sm font-medium text-gray-700 mb-2">密码</label>
+                <div class="relative group">
+                  <span class="absolute inset-y-0 left-0 flex items-center pl-4 input-icon">
+                    <i class="fas fa-lock"> </i>
+                  </span>
+                  <input type="password" id="login-password" class="w-full pl-12 pr-12 py-3.5 border-2 border-gray-200 rounded-xl input-focus glass-input hover:border-gray-300" placeholder="请输入密码" required />
+                  <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-primary transition-colors duration-300" id="toggle-password">
+                    <i class="fas fa-eye-slash"> </i>
+                  </button>
+                </div>
+              </div>
+              
+              <!-- 记住我 & 忘记密码 -->
+              <div class="flex items-center justify-between">
+                <div class="flex items-center group">
+                  <input type="checkbox" id="remember-me" class="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary cursor-pointer" />
+                  <label for="remember-me" class="ml-2 text-sm text-gray-600 cursor-pointer group-hover:text-gray-800 transition-colors duration-300">记住我</label>
+                </div>
+                <a id="forgot-password-link" href="javascript:void(0);" class="text-sm text-primary font-medium hover:text-primary/70 transition-colors duration-300">忘记密码？</a>
+              </div>
+              
+              <!-- 登录按钮 -->
+              <button type="submit" class="w-full btn-primary text-base shadow-lg shadow-primary/30 btn-glow">登 录</button>
+              
+              <!-- 分割线 -->
+              <div class="relative my-6">
+                <div class="absolute inset-0 flex items-center">
+                  <div class="w-full border-t border-gray-200"></div>
+                </div>
+                <div class="relative flex justify-center">
+                  <span class="auth-alt-divider px-4 bg-white/95 backdrop-blur-sm text-gray-600 text-sm font-medium rounded-full border border-gray-200/80">其他登录方式</span>
+                </div>
+              </div>
+              
+              <!-- 社交登录 - 图标 + 文字 -->
+              <div class="grid grid-cols-4 gap-3">
+                <button type="button" class="btn-social group glass-strong hover:border-green-400/50" title="微信登录">
+                  <i class="fab fa-weixin text-green-500 social-icon"> </i>
+                  <span class="social-text">微信</span>
+                </button>
+                <button type="button" class="btn-social group glass-strong hover:border-gray-400/50" title="苹果登录">
+                  <i class="fab fa-apple text-gray-800 social-icon"> </i>
+                  <span class="social-text">苹果</span>
+                </button>
+                <button type="button" class="btn-social group glass-strong hover:border-red-400/50" title="谷歌登录">
+                  <i class="fab fa-google text-red-500 social-icon"> </i>
+                  <span class="social-text">谷歌</span>
+                </button>
+                <button type="button" class="btn-social group glass-strong hover:border-purple-400/50" title="访客登录">
+                  <i class="fas fa-user-secret text-purple-500 social-icon"> </i>
+                  <span class="social-text">访客</span>
+                </button>
+              </div>
+              
+              <!-- 注册链接 -->
+              <div class="text-center mt-6 pt-6 border-t border-gray-100">
+                <p class="auth-switch-note text-sm text-gray-700">
+                  还没有账号？
+                  <a href="注册页面.html" class="text-primary font-semibold hover:text-primary/70 transition-colors duration-300 inline-block hover:scale-105 transform">立即注册</a>
+                </p>
+              </div>
+            </form>
+          </div>
+          
+          <!-- 底部提示 - 提高对比度 -->
+          <p class="text-center text-xs text-white/90 mt-6 px-4 leading-relaxed">
+            登录即代表您同意我们的
+            <a href="javascript:void(0);" class="underline hover:text-white font-medium transition-colors duration-300">用户协议</a>
+            和
+            <a href="javascript:void(0);" class="underline hover:text-white font-medium transition-colors duration-300">隐私政策</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div id="forgot-password-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+      <div class="w-full max-w-md bg-white/95 rounded-2xl shadow-2xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-bold text-gray-800">找回密码</h3>
+          <button id="forgot-password-close" type="button" class="text-gray-400 hover:text-gray-600">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <p class="text-sm text-gray-500 mb-4">请输入注册邮箱并设置新密码。</p>
+        <form id="forgot-password-form" class="space-y-3">
+          <input id="forgot-email" type="email" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl input-focus" placeholder="注册邮箱" required />
+          <input id="forgot-new-password" type="password" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl input-focus" placeholder="新密码（至少6位）" minlength="6" required />
+          <input id="forgot-confirm-password" type="password" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl input-focus" placeholder="确认新密码" minlength="6" required />
+          <button type="submit" class="w-full btn-primary">确认重置密码</button>
+        </form>
+      </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script src="data.js"></script>
+    <script src="common.js"></script>
+    <script src="components.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // 登录页默认保持停留，便于测试（仅在 ?auto=1 时才自动跳转）
+        try {
+          var __skipAutoRedirect = sessionStorage.getItem('skipLoginAutoRedirect') === '1';
+          if (__skipAutoRedirect) sessionStorage.removeItem('skipLoginAutoRedirect');
+        } catch (e) { var __skipAutoRedirect = false; }
+        var __allowAutoRedirect = false;
+        try {
+          var __params = new URLSearchParams(window.location.search || '');
+          __allowAutoRedirect = __params.get('auto') === '1';
+        } catch (e) { __allowAutoRedirect = false; }
+        try {
+          var __tok = localStorage.getItem('token');
+        } catch (e) { var __tok = null; }
+        if (__tok && !__skipAutoRedirect && __allowAutoRedirect) {
+          apiRequest('/api/me', { method: 'GET' }).then(function (r) {
+            if (r && r.status === 200 && r.body && r.body.code === 200) {
+              var me = (r.body && r.body.data) || {};
+              if (String(me.email || '').toLowerCase() === 'admin@xydb.local') {
+                safeNavigate('后台管理页面.html');
+                return;
+              }
+              safeNavigate('待办页面.html');
+              return;
+            }
+          }).catch(function () { /* ignore, show login form */ });
+        }
+
+        AppState.init();
+
+        function isMobileNumber(v) {
+          return /^1\d{10}$/.test(String(v || '').trim());
+        }
+
+        function isAdminAccount(v) {
+          return String(v || '').trim().toLowerCase() === 'admin';
+        }
+
+        function normalizeLoginIdentifier(v) {
+          var raw = String(v || '').trim();
+          if (isAdminAccount(raw)) return 'admin@xydb.local';
+          if (isMobileNumber(raw)) return raw + '@mobile.local';
+          return raw;
+        }
+
+        function randomMobile() {
+          var prefix = ['130','131','132','133','135','136','137','138','139','150','151','152','155','156','157','158','159','166','171','172','173','175','176','177','178','180','181','182','183','184','185','186','187','188','189','198','199'];
+          var p = prefix[Math.floor(Math.random() * prefix.length)] || '138';
+          var n = String(Math.floor(Math.random() * 100000000)).padStart(8, '0');
+          return p + n;
+        }
+
+        function randomPassword() {
+          return 'Qy_' + Date.now().toString(36) + '_A1!';
+        }
+
+        function backendRegisterAndLoginByPhone(phone) {
+          var email = phone + '@mobile.local';
+          var password = randomPassword();
+          var nickname = '用户' + phone.slice(-4);
+          var registerPayload = {
+            nickname: nickname,
+            email: email,
+            phone: phone,
+            password: password
+          };
+
+          function doLogin() {
+            return apiRequest('/api/auth/login', {
+              method: 'POST',
+              timeoutMs: 8000,
+              body: JSON.stringify({ email: email, password: password })
+            });
+          }
+
+          return apiRequest('/api/auth/register', {
+            method: 'POST',
+            timeoutMs: 8000,
+            body: JSON.stringify(registerPayload)
+          }).then(function (resp) {
+            // 注册成功或账号已存在都尝试登录
+            if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+              return doLogin();
+            }
+            if (resp && resp.status > 0 && resp.status < 500) {
+              return doLogin();
+            }
+            throw new Error((resp && resp.body && resp.body.message) || '自动建号失败');
+          }).then(function (loginResp) {
+            if (loginResp && loginResp.status === 200 && loginResp.body && loginResp.body.code === 200 && loginResp.body.data && loginResp.body.data.token) {
+              return loginResp;
+            }
+            throw new Error((loginResp && loginResp.body && loginResp.body.message) || '自动登录失败');
+          });
+        }
+
+        function authErrorMessage(resp, fallback) {
+          var status = resp && resp.status;
+          var msg = (resp && resp.body && resp.body.message) || '';
+          if (status === 504 || /timeout/i.test(msg)) {
+            return '服务响应超时，请重试（已自动切换备用线路）';
+          }
+          if (status >= 500) {
+            return '服务暂时不可用，请稍后再试';
+          }
+          return msg || fallback;
+        }
+
+        function shouldEnterLocalMode(resp) {
+          if (!resp) return true;
+          var status = Number(resp.status || 0);
+          if (status === 0 || status === 504) return true;
+          if (status >= 500) return true;
+          var msg = String((resp.body && resp.body.message) || '').toLowerCase();
+          return msg.indexOf('timeout') !== -1 || msg.indexOf('network') !== -1;
+        }
+
+        function enterLocalMode(accountHint) {
+          var display = String(accountHint || '').trim();
+          if (!display) display = '本地用户';
+          var userName = display;
+          if (display.indexOf('@') > -1) {
+            userName = display.split('@')[0] || '本地用户';
+          }
+          if (/^1\d{10}$/.test(display)) {
+            userName = '用户' + display.slice(-4);
+          }
+
+          try {
+            localStorage.setItem('token', 'dev-local-' + Date.now());
+            localStorage.setItem('devSkipAuth', '1');
+            if (window.AppState) {
+              window.AppState.user = window.AppState.user || {};
+              window.AppState.user.name = userName;
+              if (display.indexOf('@') > -1) {
+                window.AppState.user.email = display;
+              }
+              if (/^1\d{10}$/.test(display)) {
+                window.AppState.user.phone = display;
+                window.AppState.user.email = display + '@mobile.local';
+              }
+              if (typeof window.AppState.save === 'function') window.AppState.save();
+            }
+          } catch (e) {}
+
+          showToast('服务繁忙，已切换本地快速登录');
+          setTimeout(function () { safeNavigate('待办页面.html'); }, 320);
+        }
+
+        var heroThemeIcon = document.getElementById('hero-theme-icon');
+        var authHeroPreview = document.getElementById('auth-hero-preview');
+        var syncHeroThemeIcon = function () {
+          if (!heroThemeIcon || !document.body) return;
+          heroThemeIcon.textContent = document.body.classList.contains('theme-night') ? '🌙' : '☀️';
+        };
+        var syncAuthHeroPreview = function () {
+          if (!authHeroPreview || !document.body || !document.documentElement) return;
+          var isDark = document.body.classList.contains('theme-night') || document.documentElement.classList.contains('unified-dark-mode');
+          authHeroPreview.src = isDark ? 'assets/xydb-auth-dark.svg' : 'assets/xydb-auth-light.svg';
+        };
+        syncHeroThemeIcon();
+        syncAuthHeroPreview();
+        if (typeof MutationObserver !== 'undefined') {
+          var syncThemeVisuals = function () {
+            syncHeroThemeIcon();
+            syncAuthHeroPreview();
+          };
+          if (document.body) {
+            var bodyClassObserver = new MutationObserver(syncThemeVisuals);
+            bodyClassObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+          }
+          if (document.documentElement) {
+            var rootClassObserver = new MutationObserver(syncThemeVisuals);
+            rootClassObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+          }
+        }
+
+        var loginPassword = document.getElementById('login-password');
+        var togglePassword = document.getElementById('toggle-password');
+
+        togglePassword.addEventListener('click', function () {
+          var type = loginPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+          loginPassword.setAttribute('type', type);
+          var icon = this.querySelector('i');
+          icon.classList.toggle('fa-eye');
+          icon.classList.toggle('fa-eye-slash');
+        });
+
+        var loginForm = document.getElementById('login-form');
+        loginForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var account = document.getElementById('login-account').value.trim();
+          var password = document.getElementById('login-password').value;
+
+          var emailMobileRegex = /^(\S+@\S+\.\S+|1\d{10}|admin)$/i;
+          if (!account || !password) {
+            showToast('请输入账号和密码');
+            return;
+          }
+          if (!emailMobileRegex.test(account)) {
+            showToast('请输入有效的邮箱、手机号或管理员账号');
+            return;
+          }
+
+          var isAdminInput = isAdminAccount(account);
+
+          // 组装请求体：后端要求 email 字段
+          var normalizedAccount = normalizeLoginIdentifier(account);
+          var payload = {
+            email: normalizedAccount,
+            password: password
+          };
+
+          apiRequest('/api/auth/login', { method: 'POST', timeoutMs: 8000, body: JSON.stringify(payload) })
+            .then(function (resp) {
+              if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+                var token = resp.body.data && resp.body.data.token;
+                if (token) {
+                  localStorage.setItem('token', token);
+                  try { localStorage.removeItem('devSkipAuth'); } catch (e) {}
+                  showToast('登录成功，正在跳转...');
+                  setTimeout(function () {
+                    safeNavigate(isAdminInput ? '后台管理页面.html' : '待办页面.html');
+                  }, 400);
+                  return;
+                }
+              }
+              if (shouldEnterLocalMode(resp)) {
+                enterLocalMode(account);
+                return;
+              }
+              var msg = authErrorMessage(resp, '登录失败，请检查账号密码');
+              showToast(msg);
+            }).catch(function (err) {
+              console.error('login error', err);
+              enterLocalMode(account);
+            });
+        });
+
+        document.querySelectorAll('.btn-social').forEach(function (button) {
+          button.addEventListener('click', function () {
+            var phone = randomMobile();
+            showToast('扫码登录中...');
+            backendRegisterAndLoginByPhone(phone).then(function (resp) {
+              if (resp && resp.status === 200 && resp.body && resp.body.code === 200 && resp.body.data && resp.body.data.token) {
+                localStorage.setItem('token', resp.body.data.token);
+                try { localStorage.removeItem('devSkipAuth'); } catch (e) {}
+                showToast('扫码登录成功，已自动创建账号');
+                setTimeout(function () { safeNavigate('待办页面.html'); }, 400);
+                return;
+              }
+              showToast((resp && resp.body && resp.body.message) || '扫码登录失败');
+            }).catch(function (err) {
+              console.error('social login error', err);
+              showToast((err && err.message) || '扫码登录失败，请稍后重试');
+            });
+          });
+        });
+
+        var forgotPasswordLink = document.getElementById('forgot-password-link');
+        var forgotPasswordModal = document.getElementById('forgot-password-modal');
+        var forgotPasswordClose = document.getElementById('forgot-password-close');
+        var forgotPasswordForm = document.getElementById('forgot-password-form');
+
+        function openForgotPasswordModal() {
+          if (!forgotPasswordModal) return;
+          forgotPasswordModal.classList.remove('hidden');
+          forgotPasswordModal.classList.add('flex');
+        }
+
+        function closeForgotPasswordModal() {
+          if (!forgotPasswordModal) return;
+          forgotPasswordModal.classList.add('hidden');
+          forgotPasswordModal.classList.remove('flex');
+        }
+
+        if (forgotPasswordLink) {
+          forgotPasswordLink.addEventListener('click', function () {
+            openForgotPasswordModal();
+          });
+        }
+
+        if (forgotPasswordClose) {
+          forgotPasswordClose.addEventListener('click', closeForgotPasswordModal);
+        }
+
+        if (forgotPasswordModal) {
+          forgotPasswordModal.addEventListener('click', function (e) {
+            if (e.target === forgotPasswordModal) closeForgotPasswordModal();
+          });
+        }
+
+        if (forgotPasswordForm) {
+          forgotPasswordForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var email = (document.getElementById('forgot-email').value || '').trim();
+            var newPassword = document.getElementById('forgot-new-password').value || '';
+            var confirmPassword = document.getElementById('forgot-confirm-password').value || '';
+
+            if (!email || !newPassword || !confirmPassword) {
+              showToast('请填写完整信息');
+              return;
+            }
+            if (newPassword.length < 6) {
+              showToast('新密码至少 6 位');
+              return;
+            }
+            if (newPassword !== confirmPassword) {
+              showToast('两次输入的新密码不一致');
+              return;
+            }
+
+            apiRequest('/api/auth/forgot-password', {
+              method: 'POST',
+              timeoutMs: 8000,
+              body: JSON.stringify({ email: email, newPassword: newPassword })
+            }).then(function (resp) {
+              if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+                showToast('密码已重置，请使用新密码登录');
+                closeForgotPasswordModal();
+                var accountInput = document.getElementById('login-account');
+                var passwordInput = document.getElementById('login-password');
+                if (accountInput) accountInput.value = email;
+                if (passwordInput) passwordInput.value = newPassword;
+              } else {
+                var msg = authErrorMessage(resp, '找回密码失败');
+                showToast(msg);
+              }
+            }).catch(function (err) {
+              console.error('forgot password error', err);
+              showToast('网络错误，找回密码失败');
+            });
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

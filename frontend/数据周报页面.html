@@ -1,0 +1,1743 @@
+﻿<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>数据周报 - 轻悦待办</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="data.js?v=20260325_syncfix4"></script>
+    <script src="common.js?v=20260325_syncfix4"></script>
+    <script src="components.js?v=20260322_sync2"></script>
+    <link
+      href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#4F46E5',
+              secondary: '#7C3AED',
+              success: '#10B981',
+              warning: '#F59E0B',
+              danger: '#EF4444',
+              info: '#3B82F6',
+              light: '#F3F4F6',
+              dark: '#1F2937',
+              'task-work': '#3B82F6',
+              'task-study': '#8B5CF6',
+              'task-life': '#EC4899',
+              'task-health': '#10B981'
+            },
+            fontFamily: {
+              inter: ['Inter', 'system-ui', 'sans-serif']
+            }
+          }
+        }
+      };
+    </script>
+    <script id="report-data-fetch">
+      try { document.documentElement.classList.add('defer-unified-tab'); } catch (e) {}
+      if (typeof checkAuthOnLoad === 'function') { checkAuthOnLoad().catch(function(){}); }
+      window.__reportSyncNoop = true;
+      // Fetch server data (tasks, pomodoros) and render aggregated weekly stats and charts
+      function parseDateVal(v) {
+        if (v === null || v === undefined || v === '') return null;
+        if (typeof v === 'number') {
+          var dnum = new Date(v);
+          return isNaN(dnum.getTime()) ? null : dnum.toISOString();
+        }
+        if (typeof v === 'string') {
+          var s = v.trim();
+          if (s === '') return null;
+          var d = new Date(s);
+          if (!isNaN(d.getTime())) return d.toISOString();
+          var n = parseInt(s, 10);
+          if (!isNaN(n)) {
+            d = new Date(n);
+            if (!isNaN(d.getTime())) return d.toISOString();
+            d = new Date(n * 1000);
+            if (!isNaN(d.getTime())) return d.toISOString();
+          }
+        }
+        return null;
+      }
+
+      function normalizeTask(t) {
+        return {
+          id: String(t.id || t.taskId || t.idStr || ''),
+          title: t.title || t.name || '',
+          description: t.description || t.note || '',
+          dueAt: parseDateVal(t.dueAt || t.due_at || t.dueAtStr || t.dueTime),
+          status: t.status || t.state || 'pending',
+          priority: t.priority || 'medium',
+          labels: (t.tags && Array.isArray(t.tags)) ? t.tags : (t.labels || t.tagNames || []),
+          createdAt: parseDateVal(t.createdAt || t.created_at),
+          updatedAt: parseDateVal(t.updatedAt || t.updated_at)
+        };
+      }
+
+      function normalizePomo(p) {
+        return {
+          id: String(p.id || p.pomodoroId || ''),
+          startedAt: parseDateVal(p.startedAt || p.startTime || p.started_at),
+          completed: !!p.completed,
+          actualMinutes: p.actualMinutes || p.duration || p.minutes || 25,
+          mode: p.mode || 'focus'
+        };
+      }
+
+      function updateChartsAndStats() {
+        var stats = getWeeklyStats();
+        // update overview cards
+        document.getElementById('completed-tasks').textContent = (stats.completedTasks || 0) + ' 项';
+        document.getElementById('focus-hours').textContent = Math.round((stats.totalFocusMinutes || 0) / 60) + ' 小时';
+        document.getElementById('pomodoro-count').textContent = (stats.totalPomodoros || 0) + ' 个';
+        document.getElementById('max-continuous-pomodoros').textContent = (stats.maxContinuousPomodoros || 0) + ' 个番茄';
+        document.getElementById('effectiveness-score').textContent = (stats.effectivenessScore || 0) + ' 分';
+
+        // taskTrendChart: 每日完成任务数（周一..周日）
+        if (window.taskTrendChart) {
+          var weekStart = getWeekStart();
+          var counts = [];
+          for (var i = 0; i < 7; i++) {
+            var d = new Date(weekStart);
+            d.setDate(weekStart.getDate() + i);
+            var key = d.toISOString().slice(0,10);
+            var c = (AppState.tasks || []).filter(function(t){
+              if (!t.updatedAt && !t.dueAt) return false;
+              // treat tasks with status 'completed' and updatedAt in that day
+              var d1 = t.updatedAt || t.completedAt || t.dueAt;
+              if (!d1) return false;
+              return d1.slice(0,10) === key && (t.status === 'completed' || (t.status && String(t.status).toLowerCase()==='completed'));
+            }).length;
+            counts.push(c);
+          }
+          window.taskTrendChart.setOption({ series:[{ data: counts }] });
+        }
+
+        // categoryPieChart: 本周各类任务数
+        if (window.categoryPieChart) {
+          var categories = {};
+          (AppState.tasks || []).forEach(function(t){
+            var labels = t.labels && t.labels.length ? t.labels : ['工作'];
+            var label = labels[0];
+            if (!categories[label]) categories[label] = 0;
+            // 仅统计本周的任务
+            var weekStart = getWeekStart();
+            var weekEnd = getWeekEnd();
+            var d = t.dueAt ? new Date(t.dueAt) : (t.updatedAt ? new Date(t.updatedAt) : null);
+            if (!d) return;
+            if (isDateInRange(d, weekStart, weekEnd)) categories[label]++;
+          });
+          var pieData = Object.keys(categories).map(function(k){ return { name: k, value: categories[k] }; });
+          if (pieData.length === 0) pieData = [ { name: '工作', value: 0 } ];
+          window.categoryPieChart.setOption({ series:[{ data: pieData }] });
+        }
+
+        // focusBarChart: 番茄数按周分布
+        if (window.focusBarChart) {
+          var weekPomos = (AppState.pomodoroSessions || []).filter(function(s){
+            if (!s.startedAt) return false;
+            var sd = new Date(s.startedAt);
+            return isDateInRange(sd, getWeekStart(), getWeekEnd());
+          });
+          var dayCounts = [0,0,0,0,0,0,0];
+          weekPomos.forEach(function(s){
+            var sd = new Date(s.startedAt);
+            var idx = (sd.getDay() + 6) % 7; // convert Sun..Sat to Mon..Sun index 0..6
+            dayCounts[idx]++;
+          });
+          window.focusBarChart.setOption({ series:[{ data: dayCounts }] });
+        }
+      }
+
+      function syncReportStateFromServer() {
+        // 后端没有提供 /api/tasks 和 /api/pomodoros 接口，仅使用本地数据
+        window.__reportSyncNoop = true;
+        return Promise.resolve();
+        // 本地数据已经及时编程加载到 AppState 中
+      }
+    </script>
+    <style type="text/tailwindcss">
+      @layer utilities {
+          .content-auto {
+              content-visibility: auto;
+          }
+          .scrollbar-hide {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
+          }
+          .scrollbar-hide::-webkit-scrollbar {
+              display: none;
+          }
+          .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+          .scrollbar-thin::-webkit-scrollbar-track { background: rgba(243, 244, 246, 0.5); border-radius: 3px; }
+          .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(79, 70, 229, 0.3); border-radius: 3px; }
+          .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(79, 70, 229, 0.5); }
+          
+          /* ✅ 毛玻璃效果 */
+          .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.3); }
+          .glass-strong { background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(36px); -webkit-backdrop-filter: blur(36px); border: 1px solid rgba(255, 255, 255, 0.4); }
+          .glass-max { background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(48px); -webkit-backdrop-filter: blur(48px); border: 1px solid rgba(255, 255, 255, 0.5); }
+          .glass-header { 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+          }
+          .glass-tab { 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border-top: 1px solid rgba(255, 255, 255, 0.5); 
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+          }
+          
+          /* ✅ 背景装饰光斑 */
+          .bg-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.15; pointer-events: none; z-index: 0; animation: orbFloat 20s ease-in-out infinite; }
+          @keyframes orbFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -30px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.95); } }
+          
+          /* ✅ 动画效果 */
+          .fade-in { animation: fadeIn 0.4s ease-out; }
+          @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+          .float { animation: float 3s ease-in-out infinite; }
+          @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+          .slide-up { animation: slideUp 0.5s ease-out; }
+          @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+          .bounce-in { animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+          @keyframes bounceIn { 0% { opacity: 0; transform: scale(0.8); } 50% { transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); } }
+          
+          /* ✅ 统计卡片样式（优化版） */
+          .stat-card { 
+            @apply bg-white/70 backdrop-blur-sm rounded-2xl p-5 transition-all duration-300 relative overflow-hidden;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+          }
+          .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.6s ease;
+          }
+          .stat-card:hover::before {
+            left: 100%;
+          }
+          .stat-card:hover {
+            @apply bg-white/85;
+            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.15);
+            transform: translateY(-6px);
+          }
+          .stat-card .icon-wrapper {
+            @apply w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300;
+            background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(255,255,255,0.4));
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          }
+          .stat-card .stat-value {
+            @apply text-3xl font-bold transition-all duration-300;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          }
+          .stat-card .trend-indicator {
+            @apply text-xs font-medium transition-all duration-300;
+          }
+          .stat-card:hover .trend-indicator {
+            transform: translateX(4px);
+          }
+          
+          /* ✅ Tab 指示器 */
+          .tab-item { @apply relative transition-all duration-300; }
+          .tab-item:hover { @apply scale-105; }
+          .tab-item.active .tab-indicator { @apply opacity-100 scale-100; }
+          .tab-indicator { @apply absolute -top-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary rounded-full opacity-0 scale-0 transition-all duration-300; }
+          
+          /* ✅ 第三方图标统一样式 */
+          .social-icon {
+            @apply w-9 h-9 rounded-full flex items-center justify-center text-lg transition-all duration-300;
+            background: rgba(243, 244, 246, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+          }
+          .social-icon:hover {
+            @apply scale-110 shadow-md;
+            background: rgba(255, 255, 255, 0.9);
+          }
+          .social-icon.weixin { color: #10B981; }
+          .social-icon.apple { color: #1F2937; }
+          .social-icon.google { color: #EF4444; }
+          
+          /* ✅ 图表容器样式（增强版） */
+          .chart-container {
+            @apply rounded-2xl p-5 transition-all duration-300 relative overflow-hidden;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+          }
+          .chart-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(79,70,229,0.05) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+          }
+          .chart-container:hover::before {
+            opacity: 1;
+          }
+          .chart-container:hover {
+            background: rgba(255, 255, 255, 0.78);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            transform: translateY(-4px);
+          }
+          .chart-container .chart-header {
+            @apply relative z-10;
+          }
+          
+          /* ✅ 智能建议卡片（增强版） */
+          .suggestion-card {
+            @apply rounded-xl p-4 transition-all duration-300 relative overflow-hidden;
+            background: linear-gradient(135deg, rgba(254, 243, 199, 0.5), rgba(254, 243, 199, 0.3));
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
+          }
+          .suggestion-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #F59E0B, #FBBF24);
+            border-radius: 4px 0 0 4px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+          }
+          .suggestion-card:hover::after {
+            opacity: 1;
+          }
+          .suggestion-card:hover {
+            background: linear-gradient(135deg, rgba(254, 243, 199, 0.65), rgba(254, 243, 199, 0.45));
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.2);
+            transform: translateX(8px);
+          }
+          
+          /* ✅ 自定义下拉列表样式（与个人中心一致） */
+          .custom-select-wrapper {
+            @apply relative inline-block;
+          }
+          .custom-select-trigger {
+            @apply flex items-center justify-between w-full px-4 py-2.5 bg-white/85 backdrop-blur-md border border-gray-200/60 rounded-xl text-xs font-medium text-gray-700 cursor-pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+          }
+          .custom-select-trigger:hover {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(79, 70, 229, 0.4);
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.12);
+            transform: translateY(-1px);
+          }
+          .custom-select-trigger.active {
+            background: rgba(255, 255, 255, 0.98);
+            border-color: rgba(79, 70, 229, 0.6);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15), 0 4px 12px rgba(79, 70, 229, 0.2);
+          }
+          .custom-select-arrow {
+            @apply ml-2 text-gray-400 transition-transform duration-300;
+          }
+          .custom-select-arrow.rotate {
+            transform: rotate(180deg);
+          }
+          .custom-select-dropdown {
+            @apply absolute left-0 mt-2 w-full glass-max rounded-xl shadow-2xl py-1.5 z-[100];
+            display: none;
+            animation: dropdownSlide 0.25s ease-out;
+          }
+          .custom-select-dropdown.show {
+            display: block;
+          }
+          @keyframes dropdownSlide {
+            from { opacity: 0; transform: translateY(-8px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+          }
+          .custom-select-option {
+            @apply px-4 py-2.5 text-xs text-gray-700 cursor-pointer transition-all duration-200 rounded-md;
+          }
+          .custom-select-option:hover {
+            @apply bg-primary/10 text-primary;
+          }
+          .custom-select-option.selected {
+            @apply bg-primary/15 text-primary font-semibold;
+          }
+          .custom-select-option.selected::after {
+            content: '✓';
+            float: right;
+            margin-left: 8px;
+          }
+          
+          /* ✅ Toast 提示样式 */
+          .toast {
+            @apply fixed top-20 right-4 z-[1001] glass-max rounded-2xl shadow-2xl p-4 flex items-center space-x-3 min-w-[300px] bounce-in;
+          }
+          
+          /* ✅ 效率时段卡片（优化版 - 取消条纹） */
+          .time-slot-card {
+            @apply rounded-2xl p-5 transition-all duration-300 relative overflow-hidden;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+          }
+          .time-slot-card:hover {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.08));
+            box-shadow: 0 12px 28px rgba(59, 130, 246, 0.2);
+            transform: translateY(-6px);
+          }
+          .time-slot-card.best-slot {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.1));
+            border-color: rgba(251, 191, 36, 0.4);
+            box-shadow: 0 6px 20px rgba(251, 191, 36, 0.25);
+          }
+          .time-slot-card.best-slot:hover {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(245, 158, 11, 0.15));
+            box-shadow: 0 16px 36px rgba(251, 191, 36, 0.35);
+          }
+          .time-slot-card .slot-count {
+            @apply text-2xl font-bold transition-all duration-300;
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+          }
+          .time-slot-card.best-slot .slot-count {
+            background: linear-gradient(135deg, #F59E0B, #FBBF24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+          }
+          .time-slot-card .crown-badge {
+            animation: crownFloat 2s ease-in-out infinite;
+          }
+          @keyframes crownFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+          }
+          
+          /* ✅ 专注时间段和番茄分析卡片特殊光效 */
+          .chart-container.focus-chart {
+            background: linear-gradient(135deg, rgba(255,255,255,0.7), rgba(255,255,255,0.5));
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 
+              0 4px 16px rgba(0,0,0,0.04),
+              inset 0 1px 0 rgba(255,255,255,0.6),
+              inset 0 -1px 0 rgba(255,255,255,0.3);
+          }
+          .chart-container.focus-chart::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: linear-gradient(
+              180deg,
+              rgba(255,255,255,0.15) 0%,
+              rgba(255,255,255,0) 100%
+            );
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+          }
+          .chart-container.focus-chart:hover::after {
+            opacity: 1;
+          }
+          .chart-container.focus-chart:hover {
+            background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(255,255,255,0.6));
+            box-shadow: 
+              0 12px 40px rgba(0,0,0,0.12),
+              inset 0 1px 0 rgba(255,255,255,0.8),
+              inset 0 -1px 0 rgba(255,255,255,0.4);
+          }
+      }
+    </style>
+  </head>
+  <body class="font-inter bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden fade-in scroll-smooth">
+    <!-- ✅ 背景装饰光斑 -->
+    <div class="bg-orb w-[500px] h-[500px] bg-primary top-0 left-0"></div>
+    <div class="bg-orb w-[400px] h-[400px] bg-secondary bottom-0 right-0" style="animation-delay: -5s;"></div>
+    <div class="bg-orb w-[350px] h-[350px] bg-info top-1/2 left-1/2" style="animation-delay: -10s;"></div>
+    <div class="bg-orb w-[300px] h-[300px] bg-warning top-0 right-0" style="animation-delay: -15s;"></div>
+    <div class="bg-orb w-[250px] h-[250px] bg-success bottom-0 left-0" style="animation-delay: -20s;"></div>
+    
+    <!-- [MODULE] a1b_顶部导航 -->
+    <header class="glass-header sticky top-0 z-30">
+      <div
+        class="container mx-auto px-4 py-3 flex items-center justify-between"
+      >
+        <!-- 返回首页/应用名称 -->
+        <div class="flex items-center space-x-4">
+          <a
+            class="text-gray-600 hover:text-primary transition-all duration-300 p-2.5 rounded-xl hover:bg-primary/10 hover:scale-110"
+            href="javascript:void(0);"
+            onclick="history.back()"
+          >
+            <i class="fas fa-arrow-left text-lg"> </i>
+          </a>
+          <div>
+            <h1 class="text-lg md:text-xl font-bold text-gray-800">数据周报</h1>
+            <p class="text-xs text-gray-500 mt-0.5 hidden md:block">洞察你的效率趋势</p>
+          </div>
+        </div>
+        <!-- 日期显示和时间范围选择器 -->
+        <div class="flex items-center space-x-4">
+          <div class="text-gray-600 text-sm hidden md:block">
+            <span class="font-medium" id="current-date"> </span>
+          </div>
+          <!-- ✅ 优化后的自定义下拉列表 -->
+          <div class="custom-select-wrapper w-32">
+            <div class="custom-select-trigger" onclick="toggleTimeRangeDropdown()">
+              <span id="time-range-text">本周</span>
+              <i class="fas fa-chevron-down custom-select-arrow" id="time-range-arrow"></i>
+            </div>
+            <div class="custom-select-dropdown" id="time-range-dropdown">
+              <div class="custom-select-option selected" onclick="selectTimeRange('本周', this)">本周</div>
+              <div class="custom-select-option" onclick="selectTimeRange('上周', this)">上周</div>
+              <div class="custom-select-option" onclick="selectTimeRange('本月', this)">本月</div>
+              <div class="custom-select-option" onclick="selectTimeRange('自定义', this)">自定义</div>
+            </div>
+          </div>
+        </div>
+        <!-- 右侧操作区 -->
+        <div class="flex items-center space-x-4">
+          <button class="text-gray-600 hover:text-primary transition-all duration-300 p-2.5 rounded-xl hover:bg-primary/10 hover:scale-110" title="导出报告" onclick="exportReport()">
+            <i class="fas fa-download text-lg"> </i>
+          </button>
+          <button class="text-gray-600 hover:text-primary transition-all duration-300 p-2.5 rounded-xl hover:bg-primary/10 hover:scale-110" title="分享" onclick="shareReport()">
+            <i class="fas fa-share-alt text-lg"> </i>
+          </button>
+          <div class="relative group">
+            <button class="flex items-center space-x-2 focus:outline-none cursor-pointer">
+              <img
+                alt="用户头像"
+                class="header-user-avatar w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300"
+                src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
+              />
+              <span class="header-user-name hidden md:inline-block font-medium text-sm"> 张明 </span>
+              <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform duration-300"> </i>
+            </button>
+            <!-- 下拉菜单 (默认隐藏) -->
+            <div
+              class="absolute right-0 mt-2 w-48 glass-max rounded-lg shadow-xl py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
+              style="pointer-events: auto;"
+            >
+              <a
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors"
+                href="个人中心页面.html"
+              >
+                <i class="fas fa-user mr-2 text-gray-500"> </i>
+                个人中心
+              </a>
+              <a
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors"
+                href="javascript:void(0);"
+              >
+                <i class="fas fa-cog mr-2 text-gray-500"> </i>
+                设置
+              </a>
+              <div class="border-t border-gray-100 my-1"></div>
+              <a
+                class="block px-4 py-2 text-sm text-danger hover:bg-danger/10 transition-colors"
+                href="javascript:void(0);"
+              >
+                <i class="fas fa-sign-out-alt mr-2"> </i>
+                退出登录
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- [/MODULE] a1b_顶部导航 -->
+    
+    <div class="flex flex-1 overflow-hidden">
+      <!-- [MODULE] e3f_主内容区域 -->
+      <main class="flex-1 overflow-y-auto content-auto bg-transparent p-4 md:p-6 scrollbar-thin fade-in">
+        <!-- 概览卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+          <div class="stat-card group">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="text-sm font-medium text-gray-500 flex items-center">
+                <div class="icon-wrapper mr-3">
+                  <i class="fas fa-check-circle text-success text-xl"></i>
+                </div>
+                本周完成任务总数
+              </h3>
+            </div>
+            <div class="stat-value bg-gradient-to-r from-success to-emerald-500 bg-clip-text text-transparent" id="completed-tasks">28 项</div>
+            <div class="trend-indicator text-green-600 mt-2 flex items-center">
+              <i class="fas fa-arrow-up mr-1"> </i>
+              12% 较上周
+            </div>
+          </div>
+          <div class="stat-card group">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="text-sm font-medium text-gray-500 flex items-center">
+                <div class="icon-wrapper mr-3">
+                  <i class="fas fa-clock text-primary text-xl"></i>
+                </div>
+                本周专注总时长
+              </h3>
+            </div>
+            <div class="stat-value bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent" id="focus-hours">14 小时</div>
+          </div>
+          <div class="stat-card group">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="text-sm font-medium text-gray-500 flex items-center">
+                <div class="icon-wrapper mr-3">
+                  <i class="fas fa-fire text-danger text-xl"></i>
+                </div>
+                本周完成番茄总数
+              </h3>
+            </div>
+            <div class="stat-value bg-gradient-to-r from-danger to-red-500 bg-clip-text text-transparent" id="pomodoro-count">32 个</div>
+          </div>
+          <div class="stat-card group">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="text-sm font-medium text-gray-500 flex items-center">
+                <div class="icon-wrapper mr-3">
+                  <i class="fas fa-bolt text-warning text-xl"></i>
+                </div>
+                本周最长连续专注
+              </h3>
+            </div>
+            <div class="stat-value bg-gradient-to-r from-warning to-orange-500 bg-clip-text text-transparent" id="max-continuous-pomodoros">4 个番茄</div>
+          </div>
+          <div class="stat-card group">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="text-sm font-medium text-gray-500 flex items-center">
+                <div class="icon-wrapper mr-3">
+                  <i class="fas fa-star text-secondary text-xl"></i>
+                </div>
+                综合效率评分
+              </h3>
+            </div>
+            <div class="stat-value bg-gradient-to-r from-secondary to-purple-500 bg-clip-text text-transparent" id="effectiveness-score">85 分</div>
+            <div class="text-xs text-gray-500 mt-2 font-medium">A 级</div>
+          </div>
+        </div>
+        
+        <!-- 任务完成趋势图 -->
+        <div class="chart-container mb-6 fade-in">
+          <div class="chart-header">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+              <i class="fas fa-chart-line text-primary mr-2"></i>
+              任务完成趋势
+            </h2>
+          </div>
+          <div class="w-full h-64" id="task-trend-chart"></div>
+        </div>
+        
+        <!-- 任务分类统计和番茄专注分析 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div class="chart-container focus-chart fade-in">
+            <div class="chart-header">
+              <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-tags text-secondary mr-2"></i>
+                任务分类统计
+              </h2>
+            </div>
+            <div class="w-full h-64" id="category-pie-chart"></div>
+          </div>
+          <div class="chart-container focus-chart fade-in">
+            <div class="chart-header">
+              <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-chart-bar text-info mr-2"></i>
+                番茄专注分析
+              </h2>
+            </div>
+            <div class="w-full h-64" id="focus-bar-chart"></div>
+          </div>
+        </div>
+        
+        <!-- 专注时间段分布热力图 -->
+        <div class="chart-container focus-chart mb-6 fade-in">
+          <div class="chart-header">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+              <i class="fas fa-th text-warning mr-2"></i>
+              专注时间段分布
+            </h2>
+          </div>
+          <div class="w-full h-64" id="focus-heatmap"></div>
+        </div>
+        
+        <!-- 效率时段分析 -->
+        <div class="card-shadow card-hover glass-strong rounded-2xl p-6 mb-6 fade-in">
+          <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+            <i class="fas fa-clock text-primary mr-2"></i>
+            效率时段分析
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="time-slots-container">
+            <div class="time-slot-card" data-slot="early_morning">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-sunrise slot-icon text-yellow-500 text-2xl mr-3"></i>
+                <div class="text-sm font-medium text-gray-700">清晨 (6-8 点)</div>
+              </div>
+              <div class="slot-count">3 项</div>
+            </div>
+            <div class="time-slot-card best-slot" data-slot="morning">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-sun slot-icon text-yellow-400 text-2xl mr-3"></i>
+                <div class="text-sm font-medium text-gray-700">上午 (9-11 点)</div>
+              </div>
+              <div class="slot-count">8 项</div>
+              <div class="text-xs text-yellow-600 mt-3 flex items-center font-medium">
+                <i class="fas fa-crown crown-badge mr-2"></i>
+                最佳效率时段
+              </div>
+            </div>
+            <div class="time-slot-card" data-slot="noon">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-cloud-sun slot-icon text-orange-400 text-2xl mr-3"></i>
+                <div class="text-sm font-medium text-gray-700">中午 (12-14 点)</div>
+              </div>
+              <div class="slot-count">2 项</div>
+            </div>
+            <div class="time-slot-card" data-slot="afternoon">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-sun slot-icon text-orange-500 text-2xl mr-3"></i>
+                <div class="text-sm font-medium text-gray-700">下午 (15-17 点)</div>
+              </div>
+              <div class="slot-count">7 项</div>
+            </div>
+            <div class="time-slot-card" data-slot="evening">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-moon slot-icon text-indigo-400 text-2xl mr-3"></i>
+                <div class="text-sm font-medium text-gray-700">晚上 (18-21 点)</div>
+              </div>
+              <div class="slot-count">6 项</div>
+            </div>
+            <div class="time-slot-card" data-slot="late_night">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-moon slot-icon text-purple-400 text-2xl mr-3"></i>
+                <div class="text-sm font-medium text-gray-700">深夜 (22-24 点)</div>
+              </div>
+              <div class="slot-count">2 项</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 智能建议栏 -->
+        <div class="card-shadow card-hover glass-strong rounded-2xl p-6 mb-6 fade-in">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-800 flex items-center">
+              <i class="fas fa-lightbulb text-yellow-500 mr-2 float"></i>
+              智能建议
+            </h2>
+            <button id="ai-suggestions-refresh" class="text-xs px-2.5 py-1 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all">
+              刷新建议
+            </button>
+          </div>
+          <div class="space-y-3" id="smart-suggestions-list">
+            <div class="suggestion-card flex items-start">
+              <i class="fas fa-lightbulb text-yellow-500 mt-1 mr-3 flex-shrink-0"></i>
+              <p class="text-gray-700 text-sm leading-relaxed">正在生成个性化建议...</p>
+            </div>
+          </div>
+        </div>
+      </main>
+      <!-- [/MODULE] e3f_主内容区域 -->
+    </div>
+    
+    <!-- [MODULE] m7n_底部 Tab 栏 -->
+    <footer
+      class="glass-tab py-1.5 px-2 sticky bottom-0 z-40"
+    >
+      <div class="container mx-auto flex justify-around items-center">
+        <a
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+          href="待办页面.html"
+        >
+          <i class="fas fa-list-alt text-base"> </i>
+          <span class="text-[10px] mt-0.5"> 待办 </span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+          href="日历页面.html"
+        >
+          <i class="fas fa-calendar text-base"> </i>
+          <span class="text-[10px] mt-0.5"> 日历 </span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+          href="番茄钟页面.html"
+        >
+          <i class="fas fa-clock text-base"> </i>
+          <span class="text-[10px] mt-0.5"> 番茄钟 </span>
+          <span class="tab-indicator"></span>
+        </a>
+        <!-- 当前页：数据周报 -->
+        <a
+          class="tab-item active flex flex-col items-center text-primary px-2 py-1 rounded-lg bg-primary/10"
+          href="数据周报页面.html"
+        >
+          <i class="fas fa-chart-line text-base"> </i>
+          <span class="text-[10px] mt-0.5 font-semibold"> 数据周报 </span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+          href="打卡页面.html"
+        >
+          <i class="fas fa-check-circle text-base"> </i>
+          <span class="text-[10px] mt-0.5"> 打卡 </span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+          href="个人中心页面.html"
+        >
+          <i class="fas fa-user text-base"> </i>
+          <span class="text-[10px] mt-0.5"> 个人中心 </span>
+          <span class="tab-indicator"></span>
+        </a>
+      </div>
+    </footer>
+    <!-- [/MODULE] m7n_底部 Tab 栏 -->
+    
+    <!-- [JSMOD] n8o_日期显示功能 -->
+    <script id="date-script">
+      function setCurrentDate() {
+        var now = new Date();
+        var options = {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          weekday: 'short'
+        };
+        var dateString = now.toLocaleDateString('zh-CN', options);
+        document.getElementById('current-date').textContent = "\u4eca\u5929 \u00b7 ".concat(dateString);
+      }
+      window.addEventListener('load', setCurrentDate);
+    </script>
+    <!-- [/JSMOD] n8o_日期显示功能 -->
+    
+    <!-- [JSMOD] p9q_ECharts 图表初始化 -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <script id="echarts-script">
+      function initReportChartsOnce() {
+        if (window.__reportChartsInited) return;
+        window.__reportChartsInited = true;
+        if (!window.echarts) {
+          console.warn('ECharts 加载失败，图表已降级为文本提示');
+          ['task-trend-chart', 'category-pie-chart', 'focus-bar-chart', 'focus-heatmap'].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) {
+              el.innerHTML = '<div style="height:100%;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:13px;">图表组件加载失败，请刷新重试</div>';
+            }
+          });
+          return;
+        }
+
+        var taskTrendChartEl = document.getElementById('task-trend-chart');
+        var categoryPieChartEl = document.getElementById('category-pie-chart');
+        var focusBarChartEl = document.getElementById('focus-bar-chart');
+        var focusHeatmapEl = document.getElementById('focus-heatmap');
+        if (!taskTrendChartEl || !categoryPieChartEl || !focusBarChartEl || !focusHeatmapEl) {
+          console.warn('图表容器缺失，跳过图表初始化');
+          return;
+        }
+
+        var isDark = document.documentElement.classList.contains('unified-dark-mode');
+        var chartTheme = isDark ? {
+          axisLine: 'rgba(113, 122, 138, 0.42)',
+          axisTick: 'rgba(113, 122, 138, 0.28)',
+          axisText: '#B0B7C3',
+          splitLine: 'rgba(45, 55, 72, 0.72)',
+          tooltipBg: 'rgba(35, 43, 59, 0.95)',
+          tooltipBorder: '#2D3748',
+          tooltipText: '#F0F2F5',
+          seriesMain: '#4A6CF7',
+          seriesMainAreaTop: 'rgba(74, 108, 247, 0.28)',
+          seriesMainAreaBottom: 'rgba(74, 108, 247, 0.04)',
+          seriesBarTop: '#8B5CF6',
+          seriesBarBottom: '#4A6CF7',
+          heatAreaA: 'rgba(35, 43, 59, 0.65)',
+          heatAreaB: 'rgba(26, 33, 48, 0.68)',
+          heatLegendBg: 'rgba(35, 43, 59, 0.85)',
+          heatLegendText: '#B0B7C3',
+          heatRamp: ['#23314E', '#314B82', '#3B5EB6', '#4A6CF7', '#5D7EFF', '#7A95FF'],
+          pieBorder: '#232B3B',
+          pieLabel: 'rgba(240, 242, 245, 0.88)',
+          pieWork: '#4A6CF7',
+          pieStudy: '#8B5CF6',
+          pieLife: '#EC4899',
+          pieHealth: '#10B981'
+        } : {
+          axisLine: 'rgba(156, 163, 175, 0.5)',
+          axisTick: 'rgba(156, 163, 175, 0.3)',
+          axisText: '#374151',
+          splitLine: 'rgba(209, 213, 219, 0.3)',
+          tooltipBg: 'rgba(255, 255, 255, 0.95)',
+          tooltipBorder: '#E5E7EB',
+          tooltipText: '#1F2937',
+          seriesMain: '#4F46E5',
+          seriesMainAreaTop: 'rgba(79, 70, 229, 0.3)',
+          seriesMainAreaBottom: 'rgba(79, 70, 229, 0.05)',
+          seriesBarTop: '#7C3AED',
+          seriesBarBottom: '#4F46E5',
+          heatAreaA: 'rgba(255,255,255,0.3)',
+          heatAreaB: 'rgba(243,244,246,0.3)',
+          heatLegendBg: 'rgba(255,255,255,0.8)',
+          heatLegendText: '#6B7280',
+          heatRamp: ['#DBEAFE', '#93C5FD', '#60A5FA', '#3B82F6', '#2563EB', '#1D4ED8'],
+          pieBorder: '#fff',
+          pieLabel: 'rgba(31, 41, 55, 0.8)',
+          pieWork: '#3B82F6',
+          pieStudy: '#8B5CF6',
+          pieLife: '#EC4899',
+          pieHealth: '#10B981'
+        };
+
+        // 任务完成趋势图
+        var taskTrendChart = echarts.init(taskTrendChartEl);
+        window.taskTrendChart = taskTrendChart;
+        taskTrendChart.setOption({
+          xAxis: {
+            type: 'category',
+            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+            axisLine: { lineStyle: { color: chartTheme.axisLine } },
+            axisTick: { lineStyle: { color: chartTheme.axisTick } },
+            axisLabel: { 
+              color: chartTheme.axisText,
+              fontWeight: 500,
+              fontSize: 12
+            }
+          },
+          yAxis: {
+            type: 'value',
+            axisLine: { show: false },
+            splitLine: { lineStyle: { color: chartTheme.splitLine } },
+            axisLabel: {
+              color: chartTheme.axisText,
+              fontWeight: 500
+            }
+          },
+          series: [{
+            data: [3, 6, 4, 5, 7, 2, 1],
+            type: 'line',
+            smooth: true,
+            lineStyle: {
+              color: chartTheme.seriesMain,
+              width: 3
+            },
+            itemStyle: {
+              color: chartTheme.seriesMain,
+              borderColor: chartTheme.pieBorder,
+              borderWidth: 2
+            },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: chartTheme.seriesMainAreaTop },
+                { offset: 1, color: chartTheme.seriesMainAreaBottom }
+              ])
+            }
+          }]
+        });
+
+        // 任务分类统计饼图
+        var categoryPieChart = echarts.init(categoryPieChartEl);
+        window.categoryPieChart = categoryPieChart;
+        categoryPieChart.setOption({
+          series: [{
+            type: 'pie',
+            radius: ['40%', '70%'],
+            center: ['50%', '50%'],
+            itemStyle: {
+              borderRadius: 8,
+              borderColor: chartTheme.pieBorder,
+              borderWidth: 2
+            },
+            label: {
+              color: chartTheme.pieLabel
+            },
+            data: [
+              { value: 12, name: '工作', itemStyle: { color: chartTheme.pieWork } },
+              { value: 8, name: '学习', itemStyle: { color: chartTheme.pieStudy } },
+              { value: 5, name: '生活', itemStyle: { color: chartTheme.pieLife } },
+              { value: 3, name: '健康', itemStyle: { color: chartTheme.pieHealth } }
+            ]
+          }]
+        });
+
+        // 番茄专注分析柱状图
+        var focusBarChart = echarts.init(focusBarChartEl);
+        window.focusBarChart = focusBarChart;
+        focusBarChart.setOption({
+          xAxis: {
+            type: 'category',
+            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+            axisLine: { lineStyle: { color: chartTheme.axisLine } },
+            axisTick: { lineStyle: { color: chartTheme.axisTick } },
+            axisLabel: { 
+              color: chartTheme.axisText,
+              fontWeight: 500,
+              fontSize: 12
+            }
+          },
+          yAxis: {
+            type: 'value',
+            axisLine: { show: false },
+            splitLine: { lineStyle: { color: chartTheme.splitLine } },
+            axisLabel: {
+              color: chartTheme.axisText,
+              fontWeight: 500
+            }
+          },
+          series: [{
+            data: [4, 6, 5, 3, 7, 2, 5],
+            type: 'bar',
+            barWidth: '50%',
+            itemStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: chartTheme.seriesBarTop },
+                { offset: 1, color: chartTheme.seriesBarBottom }
+              ]),
+              borderRadius: [6, 6, 0, 0]
+            }
+          }]
+        });
+
+        // 专注时间段分布热力图
+        var focusHeatmap = echarts.init(focusHeatmapEl);
+        window.focusHeatmap = focusHeatmap;
+        focusHeatmap.setOption({
+          tooltip: {
+            position: 'top',
+            backgroundColor: chartTheme.tooltipBg,
+            borderColor: chartTheme.tooltipBorder,
+            textStyle: { color: chartTheme.tooltipText },
+            formatter: function(params) {
+              var days = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+              return days[params.value[1]] + ' ' + params.value[0] + ':00-' + (parseInt(params.value[0]) + 2) + ':00<br/>专注强度：' + params.value[2];
+            }
+          },
+          grid: {
+            left: '3%',
+            right: '8%',
+            bottom: '15%',
+            top: '5%',
+            containLabel: true
+          },
+          xAxis: {
+            type: 'category',
+            data: ['0-2', '2-4', '4-6', '6-8', '8-10', '10-12', '12-14', '14-16', '16-18', '18-20', '20-22', '22-24'],
+            splitArea: { show: true, areaStyle: { color: [chartTheme.heatAreaA, chartTheme.heatAreaB] } },
+            axisLine: { lineStyle: { color: chartTheme.axisLine } },
+            axisTick: { lineStyle: { color: chartTheme.axisTick } },
+            axisLabel: { 
+              color: chartTheme.axisText,
+              fontWeight: 500,
+              fontSize: 12
+            }
+
+          },
+          yAxis: {
+            type: 'category',
+            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+            splitArea: { show: true, areaStyle: { color: [chartTheme.heatAreaA, chartTheme.heatAreaB] } },
+            axisLine: { lineStyle: { color: chartTheme.axisLine } },
+            axisTick: { lineStyle: { color: chartTheme.axisTick } },
+            axisLabel: {
+              color: chartTheme.axisText,
+              fontWeight: 500
+            }
+          },
+          visualMap: {
+            min: 0,
+            max: 10,
+            calculable: true,
+            orient: 'horizontal',
+            left: 'center',
+            bottom: '0%',
+            itemWidth: 12,
+            itemHeight: 80,
+            bgStyle: { color: chartTheme.heatLegendBg, borderColor: chartTheme.tooltipBorder, borderWidth: 1 },
+            textStyle: { color: chartTheme.heatLegendText, fontSize: 10 },
+            inRange: {
+              color: chartTheme.heatRamp
+            }
+          },
+          series: [{
+            type: 'heatmap',
+            data: [[0, 0, 1], [1, 0, 0], [2, 0, 0], [3, 0, 0], [4, 0, 0], [5, 0, 2], [6, 0, 5], [7, 0, 3], [8, 0, 1], [9, 0, 0], [10, 0, 0], [11, 0, 0], [0, 1, 0], [1, 1, 0], [2, 1, 0], [3, 1, 0], [4, 1, 0], [5, 1, 3], [6, 1, 6], [7, 1, 4], [8, 1, 2], [9, 1, 0], [10, 1, 0], [11, 1, 0], [0, 2, 0], [1, 2, 0], [2, 2, 0], [3, 2, 0], [4, 2, 0], [5, 2, 2], [6, 2, 5], [7, 2, 3], [8, 2, 1], [9, 2, 0], [10, 2, 0], [11, 2, 0], [0, 3, 0], [1, 3, 0], [2, 3, 0], [3, 3, 0], [4, 3, 0], [5, 3, 4], [6, 3, 7], [7, 3, 5], [8, 3, 2], [9, 3, 0], [10, 3, 0], [11, 3, 0], [0, 4, 0], [1, 4, 0], [2, 4, 0], [3, 4, 0], [4, 4, 0], [5, 4, 3], [6, 4, 6], [7, 4, 4], [8, 4, 1], [9, 4, 0], [10, 4, 0], [11, 4, 0], [0, 5, 1], [1, 5, 0], [2, 5, 0], [3, 5, 0], [4, 5, 0], [5, 5, 1], [6, 5, 3], [7, 5, 2], [8, 5, 0], [9, 5, 0], [10, 5, 0], [11, 5, 0], [0, 6, 0], [1, 6, 0], [2, 6, 0], [3, 6, 0], [4, 6, 0], [5, 6, 2], [6, 6, 4], [7, 6, 3], [8, 6, 1], [9, 6, 0], [10, 6, 0], [11, 6, 0]],
+            itemStyle: {
+              emphasis: {
+                shadowBlur: 10,
+                shadowColor: 'rgba(0, 0, 0, 0.3)'
+              }
+            }
+          }]
+        });
+
+        window.addEventListener('resize', function () {
+          taskTrendChart.resize();
+          categoryPieChart.resize();
+          focusBarChart.resize();
+          focusHeatmap.resize();
+        });
+      }
+
+      function scheduleReportChartsInit() {
+        if (window.__reportChartsInitScheduled) return;
+        window.__reportChartsInitScheduled = true;
+        var run = function () {
+          initReportChartsOnce();
+        };
+        if (window.requestIdleCallback) {
+          window.requestIdleCallback(run, { timeout: 1200 });
+        } else {
+          window.setTimeout(run, 160);
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', scheduleReportChartsInit);
+      } else {
+        scheduleReportChartsInit();
+      }
+      window.addEventListener('load', scheduleReportChartsInit);
+    </script>
+    <!-- [/JSMOD] p9q_ECharts 图表初始化 -->
+    
+    <script>
+      // ✅ Toast 提示函数
+      function showToast(message, type) {
+        if (window.__unifiedShowToast) {
+          window.__unifiedShowToast(message, type || 'success');
+        }
+      }
+
+      // ✅ 时间范围下拉列表控制函数
+      function toggleTimeRangeDropdown() {
+        const dropdown = document.getElementById('time-range-dropdown');
+        const arrow = document.getElementById('time-range-arrow');
+        const trigger = dropdown.previousElementSibling;
+        const isActive = dropdown.classList.contains('show');
+        
+        // 关闭所有其他下拉菜单
+        document.querySelectorAll('.custom-select-dropdown').forEach(d => {
+          if (d.id !== 'time-range-dropdown') {
+            d.classList.remove('show');
+            d.previousElementSibling.classList.remove('active');
+            d.querySelector('.custom-select-arrow')?.classList.remove('rotate');
+          }
+        });
+        
+        if (!isActive) {
+          dropdown.classList.add('show');
+          trigger.classList.add('active');
+          arrow.classList.add('rotate');
+        } else {
+          dropdown.classList.remove('show');
+          trigger.classList.remove('active');
+          arrow.classList.remove('rotate');
+        }
+      }
+
+      function selectTimeRange(value, element) {
+        var textEl = document.getElementById('time-range-text');
+        if (textEl) textEl.textContent = value;
+
+        document.querySelectorAll('#time-range-dropdown .custom-select-option').forEach(function (opt) {
+          opt.classList.remove('selected');
+        });
+        if (element) element.classList.add('selected');
+
+        var dropdown = document.getElementById('time-range-dropdown');
+        var arrow = document.getElementById('time-range-arrow');
+        var trigger = dropdown ? dropdown.previousElementSibling : null;
+        if (dropdown) dropdown.classList.remove('show');
+        if (trigger) trigger.classList.remove('active');
+        if (arrow) arrow.classList.remove('rotate');
+
+        try { localStorage.setItem('report-time-range', value); } catch (e) {}
+
+        if (value === '自定义') {
+          showToast('已切换到自定义（近 30 天）数据视图');
+        } else {
+          showToast('已切换到 ' + value + ' 数据视图');
+        }
+        updateWeeklyStats({ sync: false });
+      }
+
+      // 点击其他地方关闭下拉
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-select-wrapper')) {
+          document.querySelectorAll('.custom-select-dropdown').forEach(function (d) {
+            d.classList.remove('show');
+            if (d.previousElementSibling) d.previousElementSibling.classList.remove('active');
+            var arrow = d.querySelector('.custom-select-arrow');
+            if (arrow) arrow.classList.remove('rotate');
+          });
+        }
+      });
+
+      function resolveDate(value) {
+        if (!value) return null;
+        var parsed = (typeof parseDateVal === 'function') ? parseDateVal(value) : value;
+        var date = new Date(parsed || value);
+        return isNaN(date.getTime()) ? null : date;
+      }
+
+      function normalizeStatus(status) {
+        return String(status || '').trim().toLowerCase();
+      }
+
+      function getDateRangeByLabel(label) {
+        var now = new Date();
+        var end = new Date(now);
+        end.setHours(23, 59, 59, 999);
+
+        var start;
+        if (label === '上周') {
+          start = getWeekStart(now);
+          start.setDate(start.getDate() - 7);
+          end = new Date(start);
+          end.setDate(end.getDate() + 6);
+          end.setHours(23, 59, 59, 999);
+        } else if (label === '本月') {
+          start = new Date(now.getFullYear(), now.getMonth(), 1);
+          end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+          end.setHours(23, 59, 59, 999);
+        } else if (label === '自定义') {
+          start = new Date(now);
+          start.setDate(now.getDate() - 29);
+          start.setHours(0, 0, 0, 0);
+        } else {
+          start = getWeekStart(now);
+          end = getWeekEnd(now);
+          end.setHours(23, 59, 59, 999);
+        }
+
+        start.setHours(0, 0, 0, 0);
+        return { label: label || '本周', start: start, end: end };
+      }
+
+      function getCompletedTasksInRange(start, end) {
+        return (AppState.tasks || []).filter(function (task) {
+          if (normalizeStatus(task.status) !== 'completed') return false;
+          var date = resolveDate(task.completedAt || task.updatedAt || task.dueAt || task.createdAt);
+          if (!date) return false;
+          return isDateInRange(date, start, end);
+        });
+      }
+
+      function getFocusSessionsInRange(start, end) {
+        return (AppState.pomodoroSessions || []).filter(function (session) {
+          var sessionDate = resolveDate(session.startedAt || session.startTime || session.createdAt);
+          if (!sessionDate || !isDateInRange(sessionDate, start, end)) return false;
+          var mode = String(session.mode || 'focus').toLowerCase();
+          var completed = session.completed !== false;
+          return mode === 'focus' && completed;
+        });
+      }
+
+      function getMaxContinuousPomodoros(sessions) {
+        if (!sessions.length) return 0;
+        var sorted = sessions.slice().sort(function (a, b) {
+          return new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime();
+        });
+        var max = 0;
+        var streak = 0;
+        var lastTime = null;
+
+        sorted.forEach(function (session) {
+          var current = new Date(session.startedAt).getTime();
+          if (!lastTime) {
+            streak = 1;
+          } else {
+            var gapMinutes = (current - lastTime) / (1000 * 60);
+            streak = gapMinutes <= 45 ? (streak + 1) : 1;
+          }
+          lastTime = current;
+          if (streak > max) max = streak;
+        });
+
+        return max;
+      }
+
+      function calculateOverview(tasks, sessions) {
+        var totalFocusMinutes = sessions.reduce(function (sum, session) {
+          var minutes = Number(session.actualMinutes || session.plannedMinutes || 25);
+          return sum + (isNaN(minutes) ? 0 : minutes);
+        }, 0);
+
+        var maxContinuousPomodoros = getMaxContinuousPomodoros(sessions);
+        var taskScore = Math.min(tasks.length * 3, 50);
+        var pomodoroScore = Math.min(sessions.length * 2, 30);
+        var continuityBonus = Math.min(maxContinuousPomodoros * 5, 20);
+
+        return {
+          completedTasks: tasks.length,
+          totalFocusMinutes: totalFocusMinutes,
+          totalPomodoros: sessions.length,
+          maxContinuousPomodoros: maxContinuousPomodoros,
+          effectivenessScore: Math.min(Math.floor(taskScore + pomodoroScore + continuityBonus), 100)
+        };
+      }
+
+      function updateOverviewCards(stats) {
+        animateValue(document.getElementById('completed-tasks'), Number(stats.completedTasks || 0), ' 项');
+        animateValue(document.getElementById('focus-hours'), Number(((stats.totalFocusMinutes || 0) / 60).toFixed(1)), ' 小时');
+        animateValue(document.getElementById('pomodoro-count'), Number(stats.totalPomodoros || 0), ' 个');
+        animateValue(document.getElementById('max-continuous-pomodoros'), Number(stats.maxContinuousPomodoros || 0), ' 个番茄');
+        animateValue(document.getElementById('effectiveness-score'), Number(stats.effectivenessScore || 0), ' 分');
+      }
+
+      function buildDateList(start, end) {
+        var dates = [];
+        var cursor = new Date(start);
+        while (cursor <= end) {
+          dates.push(new Date(cursor));
+          cursor.setDate(cursor.getDate() + 1);
+        }
+        return dates;
+      }
+
+      function toDateKey(date) {
+        var y = date.getFullYear();
+        var m = String(date.getMonth() + 1).padStart(2, '0');
+        var d = String(date.getDate()).padStart(2, '0');
+        return y + '-' + m + '-' + d;
+      }
+
+      function updateTrendCharts(range, tasks, sessions) {
+        var days = buildDateList(range.start, range.end);
+        if (!days.length) return;
+
+        var labels = days.map(function (date) {
+          if (range.label === '本周' || range.label === '上周') {
+            var week = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+            return week[date.getDay()];
+          }
+          return String(date.getMonth() + 1) + '/' + String(date.getDate());
+        });
+
+        var taskMap = {};
+        tasks.forEach(function (task) {
+          var date = resolveDate(task.completedAt || task.updatedAt || task.dueAt || task.createdAt);
+          if (!date) return;
+          var key = toDateKey(date);
+          taskMap[key] = (taskMap[key] || 0) + 1;
+        });
+
+        var focusMap = {};
+        sessions.forEach(function (session) {
+          var date = resolveDate(session.startedAt || session.startTime || session.createdAt);
+          if (!date) return;
+          var key = toDateKey(date);
+          var minutes = Number(session.actualMinutes || session.plannedMinutes || 25);
+          focusMap[key] = (focusMap[key] || 0) + (isNaN(minutes) ? 0 : minutes);
+        });
+
+        var taskCounts = days.map(function (date) {
+          return taskMap[toDateKey(date)] || 0;
+        });
+        var focusHours = days.map(function (date) {
+          var minutes = focusMap[toDateKey(date)] || 0;
+          return Number((minutes / 60).toFixed(1));
+        });
+
+        if (window.taskTrendChart) {
+          window.taskTrendChart.setOption({
+            xAxis: { data: labels },
+            series: [{ data: taskCounts }]
+          });
+        }
+
+        if (window.focusBarChart) {
+          window.focusBarChart.setOption({
+            xAxis: { data: labels },
+            series: [{ data: focusHours }]
+          });
+        }
+      }
+
+      function updateCategoryChart(tasks) {
+        if (!window.categoryPieChart) return;
+        var categoryMap = {};
+        tasks.forEach(function (task) {
+          var labels = Array.isArray(task.labels) ? task.labels : [];
+          var name = labels.length ? labels[0] : '未分类';
+          categoryMap[name] = (categoryMap[name] || 0) + 1;
+        });
+
+        var data = Object.keys(categoryMap).map(function (name) {
+          return { name: name, value: categoryMap[name] };
+        });
+
+        if (!data.length) {
+          data = [{ name: '暂无数据', value: 0 }];
+        }
+
+        window.categoryPieChart.setOption({ series: [{ data: data }] });
+      }
+
+      function updateHeatmap(sessions) {
+        if (!window.focusHeatmap) return;
+        var matrix = [];
+        for (var y = 0; y < 7; y++) {
+          for (var x = 0; x < 12; x++) {
+            matrix.push([x, y, 0]);
+          }
+        }
+
+        sessions.forEach(function (session) {
+          var date = resolveDate(session.startedAt || session.startTime || session.createdAt);
+          if (!date) return;
+          var x = Math.max(0, Math.min(11, Math.floor(date.getHours() / 2)));
+          var y = (date.getDay() + 6) % 7;
+          var idx = y * 12 + x;
+          matrix[idx][2] += 1;
+        });
+
+        var maxValue = matrix.reduce(function (max, item) {
+          return Math.max(max, item[2]);
+        }, 0);
+
+        window.focusHeatmap.setOption({
+          visualMap: { max: Math.max(maxValue, 1) },
+          series: [{ data: matrix }]
+        });
+      }
+
+      function getSlotNameByHour(hour) {
+        if (hour >= 6 && hour <= 8) return 'early_morning';
+        if (hour >= 9 && hour <= 11) return 'morning';
+        if (hour >= 12 && hour <= 14) return 'noon';
+        if (hour >= 15 && hour <= 17) return 'afternoon';
+        if (hour >= 18 && hour <= 21) return 'evening';
+        if (hour >= 22 || hour <= 5) return 'late_night';
+        return 'morning';
+      }
+
+      function calculateTimeSlotsData(tasks) {
+        var slots = [
+          { slot: 'early_morning', label: '清晨 (6-8 点)', tasksCompleted: 0 },
+          { slot: 'morning', label: '上午 (9-11 点)', tasksCompleted: 0 },
+          { slot: 'noon', label: '中午 (12-14 点)', tasksCompleted: 0 },
+          { slot: 'afternoon', label: '下午 (15-17 点)', tasksCompleted: 0 },
+          { slot: 'evening', label: '晚上 (18-21 点)', tasksCompleted: 0 },
+          { slot: 'late_night', label: '深夜 (22-24 点)', tasksCompleted: 0 }
+        ];
+
+        var slotMap = {};
+        slots.forEach(function (item) { slotMap[item.slot] = item; });
+
+        (tasks || []).forEach(function (task) {
+          var date = resolveDate(task.completedAt || task.updatedAt || task.dueAt || task.createdAt);
+          if (!date) return;
+          var slotName = getSlotNameByHour(date.getHours());
+          if (slotMap[slotName]) {
+            slotMap[slotName].tasksCompleted += 1;
+          }
+        });
+
+        return slots;
+      }
+
+      function updateTimeSlots(tasks) {
+        var timeSlotsData = calculateTimeSlotsData(tasks);
+        var container = document.getElementById('time-slots-container');
+        if (!container || !timeSlotsData) return;
+
+        var bestSlot = null;
+        var maxTasks = 0;
+
+        timeSlotsData.forEach(function (slot) {
+          if (slot.tasksCompleted > maxTasks) {
+            maxTasks = slot.tasksCompleted;
+            bestSlot = slot.slot;
+          }
+        });
+
+        timeSlotsData.forEach(function (slot) {
+          var slotElement = container.querySelector('[data-slot="' + slot.slot + '"]');
+          if (!slotElement) return;
+
+          var countElement = slotElement.querySelector('.slot-count');
+          if (countElement) {
+            animateValue(countElement, Number(slot.tasksCompleted || 0), '项');
+          }
+
+          if (slot.slot === bestSlot && slot.tasksCompleted > 0) {
+            slotElement.classList.add('best-slot');
+          } else {
+            slotElement.classList.remove('best-slot');
+          }
+        });
+      }
+
+      function getDefaultSuggestions() {
+        return [
+          '您周二周三效率较高，建议将高优先级任务集中在这两天。',
+          '下午 3-5 点容易分心，建议安排低认知负荷任务。',
+          '对延期任务可拆解为 30 分钟以内的小步骤，执行成功率更高。',
+          '连续完成 4 个番茄后建议休息 15 分钟，避免效率衰减。'
+        ];
+      }
+
+      function renderSmartSuggestions(items) {
+        var list = document.getElementById('smart-suggestions-list');
+        if (!list) return;
+        var values = Array.isArray(items) && items.length ? items : getDefaultSuggestions();
+        list.innerHTML = values.map(function (text) {
+          return '<div class="suggestion-card flex items-start">' +
+            '<i class="fas fa-lightbulb text-yellow-500 mt-1 mr-3 flex-shrink-0"></i>' +
+            '<p class="text-gray-700 text-sm leading-relaxed">' + String(text || '') + '</p>' +
+            '</div>';
+        }).join('');
+      }
+
+      function buildReportAiContext() {
+        var selectedLabel = (document.getElementById('time-range-text') || {}).textContent || '本周';
+        selectedLabel = selectedLabel.trim() || '本周';
+        var range = getDateRangeByLabel(selectedLabel);
+        var completedTasks = getCompletedTasksInRange(range.start, range.end);
+        var focusSessions = getFocusSessionsInRange(range.start, range.end);
+        var overview = calculateOverview(completedTasks, focusSessions);
+        var slots = calculateTimeSlotsData(completedTasks);
+        return {
+          range: selectedLabel,
+          overview: overview,
+          completedTasks: completedTasks.length,
+          focusSessions: focusSessions.length,
+          slots: slots
+        };
+      }
+
+      function requestAiSmartSuggestions() {
+        if (!window.AiService || typeof window.AiService.chat !== 'function') {
+          return Promise.reject(new Error('ai-service-unavailable'));
+        }
+        var context = buildReportAiContext();
+        var prompt = [
+          '你是效率分析助手，请基于用户周报数据生成4条可执行建议。',
+          '要求：每条建议不超过30字，中文。返回纯JSON。',
+          '格式：{"suggestions":["建议1","建议2","建议3","建议4"]}',
+          '数据：' + JSON.stringify(context)
+        ].join('\n');
+
+        var aiPromise = window.AiService.chat([
+          { role: 'system', content: '你是严谨的数据分析助手，只返回JSON。' },
+          { role: 'user', content: prompt }
+        ], { temperature: 0.4, maxTokens: 500 }).then(function (content) {
+          var parsed = window.AiService.parseJson(content);
+          if (!parsed || !Array.isArray(parsed.suggestions)) throw new Error('invalid-ai-json');
+          return parsed.suggestions.slice(0, 4);
+        });
+
+        return Promise.race([
+          aiPromise,
+          new Promise(function (_, reject) {
+            setTimeout(function () { reject(new Error('ai-timeout')); }, 10000);
+          })
+        ]);
+      }
+
+      function scheduleAiSuggestionsLoad() {
+        var run = function () {
+          return requestAiSmartSuggestions().then(function (items) {
+            renderSmartSuggestions(items);
+          }).catch(function () {
+            renderSmartSuggestions(getDefaultSuggestions());
+          });
+        };
+        if (window.requestIdleCallback) {
+          window.requestIdleCallback(function () { run(); }, { timeout: 1500 });
+        } else {
+          window.setTimeout(run, 300);
+        }
+      }
+
+      function applyTimeRangeSelection(value) {
+        var validValues = ['本周', '上周', '本月', '自定义'];
+        var selected = validValues.indexOf(value) >= 0 ? value : '本周';
+
+        var textEl = document.getElementById('time-range-text');
+        if (textEl) textEl.textContent = selected;
+
+        document.querySelectorAll('#time-range-dropdown .custom-select-option').forEach(function (opt) {
+          var isSelected = opt.textContent.trim() === selected;
+          opt.classList.toggle('selected', isSelected);
+        });
+
+        return selected;
+      }
+
+      function updateWeeklyStats(options) {
+        var opts = options || {};
+        var shouldSync = opts.sync !== false;
+        var selectedLabel = (document.getElementById('time-range-text') || {}).textContent || '本周';
+        selectedLabel = selectedLabel.trim() || '本周';
+        var range = getDateRangeByLabel(selectedLabel);
+
+        function render() {
+          var completedTasks = getCompletedTasksInRange(range.start, range.end);
+          var focusSessions = getFocusSessionsInRange(range.start, range.end);
+          var overview = calculateOverview(completedTasks, focusSessions);
+
+          updateOverviewCards(overview);
+          updateTrendCharts(range, completedTasks, focusSessions);
+          updateCategoryChart(completedTasks);
+          updateHeatmap(focusSessions);
+          updateTimeSlots(completedTasks);
+        }
+
+        if (shouldSync && typeof syncReportStateFromServer === 'function') {
+          return syncReportStateFromServer().finally(render);
+        }
+
+        render();
+        return Promise.resolve();
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        AppState.init();
+        renderHeader('report');
+        renderFooter('report');
+        bindGlobalLogout();
+        var tabShown = false;
+        function revealBottomTab() {
+          if (tabShown) return;
+          tabShown = true;
+          if (typeof showUnifiedBottomTabDock === 'function') {
+            showUnifiedBottomTabDock();
+          }
+        }
+        setTimeout(revealBottomTab, 220);
+        window.addEventListener('load', revealBottomTab);
+
+        var now = new Date();
+        var currentDateEl = document.getElementById('current-date');
+        if (currentDateEl) {
+          currentDateEl.textContent = now.toLocaleDateString('zh-CN', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            weekday: 'short'
+          });
+        }
+
+        var savedRange = null;
+        try { savedRange = localStorage.getItem('report-time-range'); } catch (e) { savedRange = null; }
+        applyTimeRangeSelection(savedRange || '本周');
+
+        Promise.resolve()
+          .then(function () { return updateWeeklyStats({ sync: false }); })
+          .then(function () {
+            // 仅在存在真实远端同步逻辑时再触发二次刷新，避免重复渲染。
+            if (!window.__reportSyncNoop) {
+              Promise.resolve()
+                .then(function () { return updateWeeklyStats({ sync: true }); })
+                .catch(function (err) { console.error('updateWeeklyStats sync error:', err); });
+            }
+
+            // AI 建议在空闲时加载，降低与首屏渲染竞争。
+            scheduleAiSuggestionsLoad();
+          })
+          .catch(function (err) { console.error('updateWeeklyStats init error:', err); })
+          .finally(revealBottomTab);
+
+        var aiRefreshBtn = document.getElementById('ai-suggestions-refresh');
+        if (aiRefreshBtn) {
+          aiRefreshBtn.addEventListener('click', function () {
+            aiRefreshBtn.disabled = true;
+            requestAiSmartSuggestions().then(function (items) {
+              renderSmartSuggestions(items);
+              showToast('智能建议已更新', 'success');
+            }).catch(function () {
+              renderSmartSuggestions(getDefaultSuggestions());
+              showToast('AI 不可用，已展示默认建议', 'warning');
+            }).finally(function () {
+              aiRefreshBtn.disabled = false;
+            });
+          });
+        }
+        
+        // ✅ 监听其他页面的 AppState 更新（跨页面同步）
+        window.addEventListener('appstate-updated', function (e) {
+          updateWeeklyStats({ sync: false }).then(function () {
+            showToast('📊 数据周报已刷新', 'info');
+          }).catch(function (err) {
+            console.error('刷新数据周报失败:', err);
+          });
+        }, false);
+      });
+function exportReport() {
+        showToast('报告导出功能正在开发中');
+      }
+      
+      function shareReport() {
+        if (navigator.share) {
+          navigator.share({
+            title: '我的数据周报',
+            text: '查看我的本周效率数据',
+            url: window.location.href,
+          })
+          .then(() => console.log('分享成功'))
+          .catch((error) => console.log('分享失败:', error));
+        } else {
+          showToast('分享功能在当前浏览器中不可用');
+        }
+      }
+      
+      // ✅ 优化后的数字动画函数（修复 BUG）
+      function animateValue(element, targetValue, suffix = '', duration = 800) {
+        if (!element) return;
+        
+        const currentValue = parseFloat(element.textContent.replace(/[^\d.]/g, '')) || 0;
+        if (currentValue === targetValue) return;
+        
+        const startTime = performance.now();
+        
+        function animate(currentTime) {
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          
+          // 使用缓动函数使动画更流畅
+          const easeProgress = 1 - Math.pow(1 - progress, 3);
+          const value = currentValue + (targetValue - currentValue) * easeProgress;
+          
+          const formattedValue = Number.isInteger(targetValue) 
+            ? Math.floor(value) 
+            : value.toFixed(1);
+          
+          element.textContent = formattedValue + suffix;
+          
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          }
+        }
+        
+        requestAnimationFrame(animate);
+      }
+    </script>
+  </body>
+</html>
+
+
+
+
