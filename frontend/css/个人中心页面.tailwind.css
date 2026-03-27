@@ -1,0 +1,386 @@
+﻿
+      @layer utilities {
+          .content-auto {
+              content-visibility: auto;
+          }
+          .scrollbar-hide {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
+          }
+          .scrollbar-hide::-webkit-scrollbar {
+              display: none;
+          }
+          .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+          .scrollbar-thin::-webkit-scrollbar-track { background: rgba(243, 244, 246, 0.5); border-radius: 3px; }
+          .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(79, 70, 229, 0.3); border-radius: 3px; }
+          .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(79, 70, 229, 0.5); }
+          
+          /* ✅ 毛玻璃效果增强 */
+          .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.3); }
+          .glass-strong { background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(36px); -webkit-backdrop-filter: blur(36px); border: 1px solid rgba(255, 255, 255, 0.4); }
+          .glass-max { background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(48px); -webkit-backdrop-filter: blur(48px); border: 1px solid rgba(255, 255, 255, 0.5); }
+          .glass-input { background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(209, 213, 219, 0.5); transition: all 0.3s ease; }
+          .glass-input:focus { background: rgba(255, 255, 255, 0.95); border-color: rgba(79, 70, 229, 0.5); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12); }
+          .glass-tab { 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border-top: 1px solid rgba(255, 255, 255, 0.5); 
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+          }
+          .glass-header { 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+          }
+          .glass-card { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px); border: 1px solid rgba(255, 255, 255, 0.35); }
+          
+          /* ✅ 卡片阴影样式 */
+          .card-shadow { box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08); }
+          .card-hover { transition: all 0.3s ease; }
+          .card-hover:hover { box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12); transform: translateY(-2px); }
+          
+          /* ✅ 背景装饰光斑 */
+          .bg-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.15; pointer-events: none; z-index: 0; animation: orbFloat 20s ease-in-out infinite; }
+          @keyframes orbFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -30px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.95); } }
+          
+          /* ✅ 动画效果 */
+          .fade-in { animation: fadeIn 0.4s ease-out; }
+          @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+          .float { animation: float 3s ease-in-out infinite; }
+          @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+          .slide-up { animation: slideUp 0.5s ease-out; }
+          @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+          .bounce-in { animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+          @keyframes bounceIn { 0% { opacity: 0; transform: scale(0.8); } 50% { transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); } }
+          .wiggle { animation: wiggle 0.4s ease-in-out; }
+          @keyframes wiggle { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-5deg); } 75% { transform: rotate(5deg); } }
+          .slide-in-right { animation: slideInRight 0.35s ease-out; }
+          @keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+          
+          /* ✅ 用户卡片特殊样式 */
+          .user-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(249, 250, 251, 0.85) 100%);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 24px rgba(79, 70, 229, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+          }
+          .user-card::before {
+            content: none;
+          }
+          
+          /* ✅ 统计卡片样式 */
+          .stat-card { 
+            @apply bg-white/70 backdrop-blur-sm rounded-xl p-3 transition-all duration-300;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+          }
+          .stat-card:hover {
+            @apply bg-white/80 shadow-lg;
+            transform: translateY(-2px);
+          }
+          
+          /* ✅ 设置项样式 */
+          .setting-item { @apply flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-gray-50/50 transition-all duration-200; }
+          
+          /* ✅ 徽章样式 */
+          .badge-level { 
+            @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            color: #92400E;
+            border: 1px solid #FCD34D;
+            box-shadow: 0 1px 3px rgba(245, 158, 11, 0.2);
+          }
+          
+          /* ✅ 进度条样式 */
+          .progress-bar { transition: width 0.5s ease-out; position: relative; overflow: hidden; }
+          .progress-bar::after { content: ''; position: absolute; top: 0; left: 0; height: 100%; width: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: progressShine 2s ease-in-out infinite; }
+          @keyframes progressShine { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+          
+          /* ✅ 成就徽章样式 */
+          .achievement-badge { @apply rounded-2xl p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-[2px]; }
+          .achievement-badge.locked { @apply opacity-40 grayscale; }
+          .achievement-badge.unlocked { @apply bg-gradient-to-br from-primary/5 to-secondary/5; }
+          
+          /* ✅ Tab 指示器 */
+          .tab-item { @apply relative transition-all duration-300; }
+          .tab-item:hover { @apply scale-105; }
+          .tab-item.active .tab-indicator { @apply opacity-100 scale-100; }
+          .tab-indicator { @apply absolute -top-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary rounded-full opacity-0 scale-0 transition-all duration-300; }
+
+          /* ✅ 联系方式图标容器（邮箱/手机） */
+          .contact-icon-badge {
+            @apply w-9 h-9 rounded-full flex items-center justify-center mr-3 transition-colors;
+            border: 1px solid transparent;
+          }
+          .contact-icon-badge.email {
+            background: rgba(239, 246, 255, 0.82);
+          }
+          .contact-icon-badge.phone {
+            background: rgba(250, 245, 255, 0.82);
+          }
+          .group:hover .contact-icon-badge.email {
+            background: rgba(219, 234, 254, 0.95);
+          }
+          .group:hover .contact-icon-badge.phone {
+            background: rgba(243, 232, 255, 0.95);
+          }
+          
+          /* ✅ 第三方图标统一样式 */
+          .social-icon {
+            @apply w-9 h-9 rounded-full flex items-center justify-center text-lg transition-all duration-300;
+            background: rgba(243, 244, 246, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+          }
+          .social-icon:hover {
+            @apply scale-110 shadow-md;
+            background: rgba(255, 255, 255, 0.9);
+          }
+          .social-icon.weixin { color: #10B981; }
+          .social-icon.apple { color: #1F2937; }
+          .social-icon.google { color: #EF4444; }
+          body.theme-night .social-icon.apple,
+          html.unified-dark-mode .social-icon.apple {
+            color: #e2e8f0 !important;
+          }
+          
+          /* ✅ 自定义复选框样式 */
+          .custom-checkbox {
+            @apply relative w-5 h-5 cursor-pointer appearance-none;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(209, 213, 219, 0.8);
+            border-radius: 6px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(4px);
+          }
+          .custom-checkbox:hover {
+            border-color: rgba(79, 70, 229, 0.6);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+          }
+          .custom-checkbox:checked {
+            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+            border-color: transparent;
+            animation: checkPop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+          }
+          .custom-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+          }
+          @keyframes checkPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+          }
+          
+          /* ✅ 自定义下拉列表样式 */
+          .custom-select-wrapper {
+            @apply relative inline-block;
+          }
+          .custom-select-trigger {
+            @apply flex items-center justify-between w-full px-4 py-2.5 bg-white/85 backdrop-blur-md border border-gray-200/60 rounded-xl text-xs font-medium text-gray-700 cursor-pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+          }
+          .custom-select-trigger:hover {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(79, 70, 229, 0.4);
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.12);
+            transform: translateY(-1px);
+          }
+          .custom-select-trigger.active {
+            background: rgba(255, 255, 255, 0.98);
+            border-color: rgba(79, 70, 229, 0.6);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15), 0 4px 12px rgba(79, 70, 229, 0.2);
+          }
+          .custom-select-arrow {
+            @apply ml-2 text-gray-400 transition-transform duration-300;
+          }
+          .custom-select-arrow.rotate {
+            transform: rotate(180deg);
+          }
+          .custom-select-dropdown {
+            @apply absolute left-0 mt-2 w-full glass-max rounded-xl shadow-2xl py-1.5 z-[100];
+            display: none;
+            animation: dropdownSlide 0.25s ease-out;
+          }
+          .custom-select-dropdown.show {
+            display: block;
+          }
+          @keyframes dropdownSlide {
+            from { opacity: 0; transform: translateY(-8px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+          }
+          .custom-select-option {
+            @apply px-4 py-2.5 text-xs text-gray-700 cursor-pointer transition-all duration-200 rounded-md;
+          }
+          .custom-select-option:hover {
+            @apply bg-primary/10 text-primary;
+          }
+          .custom-select-option.selected {
+            @apply bg-primary/15 text-primary font-semibold;
+          }
+          .custom-select-option.selected::after {
+            content: '✓';
+            float: right;
+            margin-left: 8px;
+          }
+          
+          /* ✅ 模态框样式 */
+          .modal-overlay { 
+            @apply fixed inset-0 bg-black/40 backdrop-blur-sm z-[999] flex items-center justify-center;
+            display: none;
+          }
+          .modal-overlay.hidden { display: none !important; }
+          .modal-overlay:not(.hidden) { display: flex !important; }
+          .modal-content { 
+            @apply glass-max rounded-3xl shadow-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto slide-in-right;
+          }
+          .modal-input {
+            @apply w-full px-4 py-2.5 rounded-xl glass-input focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary transition-all duration-300 text-sm;
+          }
+          
+          /* ✅ 手机号修改模态框样式 */
+          .phone-modal-overlay { 
+            @apply fixed inset-0 bg-black/40 backdrop-blur-sm z-[1000] flex items-center justify-center;
+            display: none;
+          }
+          .phone-modal-overlay.hidden { display: none !important; }
+          .phone-modal-overlay:not(.hidden) { display: flex !important; }
+
+          /* ✅ 危险操作确认弹窗（同打卡页清空风格） */
+          .confirm-modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 120000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            background: rgba(15, 23, 42, 0.35);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+          }
+          .confirm-modal-overlay.show {
+            display: flex !important;
+          }
+          .confirm-modal-card {
+            width: min(92vw, 520px);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.86);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            box-shadow: 0 20px 48px rgba(15, 23, 42, 0.2);
+            animation: confirmModalIn 0.24s ease-out;
+          }
+
+          /* ✅ 暗夜模式 */
+          body.theme-night {
+            background: linear-gradient(135deg, #0b1220 0%, #111827 50%, #0f172a 100%) !important;
+            color: #e5e7eb;
+          }
+          body.theme-night .bg-orb {
+            opacity: 0.08;
+          }
+          body.theme-night .glass,
+          body.theme-night .glass-strong,
+          body.theme-night .glass-max,
+          body.theme-night .glass-header,
+          body.theme-night .glass-card,
+          body.theme-night .user-card,
+          body.theme-night .stat-card,
+          body.theme-night .setting-item,
+          body.theme-night .custom-select-trigger,
+          body.theme-night .custom-select-dropdown,
+          body.theme-night .modal-content,
+          body.theme-night .confirm-modal-card {
+            background: rgba(17, 24, 39, 0.72) !important;
+            border-color: rgba(148, 163, 184, 0.24) !important;
+            color: #e5e7eb !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.32);
+          }
+          body.theme-night .setting-item:hover {
+            background: rgba(30, 41, 59, 0.62) !important;
+          }
+          body.theme-night .text-gray-800,
+          body.theme-night .text-gray-700,
+          body.theme-night .text-gray-600 {
+            color: #e5e7eb !important;
+          }
+          body.theme-night .text-gray-500,
+          body.theme-night .text-gray-400 {
+            color: #94a3b8 !important;
+          }
+          body.theme-night .bg-white,
+          body.theme-night .bg-white\/70,
+          body.theme-night .bg-white\/80,
+          body.theme-night .bg-white\/85,
+          body.theme-night .bg-white\/90,
+          body.theme-night .bg-white\/95,
+          body.theme-night .bg-gray-50,
+          body.theme-night .bg-gray-100 {
+            background-color: rgba(30, 41, 59, 0.62) !important;
+            color: #e5e7eb !important;
+          }
+          body.theme-night .border-gray-100,
+          body.theme-night .border-gray-200,
+          body.theme-night .border-gray-300 {
+            border-color: rgba(148, 163, 184, 0.24) !important;
+          }
+          body.theme-night .custom-checkbox {
+            background: rgba(30, 41, 59, 0.9);
+            border-color: rgba(148, 163, 184, 0.5);
+          }
+          body.theme-night .custom-select-option {
+            color: #e5e7eb;
+          }
+          body.theme-night .custom-select-option:hover,
+          body.theme-night .custom-select-option.selected {
+            background: rgba(79, 70, 229, 0.26) !important;
+            color: #c7d2fe !important;
+          }
+          body.theme-night .glass-input,
+          body.theme-night .modal-input {
+            background: rgba(30, 41, 59, 0.85) !important;
+            border-color: rgba(148, 163, 184, 0.32) !important;
+            color: #e5e7eb !important;
+          }
+          body.theme-night .glass-input::placeholder,
+          body.theme-night .modal-input::placeholder {
+            color: #94a3b8 !important;
+          }
+          body.theme-night .contact-icon-badge.email,
+          html.unified-dark-mode .contact-icon-badge.email {
+            background: rgba(30, 64, 175, 0.34) !important;
+            border-color: rgba(96, 165, 250, 0.34) !important;
+          }
+          body.theme-night .contact-icon-badge.phone,
+          html.unified-dark-mode .contact-icon-badge.phone {
+            background: rgba(107, 33, 168, 0.3) !important;
+            border-color: rgba(167, 139, 250, 0.34) !important;
+          }
+          body.theme-night .group:hover .contact-icon-badge.email,
+          html.unified-dark-mode .group:hover .contact-icon-badge.email {
+            background: rgba(29, 78, 216, 0.42) !important;
+          }
+          body.theme-night .group:hover .contact-icon-badge.phone,
+          html.unified-dark-mode .group:hover .contact-icon-badge.phone {
+            background: rgba(126, 34, 206, 0.38) !important;
+          }
+          @keyframes confirmModalIn {
+            from { opacity: 0; transform: translateY(10px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+          }
+      }
+    

@@ -1,0 +1,311 @@
+﻿
+      @layer utilities {
+          .content-auto {
+              content-visibility: auto;
+          }
+          .scrollbar-hide {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
+          }
+          .scrollbar-hide::-webkit-scrollbar {
+              display: none;
+          }
+          .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+          .scrollbar-thin::-webkit-scrollbar-track { background: rgba(243, 244, 246, 0.5); border-radius: 3px; }
+          .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(79, 70, 229, 0.3); border-radius: 3px; }
+          .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(79, 70, 229, 0.5); }
+          
+          /* ✅ 毛玻璃效果 */
+          .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.3); }
+          .glass-strong { background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(36px); -webkit-backdrop-filter: blur(36px); border: 1px solid rgba(255, 255, 255, 0.4); }
+          .glass-max { background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(48px); -webkit-backdrop-filter: blur(48px); border: 1px solid rgba(255, 255, 255, 0.5); }
+          .glass-header { 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+          }
+          .glass-tab { 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border-top: 1px solid rgba(255, 255, 255, 0.5); 
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+          }
+          
+          /* ✅ 背景装饰光斑 */
+          .bg-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.15; pointer-events: none; z-index: 0; animation: orbFloat 20s ease-in-out infinite; }
+          @keyframes orbFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -30px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.95); } }
+          
+          /* ✅ 动画效果 */
+          .fade-in { animation: fadeIn 0.4s ease-out; }
+          @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+          .float { animation: float 3s ease-in-out infinite; }
+          @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+          .slide-up { animation: slideUp 0.5s ease-out; }
+          @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+          .bounce-in { animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+          @keyframes bounceIn { 0% { opacity: 0; transform: scale(0.8); } 50% { transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); } }
+          
+          /* ✅ 统计卡片样式（优化版） */
+          .stat-card { 
+            @apply bg-white/70 backdrop-blur-sm rounded-2xl p-5 transition-all duration-300 relative overflow-hidden;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+          }
+          .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.6s ease;
+          }
+          .stat-card:hover::before {
+            left: 100%;
+          }
+          .stat-card:hover {
+            @apply bg-white/85;
+            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.15);
+            transform: translateY(-6px);
+          }
+          .stat-card .icon-wrapper {
+            @apply w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300;
+            background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(255,255,255,0.4));
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          }
+          .stat-card .stat-value {
+            @apply text-3xl font-bold transition-all duration-300;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          }
+          .stat-card .trend-indicator {
+            @apply text-xs font-medium transition-all duration-300;
+          }
+          .stat-card:hover .trend-indicator {
+            transform: translateX(4px);
+          }
+          
+          /* ✅ Tab 指示器 */
+          .tab-item { @apply relative transition-all duration-300; }
+          .tab-item:hover { @apply scale-105; }
+          .tab-item.active .tab-indicator { @apply opacity-100 scale-100; }
+          .tab-indicator { @apply absolute -top-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary rounded-full opacity-0 scale-0 transition-all duration-300; }
+          
+          /* ✅ 第三方图标统一样式 */
+          .social-icon {
+            @apply w-9 h-9 rounded-full flex items-center justify-center text-lg transition-all duration-300;
+            background: rgba(243, 244, 246, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+          }
+          .social-icon:hover {
+            @apply scale-110 shadow-md;
+            background: rgba(255, 255, 255, 0.9);
+          }
+          .social-icon.weixin { color: #10B981; }
+          .social-icon.apple { color: #1F2937; }
+          .social-icon.google { color: #EF4444; }
+          
+          /* ✅ 图表容器样式（增强版） */
+          .chart-container {
+            @apply rounded-2xl p-5 transition-all duration-300 relative overflow-hidden;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+          }
+          .chart-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(79,70,229,0.05) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+          }
+          .chart-container:hover::before {
+            opacity: 1;
+          }
+          .chart-container:hover {
+            background: rgba(255, 255, 255, 0.78);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            transform: translateY(-4px);
+          }
+          .chart-container .chart-header {
+            @apply relative z-10;
+          }
+          
+          /* ✅ 智能建议卡片（增强版） */
+          .suggestion-card {
+            @apply rounded-xl p-4 transition-all duration-300 relative overflow-hidden;
+            background: linear-gradient(135deg, rgba(254, 243, 199, 0.5), rgba(254, 243, 199, 0.3));
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
+          }
+          .suggestion-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #F59E0B, #FBBF24);
+            border-radius: 4px 0 0 4px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+          }
+          .suggestion-card:hover::after {
+            opacity: 1;
+          }
+          .suggestion-card:hover {
+            background: linear-gradient(135deg, rgba(254, 243, 199, 0.65), rgba(254, 243, 199, 0.45));
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.2);
+            transform: translateX(8px);
+          }
+          
+          /* ✅ 自定义下拉列表样式（与个人中心一致） */
+          .custom-select-wrapper {
+            @apply relative inline-block;
+          }
+          .custom-select-trigger {
+            @apply flex items-center justify-between w-full px-4 py-2.5 bg-white/85 backdrop-blur-md border border-gray-200/60 rounded-xl text-xs font-medium text-gray-700 cursor-pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+          }
+          .custom-select-trigger:hover {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(79, 70, 229, 0.4);
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.12);
+            transform: translateY(-1px);
+          }
+          .custom-select-trigger.active {
+            background: rgba(255, 255, 255, 0.98);
+            border-color: rgba(79, 70, 229, 0.6);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15), 0 4px 12px rgba(79, 70, 229, 0.2);
+          }
+          .custom-select-arrow {
+            @apply ml-2 text-gray-400 transition-transform duration-300;
+          }
+          .custom-select-arrow.rotate {
+            transform: rotate(180deg);
+          }
+          .custom-select-dropdown {
+            @apply absolute left-0 mt-2 w-full glass-max rounded-xl shadow-2xl py-1.5 z-[100];
+            display: none;
+            animation: dropdownSlide 0.25s ease-out;
+          }
+          .custom-select-dropdown.show {
+            display: block;
+          }
+          @keyframes dropdownSlide {
+            from { opacity: 0; transform: translateY(-8px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+          }
+          .custom-select-option {
+            @apply px-4 py-2.5 text-xs text-gray-700 cursor-pointer transition-all duration-200 rounded-md;
+          }
+          .custom-select-option:hover {
+            @apply bg-primary/10 text-primary;
+          }
+          .custom-select-option.selected {
+            @apply bg-primary/15 text-primary font-semibold;
+          }
+          .custom-select-option.selected::after {
+            content: '✓';
+            float: right;
+            margin-left: 8px;
+          }
+          
+          /* ✅ Toast 提示样式 */
+          .toast {
+            @apply fixed top-20 right-4 z-[1001] glass-max rounded-2xl shadow-2xl p-4 flex items-center space-x-3 min-w-[300px] bounce-in;
+          }
+          
+          /* ✅ 效率时段卡片（优化版 - 取消条纹） */
+          .time-slot-card {
+            @apply rounded-2xl p-5 transition-all duration-300 relative overflow-hidden;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+          }
+          .time-slot-card:hover {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.08));
+            box-shadow: 0 12px 28px rgba(59, 130, 246, 0.2);
+            transform: translateY(-6px);
+          }
+          .time-slot-card.best-slot {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.1));
+            border-color: rgba(251, 191, 36, 0.4);
+            box-shadow: 0 6px 20px rgba(251, 191, 36, 0.25);
+          }
+          .time-slot-card.best-slot:hover {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(245, 158, 11, 0.15));
+            box-shadow: 0 16px 36px rgba(251, 191, 36, 0.35);
+          }
+          .time-slot-card .slot-count {
+            @apply text-2xl font-bold transition-all duration-300;
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+          }
+          .time-slot-card.best-slot .slot-count {
+            background: linear-gradient(135deg, #F59E0B, #FBBF24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+          }
+          .time-slot-card .crown-badge {
+            animation: crownFloat 2s ease-in-out infinite;
+          }
+          @keyframes crownFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+          }
+          
+          /* ✅ 专注时间段和番茄分析卡片特殊光效 */
+          .chart-container.focus-chart {
+            background: linear-gradient(135deg, rgba(255,255,255,0.7), rgba(255,255,255,0.5));
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 
+              0 4px 16px rgba(0,0,0,0.04),
+              inset 0 1px 0 rgba(255,255,255,0.6),
+              inset 0 -1px 0 rgba(255,255,255,0.3);
+          }
+          .chart-container.focus-chart::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: linear-gradient(
+              180deg,
+              rgba(255,255,255,0.15) 0%,
+              rgba(255,255,255,0) 100%
+            );
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+          }
+          .chart-container.focus-chart:hover::after {
+            opacity: 1;
+          }
+          .chart-container.focus-chart:hover {
+            background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(255,255,255,0.6));
+            box-shadow: 
+              0 12px 40px rgba(0,0,0,0.12),
+              inset 0 1px 0 rgba(255,255,255,0.8),
+              inset 0 -1px 0 rgba(255,255,255,0.4);
+          }
+      }
+    
