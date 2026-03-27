@@ -1489,20 +1489,27 @@ function checkAuthOnLoad(opts) {
       try {
         var u = resp.body.data || {};
         if (window.AppState) {
-          window.AppState.user = window.AppState.user || {};
-          window.AppState.user.id = u.id || window.AppState.user.id;
-          window.AppState.user.name = u.nickname || u.email || window.AppState.user.name;
-          window.AppState.user.email = u.email || window.AppState.user.email;
-          window.AppState.user.phone = u.phone || window.AppState.user.phone;
-          window.AppState.user.avatar = u.avatarUrl || window.AppState.user.avatar;
-          window.AppState.user.level = typeof u.level === 'number' ? u.level : (window.AppState.user.level || 1);
-          window.AppState.user.exp = typeof u.exp === 'number' ? u.exp : (window.AppState.user.exp || 0);
-          window.AppState.user.twoStepEnabled = typeof u.twoStepEnabled === 'boolean' ? u.twoStepEnabled : !!window.AppState.user.twoStepEnabled;
-          window.AppState.user.securityPhone = u.securityPhone || window.AppState.user.securityPhone || window.AppState.user.phone;
-          window.AppState.user.wechatBound = typeof u.wechatBound === 'boolean' ? u.wechatBound : !!window.AppState.user.wechatBound;
-          window.AppState.user.appleBound = typeof u.appleBound === 'boolean' ? u.appleBound : !!window.AppState.user.appleBound;
-          window.AppState.user.googleBound = typeof u.googleBound === 'boolean' ? u.googleBound : !!window.AppState.user.googleBound;
-          if (typeof window.AppState.save === 'function') window.AppState.save();
+          var normalizedUser = {
+            id: u.id,
+            name: u.nickname || u.email || '',
+            email: u.email || '',
+            phone: u.phone || '',
+            avatar: u.avatarUrl || '',
+            level: typeof u.level === 'number' ? u.level : 1,
+            exp: typeof u.exp === 'number' ? u.exp : 0,
+            twoStepEnabled: !!u.twoStepEnabled,
+            securityPhone: u.securityPhone || u.phone || '',
+            wechatBound: !!u.wechatBound,
+            appleBound: !!u.appleBound,
+            googleBound: !!u.googleBound
+          };
+
+          if (typeof window.AppState.switchUser === 'function') {
+            window.AppState.switchUser(normalizedUser);
+          } else {
+            window.AppState.user = Object.assign({}, window.AppState.user || {}, normalizedUser);
+            if (typeof window.AppState.save === 'function') window.AppState.save();
+          }
         }
       } catch (e) {}
       if (!silent) console.info('auth: token valid');
@@ -2968,7 +2975,9 @@ function resolveUnifiedThemeMode() {
 
   if (!theme) {
     try {
-      var raw = localStorage.getItem('qingyue_todo_app_state_v1');
+      var activeUserKey = localStorage.getItem('qingyue_active_user_v1');
+      var v2Key = activeUserKey ? ('qingyue_todo_app_state_v2::' + activeUserKey) : '';
+      var raw = v2Key ? localStorage.getItem(v2Key) : localStorage.getItem('qingyue_todo_app_state_v1');
       if (raw) {
         var parsed = JSON.parse(raw);
         if (parsed && parsed.settings && parsed.settings.theme) {
@@ -3011,10 +3020,15 @@ if (typeof window !== 'undefined') {
         window.AppState.settings.theme = normalized;
         if (typeof window.AppState.save === 'function') window.AppState.save();
       } else {
-        var raw = localStorage.getItem('qingyue_todo_app_state_v1');
+        var activeUserKey = localStorage.getItem('qingyue_active_user_v1');
+        var v2Key = activeUserKey ? ('qingyue_todo_app_state_v2::' + activeUserKey) : '';
+        var raw = v2Key ? localStorage.getItem(v2Key) : localStorage.getItem('qingyue_todo_app_state_v1');
         var parsed = raw ? JSON.parse(raw) : {};
         parsed.settings = parsed.settings || {};
         parsed.settings.theme = normalized;
+        if (v2Key) {
+          localStorage.setItem(v2Key, JSON.stringify(parsed));
+        }
         localStorage.setItem('qingyue_todo_app_state_v1', JSON.stringify(parsed));
       }
     } catch (e) {}
@@ -3675,7 +3689,8 @@ function isUnifiedLogoutTarget(el) {
     id === 'global-logout' ||
     id === 'todo-logout-link' ||
     id === 'logout-btn-top' ||
-    id === 'profile-logout'
+    id === 'profile-logout' ||
+    id === 'admin-logout'
   ) {
     return true;
   }
@@ -3698,6 +3713,9 @@ function performUnifiedLogoutFlow() {
   if (window.AppState && typeof window.AppState.logout === 'function') {
     window.AppState.logout();
   }
+  try { localStorage.removeItem('todoTasks'); } catch (e) {}
+  try { localStorage.removeItem('todoTags'); } catch (e) {}
+  try { localStorage.removeItem('todoPendingCreates_v1'); } catch (e) {}
   if (typeof showToast === 'function') {
     showToast('已退出登录');
   }
@@ -3728,7 +3746,13 @@ function initUnifiedIdentitySync() {
   initUnifiedLogoutBindings();
   window.addEventListener('storage', function (e) {
     if (!e) return;
-    if (e.key === UNIFIED_APP_STATE_KEY || e.key === UNIFIED_IDENTITY_SYNC_KEY) {
+    var k = String(e.key || '');
+    if (
+      k === UNIFIED_APP_STATE_KEY ||
+      k === UNIFIED_IDENTITY_SYNC_KEY ||
+      k === 'qingyue_active_user_v1' ||
+      k.indexOf('qingyue_todo_app_state_v2::') === 0
+    ) {
       refreshUnifiedUserIdentityUi();
     }
   });
@@ -3757,7 +3781,12 @@ if (document.readyState === 'loading') {
 // ✅ 跨页面数据同步：监听 localStorage 变化
 if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
   window.addEventListener('storage', function (e) {
-    if (!e.key || e.key !== 'qingyue_todo_app_state_v1') return; // 只关注 AppState 更新
+    if (!e || !e.key) return;
+    var isAppStateUpdate =
+      e.key === 'qingyue_todo_app_state_v1' ||
+      e.key === 'qingyue_active_user_v1' ||
+      String(e.key).indexOf('qingyue_todo_app_state_v2::') === 0;
+    if (!isAppStateUpdate) return; // 只关注 AppState 更新
     
     // 当 AppState 在另一个标签页被更新时，重新加载到当前页面的 AppState
     if (typeof AppState !== 'undefined' && AppState.init) {

@@ -679,7 +679,16 @@
             };
 
             window.addEventListener('storage', (e) => {
-              if (!e || e.key === 'qingyue_todo_app_state_v1') {
+              if (!e || !e.key) {
+                refreshTasks();
+                return;
+              }
+              var key = String(e.key);
+              if (
+                key === 'qingyue_todo_app_state_v1' ||
+                key === 'qingyue_active_user_v1' ||
+                key.indexOf('qingyue_todo_app_state_v2::') === 0
+              ) {
                 refreshTasks();
               }
             });

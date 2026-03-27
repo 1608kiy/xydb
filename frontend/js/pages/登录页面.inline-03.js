@@ -131,16 +131,21 @@
             localStorage.setItem('token', 'dev-local-' + Date.now());
             localStorage.setItem('devSkipAuth', '1');
             if (window.AppState) {
-              window.AppState.user = window.AppState.user || {};
-              window.AppState.user.name = userName;
+              var localProfile = { name: userName };
               if (display.indexOf('@') > -1) {
-                window.AppState.user.email = display;
+                localProfile.email = display;
               }
               if (/^1\d{10}$/.test(display)) {
-                window.AppState.user.phone = display;
-                window.AppState.user.email = display + '@mobile.local';
+                localProfile.phone = display;
+                localProfile.email = display + '@mobile.local';
               }
-              if (typeof window.AppState.save === 'function') window.AppState.save();
+
+              if (typeof window.AppState.switchUser === 'function') {
+                window.AppState.switchUser(localProfile);
+              } else {
+                window.AppState.user = Object.assign({}, window.AppState.user || {}, localProfile);
+                if (typeof window.AppState.save === 'function') window.AppState.save();
+              }
             }
           } catch (e) {}
 
@@ -219,10 +224,46 @@
                 if (token) {
                   localStorage.setItem('token', token);
                   try { localStorage.removeItem('devSkipAuth'); } catch (e) {}
-                  showToast('登录成功，正在跳转...');
-                  setTimeout(function () {
-                    safeNavigate(isAdminInput ? '后台管理页面.html' : '待办页面.html');
-                  }, 400);
+                  apiRequest('/api/me', { method: 'GET', timeoutMs: 8000 }).then(function (meResp) {
+                    var me = (meResp && meResp.status === 200 && meResp.body && meResp.body.code === 200)
+                      ? (meResp.body.data || {})
+                      : {};
+
+                    var profile = {
+                      id: me.id,
+                      name: me.nickname || me.email || normalizedAccount,
+                      email: me.email || normalizedAccount,
+                      phone: me.phone || '',
+                      avatar: me.avatarUrl || '',
+                      level: typeof me.level === 'number' ? me.level : 1,
+                      exp: typeof me.exp === 'number' ? me.exp : 0
+                    };
+
+                    if (window.AppState) {
+                      if (typeof window.AppState.switchUser === 'function') {
+                        window.AppState.switchUser(profile);
+                      } else {
+                        window.AppState.user = Object.assign({}, window.AppState.user || {}, profile);
+                        if (typeof window.AppState.save === 'function') window.AppState.save();
+                      }
+                    }
+
+                    var meEmail = String((me && me.email) || normalizedAccount || '').toLowerCase();
+                    var goAdmin = !!(me && me.admin) || meEmail === 'admin@xydb.local' || isAdminInput;
+
+                    showToast('登录成功，正在跳转...');
+                    setTimeout(function () {
+                      safeNavigate(goAdmin ? '后台管理页面.html' : '待办页面.html');
+                    }, 400);
+                  }).catch(function () {
+                    if (window.AppState && typeof window.AppState.switchUser === 'function') {
+                      window.AppState.switchUser({ email: normalizedAccount, name: normalizedAccount });
+                    }
+                    showToast('登录成功，正在跳转...');
+                    setTimeout(function () {
+                      safeNavigate(isAdminInput ? '后台管理页面.html' : '待办页面.html');
+                    }, 400);
+                  });
                   return;
                 }
               }
@@ -246,6 +287,14 @@
               if (resp && resp.status === 200 && resp.body && resp.body.code === 200 && resp.body.data && resp.body.data.token) {
                 localStorage.setItem('token', resp.body.data.token);
                 try { localStorage.removeItem('devSkipAuth'); } catch (e) {}
+                var mobileEmail = phone + '@mobile.local';
+                if (window.AppState && typeof window.AppState.switchUser === 'function') {
+                  window.AppState.switchUser({
+                    email: mobileEmail,
+                    phone: phone,
+                    name: '用户' + phone.slice(-4)
+                  });
+                }
                 showToast('扫码登录成功，已自动创建账号');
                 setTimeout(function () { safeNavigate('待办页面.html'); }, 400);
                 return;

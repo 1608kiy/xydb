@@ -1,5 +1,8 @@
-// 共享全局数据状态与 localStorage
-const STORAGE_KEY = 'qingyue_todo_app_state_v1';
+// 共享全局数据状态与 localStorage（按用户隔离）
+const LEGACY_STORAGE_KEY = 'qingyue_todo_app_state_v1';
+const STORAGE_KEY_PREFIX = 'qingyue_todo_app_state_v2::';
+const ACTIVE_USER_KEY = 'qingyue_active_user_v1';
+const STORAGE_HYGIENE_FLAG_KEY = 'qingyue_storage_hygiene_v1';
 
 const defaultState = {
   user: {
@@ -53,6 +56,72 @@ const defaultState = {
   ]
 };
 
+function deepClone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function sanitizeIdentityFragment(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_@.-]/g, '_');
+}
+
+function parseJwtSubject(token) {
+  try {
+    var parts = String(token || '').split('.');
+    if (parts.length < 2) return '';
+    var payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    while (payload.length % 4) payload += '=';
+    var decoded = atob(payload);
+    var parsed = JSON.parse(decoded);
+    return String(parsed && parsed.sub ? parsed.sub : '').trim();
+  } catch (e) {
+    return '';
+  }
+}
+
+function deriveUserStorageKey(profile) {
+  var p = profile || {};
+  var id = sanitizeIdentityFragment(p.id);
+  if (id) return 'id:' + id;
+  var email = sanitizeIdentityFragment(p.email);
+  if (email) return 'email:' + email;
+  var phone = sanitizeIdentityFragment(p.phone);
+  if (phone) return 'phone:' + phone;
+  var name = sanitizeIdentityFragment(p.name);
+  if (name) return 'name:' + name;
+  return 'guest';
+}
+
+function isValidUserStorageKey(userKey) {
+  var key = String(userKey || '').trim().toLowerCase();
+  if (!key) return false;
+  if (key === 'guest') return true;
+  return /^(id|email|phone|name):[a-z0-9_@.-]+$/.test(key);
+}
+
+function normalizeStoredUserStorageKey(rawKey) {
+  var key = String(rawKey || '').trim().toLowerCase();
+  if (!key) return '';
+  if (isValidUserStorageKey(key)) return key;
+
+  // 兼容早期错误清洗：email_xxx@a.com => email:xxx@a.com
+  var patched = key
+    .replace(/^id_/, 'id:')
+    .replace(/^email_/, 'email:')
+    .replace(/^phone_/, 'phone:')
+    .replace(/^name_/, 'name:');
+  if (isValidUserStorageKey(patched)) return patched;
+  return '';
+}
+
+function buildDefaultStateForUser(profile) {
+  var state = deepClone(defaultState);
+  state.user = Object.assign({}, state.user || {}, profile || {});
+  return state;
+}
+
 const AppState = {
   user: null,
   tasks: [],
@@ -60,50 +129,266 @@ const AppState = {
   checkins: [],
   settings: {},
   labels: [],
-  init() {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      try {
-        const parsed = JSON.parse(raw);
-        this.user = parsed.user || defaultState.user;
-        this.tasks = parsed.tasks || [];
-        this.pomodoroSessions = parsed.pomodoroSessions || [];
-        this.checkins = parsed.checkins || [];
-        this.settings = parsed.settings || defaultState.settings;
-        this.labels = parsed.labels || defaultState.labels;
-      } catch (err) {
-        console.warn('state parse failed', err);
-        this.reset();
-      }
-    } else {
-      this.reset();
+  currentUserKey: 'guest',
+
+  getStorageKeyForUserKey(userKey) {
+    return STORAGE_KEY_PREFIX + String(userKey || 'guest');
+  },
+
+  getCurrentUserKey() {
+    return this.currentUserKey || 'guest';
+  },
+
+  getActiveStorageKey() {
+    return this.getStorageKeyForUserKey(this.getCurrentUserKey());
+  },
+
+  resolveCurrentUserKey(userHint) {
+    if (userHint) {
+      return deriveUserStorageKey(userHint);
     }
+
+    try {
+      var token = localStorage.getItem('token');
+      var sub = parseJwtSubject(token);
+      if (sub) {
+        return deriveUserStorageKey({ email: sub });
+      }
+    } catch (e) {}
+
+    try {
+      var active = normalizeStoredUserStorageKey(localStorage.getItem(ACTIVE_USER_KEY));
+      if (active) return active;
+    } catch (e) {}
+
+    try {
+      var legacyRaw = localStorage.getItem(LEGACY_STORAGE_KEY);
+      if (legacyRaw) {
+        var legacyParsed = JSON.parse(legacyRaw);
+        if (legacyParsed && legacyParsed.user) {
+          return deriveUserStorageKey(legacyParsed.user);
+        }
+      }
+    } catch (e) {}
+
+    return 'guest';
+  },
+
+  loadStateByUserKey(userKey, userHint) {
+    var key = this.getStorageKeyForUserKey(userKey);
+    var parsed = null;
+
+    try {
+      var raw = localStorage.getItem(key);
+      if (raw) parsed = JSON.parse(raw);
+    } catch (e) {
+      parsed = null;
+    }
+
+    if (!parsed) {
+      try {
+        var legacyRaw = localStorage.getItem(LEGACY_STORAGE_KEY);
+        if (legacyRaw) {
+          var legacyParsed = JSON.parse(legacyRaw);
+          var legacyUserKey = deriveUserStorageKey((legacyParsed && legacyParsed.user) || {});
+          if (legacyUserKey === userKey) {
+            parsed = legacyParsed;
+          }
+        }
+      } catch (e) {
+        parsed = null;
+      }
+    }
+
+    if (!parsed || typeof parsed !== 'object') {
+      parsed = buildDefaultStateForUser(userHint);
+    }
+
+    parsed.user = Object.assign({}, defaultState.user, parsed.user || {}, userHint || {});
+    if (userHint && userHint.email && !userHint.phone) {
+      parsed.user.phone = '';
+    }
+    parsed.tasks = Array.isArray(parsed.tasks) ? parsed.tasks : [];
+    parsed.pomodoroSessions = Array.isArray(parsed.pomodoroSessions) ? parsed.pomodoroSessions : [];
+    parsed.checkins = Array.isArray(parsed.checkins) ? parsed.checkins : [];
+    parsed.settings = parsed.settings && typeof parsed.settings === 'object'
+      ? Object.assign({}, deepClone(defaultState.settings), parsed.settings)
+      : deepClone(defaultState.settings);
+    parsed.labels = Array.isArray(parsed.labels) ? parsed.labels : deepClone(defaultState.labels);
+
+    return parsed;
+  },
+
+  applyLoadedState(parsed, userKey) {
+    this.currentUserKey = String(userKey || 'guest');
+    this.user = parsed.user || null;
+    this.tasks = parsed.tasks || [];
+    this.pomodoroSessions = parsed.pomodoroSessions || [];
+    this.checkins = parsed.checkins || [];
+    this.settings = parsed.settings || deepClone(defaultState.settings);
+    this.labels = parsed.labels || deepClone(defaultState.labels);
+  },
+
+  runStorageHygiene(force) {
+    var shouldRun = !!force;
+    if (!shouldRun) {
+      try {
+        shouldRun = !localStorage.getItem(STORAGE_HYGIENE_FLAG_KEY);
+      } catch (e) {
+        shouldRun = false;
+      }
+    }
+    if (!shouldRun) return;
+
+    var toRemove = [];
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        if (!key) continue;
+
+        if (
+          key === 'todoTasks' ||
+          key === 'todoTags' ||
+          key === 'todoPendingCreates_v1' ||
+          key.indexOf('todoTasks::') === 0 ||
+          key.indexOf('todoTags::') === 0 ||
+          key.indexOf('todoPendingCreates_v1::') === 0
+        ) {
+          toRemove.push(key);
+          continue;
+        }
+
+        if (key.indexOf(STORAGE_KEY_PREFIX) === 0) {
+          var userPart = key.slice(STORAGE_KEY_PREFIX.length);
+          if (!isValidUserStorageKey(userPart)) {
+            toRemove.push(key);
+            continue;
+          }
+          try {
+            var raw = localStorage.getItem(key);
+            var parsed = raw ? JSON.parse(raw) : null;
+            if (!parsed || typeof parsed !== 'object') {
+              toRemove.push(key);
+            }
+          } catch (e) {
+            toRemove.push(key);
+          }
+        }
+      }
+    } catch (e) {
+      toRemove = [];
+    }
+
+    for (var j = 0; j < toRemove.length; j++) {
+      try { localStorage.removeItem(toRemove[j]); } catch (e) {}
+    }
+
+    try {
+      var active = normalizeStoredUserStorageKey(localStorage.getItem(ACTIVE_USER_KEY));
+      if (!active) {
+        localStorage.removeItem(ACTIVE_USER_KEY);
+      } else {
+        localStorage.setItem(ACTIVE_USER_KEY, active);
+      }
+    } catch (e) {}
+
+    try { localStorage.setItem(STORAGE_HYGIENE_FLAG_KEY, String(Date.now())); } catch (e) {}
+  },
+
+  init(userHint) {
+    this.runStorageHygiene(false);
+    var inferredHint = userHint || null;
+    if (!inferredHint) {
+      try {
+        var token = localStorage.getItem('token');
+        var sub = parseJwtSubject(token);
+        if (sub) {
+          var profile = { email: sub };
+          var phoneMatch = String(sub).match(/^(1\d{10})@mobile\.local$/i);
+          if (phoneMatch) {
+            profile.phone = phoneMatch[1];
+            profile.name = '用户' + profile.phone.slice(-4);
+          } else {
+            profile.name = String(sub).split('@')[0] || sub;
+          }
+          inferredHint = profile;
+        }
+      } catch (e) {}
+    }
+
+    var userKey = this.resolveCurrentUserKey(inferredHint);
+    var parsed = this.loadStateByUserKey(userKey, inferredHint);
+    this.applyLoadedState(parsed, userKey);
+    try { localStorage.setItem(ACTIVE_USER_KEY, userKey); } catch (e) {}
+    this.save();
     return this;
   },
+
+  switchUser(userHint) {
+    this.runStorageHygiene(false);
+    var userKey = deriveUserStorageKey(userHint || {});
+    var parsed = this.loadStateByUserKey(userKey, userHint || {});
+    this.applyLoadedState(parsed, userKey);
+    try { localStorage.setItem(ACTIVE_USER_KEY, userKey); } catch (e) {}
+    this.save();
+
+    // 清理旧的全局兜底缓存，避免账号切换时误读上一个用户草稿
+    try { localStorage.removeItem('todoTasks'); } catch (e) {}
+    try { localStorage.removeItem('todoTags'); } catch (e) {}
+    try { localStorage.removeItem('todoPendingCreates_v1'); } catch (e) {}
+
+    return this;
+  },
+
   reset() {
-    this.user = defaultState.user;
-    this.tasks = defaultState.tasks.slice();
+    var state = buildDefaultStateForUser(this.user || {});
+    this.user = state.user;
+    this.tasks = state.tasks;
     this.pomodoroSessions = [];
     this.checkins = [];
-    this.settings = JSON.parse(JSON.stringify(defaultState.settings));
-    this.labels = defaultState.labels.slice();
+    this.settings = deepClone(defaultState.settings);
+    this.labels = deepClone(defaultState.labels);
     this.save();
   },
+
   save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    var payload = {
       user: this.user,
       tasks: this.tasks,
       pomodoroSessions: this.pomodoroSessions,
       checkins: this.checkins,
       settings: this.settings,
       labels: this.labels
-    }));
+    };
+
+    var activeKey = this.getActiveStorageKey();
+    try {
+      localStorage.setItem(activeKey, JSON.stringify(payload));
+    } catch (e) {}
+
+    // 兼容旧逻辑（主题、跨页刷新等模块仍在读取 legacy key）
+    try {
+      localStorage.setItem(LEGACY_STORAGE_KEY, JSON.stringify(payload));
+    } catch (e) {}
+
+    try {
+      var u = this.user || {};
+      var hasIdentity = !!(u.id || u.email || u.phone || u.name);
+      if (hasIdentity) {
+        localStorage.setItem(ACTIVE_USER_KEY, this.getCurrentUserKey());
+      } else {
+        localStorage.removeItem(ACTIVE_USER_KEY);
+      }
+    } catch (e) {}
   },
+
   logout() {
     this.user = null;
+    this.currentUserKey = 'guest';
     try { localStorage.removeItem('token'); } catch (e) {}
     try { localStorage.removeItem('devSkipAuth'); } catch (e) {}
     try { sessionStorage.setItem('skipLoginAutoRedirect', '1'); } catch (e) {}
+    try { localStorage.removeItem(ACTIVE_USER_KEY); } catch (e) {}
     this.save();
   }
 };

@@ -531,9 +531,17 @@
         });
 
         logoutBtn.addEventListener('click', function () {
+          if (typeof window.performUnifiedLogoutFlow === 'function') {
+            window.performUnifiedLogoutFlow();
+            return;
+          }
           try {
-            localStorage.removeItem('token');
-            localStorage.removeItem('devSkipAuth');
+            if (window.AppState && typeof window.AppState.logout === 'function') {
+              window.AppState.logout();
+            } else {
+              localStorage.removeItem('token');
+              localStorage.removeItem('devSkipAuth');
+            }
           } catch (e) {}
           safeNavigate('登录页面.html');
         });

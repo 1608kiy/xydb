@@ -229,7 +229,10 @@
       });
 
       document.addEventListener('DOMContentLoaded', function () {
-        if (typeof checkAuthOnLoad === 'function') { checkAuthOnLoad().catch(function(){}); }
+        var authSyncPromise = Promise.resolve();
+        if (typeof checkAuthOnLoad === 'function') {
+          authSyncPromise = checkAuthOnLoad().catch(function(){});
+        }
         AppState.init();
         function ensureSettingsScopes() {
           AppState.settings = AppState.settings || {};
@@ -307,11 +310,11 @@
         function syncProfileIdentityUi() {
           var displayName = (AppState.user && AppState.user.name) || '轻悦用户';
           var displayEmail = (AppState.user && AppState.user.email) || 'demo@qingyue.com';
-          var displayPhone = (AppState.user && AppState.user.phone) || '13800000000';
+          var displayPhone = (AppState.user && AppState.user.phone) || '';
           if (profileAvatar) profileAvatar.src = (AppState.user && AppState.user.avatar) || profileAvatar.src;
           if (userName) userName.value = displayName;
           if (userEmail) userEmail.textContent = displayEmail;
-          if (userPhone) userPhone.textContent = maskPhoneNumber(displayPhone);
+          if (userPhone) userPhone.textContent = displayPhone ? maskPhoneNumber(displayPhone) : '未绑定';
           var headerUserName = document.querySelector('.header-user-name');
           if (headerUserName) headerUserName.textContent = displayName;
           if (typeof window.refreshUnifiedUserIdentityUi === 'function') {
@@ -513,6 +516,13 @@
         }
         renderExpProfile();
 
+        authSyncPromise.then(function () {
+          AppState.init();
+          syncProfileIdentityUi();
+          syncSecurityUi();
+          renderExpProfile();
+        });
+
         if (changeAvatarBtn && avatarFileInput && profileAvatar) {
           changeAvatarBtn.addEventListener('click', function () {
             avatarFileInput.click();
@@ -602,7 +612,15 @@
         }
 
         var exportState = function () {
-          var data = localStorage.getItem('qingyue_todo_app_state_v1') || JSON.stringify(defaultState);
+          var snapshot = {
+            user: AppState.user || null,
+            tasks: Array.isArray(AppState.tasks) ? AppState.tasks : [],
+            pomodoroSessions: Array.isArray(AppState.pomodoroSessions) ? AppState.pomodoroSessions : [],
+            checkins: Array.isArray(AppState.checkins) ? AppState.checkins : [],
+            settings: AppState.settings || {},
+            labels: Array.isArray(AppState.labels) ? AppState.labels : []
+          };
+          var data = JSON.stringify(snapshot);
           var blob = new Blob([data], { type: 'application/json;charset=utf-8' });
           var url = URL.createObjectURL(blob);
           var a = document.createElement('a');
@@ -631,7 +649,16 @@
               desc: '将永久删除所有任务、打卡和专注记录，且无法恢复。',
               okText: '确认删除',
               onConfirm: function () {
-                localStorage.removeItem('qingyue_todo_app_state_v1');
+                var currentUserKey = 'guest';
+                try {
+                  if (typeof AppState.getCurrentUserKey === 'function') {
+                    currentUserKey = AppState.getCurrentUserKey() || 'guest';
+                  }
+                } catch (e) {
+                  currentUserKey = 'guest';
+                }
+                try { localStorage.removeItem('qingyue_todo_app_state_v2::' + currentUserKey); } catch (e) {}
+                try { localStorage.removeItem('qingyue_todo_app_state_v1'); } catch (e) {}
                 AppState.reset();
                 updateDataStatistics();
                 showToast('所有数据已清除');
@@ -852,7 +879,12 @@
         updateDataStatistics();
         window.addEventListener('storage', function (e) {
           if (!e) return;
-          if (e.key === 'qingyue_todo_app_state_v1') {
+          var key = String(e.key || '');
+          if (
+            key === 'qingyue_todo_app_state_v1' ||
+            key === 'qingyue_active_user_v1' ||
+            key.indexOf('qingyue_todo_app_state_v2::') === 0
+          ) {
             AppState.init();
             syncProfileIdentityUi();
             syncSecurityUi();

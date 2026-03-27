@@ -24,6 +24,33 @@
     var syncingPendingCreates = false;
     var PENDING_CREATE_KEY = 'todoPendingCreates_v1';
 
+    function getPendingCreateStorageKey() {
+      try {
+        if (window.AppState && typeof window.AppState.getCurrentUserKey === 'function') {
+          return PENDING_CREATE_KEY + '::' + window.AppState.getCurrentUserKey();
+        }
+      } catch (e) {}
+      return PENDING_CREATE_KEY;
+    }
+
+    function getLegacyTodoTasksKey() {
+      try {
+        if (window.AppState && typeof window.AppState.getCurrentUserKey === 'function') {
+          return 'todoTasks::' + window.AppState.getCurrentUserKey();
+        }
+      } catch (e) {}
+      return 'todoTasks';
+    }
+
+    function getLegacyTodoTagsKey() {
+      try {
+        if (window.AppState && typeof window.AppState.getCurrentUserKey === 'function') {
+          return 'todoTags::' + window.AppState.getCurrentUserKey();
+        }
+      } catch (e) {}
+      return 'todoTags';
+    }
+
     // ==================== 工具函数 ====================
     function showToast(message, type) {
       if (window.__unifiedShowToast) {
@@ -495,21 +522,21 @@
           sharedState.save();
         } else {
           // 回退到旧 key，避免 data.js 异常时无法保存
-          localStorage.setItem('todoTasks', JSON.stringify(tasks));
-          localStorage.setItem('todoTags', JSON.stringify(tags));
+          localStorage.setItem(getLegacyTodoTasksKey(), JSON.stringify(tasks));
+          localStorage.setItem(getLegacyTodoTagsKey(), JSON.stringify(tags));
         }
       } catch (e) { console.error('保存失败:', e); }
     }
     function savePendingQueue() {
       try {
-        localStorage.setItem(PENDING_CREATE_KEY, JSON.stringify(pendingCreateQueue));
+        localStorage.setItem(getPendingCreateStorageKey(), JSON.stringify(pendingCreateQueue));
         updateSyncStatusBadge();
       } catch (e) { console.error('待同步队列保存失败:', e); }
     }
 
     function loadPendingQueue() {
       try {
-        var raw = localStorage.getItem(PENDING_CREATE_KEY);
+        var raw = localStorage.getItem(getPendingCreateStorageKey());
         pendingCreateQueue = raw ? JSON.parse(raw) : [];
         if (!Array.isArray(pendingCreateQueue)) pendingCreateQueue = [];
       } catch (e) {
@@ -733,14 +760,14 @@
         if (sharedState && Array.isArray(sharedState.tasks)) {
           allTasks = sharedState.tasks;
         } else {
-          var saved = localStorage.getItem('todoTasks');
+          var saved = localStorage.getItem(getLegacyTodoTasksKey());
           if (saved) {
             var legacy = JSON.parse(saved);
             if (legacy && typeof legacy === 'object') {
               tasks = legacy;
             }
           }
-          var savedTags = localStorage.getItem('todoTags');
+          var savedTags = localStorage.getItem(getLegacyTodoTagsKey());
           if (savedTags) {
             var legacyTags = JSON.parse(savedTags);
             if (Array.isArray(legacyTags)) tags = legacyTags;
