@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="120" y1="40" x2="1320" y2="860" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F7F9FF"/>
+      <stop offset="1" stop-color="#EEF3FF"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="220" y1="180" x2="1220" y2="780" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F5F8FF"/>
+    </linearGradient>
+    <linearGradient id="title" x1="260" y1="110" x2="760" y2="110" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4F46E5"/>
+      <stop offset="1" stop-color="#3B82F6"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1440" height="900" fill="url(#bg)"/>
+  <circle cx="170" cy="120" r="130" fill="#DBEAFE" fill-opacity="0.65"/>
+  <circle cx="1290" cy="760" r="180" fill="#C7D2FE" fill-opacity="0.45"/>
+  <circle cx="1210" cy="130" r="90" fill="#BFDBFE" fill-opacity="0.5"/>
+
+  <text x="220" y="120" fill="url(#title)" font-family="Segoe UI, Arial, sans-serif" font-size="48" font-weight="800">ringnote Smart Planner</text>
+  <text x="220" y="160" fill="#475569" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="500">
+    Todo · Calendar · Pomodoro · Weekly Report · Check-in · Profile
+  </text>
+
+  <rect x="200" y="200" width="1040" height="560" rx="28" fill="url(#panel)" stroke="#DCE6FF" stroke-width="2"/>
+
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <rect x="250" y="250" width="290" height="140" rx="20" fill="#EEF2FF" stroke="#CBD5FF"/>
+    <circle cx="300" cy="300" r="20" fill="#4F46E5"/>
+    <text x="335" y="292" fill="#1E293B" font-size="26" font-weight="700">Todo</text>
+    <text x="335" y="322" fill="#64748B" font-size="18">Task focus and execution</text>
+
+    <rect x="575" y="250" width="290" height="140" rx="20" fill="#ECFEFF" stroke="#BFEFFF"/>
+    <circle cx="625" cy="300" r="20" fill="#06B6D4"/>
+    <text x="660" y="292" fill="#1E293B" font-size="26" font-weight="700">Calendar</text>
+    <text x="660" y="322" fill="#64748B" font-size="18">Visual timeline planning</text>
+
+    <rect x="900" y="250" width="290" height="140" rx="20" fill="#FFF7ED" stroke="#FFE2BF"/>
+    <circle cx="950" cy="300" r="20" fill="#F97316"/>
+    <text x="985" y="292" fill="#1E293B" font-size="26" font-weight="700">Pomodoro</text>
+    <text x="985" y="322" fill="#64748B" font-size="18">Deep-work time blocks</text>
+
+    <rect x="250" y="430" width="290" height="140" rx="20" fill="#F0FDF4" stroke="#C9F7D6"/>
+    <circle cx="300" cy="480" r="20" fill="#10B981"/>
+    <text x="335" y="472" fill="#1E293B" font-size="26" font-weight="700">Check-in</text>
+    <text x="335" y="502" fill="#64748B" font-size="18">Habit consistency tracking</text>
+
+    <rect x="575" y="430" width="290" height="140" rx="20" fill="#FFF1F2" stroke="#FFD2D8"/>
+    <circle cx="625" cy="480" r="20" fill="#EF4444"/>
+    <text x="660" y="472" fill="#1E293B" font-size="26" font-weight="700">Weekly Report</text>
+    <text x="660" y="502" fill="#64748B" font-size="18">Insights and performance</text>
+
+    <rect x="900" y="430" width="290" height="140" rx="20" fill="#F5F3FF" stroke="#DDD6FE"/>
+    <circle cx="950" cy="480" r="20" fill="#8B5CF6"/>
+    <text x="985" y="472" fill="#1E293B" font-size="26" font-weight="700">Profile</text>
+    <text x="985" y="502" fill="#64748B" font-size="18">Account and preferences</text>
+  </g>
+
+  <rect x="250" y="620" width="940" height="90" rx="16" fill="#EEF4FF" stroke="#D4E2FF"/>
+  <text x="285" y="675" fill="#334155" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700">
+    Focus every day, deliver every week.
+  </text>
+</svg>

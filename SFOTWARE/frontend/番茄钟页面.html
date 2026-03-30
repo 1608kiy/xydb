@@ -1,0 +1,481 @@
+﻿<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>番茄专注</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../SHARE/data.js?v=20260325_syncfix4"></script>
+    <script src="../../SHARE/common.js?v=20260325_syncfix4"></script>
+    <link rel='stylesheet' href='./css/mobile-tune.css?v=20260330_fix24' />
+    <script defer src='./js/software-mobile.js?v=20260330_app8'></script>
+    <script src="components.js?v=20260322_sync2"></script>
+    <link
+      href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src='./js/pages/番茄钟页面.inline-01.js?v=20260327_jssplit'></script>
+    <script src='./js/tailwind-style-loader.js?v=20260327_csssplit'></script>
+  <script src='./js/pages/番茄钟页面.inline-02.js?v=20260327_jssplit'></script>
+</head>
+  <body class="software-app font-inter bg-gradient-to-br from-red-100 via-orange-100 to-amber-100 text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden fade-in scroll-smooth">
+    <!-- ✅ 背景装饰光斑 -->
+    <div class="bg-orb w-[600px] h-[600px] bg-red-300 -top-20 -left-20"></div>
+    <div class="bg-orb w-[500px] h-[500px] bg-orange-300 -bottom-20 -right-20" style="animation-delay: -5s;"></div>
+    <div class="bg-orb w-[400px] h-[400px] bg-amber-300 top-1/2 left-1/2" style="animation-delay: -10s;"></div>
+    
+    <!-- 顶部导航 -->
+    <header class="glass-header sticky top-0 z-30" id="pomodoro-header">
+      <div
+        class="container mx-auto px-4 py-3 flex items-center justify-between"
+      >
+        <div class="flex items-center space-x-4">
+          <a
+            href="待办页面.html"
+            class="text-gray-600 hover:text-primary transition-all duration-300 p-2.5 rounded-xl hover:bg-primary/10 hover:scale-110 group"
+          >
+            <div class="relative w-5 h-5 flex items-center justify-center">
+              <i class="fas fa-arrow-left text-lg absolute transition-all duration-300 group-hover:-translate-x-0.5"></i>
+            </div>
+          </a>
+          <div>
+            <h1 class="text-xl font-bold text-gray-800">番茄专注</h1>
+            <p class="text-xs text-gray-500 mt-0.5">
+              25 分钟高效专注 + 间隔休息，提升你的工作与学习效率
+            </p>
+          </div>
+        </div>
+        <div class="hidden md:flex flex-col items-end text-xs text-gray-500">
+          <span>
+            当前模式：
+            <span id="current-mode-label" class="font-semibold text-primary">专注</span>
+          </span>
+          <span id="current-date" class="mt-0.5"></span>
+        </div>
+        <div class="flex items-center space-x-6">
+          <a
+            href="数据周报页面.html"
+            class="hidden md:inline-flex items-center px-3 py-1.5 border border-gray-200 rounded-xl text-sm text-gray-700 hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-all duration-300"
+          >
+            <i class="fas fa-chart-line mr-2"></i>
+            本周专注统计
+          </a>
+          <div class="relative group" id="pm-user-menu-container">
+            <button class="flex items-center space-x-2 focus:outline-none cursor-pointer" id="pm-user-menu-btn" type="button" aria-label="用户菜单">
+              <img
+                src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
+                alt="用户头像"
+                class="header-user-avatar w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300"
+              />
+              <span class="header-user-name hidden md:inline-block font-medium">张明</span>
+              <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform duration-300"></i>
+            </button>
+            <div
+              id="pm-user-dropdown"
+              class="absolute right-0 mt-2 w-48 glass-max rounded-lg shadow-xl py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
+              style="pointer-events: none;"
+            >
+              <a
+                href="个人中心页面.html"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors"
+                style="pointer-events: auto;"
+              >
+                <i class="fas fa-user mr-2 text-gray-500"></i>
+                个人中心
+              </a>
+              <a
+                href="javascript:void(0);"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors"
+                style="pointer-events: auto;"
+              >
+                <i class="fas fa-cog mr-2 text-gray-500"></i>
+                设置
+              </a>
+              <div class="border-t border-gray-100 my-1"></div>
+              <a
+                href="登录页面.html"
+                class="block px-4 py-2 text-sm text-danger hover:bg-danger/10 transition-colors"
+                style="pointer-events: auto;"
+              >
+                <i class="fas fa-sign-out-alt mr-2"></i>
+                退出登录
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+      <!-- 左侧：任务选择区 -->
+      <aside
+        class="hidden lg:block w-64 glass-strong border-r border-white/40 overflow-y-auto scrollbar-hide"
+      >
+        <div class="p-4">
+          <div class="mb-3">
+            <h2 class="text-sm font-semibold text-gray-700">待办任务</h2>
+            <p class="text-xs text-gray-500 mt-0.5">选择一个任务，完成番茄计时。</p>
+          </div>
+          <div id="task-cards" class="space-y-2"></div>
+        </div>
+      </aside>
+
+      <!-- 中间：主计时器区域 -->
+      <main
+        class="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col items-center scrollbar-thin"
+      >
+        <!-- 模式切换 -->
+        <section
+          class="w-full max-w-xl card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-4 md:p-6 mb-4 fade-in"
+        >
+          <div
+            class="flex flex-col md:flex-row md:items-center md:justify-between gap-3"
+          >
+            <div class="flex items-center space-x-2">
+              <button
+                class="mode-btn active"
+                data-mode="focus"
+              >
+                <i class="fas fa-fire mr-1"></i>
+                专注 25'
+              </button>
+              <button
+                class="mode-btn"
+                data-mode="short"
+              >
+                <i class="fas fa-coffee mr-1"></i>
+                短休 5'
+              </button>
+              <button
+                class="mode-btn"
+                data-mode="long"
+              >
+                <i class="fas fa-bed mr-1"></i>
+                长休 15'
+              </button>
+            </div>
+            <div class="flex items-center space-x-2 text-xs text-gray-500">
+              <i class="fas fa-lightbulb text-yellow-500"></i>
+              <span>建议每完成 4 个番茄，来一次长休息</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 计时器主体 -->
+        <section
+          class="w-full max-w-xl card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-6 md:p-8 flex flex-col items-center fade-in"
+          style="animation-delay: 0.1s;"
+        >
+          <div class="relative w-52 h-52 md:w-64 md:h-64 mb-6">
+            <!-- 外环基础 -->
+            <div
+              class="absolute inset-0 rounded-full border-[10px] md:border-[12px] border-white/60"
+            ></div>
+            <!-- 进度环 -->
+            <div
+              id="progress-circle"
+              class="progress-ring absolute inset-0 rounded-full border-[10px] md:border-[12px] border-primary border-t-transparent border-l-transparent transform -rotate-90"
+              style="clip-path: circle(50% at 50% 50%);"
+            ></div>
+            
+            <!-- 中心内容 -->
+            <div
+              class="absolute inset-3 md:inset-4 rounded-full bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center shadow-inner"
+            >
+              <div
+                id="timer-display"
+                aria-live="polite"
+                class="text-5xl md:text-6xl font-bold tracking-widest text-gray-800 tabular-nums"
+              >
+                25:00
+              </div>
+              <div class="mt-3 text-xs md:text-sm text-gray-500">
+                当前任务：
+                <span id="current-task-label" class="font-medium">未选择任务</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 任务选择 - 自定义下拉 -->
+          <div class="w-full mb-4">
+            <div class="flex items-center justify-between mb-1">
+              <label
+                class="block text-sm font-medium text-gray-700"
+                for="task-select"
+              >
+                关联任务
+              </label>
+              <button
+                id="mobile-task-btn"
+                class="md:hidden text-xs text-primary font-medium"
+                type="button"
+              >
+                <i class="fas fa-list mr-1"></i>
+                任务列表
+              </button>
+            </div>
+            <div class="task-select-container" id="task-select-container">
+              <div 
+                class="task-select-dropdown" 
+                id="task-select-display"
+                tabindex="0"
+              >
+                <span id="task-select-text">不选择任务，仅计时</span>
+              </div>
+              <i class="fas fa-chevron-down task-select-arrow"></i>
+              <div class="task-select-options" id="task-select-options">
+                <div class="task-select-option" data-value="">不选择任务，仅计时</div>
+              </div>
+              <select id="task-select" class="hidden"></select>
+            </div>
+          </div>
+
+          <!-- 自动开始设置 -->
+          <div class="w-full mb-4 flex items-center justify-between text-xs text-gray-600 bg-white/50 rounded-xl px-4 py-3 border border-gray-100">
+            <label class="custom-checkbox">
+              <input id="auto-start-toggle" type="checkbox" checked />
+              <span class="checkmark"></span>
+              <span class="ml-3">专注结束后自动开始下一轮</span>
+            </label>
+            <span id="mode-tip" class="text-gray-500">当前：专注</span>
+          </div>
+
+          <!-- 控制按钮 -->
+          <div class="flex items-center space-x-4 mb-4">
+            <button
+              id="start-btn"
+              class="control-btn primary"
+            >
+              <i class="fas fa-play"></i>
+              <span class="ml-2" id="start-btn-text">开始</span>
+            </button>
+            <button
+              id="reset-btn"
+              class="control-btn secondary"
+            >
+              <i class="fas fa-redo"></i>
+              <span class="ml-2">重置</span>
+            </button>
+          </div>
+
+          <!-- 统计卡片 -->
+          <div class="w-full grid grid-cols-3 gap-3 text-center text-xs">
+            <div class="stat-box">
+              <div class="text-gray-500 mb-1.5">今日番茄</div>
+              <div
+                id="today-count"
+                class="text-2xl font-bold text-primary"
+              >
+                0
+              </div>
+            </div>
+            <div class="stat-box">
+              <div class="text-gray-500 mb-1.5">已完成循环</div>
+              <div
+                id="cycle-count"
+                class="text-2xl font-bold text-success"
+              >
+                0
+              </div>
+            </div>
+            <div class="stat-box">
+              <div class="text-gray-500 mb-1.5">当前序号</div>
+              <div
+                id="pomodoro-count"
+                class="text-2xl font-bold text-info"
+              >
+                0
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 最近专注记录 -->
+        <section
+          class="w-full max-w-xl card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-4 md:p-6 mt-4 fade-in"
+          style="animation-delay: 0.2s;"
+        >
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-semibold text-gray-800">
+              最近专注记录（本次会话）
+            </h2>
+            <button
+              id="clear-history-btn"
+              class="text-xs text-gray-400 hover:text-danger transition-colors"
+            >
+              <i class="fas fa-trash mr-1"></i>
+              清空
+            </button>
+          </div>
+          <ul id="session-history" class="space-y-2 text-xs text-gray-600 max-h-48 overflow-y-auto scrollbar-hide"></ul>
+        </section>
+      </main>
+
+      <!-- 右侧：专注提示与统计 -->
+      <aside
+        class="hidden lg:block w-64 glass-strong border-l border-white/40 overflow-y-auto scrollbar-hide"
+      >
+        <div class="p-4 space-y-4">
+          <div class="bg-gradient-to-br from-yellow-50/60 to-amber-50/60 backdrop-blur-sm rounded-xl p-4 border border-yellow-200/30">
+            <h3 class="text-sm font-semibold text-gray-800 mb-3 flex items-center">
+              <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+              专注小贴士
+            </h3>
+            <div class="space-y-2">
+              <div class="tip-item">
+                <i class="fas fa-check-circle mt-0.5 flex-shrink-0"></i>
+                <span class="text-gray-700">一次只做一件事，专注当前番茄</span>
+              </div>
+              <div class="tip-item">
+                <i class="fas fa-check-circle mt-0.5 flex-shrink-0"></i>
+                <span class="text-gray-700">计时中不要切换应用或查看手机</span>
+              </div>
+              <div class="tip-item">
+                <i class="fas fa-check-circle mt-0.5 flex-shrink-0"></i>
+                <span class="text-gray-700">短休息站起来活动，避免刷视频</span>
+              </div>
+              <div class="tip-item">
+                <i class="fas fa-check-circle mt-0.5 flex-shrink-0"></i>
+                <span class="text-gray-700">长休息远离屏幕，散步或拉伸</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-gradient-to-br from-blue-50/60 to-indigo-50/60 backdrop-blur-sm rounded-xl p-4 border border-blue-200/30">
+            <h3 class="text-sm font-semibold text-gray-800 mb-3 flex items-center">
+              <i class="fas fa-chart-pie text-primary mr-2"></i>
+              今日概要
+            </h3>
+            <div class="space-y-2">
+              <div class="stat-row">
+                <span class="text-xs text-gray-600">今日完成番茄</span>
+                <span id="summary-today" class="font-semibold text-primary text-sm">0 个</span>
+              </div>
+              <div class="stat-row">
+                <span class="text-xs text-gray-600">当前循环</span>
+                <span id="summary-cycle" class="font-semibold text-success text-sm">第 0 轮</span>
+              </div>
+              <div class="stat-row">
+                <span class="text-xs text-gray-600">建议长休息</span>
+                <span id="summary-suggest" class="font-semibold text-info text-sm">暂无</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-gradient-to-br from-green-50/60 to-emerald-50/60 backdrop-blur-sm rounded-xl p-4 border border-green-200/30">
+            <h3 class="text-sm font-semibold text-gray-800 mb-2 flex items-center">
+              <i class="fas fa-medal text-success mr-2"></i>
+              专注成就
+            </h3>
+            <div class="text-xs text-gray-600 space-y-1">
+              <div class="achievement-row">
+                <span>连续专注</span>
+                <span id="streak-display" class="font-medium text-success">0 天</span>
+              </div>
+              <div class="achievement-row">
+                <span>总番茄数</span>
+                <span id="total-pomodoro" class="font-medium text-primary">0 个</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Toast 提示 -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900/90 backdrop-blur-sm text-white text-xs px-4 py-2.5 rounded-full shadow-lg opacity-0 transition-opacity duration-300 z-50"></div>
+    
+    <!-- 消息弹窗 -->
+    <div id="message-toast" class="message-toast opacity-0 invisible transition-all duration-300">
+      <div class="flex items-center space-x-3">
+        <i id="message-icon" class="fas text-lg"></i>
+        <span id="message-text" class="text-sm font-medium text-gray-800"></span>
+      </div>
+    </div>
+
+    <!-- 移动端任务选择模态框 -->
+    <div id="mobile-task-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-50 items-end md:hidden">
+      <div class="bg-white w-full rounded-t-2xl p-4 max-h-[70vh] overflow-y-auto scale-in">
+        <div class="flex items-center justify-between mb-3 pb-3 border-b border-gray-100">
+          <div class="font-semibold text-gray-800">选择任务</div>
+          <button id="mobile-task-close" class="text-gray-400 hover:text-gray-600 transition-colors">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div id="mobile-task-list" class="space-y-2"></div>
+      </div>
+    </div>
+
+    <!-- 底部 Tab 栏 -->
+    <footer
+      class="glass-tab py-1.5 px-2 sticky bottom-0 z-40"
+    >
+      <div class="container mx-auto flex justify-around items-center">
+        <a
+          href="待办页面.html"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+        >
+          <i class="fas fa-list-alt text-base"></i>
+          <span class="text-[10px] mt-0.5">待办</span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          href="日历页面.html"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+        >
+          <i class="fas fa-calendar text-base"></i>
+          <span class="text-[10px] mt-0.5">日历</span>
+          <span class="tab-indicator"></span>
+        </a>
+        <!-- 当前页：番茄钟 -->
+        <a
+          href="番茄钟页面.html"
+          class="tab-item active flex flex-col items-center text-primary px-2 py-1 rounded-lg bg-primary/10"
+        >
+          <i class="fas fa-clock text-base"></i>
+          <span class="text-[10px] mt-0.5 font-semibold">番茄钟</span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          href="数据周报页面.html"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+        >
+          <i class="fas fa-chart-line text-base"></i>
+          <span class="text-[10px] mt-0.5">数据周报</span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          href="打卡页面.html"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+        >
+          <i class="fas fa-check-circle text-base"></i>
+          <span class="text-[10px] mt-0.5">打卡</span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          href="个人中心页面.html"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+        >
+          <i class="fas fa-user text-base"></i>
+          <span class="text-[10px] mt-0.5">个人中心</span>
+          <span class="tab-indicator"></span>
+        </a>
+      </div>
+    </footer>
+
+    <!-- JS 代码 -->
+    <script src='./js/pages/番茄钟页面.inline-03.js?v=20260327_jssplit'></script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
