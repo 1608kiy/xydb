@@ -1,0 +1,489 @@
+﻿<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <script src='./js/pages/打卡页面.inline-01.js?v=20260327_jssplit'></script>
+    <title>打卡 - 铃记</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../SHARE/data.js?v=20260322_sync4"></script>
+    <script src="../../SHARE/common.js?v=20260322_sync4"></script>
+    <link rel='stylesheet' href='./css/mobile-tune.css?v=20260330_fix24' />
+    <script defer src='./js/software-mobile.js?v=20260330_app8'></script>
+    <script src="components.js?v=20260322_sync4"></script>
+    <link
+      href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src='./js/tailwind-style-loader.js?v=20260327_csssplit'></script>
+    <script src='./js/pages/打卡页面.inline-02.js?v=20260327_jssplit'></script>
+  <script src='./js/pages/打卡页面.inline-03.js?v=20260327_jssplit'></script>
+</head>
+  <body class="software-app font-inter bg-gradient-to-br from-slate-200 via-blue-200 to-indigo-200 text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden fade-in scroll-smooth">
+    <!-- 背景装饰光斑 -->
+    <div class="bg-orb w-[600px] h-[600px] bg-blue-400 -top-20 -left-20"></div>
+    <div class="bg-orb w-[500px] h-[500px] bg-cyan-400 -bottom-20 -right-20" style="animation-delay: -5s;"></div>
+    <div class="bg-orb w-[400px] h-[400px] bg-indigo-400 top-1/2 left-1/2" style="animation-delay: -10s;"></div>
+    
+    <!-- 顶部导航 -->
+    <header class="glass-header sticky top-0 z-30" id="checkin-header">
+      <div
+        class="container mx-auto px-4 py-3 flex items-center justify-between"
+      >
+        <div class="flex items-center space-x-4">
+          <a
+            href="待办页面.html"
+            class="text-gray-600 hover:text-primary transition-all duration-300 p-2.5 rounded-xl hover:bg-primary/10 hover:scale-110"
+          >
+            <i class="fas fa-arrow-left text-lg"></i>
+          </a>
+          <div>
+            <h1 class="text-xl font-bold text-gray-800">每日打卡</h1>
+            <p class="text-xs text-gray-500 mt-0.5">
+              用一个小小的动作，记录你的每一次坚持
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-6">
+          <div class="hidden md:flex flex-col items-end text-xs text-gray-500">
+            <span>
+              已连续打卡
+              <span id="streak-days" class="text-primary font-semibold">15</span>
+              天
+            </span>
+            <span>
+              历史最长
+              <span class="font-semibold text-gray-700">21</span>
+              天
+            </span>
+          </div>
+          <div class="relative group" id="checkin-user-menu-container">
+            <button class="flex items-center space-x-2 focus:outline-none cursor-pointer" id="checkin-user-menu-btn" type="button" aria-label="用户菜单">
+              <img
+                src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
+                alt="用户头像"
+                class="header-user-avatar w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300"
+              />
+              <span class="header-user-name hidden md:inline-block font-medium">张明</span>
+              <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform duration-300"></i>
+            </button>
+            <div
+              id="checkin-user-dropdown"
+              class="absolute right-0 mt-2 w-48 glass-max rounded-lg shadow-xl py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
+              style="pointer-events: none;"
+            >
+              <a
+                href="个人中心页面.html"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors"
+                style="pointer-events: auto;"
+              >
+                <i class="fas fa-user mr-2 text-gray-500"></i>
+                个人中心
+              </a>
+              <a
+                href="javascript:void(0);"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors"
+                style="pointer-events: auto;"
+              >
+                <i class="fas fa-cog mr-2 text-gray-500"></i>
+                设置
+              </a>
+              <div class="border-t border-gray-100 my-1"></div>
+              <a
+                href="登录页面.html"
+                class="block px-4 py-2 text-sm text-danger hover:bg-danger/10 transition-colors"
+                style="pointer-events: auto;"
+              >
+                <i class="fas fa-sign-out-alt mr-2"></i>
+                退出登录
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <script src='./js/pages/打卡页面.inline-04.js?v=20260327_jssplit'></script>
+
+    <div class="flex flex-1 overflow-hidden">
+      <main class="flex-1 overflow-y-auto content-auto p-4 md:p-6 scrollbar-thin">
+        <div
+          id="checkin-app-grid"
+          class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[3fr,2fr] gap-6"
+        >
+          <!-- 左侧：今日打卡 + 日历 -->
+          <div class="space-y-4" id="checkin-main-column">
+            <!-- 今日打卡卡片 -->
+            <section
+              class="card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 md:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 fade-in"
+            >
+              <div class="flex items-start space-x-3">
+                <div
+                  class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary text-2xl float"
+                >
+✨
+                </div>
+                <div>
+                  <p class="text-xs text-gray-500 mb-1" id="today-date-text">
+                    今天
+                  </p>
+                  <h2 class="text-lg font-semibold text-gray-800">
+                    记录今天的坚持
+                  </h2>
+                  <p class="text-xs text-gray-500 mt-1">
+                    选择一个打卡类型，写下你今天的小小进步。
+                  </p>
+                  <div class="mt-3 flex flex-wrap gap-2 text-xs">
+                    <button
+                      class="type-btn study selected"
+                      data-type="学习"
+                    >
+                      <i class="fas fa-book-open"></i>
+                      <span>学习</span>
+                    </button>
+                    <button
+                      class="type-btn sport"
+                      data-type="运动"
+                    >
+                      <i class="fas fa-running"></i>
+                      <span>运动</span>
+                    </button>
+                    <button
+                      class="type-btn wake"
+                      data-type="早起"
+                    >
+                      <i class="fas fa-sun"></i>
+                      <span>早起</span>
+                    </button>
+                    <button
+                      class="type-btn read"
+                      data-type="阅读"
+                    >
+                      <i class="fas fa-book"></i>
+                      <span>阅读</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="w-full md:w-64 space-y-2">
+                <textarea
+                  id="checkin-note"
+                  rows="2"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary glass-input resize-none"
+                  placeholder="写下今天做了什么，例如：完成 2 轮番茄学习、跑步 3 公里、6 点起床等"
+                ></textarea>
+                <button
+                  id="checkin-btn"
+                  class="checkin-btn w-full"
+                >
+                  <i class="fas fa-check mr-2"></i>
+                  今日打卡
+                </button>
+                <p
+                  id="checkin-status"
+                  class="text-[11px] text-gray-500 text-center"
+                >
+                  今日尚未打卡
+                </p>
+              </div>
+            </section>
+
+            <!-- 打卡日历 -->
+            <section class="card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 fade-in">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center space-x-2">
+                  <button id="prev-month" class="calendar-nav-btn text-gray-500">
+                    <i class="fas fa-chevron-left text-sm"></i>
+                  </button>
+                  <h2 id="calendar-title" class="text-sm font-semibold text-gray-800">
+                    本月打卡日历
+                  </h2>
+                  <button id="next-month" class="calendar-nav-btn text-gray-500">
+                    <i class="fas fa-chevron-right text-sm"></i>
+                  </button>
+                </div>
+                <div class="flex items-center space-x-2 text-xs text-gray-500">
+                  <span
+                    class="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 text-blue-600"
+                  >
+                    <span class="w-2 h-2 rounded-full bg-blue-400 mr-1 animate-pulse"></span>
+                    已打卡
+                  </span>
+                  <span
+                    class="inline-flex items-center px-2 py-0.5 rounded-full bg-teal-50 text-teal-600"
+                  >
+                    <span class="w-2 h-2 rounded-full bg-teal-500 mr-1 animate-pulse"></span>
+                    连续打卡
+                  </span>
+                </div>
+              </div>
+              <div id="checkin-calendar" class="text-xs text-gray-600"></div>
+            </section>
+
+            <!-- 历史打卡记录 -->
+            <section class="card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 fade-in">
+              <div class="flex items-center justify-between mb-3">
+                <h2 class="text-sm font-semibold text-gray-800">
+                  最近打卡记录
+                </h2>
+                <button
+                  id="clear-history"
+                  class="text-xs text-gray-400 hover:text-danger transition-colors"
+                >
+                  清空
+                </button>
+              </div>
+              <ul
+                id="checkin-list"
+                class="space-y-2 text-xs text-gray-700 max-h-56 overflow-y-auto scrollbar-hide"
+              ></ul>
+            </section>
+          </div>
+
+          <!-- 右侧：打卡统计与建议 -->
+          <div class="space-y-4" id="checkin-side-column">
+            <!-- 统计概览 -->
+            <section
+              class="card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-4 md:p-5 fade-in"
+            >
+              <h2 class="text-sm font-semibold text-gray-800 mb-3">
+                打卡统计概要
+              </h2>
+              <div class="grid grid-cols-2 gap-3 text-center text-xs">
+                <div class="stat-card">
+                  <div class="text-gray-500 mb-1">选中月份打卡天数</div>
+                  <div
+                    id="month-days"
+                    class="text-xl font-bold text-gray-800"
+                  >
+                    12
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="text-gray-500 mb-1">最长连续打卡</div>
+                  <div
+                    id="max-streak"
+                    class="text-xl font-bold text-gray-800"
+                  >
+                    21
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="text-gray-500 mb-1">当前连续打卡</div>
+                  <div
+                    id="current-streak"
+                    class="text-xl font-bold text-primary"
+                  >
+                    15
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="text-gray-500 mb-1">本周打卡次数</div>
+                  <div id="week-count" class="text-xl font-bold text-gray-800">
+                    5
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- 打卡类型分布 -->
+            <section
+              class="card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-4 md:p-5 fade-in"
+            >
+              <h2 class="text-sm font-semibold text-gray-800 mb-3">
+                打卡类型分布（<span id="distribution-period">本月</span>）
+              </h2>
+              <div class="space-y-3 text-xs text-gray-700">
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center space-x-1.5">
+                      <i class="fas fa-book-open text-task-study"></i>
+                      <span>学习</span>
+                    </div>
+                    <span data-type="study-percent" class="font-medium">40%</span>
+                  </div>
+                  <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      class="h-full bg-task-study rounded-full progress-bar"
+                      data-type="study-bar"
+                      style="width: 40%"
+                    ></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center space-x-1.5">
+                      <i class="fas fa-running text-task-health"></i>
+                      <span>运动</span>
+                    </div>
+                    <span data-type="sport-percent" class="font-medium">30%</span>
+                  </div>
+                  <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      class="h-full bg-task-health rounded-full progress-bar"
+                      data-type="sport-bar"
+                      style="width: 30%"
+                    ></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center space-x-1.5">
+                      <i class="fas fa-sun text-warning"></i>
+                      <span>早起</span>
+                    </div>
+                    <span data-type="wake-percent" class="font-medium">20%</span>
+                  </div>
+                  <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      class="h-full bg-warning rounded-full progress-bar"
+                      data-type="wake-bar"
+                      style="width: 20%"
+                    ></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center space-x-1.5">
+                      <i class="fas fa-book text-info"></i>
+                      <span>阅读</span>
+                    </div>
+                    <span data-type="read-percent" class="font-medium">10%</span>
+                  </div>
+                  <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      class="h-full bg-info rounded-full progress-bar"
+                      data-type="read-bar"
+                      style="width: 10%"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- 智能建议 -->
+            <section
+              class="card-shadow card-hover glass-strong rounded-2xl p-5 fade-in"
+            >
+              <h2 class="text-sm font-semibold text-gray-800 mb-3 flex items-center">
+                <i class="fas fa-lightbulb text-yellow-500 mr-2 float"></i>
+                智能建议
+              </h2>
+              <div class="space-y-2">
+                <div class="suggestion-card flex items-start">
+                  <i class="fas fa-lightbulb text-yellow-500 mt-0.5 mr-2 flex-shrink-0"></i>
+                  <p class="text-gray-700 text-xs leading-relaxed">
+                    建议<span class="font-semibold">打卡时间固定在每天同一时段</span>，更容易形成习惯。
+                  </p>
+                </div>
+                <div class="suggestion-card flex items-start">
+                  <i class="fas fa-lightbulb text-yellow-500 mt-0.5 mr-2 flex-shrink-0"></i>
+                  <p class="text-gray-700 text-xs leading-relaxed">
+                    你近一周在<span class="font-semibold">学习类打卡</span>表现突出，可以尝试提升每日学习时长目标。
+                  </p>
+                </div>
+                <div class="suggestion-card flex items-start">
+                  <i class="fas fa-lightbulb text-yellow-500 mt-0.5 mr-2 flex-shrink-0"></i>
+                  <p class="text-gray-700 text-xs leading-relaxed">
+                    建议把打卡内容<span class="font-semibold">尽量量化</span>（如"阅读 20 分钟、跑步 3 公里"），更便于长期对比。
+                  </p>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- 底部 Tab -->
+    <footer
+      class="glass-tab py-1.5 px-2 sticky bottom-0 z-40"
+    >
+      <div class="container mx-auto flex justify-around items-center">
+        <a
+          href="待办页面.html"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+        >
+          <i class="fas fa-list-alt text-base"></i>
+          <span class="text-[10px] mt-0.5">待办</span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          href="日历页面.html"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+        >
+          <i class="fas fa-calendar text-base"></i>
+          <span class="text-[10px] mt-0.5">日历</span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          href="番茄钟页面.html"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+        >
+          <i class="fas fa-clock text-base"></i>
+          <span class="text-[10px] mt-0.5">番茄钟</span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          href="数据周报页面.html"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+        >
+          <i class="fas fa-chart-line text-base"></i>
+          <span class="text-[10px] mt-0.5">数据周报</span>
+          <span class="tab-indicator"></span>
+        </a>
+        <!-- 当前页：打卡 -->
+        <a
+          href="打卡页面.html"
+          class="tab-item active flex flex-col items-center text-primary px-2 py-1 rounded-lg bg-primary/10"
+        >
+          <i class="fas fa-check-circle text-base"></i>
+          <span class="text-[10px] mt-0.5 font-semibold">打卡</span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          href="个人中心页面.html"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+        >
+          <i class="fas fa-user text-base"></i>
+          <span class="text-[10px] mt-0.5">个人中心</span>
+          <span class="tab-indicator"></span>
+        </a>
+      </div>
+    </footer>
+
+    <!-- 清空打卡记录确认弹窗 -->
+    <div id="clear-history-modal" class="confirm-modal-overlay" aria-hidden="true">
+      <div class="confirm-modal-card">
+        <div class="flex items-start space-x-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-danger/10 text-danger flex items-center justify-center shrink-0">
+            <i class="fas fa-trash-alt"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-semibold text-gray-800">清空最近打卡记录</h3>
+            <p class="text-sm text-gray-600 mt-1">将删除当前会话内的打卡记录，此操作不可撤销。</p>
+          </div>
+        </div>
+        <div class="flex items-center justify-end gap-3">
+          <button id="cancel-clear-history-btn" class="px-4 py-2 rounded-xl border border-gray-200 text-gray-600 bg-white/70 hover:bg-white transition-colors">
+            取消
+          </button>
+          <button id="confirm-clear-history-btn" class="px-4 py-2 rounded-xl text-white bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 shadow-md shadow-red-500/25 transition-all">
+            <i class="fas fa-trash-alt mr-1.5"></i>确认删除
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- JS 代码 -->
+    <script src='./js/pages/打卡页面.inline-05.js?v=20260327_jssplit'></script>
+  </body>
+</html>
+
+
+
+
+
+

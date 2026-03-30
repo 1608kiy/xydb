@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" fill="none">
+  <defs>
+    <linearGradient id="qyMarkBg" x1="14" y1="14" x2="242" y2="242" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F59D42"/>
+      <stop offset="1" stop-color="#B85A00"/>
+    </linearGradient>
+    <linearGradient id="qyMarkArc" x1="78" y1="76" x2="190" y2="188" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF8ED"/>
+      <stop offset="1" stop-color="#FFE6C4"/>
+    </linearGradient>
+  </defs>
+  <rect x="12" y="12" width="232" height="232" rx="68" fill="url(#qyMarkBg)"/>
+  <path d="M191 86L128 153L98 123" stroke="#FFF8ED" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M186 169C174.4 185.3 154.6 196 132.3 196C96.9 196 68.2 167.3 68.2 131.9C68.2 96.5 96.9 67.8 132.3 67.8C157.1 67.8 178.6 81.9 189.3 102.6" stroke="url(#qyMarkArc)" stroke-width="20" stroke-linecap="round"/>
+  <circle cx="70" cy="74" r="8" fill="#FFD49F"/>
+  <circle cx="202" cy="58" r="10" fill="#FFDDB1"/>
+</svg>
