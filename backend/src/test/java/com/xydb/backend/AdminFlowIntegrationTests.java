@@ -44,7 +44,7 @@ class AdminFlowIntegrationTests {
                         .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.data.email").value("admin@xydb.local"));
+                .andExpect(jsonPath("$.data.email").value("admin@ringnote.local"));
 
         mockMvc.perform(get("/api/admin/users")
                         .header("Authorization", "Bearer " + adminToken))
@@ -55,7 +55,7 @@ class AdminFlowIntegrationTests {
     @Test
     void adminCanCreateAnotherAdminAndNewAdminCanAccessAdminApis() throws Exception {
         String unique = String.valueOf(System.currentTimeMillis());
-        String adminEmail2 = "subadmin_" + unique + "@xydb.local";
+        String adminEmail2 = "subadmin_" + unique + "@ringnote.local";
         String adminPassword2 = "Admin#123456";
 
         String adminToken = loginAndGetToken("admin", "admin");

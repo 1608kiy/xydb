@@ -19,7 +19,7 @@
   <circle cx="1290" cy="760" r="180" fill="#312E81" fill-opacity="0.28"/>
   <circle cx="1210" cy="130" r="90" fill="#0EA5E9" fill-opacity="0.2"/>
 
-  <text x="220" y="120" fill="url(#titleDark)" font-family="Segoe UI, Arial, sans-serif" font-size="48" font-weight="800">XYDB Smart Planner</text>
+  <text x="220" y="120" fill="url(#titleDark)" font-family="Segoe UI, Arial, sans-serif" font-size="48" font-weight="800">ringnote Smart Planner</text>
   <text x="220" y="160" fill="#B6C4DA" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="500">
     Todo · Calendar · Pomodoro · Weekly Report · Check-in · Profile
   </text>

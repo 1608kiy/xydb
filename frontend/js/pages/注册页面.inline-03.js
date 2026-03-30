@@ -5,7 +5,7 @@
         var syncAuthHeroPreview = function () {
           if (!authHeroPreview || !document.body || !document.documentElement) return;
           var isDark = document.body.classList.contains('theme-night') || document.documentElement.classList.contains('unified-dark-mode');
-          authHeroPreview.src = isDark ? 'assets/xydb-auth-dark.svg' : 'assets/xydb-auth-light.svg';
+          authHeroPreview.src = isDark ? 'assets/ringnote-auth-dark.svg' : 'assets/ringnote-auth-light.svg';
         };
         syncAuthHeroPreview();
         if (typeof MutationObserver !== 'undefined') {

@@ -1,4 +1,4 @@
-Set-Location 'E:\computer science\xydb\backend'
+Set-Location 'E:\computer science\ringnote\backend'
 $out = Join-Path (Get-Location) 'backend_run.log'
 $err = Join-Path (Get-Location) 'backend_run.err'
 if (Test-Path $out) { Remove-Item $out -Force }

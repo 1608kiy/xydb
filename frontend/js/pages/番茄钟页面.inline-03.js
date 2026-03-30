@@ -685,9 +685,9 @@
               }
               var key = String(e.key);
               if (
-                key === 'qingyue_todo_app_state_v1' ||
-                key === 'qingyue_active_user_v1' ||
-                key.indexOf('qingyue_todo_app_state_v2::') === 0
+                key === 'ringnote_app_state_v1' ||
+                key === 'ringnote_active_user_v1' ||
+                key.indexOf('ringnote_app_state_v2::') === 0
               ) {
                 refreshTasks();
               }

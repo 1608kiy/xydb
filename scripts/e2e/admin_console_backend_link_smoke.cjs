@@ -133,7 +133,7 @@ async function run() {
 
     const page = await context.newPage();
     const unique = Date.now();
-    const newAdminEmail = 'ui_admin_' + unique + '@xydb.local';
+    const newAdminEmail = 'ui_admin_' + unique + '@ringnote.local';
     const newAdminPassword = 'Admin#123456';
 
     await page.goto('/frontend/后台管理页面.html', { waitUntil: 'domcontentloaded', timeout: 45000 });

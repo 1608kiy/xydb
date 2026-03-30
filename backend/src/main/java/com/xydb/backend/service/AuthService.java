@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Service
 public class AuthService {
-    public static final String ADMIN_EMAIL = "admin@xydb.local";
+    public static final String ADMIN_EMAIL = "admin@ringnote.local";
     private static final String ADMIN_LOGIN_IDENTIFIER = "admin";
     private static final String ADMIN_DEFAULT_PASSWORD = "admin";
 

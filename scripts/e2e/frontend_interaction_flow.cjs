@@ -192,7 +192,7 @@ async function runCalendarFlow(page) {
 
   await page.addInitScript((state) => {
     try {
-      localStorage.setItem('qingyue_todo_app_state_v1', JSON.stringify(state));
+      localStorage.setItem('ringnote_app_state_v1', JSON.stringify(state));
     } catch (_) {}
   }, stressState);
 

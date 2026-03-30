@@ -1,4 +1,4 @@
-Set-Location 'E:\computer science\xydb\backend'
+Set-Location 'E:\computer science\ringnote\backend'
 $body = Get-Content -Raw '.\login_temp.json'
 try {
   $login = Invoke-RestMethod -Method Post -Uri 'http://localhost:8080/api/auth/login' -Body $body -ContentType 'application/json' -TimeoutSec 10

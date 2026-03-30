@@ -104,7 +104,7 @@ async function run() {
       let parsedCount = -1;
       let titles = [];
       try {
-        raw = localStorage.getItem('qingyue_todo_app_state_v1');
+        raw = localStorage.getItem('ringnote_app_state_v1');
         const parsed = raw ? JSON.parse(raw) : null;
         const tasks = parsed && Array.isArray(parsed.tasks) ? parsed.tasks : [];
         parsedCount = tasks.length;

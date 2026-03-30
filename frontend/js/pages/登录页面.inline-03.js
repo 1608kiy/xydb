@@ -17,7 +17,7 @@
           apiRequest('/api/me', { method: 'GET' }).then(function (r) {
             if (r && r.status === 200 && r.body && r.body.code === 200) {
               var me = (r.body && r.body.data) || {};
-              if (String(me.email || '').toLowerCase() === 'admin@xydb.local') {
+              if (String(me.email || '').toLowerCase() === 'admin@ringnote.local') {
                 safeNavigate('后台管理页面.html');
                 return;
               }
@@ -39,7 +39,7 @@
 
         function normalizeLoginIdentifier(v) {
           var raw = String(v || '').trim();
-          if (isAdminAccount(raw)) return 'admin@xydb.local';
+          if (isAdminAccount(raw)) return 'admin@ringnote.local';
           if (isMobileNumber(raw)) return raw + '@mobile.local';
           return raw;
         }
@@ -162,7 +162,7 @@
         var syncAuthHeroPreview = function () {
           if (!authHeroPreview || !document.body || !document.documentElement) return;
           var isDark = document.body.classList.contains('theme-night') || document.documentElement.classList.contains('unified-dark-mode');
-          authHeroPreview.src = isDark ? 'assets/xydb-auth-dark.svg' : 'assets/xydb-auth-light.svg';
+          authHeroPreview.src = isDark ? 'assets/ringnote-auth-dark.svg' : 'assets/ringnote-auth-light.svg';
         };
         syncHeroThemeIcon();
         syncAuthHeroPreview();
@@ -249,7 +249,7 @@
                     }
 
                     var meEmail = String((me && me.email) || normalizedAccount || '').toLowerCase();
-                    var goAdmin = !!(me && me.admin) || meEmail === 'admin@xydb.local' || isAdminInput;
+                    var goAdmin = !!(me && me.admin) || meEmail === 'admin@ringnote.local' || isAdminInput;
 
                     showToast('登录成功，正在跳转...');
                     setTimeout(function () {

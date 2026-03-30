@@ -4,7 +4,7 @@ function renderHeader(activePage) {
   <header class="bg-white shadow-sm sticky top-0 z-30">
     <div class="container mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-2">
-        <a href="待办页面.html" class="text-primary text-lg font-bold">轻悦待办</a>
+        <a href="待办页面.html" class="text-primary text-lg font-bold">铃记</a>
         <span class="text-xs text-gray-500">高效每一天</span>
       </div>
       <div class="flex items-center gap-4">

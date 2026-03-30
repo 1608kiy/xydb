@@ -1,4 +1,4 @@
-Set-Location 'E:\computer science\xydb\backend'
+Set-Location 'E:\computer science\ringnote\backend'
 $token = (Get-Content .\login_token.txt -Raw).Trim()
 Write-Output '-----TOKEN-----'
 Write-Output $token

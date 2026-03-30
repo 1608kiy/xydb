@@ -1,6 +1,6 @@
 ﻿
       document.addEventListener('DOMContentLoaded', function () {
-        var ADMIN_EMAIL = 'admin@xydb.local';
+        var ADMIN_EMAIL = 'admin@ringnote.local';
         var usersTbody = document.getElementById('users-tbody');
         var userCount = document.getElementById('user-count');
         var selectedCount = document.getElementById('selected-count');

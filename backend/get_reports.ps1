@@ -1,4 +1,4 @@
-Set-Location 'E:\computer science\xydb\backend'
+Set-Location 'E:\computer science\ringnote\backend'
 $t = Get-Content -Raw '.\login_token.txt'
 try {
   $r = Invoke-WebRequest -Method Get -Uri 'http://localhost:8080/api/me' -Headers @{ Authorization = 'Bearer ' + $t } -UseBasicParsing -TimeoutSec 10

@@ -309,7 +309,7 @@
 
         function syncProfileIdentityUi() {
           var displayName = (AppState.user && AppState.user.name) || '轻悦用户';
-          var displayEmail = (AppState.user && AppState.user.email) || 'demo@qingyue.com';
+          var displayEmail = (AppState.user && AppState.user.email) || 'demo@ringnote.com';
           var displayPhone = (AppState.user && AppState.user.phone) || '';
           if (profileAvatar) profileAvatar.src = (AppState.user && AppState.user.avatar) || profileAvatar.src;
           if (userName) userName.value = displayName;
@@ -625,7 +625,7 @@
           var url = URL.createObjectURL(blob);
           var a = document.createElement('a');
           a.href = url;
-          a.download = 'qingyue_backup.json';
+          a.download = 'ringnote_backup.json';
           a.click();
           URL.revokeObjectURL(url);
         };
@@ -657,8 +657,8 @@
                 } catch (e) {
                   currentUserKey = 'guest';
                 }
-                try { localStorage.removeItem('qingyue_todo_app_state_v2::' + currentUserKey); } catch (e) {}
-                try { localStorage.removeItem('qingyue_todo_app_state_v1'); } catch (e) {}
+                try { localStorage.removeItem('ringnote_app_state_v2::' + currentUserKey); } catch (e) {}
+                try { localStorage.removeItem('ringnote_app_state_v1'); } catch (e) {}
                 AppState.reset();
                 updateDataStatistics();
                 showToast('所有数据已清除');
@@ -881,9 +881,9 @@
           if (!e) return;
           var key = String(e.key || '');
           if (
-            key === 'qingyue_todo_app_state_v1' ||
-            key === 'qingyue_active_user_v1' ||
-            key.indexOf('qingyue_todo_app_state_v2::') === 0
+            key === 'ringnote_app_state_v1' ||
+            key === 'ringnote_active_user_v1' ||
+            key.indexOf('ringnote_app_state_v2::') === 0
           ) {
             AppState.init();
             syncProfileIdentityUi();

@@ -1,4 +1,4 @@
-Set-Location 'e:\computer science\xydb\backend'
+Set-Location 'e:\computer science\ringnote\backend'
 $reg=@{ nickname='dev'; email='dev@test.com'; password='123456' } | ConvertTo-Json
 try { Invoke-RestMethod -Uri 'http://localhost:8080/api/auth/register' -Method Post -ContentType 'application/json' -Body $reg } catch { Write-Output 'register skipped or failed' }
 $login=@{ email='dev@test.com'; password='123456' } | ConvertTo-Json

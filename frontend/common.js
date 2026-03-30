@@ -2975,9 +2975,9 @@ function resolveUnifiedThemeMode() {
 
   if (!theme) {
     try {
-      var activeUserKey = localStorage.getItem('qingyue_active_user_v1');
-      var v2Key = activeUserKey ? ('qingyue_todo_app_state_v2::' + activeUserKey) : '';
-      var raw = v2Key ? localStorage.getItem(v2Key) : localStorage.getItem('qingyue_todo_app_state_v1');
+      var activeUserKey = localStorage.getItem('ringnote_active_user_v1');
+      var v2Key = activeUserKey ? ('ringnote_app_state_v2::' + activeUserKey) : '';
+      var raw = v2Key ? localStorage.getItem(v2Key) : localStorage.getItem('ringnote_app_state_v1');
       if (raw) {
         var parsed = JSON.parse(raw);
         if (parsed && parsed.settings && parsed.settings.theme) {
@@ -3020,16 +3020,16 @@ if (typeof window !== 'undefined') {
         window.AppState.settings.theme = normalized;
         if (typeof window.AppState.save === 'function') window.AppState.save();
       } else {
-        var activeUserKey = localStorage.getItem('qingyue_active_user_v1');
-        var v2Key = activeUserKey ? ('qingyue_todo_app_state_v2::' + activeUserKey) : '';
-        var raw = v2Key ? localStorage.getItem(v2Key) : localStorage.getItem('qingyue_todo_app_state_v1');
+        var activeUserKey = localStorage.getItem('ringnote_active_user_v1');
+        var v2Key = activeUserKey ? ('ringnote_app_state_v2::' + activeUserKey) : '';
+        var raw = v2Key ? localStorage.getItem(v2Key) : localStorage.getItem('ringnote_app_state_v1');
         var parsed = raw ? JSON.parse(raw) : {};
         parsed.settings = parsed.settings || {};
         parsed.settings.theme = normalized;
         if (v2Key) {
           localStorage.setItem(v2Key, JSON.stringify(parsed));
         }
-        localStorage.setItem('qingyue_todo_app_state_v1', JSON.stringify(parsed));
+        localStorage.setItem('ringnote_app_state_v1', JSON.stringify(parsed));
       }
     } catch (e) {}
     return normalized;
@@ -3042,7 +3042,7 @@ if (document.readyState === 'loading') {
   initUnifiedThemeMode();
 }
 
-var UNIFIED_UI_PREF_KEY = 'qingyue_ui_preferences_v1';
+var UNIFIED_UI_PREF_KEY = 'ringnote_ui_preferences_v1';
 
 function getUnifiedUiPreferenceDefaults() {
   return {
@@ -3583,8 +3583,8 @@ if (document.readyState === 'loading') {
   initUnifiedHeaderSettings();
 }
 
-var UNIFIED_APP_STATE_KEY = 'qingyue_todo_app_state_v1';
-var UNIFIED_IDENTITY_SYNC_KEY = 'qingyue_identity_sync_tick';
+var UNIFIED_APP_STATE_KEY = 'ringnote_app_state_v1';
+var UNIFIED_IDENTITY_SYNC_KEY = 'ringnote_identity_sync_tick';
 
 function getUnifiedStateSnapshot() {
   var parsed = null;
@@ -3670,7 +3670,7 @@ function notifyIdentityUpdated(reason) {
   } catch (e) {}
 
   try {
-    var evt = new CustomEvent('qingyue:identity-updated', {
+    var evt = new CustomEvent('ringnote:identity-updated', {
       detail: { reason: reason || 'manual', ts: Date.now() }
     });
     window.dispatchEvent(evt);
@@ -3750,13 +3750,13 @@ function initUnifiedIdentitySync() {
     if (
       k === UNIFIED_APP_STATE_KEY ||
       k === UNIFIED_IDENTITY_SYNC_KEY ||
-      k === 'qingyue_active_user_v1' ||
-      k.indexOf('qingyue_todo_app_state_v2::') === 0
+      k === 'ringnote_active_user_v1' ||
+      k.indexOf('ringnote_app_state_v2::') === 0
     ) {
       refreshUnifiedUserIdentityUi();
     }
   });
-  window.addEventListener('qingyue:identity-updated', function () {
+  window.addEventListener('ringnote:identity-updated', function () {
     refreshUnifiedUserIdentityUi();
   });
   document.addEventListener('visibilitychange', function () {
@@ -3783,9 +3783,9 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
   window.addEventListener('storage', function (e) {
     if (!e || !e.key) return;
     var isAppStateUpdate =
-      e.key === 'qingyue_todo_app_state_v1' ||
-      e.key === 'qingyue_active_user_v1' ||
-      String(e.key).indexOf('qingyue_todo_app_state_v2::') === 0;
+      e.key === 'ringnote_app_state_v1' ||
+      e.key === 'ringnote_active_user_v1' ||
+      String(e.key).indexOf('ringnote_app_state_v2::') === 0;
     if (!isAppStateUpdate) return; // 只关注 AppState 更新
     
     // 当 AppState 在另一个标签页被更新时，重新加载到当前页面的 AppState

@@ -1,5 +1,5 @@
 {
-  "name": "xydb-e2e-tools",
+  "name": "ringnote-e2e-tools",
   "private": true,
   "version": "1.0.0",
   "description": "UI automation and frontend interaction scripts for local usage",

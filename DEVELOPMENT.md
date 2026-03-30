@@ -24,7 +24,7 @@
 `local` 使用 H2 内存库，最适合联调：
 
 ```powershell
-cd "E:\computer science\xydb\backend"
+cd "E:\computer science\ringnote\backend"
 cmd.exe /c ".\mvnw.cmd -Dspring-boot.run.profiles=local spring-boot:run"
 ```
 
@@ -144,9 +144,9 @@ powershell -ExecutionPolicy Bypass -File .\scripts\run_graduation_suite.ps1
 
 ### 10.3 后端代码变更
 - 认证入参与落库：
-  - `backend/src/main/java/com/xydb/backend/dto/AuthRequest.java`
+  - `backend/src/main/java/com/ringnote/backend/dto/AuthRequest.java`
   - 新增 `phone` 字段与手机号格式校验。
-  - `backend/src/main/java/com/xydb/backend/service/AuthService.java`
+  - `backend/src/main/java/com/ringnote/backend/service/AuthService.java`
   - 注册流程写入 `phone` 字段。
 - 数据源稳定性配置：
   - `backend/src/main/resources/application.properties`

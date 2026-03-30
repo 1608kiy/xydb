@@ -1,14 +1,14 @@
 // 共享全局数据状态与 localStorage（按用户隔离）
-const LEGACY_STORAGE_KEY = 'qingyue_todo_app_state_v1';
-const STORAGE_KEY_PREFIX = 'qingyue_todo_app_state_v2::';
-const ACTIVE_USER_KEY = 'qingyue_active_user_v1';
-const STORAGE_HYGIENE_FLAG_KEY = 'qingyue_storage_hygiene_v1';
+const LEGACY_STORAGE_KEY = 'ringnote_app_state_v1';
+const STORAGE_KEY_PREFIX = 'ringnote_app_state_v2::';
+const ACTIVE_USER_KEY = 'ringnote_active_user_v1';
+const STORAGE_HYGIENE_FLAG_KEY = 'ringnote_storage_hygiene_v1';
 
 const defaultState = {
   user: {
     id: 'u1',
     name: '轻悦用户',
-    email: 'demo@qingyue.com',
+    email: 'demo@ringnote.com',
     phone: '13800000000',
     level: 1,
     exp: 0,
