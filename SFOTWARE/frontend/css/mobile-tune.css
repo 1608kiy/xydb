@@ -1441,3 +1441,238 @@ a,
     height: 200px !important;
   }
 }
+
+/* Bottom tab micro-tune: neutral liquid-glass (no color cast) */
+@media (max-width: 900px) {
+  body.software-app .unified-bottom-tab-dock {
+    left: 50% !important;
+    right: auto !important;
+    width: min(75vw, 450px) !important;
+    max-width: min(75vw, 450px) !important;
+    transform: translateX(-50%) !important;
+    bottom: calc(6px + env(safe-area-inset-bottom, 0px)) !important;
+    padding: 0 !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock.unified-bottom-tab-dock-hidden {
+    transform: translateX(-50%) translateY(10px) !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-row {
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 1px !important;
+    padding: 3px 8px !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(255, 255, 255, 0.24) !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)) !important;
+    box-shadow: 0 5px 12px rgba(15, 23, 42, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.32) !important;
+    backdrop-filter: blur(2.2px) saturate(105%) contrast(106%) brightness(106%) !important;
+    -webkit-backdrop-filter: blur(2.2px) saturate(105%) contrast(106%) brightness(106%) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    isolation: isolate !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-row::before {
+    content: "";
+    position: absolute;
+    inset: -16px -14px;
+    border-radius: inherit;
+    pointer-events: none;
+    background: rgba(255, 255, 255, 0.01);
+    backdrop-filter: blur(5px) saturate(110%) contrast(110%) brightness(108%);
+    -webkit-backdrop-filter: blur(5px) saturate(110%) contrast(110%) brightness(108%);
+    opacity: 0.26;
+    transform: scaleX(1.03);
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-row::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+      radial-gradient(130% 180% at 8% 50%, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 45%),
+      radial-gradient(130% 180% at 92% 50%, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 47%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.03) 40%, rgba(255, 255, 255, 0.14) 100%);
+    opacity: 0.52;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-item {
+    min-height: 42px !important;
+    padding: 3px 2px !important;
+    border-radius: 999px !important;
+    gap: 1px !important;
+    transform: none !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-item:hover {
+    transform: none !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-icon {
+    width: 22px !important;
+    height: 22px !important;
+    font-size: 13px !important;
+    border-radius: 999px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    box-shadow: none !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-label {
+    font-size: 8px !important;
+    letter-spacing: 0 !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-item.active {
+    background: rgba(255, 255, 255, 0.08) !important;
+    transform: none !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon {
+    color: #1d4ed8 !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 1px 4px rgba(37, 99, 235, 0.1) !important;
+    transform: none !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-label {
+    color: #1d4ed8 !important;
+  }
+}
+
+@media (max-width: 420px) {
+  body.software-app .unified-bottom-tab-dock {
+    width: min(79vw, 350px) !important;
+    max-width: min(79vw, 350px) !important;
+    bottom: calc(4px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-row {
+    padding: 2px 7px !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-item {
+    min-height: 40px !important;
+    padding: 2px 1px !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-icon {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 12px !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-label {
+    font-size: 8px !important;
+  }
+}
+/* Top nav micro-tune: neutral liquid-glass with softer bottom transition */
+@media (max-width: 900px) {
+  body.software-app .unified-top-header-dock .unified-top-header-shell,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#main-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#calendar-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#pomodoro-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#report-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#checkin-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#profile-header {
+    border: 0 !important;
+    border-color: transparent !important;
+    min-height: 60px !important;
+    border-radius: 0 0 22px 22px !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.12) 54%, rgba(255, 255, 255, 0.045) 100%) !important;
+    backdrop-filter: blur(2.4px) saturate(108%) contrast(104%) brightness(105%) !important;
+    -webkit-backdrop-filter: blur(2.4px) saturate(108%) contrast(104%) brightness(105%) !important;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.38) !important;
+    position: relative !important;
+    isolation: isolate !important;
+    overflow: hidden !important;
+  }
+
+  body.software-app .unified-top-header-dock .unified-top-header-shell::before {
+    content: "";
+    position: absolute;
+    inset: -14px -10px 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: rgba(255, 255, 255, 0.015);
+    backdrop-filter: blur(5px) saturate(116%) contrast(110%) brightness(108%);
+    -webkit-backdrop-filter: blur(5px) saturate(116%) contrast(110%) brightness(108%);
+    opacity: 0.26;
+    transform: scaleX(1.02);
+  }
+
+  body.software-app .unified-top-header-dock .unified-top-header-shell::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 52%, rgba(255, 255, 255, 0) 100%);
+    opacity: 0.56;
+  }
+
+  body.software-app .unified-top-header-dock .unified-top-header-shell .container,
+  body.software-app .unified-top-header-dock .unified-top-header-shell > div:first-child {
+    background: transparent !important;
+  }
+
+  body.software-app .unified-top-header-dock .unified-top-header-shell .container > :nth-child(1) > a,
+  body.software-app .unified-top-header-dock .unified-top-header-shell > div:first-child > :nth-child(1) > a,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#main-header #mobile-search-btn {
+    border: 0 !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 1px 6px rgba(15, 23, 42, 0.08) !important;
+  }
+}
+
+@media (max-width: 420px) {
+  body.software-app .unified-top-header-dock .unified-top-header-shell,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#main-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#calendar-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#pomodoro-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#report-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#checkin-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#profile-header {
+    min-height: 56px !important;
+    border-radius: 0 0 20px 20px !important;
+  }
+}
+/* Top nav final override: no radius, no edge feel */
+@media (max-width: 900px) {
+  body.software-app .unified-top-header-dock .unified-top-header-shell,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#main-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#calendar-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#pomodoro-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#report-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#checkin-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#profile-header {
+    border: 0 !important;
+    border-bottom: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 52%, rgba(255, 255, 255, 0.022) 100%) !important;
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.99) 86%, rgba(0, 0, 0, 0.7) 95%, rgba(0, 0, 0, 0) 100%);
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.99) 86%, rgba(0, 0, 0, 0.7) 95%, rgba(0, 0, 0, 0) 100%);
+  }
+
+  body.software-app .unified-top-header-dock .unified-top-header-shell::before,
+  body.software-app .unified-top-header-dock .unified-top-header-shell::after {
+    display: none !important;
+  }
+}
+
+@media (max-width: 420px) {
+  body.software-app .unified-top-header-dock .unified-top-header-shell,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#main-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#calendar-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#pomodoro-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#report-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#checkin-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#profile-header {
+    border-radius: 0 !important;
+  }
+}

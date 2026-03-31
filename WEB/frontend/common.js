@@ -2230,6 +2230,70 @@ function ensureUnifiedMobileAdaptationStyle() {
   document.head.appendChild(style);
 }
 
+function ensureUnifiedWebLiquidStyle() {
+  if (document.getElementById('unified-web-liquid-style')) return;
+  var style = document.createElement('style');
+  style.id = 'unified-web-liquid-style';
+  style.textContent = `
+  body:not(.software-app) .unified-top-header-dock .unified-top-header-shell {
+    border: 0 !important;
+    box-shadow: none !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 52%, rgba(255, 255, 255, 0.022) 100%) !important;
+    backdrop-filter: blur(2.2px) saturate(105%) contrast(106%) brightness(106%) !important;
+    -webkit-backdrop-filter: blur(2.2px) saturate(105%) contrast(106%) brightness(106%) !important;
+    position: relative !important;
+    isolation: isolate !important;
+    overflow: hidden !important;
+    outline: 0 !important;
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.99) 86%, rgba(0, 0, 0, 0.7) 95%, rgba(0, 0, 0, 0) 100%);
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.99) 86%, rgba(0, 0, 0, 0.7) 95%, rgba(0, 0, 0, 0) 100%);
+  }
+
+  body:not(.software-app) .unified-top-header-dock .unified-top-header-shell::before,
+  body:not(.software-app) .unified-top-header-dock .unified-top-header-shell::after {
+    display: none !important;
+  }
+
+  body:not(.software-app) .unified-bottom-tab-dock .unified-tab-row {
+    border: 1px solid rgba(255, 255, 255, 0.24) !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)) !important;
+    box-shadow: 0 5px 12px rgba(15, 23, 42, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.32) !important;
+    backdrop-filter: blur(2.2px) saturate(105%) contrast(106%) brightness(106%) !important;
+    -webkit-backdrop-filter: blur(2.2px) saturate(105%) contrast(106%) brightness(106%) !important;
+    isolation: isolate !important;
+  }
+
+  body:not(.software-app) .unified-bottom-tab-dock .unified-tab-row::before {
+    inset: -16px -14px !important;
+    border-radius: inherit !important;
+    background: rgba(255, 255, 255, 0.01) !important;
+    backdrop-filter: blur(5px) saturate(110%) contrast(110%) brightness(108%) !important;
+    -webkit-backdrop-filter: blur(5px) saturate(110%) contrast(110%) brightness(108%) !important;
+    opacity: 0.26 !important;
+    transform: scaleX(1.03) !important;
+  }
+
+  body:not(.software-app) .unified-bottom-tab-dock .unified-tab-row::after {
+    inset: 0 !important;
+    border-radius: inherit !important;
+    background:
+      radial-gradient(130% 180% at 8% 50%, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 45%),
+      radial-gradient(130% 180% at 92% 50%, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 47%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.03) 40%, rgba(255, 255, 255, 0.14) 100%) !important;
+    mix-blend-mode: normal !important;
+    opacity: 0.52 !important;
+  }
+
+  body:not(.software-app) .unified-bottom-tab-dock .unified-tab-item.active {
+    background: rgba(255, 255, 255, 0.08) !important;
+  }
+
+  body:not(.software-app) .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon {
+    background: rgba(255, 255, 255, 0.1) !important;
+  }
+  `;
+  document.head.appendChild(style);
+}
 function syncUnifiedTopHeaderSpace() {
   var docks = document.querySelectorAll('.unified-top-header-dock .unified-top-header-shell');
   if (!docks.length) return;
@@ -2342,6 +2406,7 @@ function initUnifiedTopHeaders() {
 
 ensureUnifiedTopHeaderStyle();
 ensureUnifiedMobileAdaptationStyle();
+ensureUnifiedWebLiquidStyle();
 ensureUnifiedDropdownTransitionStyle();
 initUnifiedDarkTheme();
 initUnifiedPageTransitions();
