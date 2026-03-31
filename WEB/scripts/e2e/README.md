@@ -6,6 +6,8 @@
   - 多页面 UI 自动化巡检（加载、关键文本、截图）
 - `frontend_interaction_flow.cjs`
   - 前端关键交互链路（待办创建+子任务、日历详情交互）
+- `run_all_frontend_e2e.cjs`
+  - 一键执行 UI 巡检 + 交互链路 + AI 冒烟，并输出统一汇总报告
 
 ## 运行方式
 
@@ -26,6 +28,14 @@ cd .\scripts\e2e
 ..\..\tools\node\npx.cmd playwright install chromium
 ..\..\tools\node\node.exe .\ui_automation_smoke.cjs
 ..\..\tools\node\node.exe .\frontend_interaction_flow.cjs
+..\..\tools\node\node.exe .\run_all_frontend_e2e.cjs
+```
+
+### 方式三：npm 一键执行
+
+```powershell
+cd .\scripts\e2e
+npm run ui:suite
 ```
 
 ## 报告输出
@@ -34,4 +44,7 @@ cd .\scripts\e2e
 
 - `REPORTS/e2e/ui_smoke_时间戳/`
 - `REPORTS/e2e/interaction_时间戳/`
+- `REPORTS/e2e/ai_smoke_时间戳/`
+- `REPORTS/e2e/frontend_suite_时间戳.json`
+- `REPORTS/e2e/frontend_suite_时间戳.md`
 

@@ -56,7 +56,7 @@ async function run() {
       return text && text !== 'AI 正在生成排程建议...';
     }, { timeout: 14000 }).catch(() => null);
     const statusText = (await aiStatus.textContent().catch(() => '')) || '';
-    const scheduleOk = /已自动排程|已预排程|AI 优化完成|AI 优化中|未生成可应用|暂无未排程任务|AI 不可用/.test(statusText);
+    const scheduleOk = /已自动排程|已预排程|AI 优化完成|AI 优化中|未生成可应用|暂无未排程任务|未发现未排程任务|AI 不可用/.test(statusText);
     result.checks.push({ step: 'calendar_ai_schedule', pass: scheduleOk, detail: statusText.trim() });
     if (!scheduleOk) throw new Error('AI 排程状态异常: ' + statusText);
 
