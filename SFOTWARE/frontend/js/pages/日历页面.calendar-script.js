@@ -443,9 +443,71 @@
         function syncCurrentSubtasksToServer() {
           if (!currentEditingTask || !currentEditingTask.id) return Promise.resolve(true);
           ensureTaskSubtasks(currentEditingTask);
-          // 后端不提供 /api/tasks/{id}/subtasks 接口，仅保存本地
-          saveCalendarState();
-          return Promise.resolve(true);
+          if (String(currentEditingTask.id).indexOf('local_') === 0) {
+            saveCalendarState();
+            return Promise.resolve(true);
+          }
+          var payload = currentEditingTask.subtasks.map(function (s) {
+            return { title: s.title || s.text || '', completed: !!s.completed };
+          });
+          return apiRequest('/api/tasks/' + currentEditingTask.id + '/subtasks', {
+            method: 'PUT',
+            body: JSON.stringify(payload)
+          }).then(function (resp) {
+            if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+              saveCalendarState();
+              return true;
+            }
+            throw new Error((resp && resp.body && resp.body.message) || '子任务同步失败');
+          });
+        }
+
+        function normalizeCalendarServerTask(task) {
+          var item = Object.assign({}, task || {});
+          item.title = item.title || item.name || '未命名任务';
+          item.description = item.description || item.note || '';
+          item.dueAt = item.dueAt || item.due_at || null;
+          item.status = item.status || item.state || 'pending';
+          item.priority = item.priority || 'medium';
+          var labels = parseTags(item.tags || item.labels || item.tag);
+          item.labels = labels.length ? labels : ['工作'];
+          ensureTaskSubtasks(item);
+          return item;
+        }
+
+        function fetchCalendarTasksFromServer() {
+          return apiRequest('/api/tasks', { method: 'GET' }).then(function (resp) {
+            if (!(resp && resp.status === 200 && resp.body && resp.body.code === 200)) {
+              throw new Error((resp && resp.body && resp.body.message) || '获取任务失败');
+            }
+            var data = resp.body.data;
+            var list = [];
+            if (Array.isArray(data)) list = data;
+            else if (data && Array.isArray(data.records)) list = data.records;
+            else if (data && Array.isArray(data.list)) list = data.list;
+            AppState.tasks = list.map(normalizeCalendarServerTask);
+            saveCalendarState();
+            return true;
+          });
+        }
+
+        function updateCalendarTaskOnServer(taskId, payload) {
+          return apiRequest('/api/tasks/' + taskId, {
+            method: 'PUT',
+            body: JSON.stringify(payload)
+          }).then(function (resp) {
+            if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+              return (resp.body && resp.body.data) || null;
+            }
+            throw new Error((resp && resp.body && resp.body.message) || '更新任务失败');
+          });
+        }
+
+        function deleteCalendarTaskOnServer(taskId) {
+          return apiRequest('/api/tasks/' + taskId, { method: 'DELETE' }).then(function (resp) {
+            if (resp && resp.status === 200 && resp.body && resp.body.code === 200) return true;
+            throw new Error((resp && resp.body && resp.body.message) || '删除任务失败');
+          });
         }
 
         function renderSubtasks() {
@@ -966,8 +1028,12 @@
         }
 
         function requestAiSchedule(tasks) {
-          if (!window.AiService || typeof window.AiService.chat !== 'function') {
-            return Promise.reject(new Error('ai-service-unavailable'));
+          function parseAiJson(content) {
+            var text = String(content || '').trim();
+            if (!text) throw new Error('ai-empty-content');
+            var fence = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+            if (fence && fence[1]) text = fence[1].trim();
+            return JSON.parse(text);
           }
 
           var today = new Date();
@@ -979,11 +1045,22 @@
             '任务列表：' + JSON.stringify(tasks)
           ].join('\n');
 
-          var aiPromise = window.AiService.chat([
-            { role: 'system', content: '你是严谨的任务排程助手，只返回合法JSON。' },
-            { role: 'user', content: userPrompt }
-          ], { temperature: 0.3, maxTokens: 1000 }).then(function (content) {
-            var parsed = window.AiService.parseJson(content);
+          var aiPromise = apiRequest('/api/ai/chat', {
+            method: 'POST',
+            timeoutMs: 10000,
+            body: JSON.stringify({
+              temperature: 0.3,
+              maxTokens: 1000,
+              messages: [
+                { role: 'system', content: '你是严谨的任务排程助手，只返回合法JSON。' },
+                { role: 'user', content: userPrompt }
+              ]
+            })
+          }).then(function (resp) {
+            if (!(resp && resp.status === 200 && resp.body && resp.body.code === 200 && resp.body.data && resp.body.data.content)) {
+              throw new Error((resp && resp.body && resp.body.message) || 'ai-backend-failed');
+            }
+            var parsed = parseAiJson(resp.body.data.content);
             return Array.isArray(parsed.plans) ? parsed : { plans: [], tips: [] };
           });
 
@@ -1645,17 +1722,22 @@
               tag: selectedLabels[0] || '工作'
             };
 
-            // 后端不提供 /api/tasks 端点，仅保存本地
-            task.title = payload.title || task.title;
-            task.description = payload.description || task.description;
-            task.dueAt = payload.dueAt;
-            task.labels = selectedLabels;
-            ensureTaskSubtasks(task);
-            saveCalendarState();
-            renderScheduledTaskList();
-            renderActiveCalendarView();
-            closeTaskDetailModal();
-            showToast('任务已保存', 'success');
+            updateCalendarTaskOnServer(selectedTaskId, payload).then(function (updated) {
+              task.title = payload.title || task.title;
+              task.description = payload.description || task.description;
+              task.dueAt = payload.dueAt;
+              task.labels = selectedLabels;
+              if (updated && updated.status) task.status = updated.status;
+              ensureTaskSubtasks(task);
+              saveCalendarState();
+              renderScheduledTaskList();
+              renderActiveCalendarView();
+              closeTaskDetailModal();
+              showToast('任务已保存', 'success');
+            }).catch(function (err) {
+              console.error('save calendar task error', err);
+              showToast((err && err.message) || '保存任务失败', 'error');
+            });
           });
         }
 
@@ -1934,15 +2016,19 @@
           deleteTaskBtn.addEventListener('click', function () {
             if (!currentEditingTask || !selectedTaskId) return;
             if (!confirm('确定要删除当前任务吗？')) return;
-            // 后端不提供 /api/tasks DELETE 端点，仅删除本地数据
-            AppState.tasks = (AppState.tasks || []).filter(function (t) {
-              return String(t.id) !== String(selectedTaskId);
+            deleteCalendarTaskOnServer(selectedTaskId).then(function () {
+              AppState.tasks = (AppState.tasks || []).filter(function (t) {
+                return String(t.id) !== String(selectedTaskId);
+              });
+              saveCalendarState();
+              closeTaskDetailModal();
+              renderScheduledTaskList();
+              renderActiveCalendarView();
+              showToast('🗑️ 任务已删除', 'success');
+            }).catch(function (err) {
+              console.error('delete calendar task error', err);
+              showToast((err && err.message) || '删除任务失败', 'error');
             });
-            saveCalendarState();
-            closeTaskDetailModal();
-            renderScheduledTaskList();
-            renderActiveCalendarView();
-            showToast('🗑️ 任务已删除', 'success');
           });
         }
 
@@ -2015,10 +2101,12 @@
           return [];
         }
 
-        // 后端不提供 /api/tasks 接口，仅使用本地数据初始化
         Promise.resolve().then(function() {
-          // 仅渲染本地状态
-        }).catch(function(){ /* ignore network errors */ }).finally(function(){
+          return fetchCalendarTasksFromServer();
+        }).catch(function(err){
+          console.warn('fetchCalendarTasksFromServer error', err);
+          showToast('任务同步失败，已展示本地缓存', 'warning');
+        }).finally(function(){
           renderScheduledTaskList();
           renderActiveCalendarView();
         });
