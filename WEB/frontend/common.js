@@ -2237,16 +2237,17 @@ function ensureUnifiedWebLiquidStyle() {
   style.textContent = `
   body:not(.software-app) .unified-top-header-dock .unified-top-header-shell {
     border: 0 !important;
+    border-bottom: 0 !important;
     box-shadow: none !important;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 52%, rgba(255, 255, 255, 0.022) 100%) !important;
-    backdrop-filter: blur(2.2px) saturate(105%) contrast(106%) brightness(106%) !important;
-    -webkit-backdrop-filter: blur(2.2px) saturate(105%) contrast(106%) brightness(106%) !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08)) !important;
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
     position: relative !important;
     isolation: isolate !important;
     overflow: hidden !important;
     outline: 0 !important;
-    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.99) 86%, rgba(0, 0, 0, 0.7) 95%, rgba(0, 0, 0, 0) 100%);
-    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.99) 86%, rgba(0, 0, 0, 0.7) 95%, rgba(0, 0, 0, 0) 100%);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.992) 64%, rgba(0, 0, 0, 0.86) 78%, rgba(0, 0, 0, 0.56) 90%, rgba(0, 0, 0, 0.22) 96%, rgba(0, 0, 0, 0) 100%);
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.992) 64%, rgba(0, 0, 0, 0.86) 78%, rgba(0, 0, 0, 0.56) 90%, rgba(0, 0, 0, 0.22) 96%, rgba(0, 0, 0, 0) 100%);
   }
 
   body:not(.software-app) .unified-top-header-dock .unified-top-header-shell::before,
@@ -2255,7 +2256,7 @@ function ensureUnifiedWebLiquidStyle() {
   }
 
   body:not(.software-app) .unified-bottom-tab-dock .unified-tab-row {
-    border: 1px solid rgba(255, 255, 255, 0.24) !important;
+    border: 0 !important;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)) !important;
     box-shadow: 0 5px 12px rgba(15, 23, 42, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.32) !important;
     backdrop-filter: blur(2.2px) saturate(105%) contrast(106%) brightness(106%) !important;
@@ -2290,6 +2291,95 @@ function ensureUnifiedWebLiquidStyle() {
 
   body:not(.software-app) .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon {
     background: rgba(255, 255, 255, 0.1) !important;
+  }
+  `;
+  document.head.appendChild(style);
+}
+
+function ensureUnifiedModalLiquidStyle() {
+  if (document.getElementById('unified-modal-liquid-style')) return;
+  var style = document.createElement('style');
+  style.id = 'unified-modal-liquid-style';
+  style.textContent = `
+  body:not(.software-app) .modal-overlay,
+  body:not(.software-app) .phone-modal-overlay,
+  body:not(.software-app) .confirm-modal-overlay,
+  body:not(.software-app) #detail-backdrop,
+  body:not(.software-app) #mobile-task-modal,
+  body:not(.software-app) #forgot-password-modal,
+  body:not(.software-app) #task-detail-panel {
+    background: rgba(15, 23, 42, 0.16) !important;
+    backdrop-filter: blur(9px) saturate(132%) contrast(104%) !important;
+    -webkit-backdrop-filter: blur(9px) saturate(132%) contrast(104%) !important;
+  }
+
+  body:not(.software-app) .modal-content,
+  body:not(.software-app) .confirm-modal-card,
+  body:not(.software-app) .detail-modal,
+  body:not(.software-app) #mobile-task-modal > div,
+  body:not(.software-app) #forgot-password-modal > div {
+    position: relative !important;
+    isolation: isolate !important;
+    overflow: hidden !important;
+    border-radius: 22px !important;
+    border: 0 !important;
+    background: linear-gradient(140deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.12) 44%, rgba(255, 255, 255, 0.05) 100%) !important;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.56), inset 0 -1px 0 rgba(255, 255, 255, 0.16) !important;
+    backdrop-filter: blur(24px) saturate(165%) contrast(106%) brightness(104%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(165%) contrast(106%) brightness(104%) !important;
+  }
+
+  body:not(.software-app) .modal-content::before,
+  body:not(.software-app) .confirm-modal-card::before,
+  body:not(.software-app) .detail-modal::before,
+  body:not(.software-app) #mobile-task-modal > div::before,
+  body:not(.software-app) #forgot-password-modal > div::before {
+    content: "";
+    position: absolute;
+    inset: -16px -14px;
+    border-radius: inherit;
+    pointer-events: none;
+    background: rgba(255, 255, 255, 0.018);
+    backdrop-filter: blur(6px) saturate(112%) contrast(108%) brightness(108%);
+    -webkit-backdrop-filter: blur(6px) saturate(112%) contrast(108%) brightness(108%);
+    opacity: 0.3;
+    transform: scale(1.02);
+  }
+
+  body:not(.software-app) .modal-content::after,
+  body:not(.software-app) .confirm-modal-card::after,
+  body:not(.software-app) .detail-modal::after,
+  body:not(.software-app) #mobile-task-modal > div::after,
+  body:not(.software-app) #forgot-password-modal > div::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+      radial-gradient(130% 180% at 8% 8%, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0) 44%),
+      radial-gradient(120% 160% at 88% 88%, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 50%);
+    opacity: 0.6;
+  }
+
+  body:not(.software-app) .modal-content > *,
+  body:not(.software-app) .confirm-modal-card > *,
+  body:not(.software-app) .detail-modal > *,
+  body:not(.software-app) #mobile-task-modal > div > *,
+  body:not(.software-app) #forgot-password-modal > div > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  body:not(.software-app) .modal-content .modal-input,
+  body:not(.software-app) .modal-content .input-glass,
+  body:not(.software-app) .confirm-modal-card .modal-input,
+  body:not(.software-app) #forgot-password-modal input {
+    background: rgba(255, 255, 255, 0.34) !important;
+    border-color: rgba(255, 255, 255, 0.42) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.46) !important;
+    backdrop-filter: blur(7px) saturate(120%) !important;
+    -webkit-backdrop-filter: blur(7px) saturate(120%) !important;
   }
   `;
   document.head.appendChild(style);
@@ -2407,6 +2497,7 @@ function initUnifiedTopHeaders() {
 ensureUnifiedTopHeaderStyle();
 ensureUnifiedMobileAdaptationStyle();
 ensureUnifiedWebLiquidStyle();
+ensureUnifiedModalLiquidStyle();
 ensureUnifiedDropdownTransitionStyle();
 initUnifiedDarkTheme();
 initUnifiedPageTransitions();
