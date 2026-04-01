@@ -205,8 +205,8 @@
           }, {
             successMessage: '手机号已更新',
             reason: 'phone-update'
-          }).then(function () {
-            closePhoneModal();
+          }).then(function (ok) {
+            if (ok) closePhoneModal();
           });
           return;
         }
@@ -414,25 +414,58 @@
           return backend;
         }
 
+        function normalizeUserFromBackend(me) {
+          var u = me || {};
+          return {
+            id: u.id,
+            name: u.nickname || u.name,
+            email: u.email,
+            phone: u.phone,
+            avatar: u.avatarUrl || u.avatar,
+            securityPhone: u.securityPhone,
+            passwordUpdatedAt: u.passwordUpdatedAt,
+            twoStepEnabled: typeof u.twoStepEnabled === 'boolean' ? u.twoStepEnabled : undefined,
+            wechatBound: typeof u.wechatBound === 'boolean' ? u.wechatBound : undefined,
+            wechatAccount: u.wechatAccount,
+            appleBound: typeof u.appleBound === 'boolean' ? u.appleBound : undefined,
+            appleAccount: u.appleAccount,
+            googleBound: typeof u.googleBound === 'boolean' ? u.googleBound : undefined,
+            googleAccount: u.googleAccount,
+            level: typeof u.level === 'number' ? u.level : undefined,
+            exp: typeof u.exp === 'number' ? u.exp : undefined
+          };
+        }
+
+        function compactPatch(patch) {
+          var out = {};
+          Object.keys(patch || {}).forEach(function (k) {
+            if (typeof patch[k] !== 'undefined') out[k] = patch[k];
+          });
+          return out;
+        }
+
         function applyUserPatch(patch, opts) {
           var options = opts || {};
           var userPatch = patch || {};
           if (!Object.keys(userPatch).length) return Promise.resolve(false);
 
-          AppState.user = AppState.user || {};
-          Object.assign(AppState.user, userPatch);
-          AppState.save && AppState.save();
-
-          syncProfileIdentityUi();
-          syncSecurityUi();
-          renderExpProfile();
-          if (typeof updateDataStatistics === 'function') updateDataStatistics();
-          if (typeof window.notifyIdentityUpdated === 'function') {
-            window.notifyIdentityUpdated(options.reason || 'user-patch');
-          }
-
           var backendPatch = buildBackendUserPatch(userPatch);
+          var commitLocal = function (extraPatch) {
+            AppState.user = AppState.user || {};
+            Object.assign(AppState.user, compactPatch(userPatch), compactPatch(extraPatch || {}));
+            AppState.save && AppState.save();
+
+            syncProfileIdentityUi();
+            syncSecurityUi();
+            renderExpProfile();
+            if (typeof updateDataStatistics === 'function') updateDataStatistics();
+            if (typeof window.notifyIdentityUpdated === 'function') {
+              window.notifyIdentityUpdated(options.reason || 'user-patch');
+            }
+          };
+
           if (!Object.keys(backendPatch).length) {
+            commitLocal({});
             if (options.successMessage) showToast(options.successMessage, 'success');
             return Promise.resolve(true);
           }
@@ -442,15 +475,17 @@
             timeoutMs: 8000,
             body: JSON.stringify(backendPatch)
           }).then(function (res) {
-            if (res && res.status === 200) {
-              if (options.successMessage) showToast(options.successMessage, 'success');
-              return true;
+            var ok = !!(res && res.status === 200 && res.body && res.body.code === 200);
+            if (!ok) {
+              throw new Error((res && res.body && res.body.message) || '资料更新失败');
             }
-            if (options.successMessage) showToast(options.successMessage + '（本地已生效）', 'warning');
+            var serverPatch = normalizeUserFromBackend((res.body && res.body.data) || {});
+            commitLocal(serverPatch);
+            if (options.successMessage) showToast(options.successMessage, 'success');
             return true;
-          }).catch(function () {
-            if (options.successMessage) showToast(options.successMessage + '（本地已生效）', 'warning');
-            return true;
+          }).catch(function (err) {
+            showToast((err && err.message) || '资料更新失败，请稍后重试', 'error');
+            return false;
           });
         }
 
@@ -495,8 +530,8 @@
           applyUserPatch(patch, {
             successMessage: '账号安全设置已保存',
             reason: 'security-update'
-          }).then(function () {
-            closeSecurityBindForm();
+          }).then(function (ok) {
+            if (ok) closeSecurityBindForm();
           });
         }
 

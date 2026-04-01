@@ -406,8 +406,12 @@
       }
 
       function requestAiSmartSuggestions() {
-        if (!window.AiService || typeof window.AiService.chat !== 'function') {
-          return Promise.reject(new Error('ai-service-unavailable'));
+        function parseAiJson(content) {
+          var text = String(content || '').trim();
+          if (!text) throw new Error('ai-empty-content');
+          var fence = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+          if (fence && fence[1]) text = fence[1].trim();
+          return JSON.parse(text);
         }
         var context = buildReportAiContext();
         var prompt = [
@@ -417,11 +421,22 @@
           '数据：' + JSON.stringify(context)
         ].join('\n');
 
-        var aiPromise = window.AiService.chat([
-          { role: 'system', content: '你是严谨的数据分析助手，只返回JSON。' },
-          { role: 'user', content: prompt }
-        ], { temperature: 0.4, maxTokens: 500 }).then(function (content) {
-          var parsed = window.AiService.parseJson(content);
+        var aiPromise = apiRequest('/api/ai/chat', {
+          method: 'POST',
+          timeoutMs: 10000,
+          body: JSON.stringify({
+            temperature: 0.4,
+            maxTokens: 500,
+            messages: [
+              { role: 'system', content: '你是严谨的数据分析助手，只返回JSON。' },
+              { role: 'user', content: prompt }
+            ]
+          })
+        }).then(function (resp) {
+          if (!(resp && resp.status === 200 && resp.body && resp.body.code === 200 && resp.body.data && resp.body.data.content)) {
+            throw new Error((resp && resp.body && resp.body.message) || 'ai-backend-failed');
+          }
+          var parsed = parseAiJson(resp.body.data.content);
           if (!parsed || !Array.isArray(parsed.suggestions)) throw new Error('invalid-ai-json');
           return parsed.suggestions.slice(0, 4);
         });
