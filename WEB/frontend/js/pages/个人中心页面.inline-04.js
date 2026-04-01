@@ -61,9 +61,33 @@
         selectElement.parentNode.replaceChild(wrapper, selectElement);
       }
 
-      // ✅ 成就徽章筛选下拉
+      // ✅ 成就徽章筛选/显示下拉
+      var achievementFilterValue = 'all';
+      var achievementDisplayMode = 'compact';
+      var achievementCompactLimit = 4;
+
+      function applyAchievementVisibility() {
+        const achievements = Array.from(document.querySelectorAll('.achievement-badge'));
+        let visibleCount = 0;
+        achievements.forEach(achievement => {
+          const category = achievement.getAttribute('data-category');
+          const matched = achievementFilterValue === 'all' || category === achievementFilterValue;
+          if (!matched) {
+            achievement.style.display = 'none';
+            return;
+          }
+          if (achievementDisplayMode === 'compact' && visibleCount >= achievementCompactLimit) {
+            achievement.style.display = 'none';
+            return;
+          }
+          achievement.style.display = 'block';
+          visibleCount += 1;
+        });
+      }
+
       function toggleAchievementFilter() {
         const dropdown = document.getElementById('achievement-filter-dropdown');
+        if (!dropdown) return;
         const arrow = document.getElementById('achievement-filter-arrow');
         const trigger = dropdown.previousElementSibling;
         const isActive = dropdown.classList.contains('show');
@@ -88,18 +112,11 @@
           'persistence': '坚持'
         };
         
+        achievementFilterValue = value;
         document.getElementById('achievement-filter-text').textContent = textMap[value];
         document.querySelectorAll('#achievement-filter-dropdown .custom-select-option').forEach(opt => opt.classList.remove('selected'));
         element.classList.add('selected');
-        
-        const achievements = document.querySelectorAll('.achievement-badge');
-        achievements.forEach(achievement => {
-          if (value === 'all' || achievement.getAttribute('data-category') === value) {
-            achievement.style.display = 'block';
-          } else {
-            achievement.style.display = 'none';
-          }
-        });
+        applyAchievementVisibility();
         
         const dropdown = document.getElementById('achievement-filter-dropdown');
         const arrow = document.getElementById('achievement-filter-arrow');
@@ -110,6 +127,46 @@
         arrow.classList.remove('rotate');
         
         showToast('已筛选：' + textMap[value]);
+      }
+
+      function toggleAchievementDisplay() {
+        const dropdown = document.getElementById('achievement-display-dropdown');
+        if (!dropdown) return;
+        const arrow = document.getElementById('achievement-display-arrow');
+        const trigger = dropdown.previousElementSibling;
+        const isActive = dropdown.classList.contains('show');
+
+        document.querySelectorAll('.custom-select-dropdown').forEach(d => d.classList.remove('show'));
+        document.querySelectorAll('.custom-select-trigger').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.custom-select-arrow').forEach(a => a.classList.remove('rotate'));
+
+        if (!isActive) {
+          dropdown.classList.add('show');
+          trigger.classList.add('active');
+          if (arrow) arrow.classList.add('rotate');
+        }
+      }
+
+      function selectAchievementDisplay(mode, element) {
+        const textMap = {
+          compact: '显示4个',
+          all: '显示全部'
+        };
+        achievementDisplayMode = mode;
+        const textEl = document.getElementById('achievement-display-text');
+        if (textEl) textEl.textContent = textMap[mode] || textMap.compact;
+        document.querySelectorAll('#achievement-display-dropdown .custom-select-option').forEach(opt => opt.classList.remove('selected'));
+        if (element) element.classList.add('selected');
+        applyAchievementVisibility();
+
+        const dropdown = document.getElementById('achievement-display-dropdown');
+        const arrow = document.getElementById('achievement-display-arrow');
+        const trigger = dropdown ? dropdown.previousElementSibling : null;
+        if (dropdown) dropdown.classList.remove('show');
+        if (trigger) trigger.classList.remove('active');
+        if (arrow) arrow.classList.remove('rotate');
+
+        showToast(mode === 'all' ? '已显示全部徽章' : '已切换为仅显示4个');
       }
 
       // ✅ 勿扰模式模态框函数
@@ -244,6 +301,7 @@
         renderHeader('profile');
         renderFooter('profile');
         bindGlobalLogout();
+        applyAchievementVisibility();
 
         var userName = document.getElementById('user-name');
         var userEmail = document.getElementById('user-email');

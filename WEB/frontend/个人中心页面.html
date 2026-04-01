@@ -492,7 +492,7 @@
                       data-theme="night"
                       class="px-3 py-1.5 rounded-full border border-gray-200 text-xs theme-btn transition-all duration-300 hover:bg-primary/10 hover:text-primary hover:shadow-md"
                     >
-                      暗夜模式
+                      深色模式
                     </button>
                   </div>
                 </div>
@@ -698,22 +698,34 @@
             <section
               class="card-shadow card-hover glass-strong rounded-2xl p-4 md:p-5 fade-in"
             >
-              <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center justify-between mb-3 gap-2">
                 <h2 class="text-sm font-semibold text-gray-800 flex items-center">
                   <i class="fas fa-trophy text-primary mr-2"></i>
                   成就徽章墙
                 </h2>
-                <div class="custom-select-wrapper w-32">
-                  <div class="custom-select-trigger" onclick="toggleAchievementFilter()">
-                    <span id="achievement-filter-text">全部分类</span>
-                    <i class="fas fa-chevron-down custom-select-arrow" id="achievement-filter-arrow"></i>
+                <div class="flex items-center gap-2">
+                  <div class="custom-select-wrapper w-32">
+                    <div class="custom-select-trigger" onclick="toggleAchievementFilter()">
+                      <span id="achievement-filter-text">全部分类</span>
+                      <i class="fas fa-chevron-down custom-select-arrow" id="achievement-filter-arrow"></i>
+                    </div>
+                    <div class="custom-select-dropdown" id="achievement-filter-dropdown">
+                      <div class="custom-select-option selected" onclick="selectAchievementFilter('all', this)">全部分类</div>
+                      <div class="custom-select-option" onclick="selectAchievementFilter('newbie', this)">新手</div>
+                      <div class="custom-select-option" onclick="selectAchievementFilter('efficiency', this)">效率</div>
+                      <div class="custom-select-option" onclick="selectAchievementFilter('focus', this)">专注</div>
+                      <div class="custom-select-option" onclick="selectAchievementFilter('persistence', this)">坚持</div>
+                    </div>
                   </div>
-                  <div class="custom-select-dropdown" id="achievement-filter-dropdown">
-                    <div class="custom-select-option selected" onclick="selectAchievementFilter('all', this)">全部分类</div>
-                    <div class="custom-select-option" onclick="selectAchievementFilter('newbie', this)">新手</div>
-                    <div class="custom-select-option" onclick="selectAchievementFilter('efficiency', this)">效率</div>
-                    <div class="custom-select-option" onclick="selectAchievementFilter('focus', this)">专注</div>
-                    <div class="custom-select-option" onclick="selectAchievementFilter('persistence', this)">坚持</div>
+                  <div class="custom-select-wrapper w-28">
+                    <div class="custom-select-trigger" onclick="toggleAchievementDisplay()">
+                      <span id="achievement-display-text">显示4个</span>
+                      <i class="fas fa-chevron-down custom-select-arrow" id="achievement-display-arrow"></i>
+                    </div>
+                    <div class="custom-select-dropdown" id="achievement-display-dropdown">
+                      <div class="custom-select-option selected" onclick="selectAchievementDisplay('compact', this)">显示4个</div>
+                      <div class="custom-select-option" onclick="selectAchievementDisplay('all', this)">显示全部</div>
+                    </div>
                   </div>
                 </div>
               </div>

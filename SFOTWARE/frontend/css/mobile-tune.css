@@ -974,24 +974,29 @@ a,
   /* 第一列可缩放，右侧操作保持内容宽度并靠右对齐 */
   #todo-main > .glass-max.rounded-2xl > .flex.flex-col.md\:flex-row.md\:items-center.justify-between.gap-4 > :first-child {
     min-width: 0;
-    width: 100%;
-    justify-self: start;
+    width: auto;
+    grid-column: 2;
+    justify-self: end;
+    display: flex;
+    justify-content: flex-end;
   }
 
   #todo-main > .glass-max.rounded-2xl > .flex.flex-col.md\:flex-row.md\:items-center.justify-between.gap-4 > :last-child {
-    min-width: max-content;
-    justify-self: end;
+    min-width: 0;
+    width: 100%;
+    grid-column: 1;
+    justify-self: start;
     display: flex;
     gap: 8px !important;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: flex-start;
   }
 
   #todo-main > .glass-max.rounded-2xl > .flex.flex-col.md\:flex-row.md\:items-center.justify-between.gap-4 > .flex.flex-wrap.gap-2 {
     display: flex !important;
     flex-wrap: nowrap !important;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: flex-start;
     gap: 8px !important;
     overflow: visible !important;
     min-width: 0;
@@ -1034,6 +1039,7 @@ a,
     align-items: center;
     justify-content: center;
     min-height: 38px;
+    min-width: 86px;
     padding: 0 12px;
     border-radius: 12px;
     border: 1px solid rgba(129, 140, 248, 0.38);
@@ -1043,6 +1049,7 @@ a,
     position: relative;
     z-index: 381;
     touch-action: manipulation;
+    white-space: nowrap;
   }
 
   #todo-main #sort-filter-btn {
@@ -1081,6 +1088,7 @@ a,
     box-shadow: 0 4px 10px rgba(15, 23, 42, 0.07);
     display: inline-flex;
     align-items: center;
+    white-space: nowrap;
   }
 
   #todo-main #batch-delete-btn {
@@ -1654,7 +1662,9 @@ a,
     border-radius: 0 !important;
     box-shadow: none !important;
     outline: 0 !important;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 52%, rgba(255, 255, 255, 0.022) 100%) !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.04) 52%, rgba(255, 255, 255, 0.008) 100%) !important;
+    backdrop-filter: blur(1.6px) saturate(104%) contrast(101%) brightness(100%) !important;
+    -webkit-backdrop-filter: blur(1.6px) saturate(104%) contrast(101%) brightness(100%) !important;
     -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.992) 64%, rgba(0, 0, 0, 0.86) 78%, rgba(0, 0, 0, 0.56) 90%, rgba(0, 0, 0, 0.22) 96%, rgba(0, 0, 0, 0) 100%);
     mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.992) 64%, rgba(0, 0, 0, 0.86) 78%, rgba(0, 0, 0, 0.56) 90%, rgba(0, 0, 0, 0.22) 96%, rgba(0, 0, 0, 0) 100%);
   }
@@ -1685,9 +1695,9 @@ a,
   body #mobile-task-modal,
   body #forgot-password-modal,
   body #task-detail-panel {
-    background: rgba(15, 23, 42, 0.14) !important;
-    backdrop-filter: blur(8px) saturate(128%) contrast(104%) !important;
-    -webkit-backdrop-filter: blur(8px) saturate(128%) contrast(104%) !important;
+    background: rgba(15, 23, 42, 0.08) !important;
+    backdrop-filter: blur(4px) saturate(110%) contrast(102%) !important;
+    -webkit-backdrop-filter: blur(4px) saturate(110%) contrast(102%) !important;
   }
 
   body .modal-content,
@@ -1698,28 +1708,35 @@ a,
     position: relative !important;
     isolation: isolate !important;
     overflow: hidden !important;
-    width: min(88vw, 360px) !important;
-    max-width: min(88vw, 360px) !important;
-    max-height: min(78vh, 640px) !important;
+    width: min(82vw, 318px) !important;
+    max-width: min(82vw, 318px) !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: min(62vh, calc(100dvh - 190px)) !important;
+    overflow-y: auto !important;
     margin-left: auto !important;
-    margin-right: auto !important;
-    border-radius: 18px !important;
+    margin-right: 10px !important;
+    padding: 14px 14px 12px !important;
+    border-radius: 16px !important;
     border: 0 !important;
-    background: linear-gradient(140deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.12) 44%, rgba(255, 255, 255, 0.05) 100%) !important;
-    box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.54), inset 0 -1px 0 rgba(255, 255, 255, 0.14) !important;
-    backdrop-filter: blur(20px) saturate(160%) contrast(106%) brightness(104%) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(160%) contrast(106%) brightness(104%) !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 52%, rgba(255, 255, 255, 0.022) 100%) !important;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.44), inset 0 -1px 0 rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(8px) saturate(112%) contrast(103%) brightness(103%) !important;
+    -webkit-backdrop-filter: blur(8px) saturate(112%) contrast(103%) brightness(103%) !important;
   }
 
   body #task-detail-panel .modal-content,
   body #task-detail-panel .task-detail-content {
-    width: min(92vw, 392px) !important;
-    max-width: min(92vw, 392px) !important;
+    width: min(86vw, 336px) !important;
+    max-width: min(86vw, 336px) !important;
+    max-height: min(64vh, calc(100dvh - 180px)) !important;
+    overflow-y: auto !important;
   }
 
   body #mobile-task-modal > div {
-    width: min(90vw, 372px) !important;
-    max-width: min(90vw, 372px) !important;
+    width: min(84vw, 326px) !important;
+    max-width: min(84vw, 326px) !important;
+    max-height: min(58vh, calc(100dvh - 210px)) !important;
     margin-bottom: calc(10px + env(safe-area-inset-bottom, 0px)) !important;
   }
 
@@ -1730,13 +1747,13 @@ a,
   body #forgot-password-modal > div::before {
     content: "";
     position: absolute;
-    inset: -14px -12px;
+    inset: -10px -8px;
     border-radius: inherit;
     pointer-events: none;
-    background: rgba(255, 255, 255, 0.016);
-    backdrop-filter: blur(5px) saturate(112%) contrast(108%) brightness(108%);
-    -webkit-backdrop-filter: blur(5px) saturate(112%) contrast(108%) brightness(108%);
-    opacity: 0.3;
+    background: rgba(255, 255, 255, 0.01);
+    backdrop-filter: blur(3px) saturate(108%) contrast(104%) brightness(104%);
+    -webkit-backdrop-filter: blur(3px) saturate(108%) contrast(104%) brightness(104%);
+    opacity: 0.2;
     transform: scale(1.02);
   }
 
@@ -1751,9 +1768,9 @@ a,
     border-radius: inherit;
     pointer-events: none;
     background:
-      radial-gradient(128% 176% at 8% 10%, rgba(255, 255, 255, 0.36), rgba(255, 255, 255, 0) 44%),
-      radial-gradient(120% 156% at 88% 88%, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 50%);
-    opacity: 0.58;
+      radial-gradient(126% 166% at 10% 10%, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 44%),
+      radial-gradient(116% 146% at 90% 88%, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 52%);
+    opacity: 0.38;
   }
 
   body .modal-content > *,
@@ -1769,11 +1786,11 @@ a,
   body .modal-content .input-glass,
   body .confirm-modal-card .modal-input,
   body #forgot-password-modal input {
-    background: rgba(255, 255, 255, 0.34) !important;
-    border-color: rgba(255, 255, 255, 0.42) !important;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.44) !important;
-    backdrop-filter: blur(7px) saturate(120%) !important;
-    -webkit-backdrop-filter: blur(7px) saturate(120%) !important;
+    background: rgba(255, 255, 255, 0.18) !important;
+    border-color: rgba(255, 255, 255, 0.26) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28) !important;
+    backdrop-filter: blur(4px) saturate(108%) !important;
+    -webkit-backdrop-filter: blur(4px) saturate(108%) !important;
   }
 }
 
@@ -1783,14 +1800,363 @@ a,
   body .detail-modal,
   body #mobile-task-modal > div,
   body #forgot-password-modal > div {
-    width: min(90vw, 334px) !important;
-    max-width: min(90vw, 334px) !important;
-    border-radius: 16px !important;
+    width: min(84vw, 284px) !important;
+    max-width: min(84vw, 284px) !important;
+    border-radius: 15px !important;
+    margin-right: 8px !important;
+    max-height: min(56vh, calc(100dvh - 190px)) !important;
+    padding: 12px 12px 10px !important;
   }
 
   body #task-detail-panel .modal-content,
   body #task-detail-panel .task-detail-content {
-    width: min(94vw, 354px) !important;
-    max-width: min(94vw, 354px) !important;
+    width: min(86vw, 304px) !important;
+    max-width: min(86vw, 304px) !important;
+    max-height: min(58vh, calc(100dvh - 176px)) !important;
+  }
+}
+
+@media (max-width: 900px) {
+  html.unified-dark-mode body.software-app .modal-content,
+  html.unified-dark-mode body.software-app .confirm-modal-card,
+  html.unified-dark-mode body.software-app .detail-modal,
+  html.unified-dark-mode body.software-app #mobile-task-modal > div,
+  html.unified-dark-mode body.software-app #forgot-password-modal > div {
+    color: #ffffff !important;
+  }
+
+  html.unified-dark-mode body.software-app .modal-content p,
+  html.unified-dark-mode body.software-app .modal-content span,
+  html.unified-dark-mode body.software-app .modal-content label,
+  html.unified-dark-mode body.software-app .modal-content li,
+  html.unified-dark-mode body.software-app .confirm-modal-card p,
+  html.unified-dark-mode body.software-app .confirm-modal-card span,
+  html.unified-dark-mode body.software-app .confirm-modal-card label,
+  html.unified-dark-mode body.software-app .confirm-modal-card li,
+  html.unified-dark-mode body.software-app .detail-modal p,
+  html.unified-dark-mode body.software-app .detail-modal span,
+  html.unified-dark-mode body.software-app .detail-modal label,
+  html.unified-dark-mode body.software-app .detail-modal li {
+    color: #ffffff !important;
+  }
+  html.unified-dark-mode body.software-app .modal-content i,
+  html.unified-dark-mode body.software-app .confirm-modal-card i,
+  html.unified-dark-mode body.software-app .detail-modal i {
+    color: #c8d4e8 !important;
+  }
+  html.unified-dark-mode body.software-app .modal-content i.text-primary,
+  html.unified-dark-mode body.software-app .confirm-modal-card i.text-primary,
+  html.unified-dark-mode body.software-app .detail-modal i.text-primary {
+    color: #93c5fd !important;
+  }
+  html.unified-dark-mode body.software-app .modal-content i.text-success,
+  html.unified-dark-mode body.software-app .confirm-modal-card i.text-success,
+  html.unified-dark-mode body.software-app .detail-modal i.text-success {
+    color: #86efac !important;
+  }
+  html.unified-dark-mode body.software-app .modal-content i.text-warning,
+  html.unified-dark-mode body.software-app .confirm-modal-card i.text-warning,
+  html.unified-dark-mode body.software-app .detail-modal i.text-warning {
+    color: #fcd34d !important;
+  }
+  html.unified-dark-mode body.software-app .modal-content i.text-danger,
+  html.unified-dark-mode body.software-app .confirm-modal-card i.text-danger,
+  html.unified-dark-mode body.software-app .detail-modal i.text-danger {
+    color: #fca5a5 !important;
+  }
+  html.unified-dark-mode body.software-app .modal-content i.text-gray-900,
+  html.unified-dark-mode body.software-app .modal-content i.text-gray-800,
+  html.unified-dark-mode body.software-app .modal-content i.text-gray-700,
+  html.unified-dark-mode body.software-app .modal-content i.text-gray-600,
+  html.unified-dark-mode body.software-app .modal-content i.text-gray-500,
+  html.unified-dark-mode body.software-app .modal-content i.text-gray-400,
+  html.unified-dark-mode body.software-app .modal-content i.text-white,
+  html.unified-dark-mode body.software-app .confirm-modal-card i.text-gray-900,
+  html.unified-dark-mode body.software-app .confirm-modal-card i.text-gray-800,
+  html.unified-dark-mode body.software-app .confirm-modal-card i.text-gray-700,
+  html.unified-dark-mode body.software-app .confirm-modal-card i.text-gray-600,
+  html.unified-dark-mode body.software-app .confirm-modal-card i.text-gray-500,
+  html.unified-dark-mode body.software-app .confirm-modal-card i.text-gray-400,
+  html.unified-dark-mode body.software-app .confirm-modal-card i.text-white,
+  html.unified-dark-mode body.software-app .detail-modal i.text-gray-900,
+  html.unified-dark-mode body.software-app .detail-modal i.text-gray-800,
+  html.unified-dark-mode body.software-app .detail-modal i.text-gray-700,
+  html.unified-dark-mode body.software-app .detail-modal i.text-gray-600,
+  html.unified-dark-mode body.software-app .detail-modal i.text-gray-500,
+  html.unified-dark-mode body.software-app .detail-modal i.text-gray-400,
+  html.unified-dark-mode body.software-app .detail-modal i.text-white {
+    color: #c8d4e8 !important;
+  }
+
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-row {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)) !important;
+    border-color: rgba(255, 255, 255, 0.24) !important;
+  }
+
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item {
+    color: rgba(255, 255, 255, 0.84) !important;
+  }
+
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-icon {
+    color: rgba(255, 255, 255, 0.88) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: none !important;
+  }
+
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item.active {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item.active::before {
+    opacity: 0 !important;
+    background: transparent !important;
+  }
+
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.14) !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-label {
+    color: #ffffff !important;
+  }
+}
+
+@media (max-width: 900px) {
+  body.software-app.theme-night .modal-content,
+  body.software-app.theme-night .confirm-modal-card,
+  body.software-app.theme-night .detail-modal,
+  body.software-app.theme-night #mobile-task-modal > div,
+  body.software-app.theme-night #forgot-password-modal > div {
+    color: #ffffff !important;
+  }
+
+  body.software-app.theme-night .modal-content p,
+  body.software-app.theme-night .modal-content span,
+  body.software-app.theme-night .modal-content label,
+  body.software-app.theme-night .modal-content li,
+  body.software-app.theme-night .confirm-modal-card p,
+  body.software-app.theme-night .confirm-modal-card span,
+  body.software-app.theme-night .confirm-modal-card label,
+  body.software-app.theme-night .confirm-modal-card li,
+  body.software-app.theme-night .detail-modal p,
+  body.software-app.theme-night .detail-modal span,
+  body.software-app.theme-night .detail-modal label,
+  body.software-app.theme-night .detail-modal li {
+    color: #ffffff !important;
+  }
+  body.software-app.theme-night .modal-content i,
+  body.software-app.theme-night .confirm-modal-card i,
+  body.software-app.theme-night .detail-modal i {
+    color: #c8d4e8 !important;
+  }
+  body.software-app.theme-night .modal-content i.text-primary,
+  body.software-app.theme-night .confirm-modal-card i.text-primary,
+  body.software-app.theme-night .detail-modal i.text-primary {
+    color: #93c5fd !important;
+  }
+  body.software-app.theme-night .modal-content i.text-success,
+  body.software-app.theme-night .confirm-modal-card i.text-success,
+  body.software-app.theme-night .detail-modal i.text-success {
+    color: #86efac !important;
+  }
+  body.software-app.theme-night .modal-content i.text-warning,
+  body.software-app.theme-night .confirm-modal-card i.text-warning,
+  body.software-app.theme-night .detail-modal i.text-warning {
+    color: #fcd34d !important;
+  }
+  body.software-app.theme-night .modal-content i.text-danger,
+  body.software-app.theme-night .confirm-modal-card i.text-danger,
+  body.software-app.theme-night .detail-modal i.text-danger {
+    color: #fca5a5 !important;
+  }
+  body.software-app.theme-night .modal-content i.text-gray-900,
+  body.software-app.theme-night .modal-content i.text-gray-800,
+  body.software-app.theme-night .modal-content i.text-gray-700,
+  body.software-app.theme-night .modal-content i.text-gray-600,
+  body.software-app.theme-night .modal-content i.text-gray-500,
+  body.software-app.theme-night .modal-content i.text-gray-400,
+  body.software-app.theme-night .modal-content i.text-white,
+  body.software-app.theme-night .confirm-modal-card i.text-gray-900,
+  body.software-app.theme-night .confirm-modal-card i.text-gray-800,
+  body.software-app.theme-night .confirm-modal-card i.text-gray-700,
+  body.software-app.theme-night .confirm-modal-card i.text-gray-600,
+  body.software-app.theme-night .confirm-modal-card i.text-gray-500,
+  body.software-app.theme-night .confirm-modal-card i.text-gray-400,
+  body.software-app.theme-night .confirm-modal-card i.text-white,
+  body.software-app.theme-night .detail-modal i.text-gray-900,
+  body.software-app.theme-night .detail-modal i.text-gray-800,
+  body.software-app.theme-night .detail-modal i.text-gray-700,
+  body.software-app.theme-night .detail-modal i.text-gray-600,
+  body.software-app.theme-night .detail-modal i.text-gray-500,
+  body.software-app.theme-night .detail-modal i.text-gray-400,
+  body.software-app.theme-night .detail-modal i.text-white {
+    color: #c8d4e8 !important;
+  }
+
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item {
+    color: rgba(255, 255, 255, 0.84) !important;
+  }
+
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-icon {
+    color: rgba(255, 255, 255, 0.88) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: none !important;
+  }
+
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item.active {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item.active::before {
+    opacity: 0 !important;
+    background: transparent !important;
+  }
+
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-label {
+    color: #ffffff !important;
+  }
+
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon {
+    background: rgba(255, 255, 255, 0.14) !important;
+    transform: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  html.unified-dark-mode body.software-app #todo-main .glass-card.rounded-2xl.p-4.mb-6,
+  body.software-app.theme-night #todo-main .glass-card.rounded-2xl.p-4.mb-6 {
+    background: linear-gradient(180deg, rgba(31, 42, 61, 0.86), rgba(21, 31, 48, 0.8)) !important;
+    border-color: rgba(148, 163, 184, 0.24) !important;
+  }
+
+  html.unified-dark-mode body.software-app #todo-main > .glass-max.rounded-2xl:first-child > .flex.flex-col.md\:flex-row.md\:items-center.justify-between.gap-4,
+  body.software-app.theme-night #todo-main > .glass-max.rounded-2xl:first-child > .flex.flex-col.md\:flex-row.md\:items-center.justify-between.gap-4 {
+    background: linear-gradient(180deg, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.38)) !important;
+    border-color: rgba(148, 163, 184, 0.24) !important;
+    box-shadow: 0 10px 24px rgba(2, 6, 23, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+  }
+
+  html.unified-dark-mode body.software-app #todo-main #sort-filter-btn,
+  body.software-app.theme-night #todo-main #sort-filter-btn {
+    background: rgba(51, 65, 85, 0.54) !important;
+    border-color: rgba(148, 163, 184, 0.34) !important;
+    color: #dbeafe !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  }
+
+  html.unified-dark-mode body.software-app #todo-main #sort-filter-btn .fa-sort,
+  html.unified-dark-mode body.software-app #todo-main #sort-filter-btn .fa-chevron-down,
+  html.unified-dark-mode body.software-app #todo-main #sort-filter-btn .fa-chevron-up,
+  body.software-app.theme-night #todo-main #sort-filter-btn .fa-sort,
+  body.software-app.theme-night #todo-main #sort-filter-btn .fa-chevron-down,
+  body.software-app.theme-night #todo-main #sort-filter-btn .fa-chevron-up {
+    color: #9fb9ff !important;
+  }
+
+  html.unified-dark-mode body.software-app #todo-main #batch-complete-btn,
+  html.unified-dark-mode body.software-app #todo-main #batch-delete-btn,
+  body.software-app.theme-night #todo-main #batch-complete-btn,
+  body.software-app.theme-night #todo-main #batch-delete-btn {
+    background: rgba(51, 65, 85, 0.54) !important;
+    border-color: rgba(148, 163, 184, 0.34) !important;
+    color: #dbeafe !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  }
+
+  html.unified-dark-mode body.software-app #todo-main #sync-status-badge,
+  body.software-app.theme-night #todo-main #sync-status-badge {
+    background: rgba(21, 128, 61, 0.26) !important;
+    border-color: rgba(74, 222, 128, 0.45) !important;
+    color: #86efac !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+  }
+
+  html.unified-dark-mode body.software-app #calendar-main .glass-card.rounded-2xl.p-4.mb-6,
+  body.software-app.theme-night #calendar-main .glass-card.rounded-2xl.p-4.mb-6 {
+    background: linear-gradient(180deg, rgba(31, 42, 61, 0.86), rgba(21, 31, 48, 0.8)) !important;
+    border-color: rgba(148, 163, 184, 0.24) !important;
+  }
+
+  html.unified-dark-mode body.software-app #calendar-main #batch-complete-btn,
+  html.unified-dark-mode body.software-app #calendar-main #batch-delete-btn,
+  body.software-app.theme-night #calendar-main #batch-complete-btn,
+  body.software-app.theme-night #calendar-main #batch-delete-btn {
+    background: rgba(71, 85, 105, 0.76) !important;
+    border-color: rgba(148, 163, 184, 0.35) !important;
+    color: #dbe7ff !important;
+    box-shadow: none !important;
+  }
+
+  html.unified-dark-mode body.software-app #calendar-main #sort-filter-btn,
+  body.software-app.theme-night #calendar-main #sort-filter-btn {
+    background: rgba(71, 85, 105, 0.76) !important;
+    border-color: rgba(148, 163, 184, 0.35) !important;
+    color: #dbe7ff !important;
+    box-shadow: none !important;
+  }
+
+  html.unified-dark-mode body.software-app #calendar-main #sort-filter-btn .fa-sort,
+  html.unified-dark-mode body.software-app #calendar-main #sort-filter-btn .fa-chevron-down,
+  html.unified-dark-mode body.software-app #calendar-main #sort-filter-btn .fa-chevron-up,
+  body.software-app.theme-night #calendar-main #sort-filter-btn .fa-sort,
+  body.software-app.theme-night #calendar-main #sort-filter-btn .fa-chevron-down,
+  body.software-app.theme-night #calendar-main #sort-filter-btn .fa-chevron-up {
+    color: #8aa4ff !important;
+  }
+
+  html.unified-dark-mode body.software-app #calendar-mobile-toolbar .calendar-mobile-toolbar-inner > div,
+  body.software-app.theme-night #calendar-mobile-toolbar .calendar-mobile-toolbar-inner > div {
+    background: linear-gradient(180deg, rgba(30, 41, 59, 0.54), rgba(15, 23, 42, 0.4)) !important;
+    border-color: rgba(148, 163, 184, 0.24) !important;
+    box-shadow: 0 10px 24px rgba(2, 6, 23, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+  }
+
+  html.unified-dark-mode body.software-app #calendar-mobile-toolbar #today-btn,
+  body.software-app.theme-night #calendar-mobile-toolbar #today-btn {
+    background: linear-gradient(180deg, rgba(83, 107, 255, 0.98), rgba(66, 88, 222, 0.98)) !important;
+    border-color: rgba(129, 150, 255, 0.75) !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+  }
+
+  html.unified-dark-mode body.software-app #calendar-mobile-toolbar .calendar-mobile-meta-row .glass-card,
+  body.software-app.theme-night #calendar-mobile-toolbar .calendar-mobile-meta-row .glass-card {
+    background: rgba(51, 65, 85, 0.56) !important;
+    border-color: rgba(148, 163, 184, 0.34) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  }
+
+  html.unified-dark-mode body.software-app #calendar-mobile-toolbar #current-date,
+  body.software-app.theme-night #calendar-mobile-toolbar #current-date {
+    color: #dbeafe !important;
+  }
+
+  html.unified-dark-mode body.software-app #calendar-mobile-toolbar .calendar-mobile-view-row > .view-btn,
+  html.unified-dark-mode body.software-app #calendar-mobile-toolbar .calendar-mobile-view-row > [data-view],
+  body.software-app.theme-night #calendar-mobile-toolbar .calendar-mobile-view-row > .view-btn,
+  body.software-app.theme-night #calendar-mobile-toolbar .calendar-mobile-view-row > [data-view] {
+    background: rgba(51, 65, 85, 0.54) !important;
+    border-color: rgba(148, 163, 184, 0.34) !important;
+    color: #dbeafe !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  }
+
+  html.unified-dark-mode body.software-app #calendar-mobile-toolbar .calendar-mobile-view-row > .view-btn.active,
+  html.unified-dark-mode body.software-app #calendar-mobile-toolbar .calendar-mobile-view-row > [data-view].active,
+  body.software-app.theme-night #calendar-mobile-toolbar .calendar-mobile-view-row > .view-btn.active,
+  body.software-app.theme-night #calendar-mobile-toolbar .calendar-mobile-view-row > [data-view].active {
+    background: linear-gradient(180deg, rgba(83, 107, 255, 0.98), rgba(66, 88, 222, 0.98)) !important;
+    border-color: rgba(129, 150, 255, 0.75) !important;
+    color: #ffffff !important;
   }
 }

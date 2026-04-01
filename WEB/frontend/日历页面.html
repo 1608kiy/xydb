@@ -82,7 +82,7 @@
             添加任务
           </a>
           <div class="relative" id="user-menu-container">
-            <button class="flex items-center space-x-2 focus:outline-none outline-none transition-all duration-300 hover:scale-105" id="user-menu-btn">
+            <button class="flex items-center space-x-2 focus:outline-none outline-none transition-colors duration-300" id="user-menu-btn">
               <img
                 alt="用户头像"
                 class="header-user-avatar w-8 h-8 rounded-full object-cover border-2 border-white shadow-md ring-2 ring-primary/30"
@@ -297,23 +297,6 @@
           </div>
         </div>
         
-        <!-- 任务侧边栏 -->
-        <div class="glass-card rounded-2xl p-6 mt-6 fade-in">
-          <h2 class="text-lg font-semibold text-gray-800 mb-4">待办任务池</h2>
-          <div class="space-y-3" id="task-pool">
-            <!-- 动态渲染任务 -->
-          </div>
-          <button
-            type="button"
-            id="ai-schedule-btn"
-            class="mt-4 btn-primary w-full justify-center glow-effect"
-          >
-            <i class="fas fa-magic mr-2"> </i>
-            AI 智能排程
-          </button>
-          <p id="ai-schedule-status" class="mt-2 text-xs text-gray-500">可接入 AI 自动为未排程任务分配日期时间</p>
-        </div>
-        
         <!-- 日历颜色标签 -->
         <div class="glass-card rounded-2xl p-6 mt-6 fade-in">
           <h2 class="text-lg font-semibold text-gray-800 mb-4">任务分类</h2>
@@ -339,6 +322,23 @@
               <span class="category-chip-label">健康</span>
             </button>
           </div>
+        </div>
+
+        <!-- 任务侧边栏 -->
+        <div class="glass-card rounded-2xl p-6 mt-6 fade-in">
+          <h2 class="text-lg font-semibold text-gray-800 mb-4">待办任务池</h2>
+          <div class="space-y-3" id="task-pool">
+            <!-- 动态渲染任务 -->
+          </div>
+          <button
+            type="button"
+            id="ai-schedule-btn"
+            class="mt-4 btn-primary w-full justify-center glow-effect"
+          >
+            <i class="fas fa-magic mr-2"> </i>
+            AI 智能排程
+          </button>
+          <p id="ai-schedule-status" class="mt-2 text-xs text-gray-500">可接入 AI 自动为未排程任务分配日期时间</p>
         </div>
       </main>
       <!-- [/MODULE] e3f_主内容区域 -->
