@@ -60,7 +60,7 @@
               <div class="custom-select-option selected" onclick="selectTimeRange('本周', this)">本周</div>
               <div class="custom-select-option" onclick="selectTimeRange('上周', this)">上周</div>
               <div class="custom-select-option" onclick="selectTimeRange('本月', this)">本月</div>
-              <div class="custom-select-option" onclick="selectTimeRange('自定义', this)">自定义</div>
+              <div class="custom-select-option" onclick="selectTimeRange('自定义', this)">近30天</div>
             </div>
           </div>
         </div>
@@ -120,6 +120,14 @@
     <div class="flex flex-1 overflow-hidden">
       <!-- [MODULE] e3f_主内容区域 -->
       <main class="flex-1 overflow-y-auto content-auto bg-transparent p-4 md:p-6 scrollbar-thin fade-in" id="report-main">
+        <div class="mb-4" id="report-range-tabs">
+          <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+            <button type="button" class="px-3 py-1.5 rounded-full text-xs font-medium bg-primary text-white" data-range="本周">本周</button>
+            <button type="button" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white/70 text-gray-600 border border-white/60" data-range="上周">上周</button>
+            <button type="button" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white/70 text-gray-600 border border-white/60" data-range="本月">本月</button>
+            <button type="button" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white/70 text-gray-600 border border-white/60" data-range="自定义">近30天</button>
+          </div>
+        </div>
         <!-- 概览卡片 -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6" id="report-stats-grid">
           <div class="stat-card group">
@@ -132,7 +140,7 @@
               </h3>
             </div>
             <div class="stat-value bg-gradient-to-r from-success to-emerald-500 bg-clip-text text-transparent" id="completed-tasks">28 项</div>
-            <div class="trend-indicator text-green-600 mt-2 flex items-center">
+            <div class="trend-indicator text-green-600 mt-2 flex items-center" id="report-overview-compare-text">
               <i class="fas fa-arrow-up mr-1"> </i>
               12% 较上周
             </div>
@@ -180,7 +188,7 @@
               </h3>
             </div>
             <div class="stat-value bg-gradient-to-r from-secondary to-purple-500 bg-clip-text text-transparent" id="effectiveness-score">85 分</div>
-            <div class="text-xs text-gray-500 mt-2 font-medium">A 级</div>
+            <div class="text-xs text-gray-500 mt-2 font-medium" id="effectiveness-rating">A 级</div>
           </div>
         </div>
         
@@ -248,10 +256,6 @@
                 <div class="text-sm font-medium text-gray-700">上午 (9-11 点)</div>
               </div>
               <div class="slot-count">8 项</div>
-              <div class="text-xs text-yellow-600 mt-3 flex items-center font-medium">
-                <i class="fas fa-crown crown-badge mr-2"></i>
-                最佳效率时段
-              </div>
             </div>
             <div class="time-slot-card" data-slot="noon">
               <div class="flex items-center mb-3">
@@ -357,12 +361,24 @@
           href="个人中心页面.html"
         >
           <i class="fas fa-user text-base"> </i>
-          <span class="text-[10px] mt-0.5"> 个人中心 </span>
+          <span class="text-[10px] mt-0.5"> 我的 </span>
           <span class="tab-indicator"></span>
         </a>
       </div>
     </footer>
     <!-- [/MODULE] m7n_底部 Tab 栏 -->
+
+    <div id="report-chart-modal" class="fixed inset-0 z-[120] hidden items-center justify-center bg-black/25 px-4">
+      <div class="glass-strong rounded-2xl p-4 w-full max-w-sm card-shadow">
+        <div class="flex items-start justify-between gap-3">
+          <h3 id="report-chart-modal-title" class="text-base font-semibold text-gray-800">数据详情</h3>
+          <button id="report-chart-modal-close" type="button" class="text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <p id="report-chart-modal-content" class="text-sm text-gray-600 mt-3 leading-relaxed"></p>
+      </div>
+    </div>
     
     <!-- [JSMOD] n8o_日期显示功能 -->
     <script id="date-script" src='./js/pages/数据周报页面.date-script.js?v=20260327_jssplit'></script>

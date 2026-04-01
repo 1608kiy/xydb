@@ -54,6 +54,7 @@
               <img
                 src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
                 alt="用户头像"
+                onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2296%22 height=%2296%22 viewBox=%220 0 96 96%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop offset=%220%25%22 stop-color=%22%23a5b4fc%22/%3E%3Cstop offset=%22100%25%22 stop-color=%22%23c4b5fd%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx=%2248%22 cy=%2248%22 r=%2248%22 fill=%22url(%23g)%22/%3E%3Ccircle cx=%2248%22 cy=%2238%22 r=%2216%22 fill=%22rgba(255,255,255,0.9)%22/%3E%3Cpath d=%22M20 82c4-14 15-22 28-22s24 8 28 22%22 fill=%22rgba(255,255,255,0.9)%22/%3E%3C/svg%3E';"
                 class="header-user-avatar w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300"
               />
               <span class="hidden md:inline-block font-medium header-user-name">张明</span>
@@ -101,7 +102,7 @@
       <main class="flex-1 overflow-y-auto content-auto p-4 md:p-6 scrollbar-thin">
         <div
           id="profile-app-grid"
-          class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[2fr,3fr] gap-6"
+          class="max-w-6xl mx-auto space-y-4"
         >
           <!-- 左侧：个人信息 + 概览 -->
           <div class="space-y-4" id="profile-main-column">
@@ -119,6 +120,7 @@
                       id="profile-avatar"
                       src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
                       alt="头像"
+                      onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22160%22 height=%22160%22 viewBox=%220 0 160 160%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop offset=%220%25%22 stop-color=%22%23a5b4fc%22/%3E%3Cstop offset=%22100%25%22 stop-color=%22%23c4b5fd%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx=%2280%22 cy=%2280%22 r=%2280%22 fill=%22url(%23g)%22/%3E%3Ccircle cx=%2280%22 cy=%2262%22 r=%2226%22 fill=%22rgba(255,255,255,0.9)%22/%3E%3Cpath d=%22M34 138c7-24 25-38 46-38s39 14 46 38%22 fill=%22rgba(255,255,255,0.9)%22/%3E%3C/svg%3E';"
                       class="relative w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg transition-all duration-300 group-hover:shadow-xl"
                     />
                     <button
@@ -193,12 +195,7 @@
                         <p class="text-xs text-gray-500 mb-0.5">手机号码</p>
                         <p id="user-phone" class="text-sm font-medium text-gray-800">188****0000</p>
                       </div>
-                      <button
-                        id="edit-phone-btn"
-                        class="px-3 py-1.5 rounded-lg border border-gray-200 text-xs text-gray-600 hover:border-primary hover:bg-gray-50 transition-all duration-200"
-                      >
-                        修改
-                      </button>
+                      <span class="text-xs text-gray-500">仅展示，修改请前往账号安全</span>
                     </div>
                   </div>
                   
@@ -230,10 +227,11 @@
 
             <!-- 数据统计概要 -->
             <section
+              id="profile-stats-module"
               class="card-shadow card-hover glass-strong rounded-2xl p-4 md:p-5 fade-in"
             >
               <h2 class="text-sm font-semibold text-gray-800 mb-4 flex items-center">
-                <i class="fas fa-chart-bar text-primary mr-2"></i>
+                <i class="fas fa-chart-bar text-primary mr-2 profile-line-icon"></i>
                 数据概要
               </h2>
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
@@ -274,15 +272,21 @@
                   <div id="stat-total-pomodoros" class="text-2xl font-bold bg-gradient-to-r from-danger to-red-500 bg-clip-text text-transparent transition-all duration-300 group-hover:brightness-110">612</div>
                 </div>
               </div>
+              <div class="module-empty-state mt-3" id="profile-stats-empty">
+                <i class="far fa-chart-bar text-lg"></i>
+                <h3>暂无数据</h3>
+                <p>快去创建待办并开始专注，数据会自动同步到这里。</p>
+              </div>
             </section>
 
             <!-- 存储管理 -->
             <section
+              id="profile-storage-module"
               class="card-shadow card-hover glass-strong rounded-2xl p-4 md:p-5 fade-in"
             >
               <div class="flex items-center justify-between mb-4">
                 <h2 class="text-sm font-semibold text-gray-800 flex items-center">
-                  <i class="fas fa-database text-info mr-2"></i>
+                  <i class="fas fa-database text-info mr-2 profile-line-icon"></i>
                   存储管理
                 </h2>
                 <button
@@ -319,41 +323,42 @@
 
             <!-- 帮助与关于 -->
             <section
+              id="profile-help-module"
               class="card-shadow card-hover glass-strong rounded-2xl p-4 md:p-5 fade-in"
             >
               <h2 class="text-sm font-semibold text-gray-800 mb-3 flex items-center">
-                <i class="fas fa-question-circle text-primary mr-2"></i>
+                <i class="fas fa-question-circle text-primary mr-2 profile-line-icon"></i>
                 帮助与关于
               </h2>
               <div class="space-y-1.5 text-sm text-gray-700">
                 <button id="help-guide-btn"
-                  class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-gray-50/50 transition-all duration-200 hover:pl-5"
+                  class="profile-list-row w-full flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-gray-50/50 transition-all duration-200 hover:pl-5"
                 >
-                  <span><i class="fas fa-book mr-2.5 text-gray-400"></i>新手指南</span>
+                  <span><i class="fas fa-book mr-2.5 text-gray-400 profile-line-icon"></i>新手指南</span>
                   <i class="fas fa-chevron-right text-xs text-gray-400 group-hover:translate-x-1 transition-transform"></i>
                 </button>
                 <button id="help-faq-btn"
-                  class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-gray-50/50 transition-all duration-200 hover:pl-5"
+                  class="profile-list-row w-full flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-gray-50/50 transition-all duration-200 hover:pl-5"
                 >
-                  <span><i class="fas fa-question-circle mr-2.5 text-gray-400"></i>常见问题</span>
+                  <span><i class="fas fa-question-circle mr-2.5 text-gray-400 profile-line-icon"></i>常见问题</span>
                   <i class="fas fa-chevron-right text-xs text-gray-400 group-hover:translate-x-1 transition-transform"></i>
                 </button>
                 <button id="feedback-btn"
-                  class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-gray-50/50 transition-all duration-200 hover:pl-5"
+                  class="profile-list-row w-full flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-gray-50/50 transition-all duration-200 hover:pl-5"
                 >
-                  <span><i class="fas fa-comment-dots mr-2.5 text-gray-400"></i>意见反馈</span>
+                  <span><i class="fas fa-comment-dots mr-2.5 text-gray-400 profile-line-icon"></i>意见反馈</span>
                   <span class="text-[11px] text-gray-400">支持截图上传</span>
                 </button>
                 <button id="contact-support-btn"
-                  class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-gray-50/50 transition-all duration-200 hover:pl-5"
+                  class="profile-list-row w-full flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-gray-50/50 transition-all duration-200 hover:pl-5"
                 >
-                  <span><i class="fas fa-headset mr-2.5 text-gray-400"></i>联系客服</span>
+                  <span><i class="fas fa-headset mr-2.5 text-gray-400 profile-line-icon"></i>联系客服</span>
                   <span class="text-[11px] text-gray-400">工作日 9:00-18:00</span>
                 </button>
                 <button
-                  class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-gray-50/50 transition-all duration-200 hover:pl-5"
+                  class="profile-list-row w-full flex items-center justify-between px-4 py-2.5 rounded-lg hover:bg-gray-50/50 transition-all duration-200 hover:pl-5"
                 >
-                  <span><i class="fas fa-star mr-2.5 text-yellow-400"></i>为应用评分</span>
+                  <span><i class="fas fa-star mr-2.5 text-yellow-400 profile-line-icon"></i>给应用评分</span>
                   <i class="fas fa-chevron-right text-xs text-gray-400 group-hover:translate-x-1 transition-transform"></i>
                 </button>
                 <div class="border-t border-gray-100 pt-2 mt-2 text-[11px]">
@@ -382,18 +387,19 @@
           <div class="space-y-4" id="profile-settings-column">
             <!-- 账号安全 -->
             <section
+              id="profile-security-module"
               class="card-shadow card-hover glass-strong rounded-2xl p-4 md:p-5 fade-in"
             >
               <div class="flex items-center justify-between mb-4">
                 <h2 class="text-sm font-semibold text-gray-800 flex items-center">
-                  <i class="fas fa-shield-alt text-primary mr-2"></i>
+                  <i class="fas fa-shield-alt text-primary mr-2 profile-line-icon"></i>
                   账号安全
                 </h2>
                 <span
                   class="inline-flex items-center px-3 py-1 rounded-full text-[11px] bg-gradient-to-r from-green-50 to-emerald-50 text-green-600 border border-green-100 font-medium"
                 >
                   <i class="fas fa-check-circle mr-1"></i>
-                  安全等级：高
+                  安全等级：高（已完成主要安全设置）
                 </span>
               </div>
               <div class="space-y-1.5 text-sm text-gray-700">
@@ -452,10 +458,19 @@
                       </p>
                     </div>
                   </div>
-                  <div class="flex space-x-3">
-                    <button id="bind-wechat-btn" class="social-icon weixin" title="点击绑定微信" type="button"><i class="fab fa-weixin"></i></button>
-                    <button id="bind-apple-btn" class="social-icon apple" title="点击绑定苹果" type="button"><i class="fab fa-apple"></i></button>
-                    <button id="bind-google-btn" class="social-icon google" title="点击绑定谷歌" type="button"><i class="fab fa-google"></i></button>
+                  <div class="flex items-center gap-4">
+                    <div class="flex flex-col items-center gap-1">
+                      <button id="bind-wechat-btn" class="social-icon weixin" title="点击绑定微信" type="button"><i class="fab fa-weixin"></i></button>
+                      <span id="bind-wechat-state" class="text-[10px] text-gray-500">去绑定</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1">
+                      <button id="bind-apple-btn" class="social-icon apple" title="点击绑定苹果" type="button"><i class="fab fa-apple"></i></button>
+                      <span id="bind-apple-state" class="text-[10px] text-gray-500">去绑定</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1">
+                      <button id="bind-google-btn" class="social-icon google" title="点击绑定谷歌" type="button"><i class="fab fa-google"></i></button>
+                      <span id="bind-google-state" class="text-[10px] text-gray-500">去绑定</span>
+                    </div>
                   </div>
                 </div>
                 <div id="security-bind-form" class="hidden mt-2 rounded-xl border border-gray-200 bg-white/70 p-3 space-y-2">
@@ -471,19 +486,22 @@
 
             <!-- 应用设置 -->
             <section
+              id="profile-settings-module"
               class="card-shadow card-hover glass-strong rounded-2xl p-4 md:p-5 fade-in"
             >
               <h2 class="text-sm font-semibold text-gray-800 mb-3 flex items-center">
-                <i class="fas fa-cog text-primary mr-2"></i>
+                <i class="fas fa-cog text-primary mr-2 profile-line-icon"></i>
                 应用设置
               </h2>
               <div class="space-y-4 text-xs text-gray-700">
                 <!-- 主题设置 -->
-                <div>
-                  <div class="flex items-center justify-between mb-2">
+                <div class="settings-group">
+                  <button class="settings-group-toggle" type="button" data-target="settings-theme-body" aria-expanded="true">
                     <span class="font-medium">主题设置</span>
-                  </div>
-                  <div class="flex flex-wrap gap-2">
+                    <i class="fas fa-chevron-down text-[11px]"></i>
+                  </button>
+                  <div id="settings-theme-body" class="settings-group-body">
+                    <div class="flex flex-wrap gap-2">
                     <button
                       id="theme-light-btn"
                       data-theme="light"
@@ -498,15 +516,18 @@
                     >
                       深色模式
                     </button>
+                    </div>
                   </div>
                 </div>
 
                 <!-- 通知设置 -->
-                <div class="border-t border-gray-100 pt-3">
-                  <div class="flex items-center justify-between mb-2">
+                <div class="settings-group border-t border-gray-100 pt-3">
+                  <button class="settings-group-toggle" type="button" data-target="settings-notify-body" aria-expanded="true">
                     <span class="font-medium">通知设置</span>
-                  </div>
-                  <div class="space-y-2.5">
+                    <i class="fas fa-chevron-down text-[11px]"></i>
+                  </button>
+                  <div id="settings-notify-body" class="settings-group-body">
+                    <div class="space-y-2.5">
                     <label class="flex items-center justify-between group cursor-pointer">
                       <span class="transition-colors">任务提醒</span>
                       <input id="notify-task-reminder" type="checkbox" class="custom-checkbox" checked />
@@ -528,15 +549,18 @@
                         </button>
                       </div>
                     </div>
+                    </div>
                   </div>
                 </div>
 
                 <!-- 专注设置 -->
-                <div class="border-t border-gray-100 pt-3">
-                  <div class="flex items-center justify-between mb-2">
+                <div class="settings-group border-t border-gray-100 pt-3">
+                  <button class="settings-group-toggle" type="button" data-target="settings-focus-body" aria-expanded="true">
                     <span class="font-medium">专注设置</span>
-                  </div>
-                  <div class="grid grid-cols-2 gap-3">
+                    <i class="fas fa-chevron-down text-[11px]"></i>
+                  </button>
+                  <div id="settings-focus-body" class="settings-group-body">
+                    <div class="grid grid-cols-2 gap-3">
                     <div>
                       <p class="text-gray-500 mb-1">默认番茄时长</p>
                       <select
@@ -571,7 +595,7 @@
                       </select>
                     </div>
                     <div>
-                      <p class="text-gray-500 mb-1">长休息触发间隔</p>
+                      <p class="text-gray-500 mb-1">长休息触发条件</p>
                       <select
                         id="long-break-interval-select"
                         class="custom-select w-full"
@@ -605,12 +629,16 @@
                       <span class="transition-colors">专注时屏蔽通知</span>
                     </label>
                   </div>
+                  </div>
                 </div>
 
-                <!-- 日历 & 数据隐私 -->
-                <div class="border-t border-gray-100 pt-3 grid md:grid-cols-2 gap-4">
-                  <div>
-                    <p class="font-medium mb-2">日历设置</p>
+                <!-- 日历设置 -->
+                <div class="settings-group border-t border-gray-100 pt-3">
+                  <button class="settings-group-toggle" type="button" data-target="settings-calendar-body" aria-expanded="true">
+                    <span class="font-medium">日历设置</span>
+                    <i class="fas fa-chevron-down text-[11px]"></i>
+                  </button>
+                  <div id="settings-calendar-body" class="settings-group-body">
                     <div class="space-y-1.5">
                       <div class="flex items-center justify-between text-[11px]">
                         <span>一周开始于</span>
@@ -644,19 +672,26 @@
                       </label>
                     </div>
                   </div>
-                  <div>
-                    <p class="font-medium mb-2">数据隐私</p>
+                </div>
+
+                <!-- 数据隐私 -->
+                <div class="settings-group border-t border-gray-100 pt-3">
+                  <button class="settings-group-toggle" type="button" data-target="settings-privacy-body" aria-expanded="true">
+                    <span class="font-medium">数据隐私</span>
+                    <i class="fas fa-chevron-down text-[11px]"></i>
+                  </button>
+                  <div id="settings-privacy-body" class="settings-group-body">
                     <div class="space-y-1.5 text-[11px]">
                       <button
                         id="export-data-btn"
-                        class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all duration-200"
+                        class="profile-list-row w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all duration-200"
                       >
                         <span>导出数据（JSON / CSV）</span>
                         <i class="fas fa-download text-gray-400 group-hover:text-primary transition-colors"></i>
                       </button>
                       <button
                         id="manual-backup-btn"
-                        class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all duration-200"
+                        class="profile-list-row w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all duration-200"
                       >
                         <span>手动备份</span>
                         <i class="fas fa-cloud-upload-alt text-gray-400 group-hover:text-primary transition-colors"></i>
@@ -669,19 +704,28 @@
                         />
                         <span class="transition-colors">允许匿名使用统计，用于产品优化</span>
                       </label>
-                      <button
-                        id="clear-all-data-btn"
-                        class="w-full flex items-center justify-between px-2 py-1.5 rounded-lg border border-danger/40 text-danger hover:bg-danger/5 mt-1 transition-all duration-200"
-                      >
-                        <span>清除所有数据</span>
-                        <i class="fas fa-exclamation-triangle text-danger"></i>
-                      </button>
                     </div>
                   </div>
                 </div>
+              </div>
+            </section>
 
-                <!-- 退出登录 / 注销账号 -->
-                <div class="border-t border-gray-100 pt-3 flex flex-wrap gap-2">
+            <!-- 账号高危操作区 -->
+            <section id="profile-danger-module" class="card-shadow card-hover glass-strong rounded-2xl p-4 md:p-5 fade-in border border-danger/20">
+              <h2 class="text-sm font-semibold text-danger mb-3 flex items-center">
+                <i class="fas fa-triangle-exclamation mr-2 profile-line-icon"></i>
+                账号高危操作
+              </h2>
+              <p class="text-xs text-gray-500 mb-3">以下操作不可逆，请谨慎确认后执行。</p>
+              <div class="space-y-2">
+                <button
+                  id="clear-all-data-btn"
+                  class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg border border-danger/40 text-danger hover:bg-danger/5 transition-all duration-200"
+                >
+                  <span>清除所有数据</span>
+                  <i class="fas fa-exclamation-triangle text-danger"></i>
+                </button>
+                <div class="flex flex-wrap gap-2">
                   <button
                     id="logout-btn"
                     class="px-3 py-1.5 rounded-lg border border-gray-300 text-xs text-gray-700 hover:bg-gray-50 transition-all duration-200"
@@ -700,11 +744,12 @@
 
             <!-- 成就徽章墙 -->
             <section
+              id="profile-achievement-module"
               class="card-shadow card-hover glass-strong rounded-2xl p-4 md:p-5 fade-in"
             >
               <div class="flex items-center justify-between mb-3 gap-2">
                 <h2 class="text-sm font-semibold text-gray-800 flex items-center">
-                  <i class="fas fa-trophy text-primary mr-2"></i>
+                  <i class="fas fa-trophy text-primary mr-2 profile-line-icon"></i>
                   成就徽章墙
                 </h2>
                 <div class="flex items-center gap-2">
@@ -810,11 +855,33 @@
                   <div class="text-[10px] text-gray-500 mt-0.5">注册满 30 天</div>
                 </div>
               </div>
+              <div class="module-empty-state mt-3" id="achievement-empty">
+                <i class="far fa-star text-lg"></i>
+                <h3>暂无可展示徽章</h3>
+                <p>完成任务、专注和打卡后，可逐步解锁你的专属成就。</p>
+              </div>
             </section>
           </div>
         </div>
       </main>
       <script src='./js/pages/个人中心页面.inline-03.js?v=20260327_jssplit'></script>
+    </div>
+
+    <div id="profile-quick-anchor" class="profile-quick-anchor">
+      <button id="profile-anchor-toggle" type="button" class="profile-anchor-toggle">
+        <i class="fas fa-list"></i>
+        <span>定位</span>
+      </button>
+      <div id="profile-anchor-panel" class="profile-anchor-panel hidden">
+        <button type="button" class="profile-anchor-item" data-target="profile-main-column">个人信息</button>
+        <button type="button" class="profile-anchor-item" data-target="profile-stats-module">数据概要</button>
+        <button type="button" class="profile-anchor-item" data-target="profile-storage-module">存储管理</button>
+        <button type="button" class="profile-anchor-item" data-target="profile-help-module">帮助与关于</button>
+        <button type="button" class="profile-anchor-item" data-target="profile-security-module">账号安全</button>
+        <button type="button" class="profile-anchor-item" data-target="profile-settings-module">应用设置</button>
+        <button type="button" class="profile-anchor-item" data-target="profile-danger-module">高危操作</button>
+        <button type="button" class="profile-anchor-item" data-target="profile-achievement-module">成就徽章</button>
+      </div>
     </div>
 
     <!-- 底部 Tab 栏 -->
@@ -868,7 +935,7 @@
           class="tab-item active flex flex-col items-center text-primary px-2 py-1 rounded-lg bg-primary/10"
         >
           <i class="fas fa-user text-base"></i>
-          <span class="text-[10px] mt-0.5 font-semibold">个人中心</span>
+          <span class="text-[10px] mt-0.5 font-semibold">我的</span>
           <span class="tab-indicator"></span>
         </a>
       </div>

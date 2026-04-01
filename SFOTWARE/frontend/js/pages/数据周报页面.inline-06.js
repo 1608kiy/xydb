@@ -35,7 +35,7 @@
 
       function selectTimeRange(value, element) {
         var textEl = document.getElementById('time-range-text');
-        if (textEl) textEl.textContent = value;
+        if (textEl) textEl.textContent = (value === '自定义' ? '近30天' : value);
 
         document.querySelectorAll('#time-range-dropdown .custom-select-option').forEach(function (opt) {
           opt.classList.remove('selected');
@@ -52,11 +52,39 @@
         try { localStorage.setItem('report-time-range', value); } catch (e) {}
 
         if (value === '自定义') {
-          showToast('已切换到自定义（近 30 天）数据视图');
+          showToast('已切换到近30天数据视图');
         } else {
           showToast('已切换到 ' + value + ' 数据视图');
         }
         updateWeeklyStats({ sync: false });
+      }
+
+      function syncTimeRangeTabs(selected) {
+        var tabs = document.querySelectorAll('#report-range-tabs [data-range]');
+        tabs.forEach(function (btn) {
+          var active = (btn.getAttribute('data-range') || '') === selected;
+          btn.classList.toggle('bg-primary', active);
+          btn.classList.toggle('text-white', active);
+          btn.classList.toggle('bg-white/70', !active);
+          btn.classList.toggle('text-gray-600', !active);
+          btn.classList.toggle('border', !active);
+          btn.classList.toggle('border-white/60', !active);
+        });
+      }
+
+      function bindTimeRangeTabs() {
+        var tabs = document.querySelectorAll('#report-range-tabs [data-range]');
+        tabs.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var range = btn.getAttribute('data-range') || '本周';
+            var fakeOption = Array.prototype.slice.call(document.querySelectorAll('#time-range-dropdown .custom-select-option')).find(function (opt) {
+              var text = (opt.textContent || '').trim();
+              if (range === '自定义') return text === '自定义';
+              return text === range;
+            });
+            selectTimeRange(range, fakeOption || null);
+          });
+        });
       }
 
       // 点击其他地方关闭下拉
@@ -175,12 +203,66 @@
         };
       }
 
+      function getPreviousRange(range) {
+        var spanMs = range.end.getTime() - range.start.getTime();
+        var prevEnd = new Date(range.start.getTime() - 1);
+        var prevStart = new Date(prevEnd.getTime() - spanMs);
+        prevStart.setHours(0, 0, 0, 0);
+        prevEnd.setHours(23, 59, 59, 999);
+        return { start: prevStart, end: prevEnd };
+      }
+
+      function updateCompareAndRating(currentOverview, range) {
+        var compareEl = document.getElementById('report-overview-compare-text');
+        var ratingEl = document.getElementById('effectiveness-rating');
+        if (!compareEl || !ratingEl) return;
+
+        var hasCurrentData = (currentOverview.completedTasks || 0) > 0 || (currentOverview.totalFocusMinutes || 0) > 0 || (currentOverview.totalPomodoros || 0) > 0 || (currentOverview.maxContinuousPomodoros || 0) > 0;
+        if (!hasCurrentData) {
+          compareEl.innerHTML = '<i class="fas fa-minus mr-1"></i>暂无对比数据';
+          compareEl.classList.remove('text-green-600', 'text-red-500');
+          compareEl.classList.add('text-gray-500');
+          var scoreValueEl = document.getElementById('effectiveness-score');
+          if (scoreValueEl) scoreValueEl.textContent = '暂无评分';
+          ratingEl.textContent = '暂无评级';
+          return;
+        }
+
+        var prevRange = getPreviousRange(range);
+        var prevTasks = getCompletedTasksInRange(prevRange.start, prevRange.end);
+        var prevSessions = getFocusSessionsInRange(prevRange.start, prevRange.end);
+        var prevOverview = calculateOverview(prevTasks, prevSessions);
+        var prev = Number(prevOverview.completedTasks || 0);
+        var curr = Number(currentOverview.completedTasks || 0);
+        if (prev <= 0) {
+          compareEl.innerHTML = '<i class="fas fa-minus mr-1"></i>暂无对比数据';
+          compareEl.classList.remove('text-green-600', 'text-red-500');
+          compareEl.classList.add('text-gray-500');
+        } else {
+          var pct = Math.round(((curr - prev) / prev) * 100);
+          var rising = pct >= 0;
+          compareEl.innerHTML = '<i class="fas ' + (rising ? 'fa-arrow-up' : 'fa-arrow-down') + ' mr-1"></i>' + Math.abs(pct) + '% 较上周期';
+          compareEl.classList.toggle('text-green-600', rising);
+          compareEl.classList.toggle('text-red-500', !rising);
+          compareEl.classList.remove('text-gray-500');
+        }
+
+        var score = Number(currentOverview.effectivenessScore || 0);
+        var level = 'D 级';
+        if (score >= 90) level = 'S 级';
+        else if (score >= 80) level = 'A 级';
+        else if (score >= 70) level = 'B 级';
+        else if (score >= 60) level = 'C 级';
+        ratingEl.textContent = level;
+      }
+
       function updateOverviewCards(stats) {
         animateValue(document.getElementById('completed-tasks'), Number(stats.completedTasks || 0), ' 项');
         animateValue(document.getElementById('focus-hours'), Number(((stats.totalFocusMinutes || 0) / 60).toFixed(1)), ' 小时');
         animateValue(document.getElementById('pomodoro-count'), Number(stats.totalPomodoros || 0), ' 个');
         animateValue(document.getElementById('max-continuous-pomodoros'), Number(stats.maxContinuousPomodoros || 0), ' 个番茄');
-        animateValue(document.getElementById('effectiveness-score'), Number(stats.effectivenessScore || 0), ' 分');
+        var scoreEl = document.getElementById('effectiveness-score');
+        if (scoreEl) scoreEl.textContent = Number(stats.effectivenessScore || 0) + ' 分';
       }
 
       function buildDateList(start, end) {
@@ -237,17 +319,32 @@
           return Number((minutes / 60).toFixed(1));
         });
 
+        var taskHasData = taskCounts.some(function (n) { return n > 0; });
+        var focusHasData = focusHours.some(function (n) { return n > 0; });
+
         if (window.taskTrendChart) {
           window.taskTrendChart.setOption({
             xAxis: { data: labels },
-            series: [{ data: taskCounts }]
+            series: [{ data: taskHasData ? taskCounts : [] }],
+            graphic: taskHasData ? [] : [{
+              type: 'text',
+              left: 'center',
+              top: 'middle',
+              style: { text: '暂无数据', fill: '#9CA3AF', fontSize: 13 }
+            }]
           });
         }
 
         if (window.focusBarChart) {
           window.focusBarChart.setOption({
             xAxis: { data: labels },
-            series: [{ data: focusHours }]
+            series: [{ data: focusHasData ? focusHours : [] }],
+            graphic: focusHasData ? [] : [{
+              type: 'text',
+              left: 'center',
+              top: 'middle',
+              style: { text: '暂无数据', fill: '#9CA3AF', fontSize: 13 }
+            }]
           });
         }
       }
@@ -265,11 +362,20 @@
           return { name: name, value: categoryMap[name] };
         });
 
-        if (!data.length) {
-          data = [{ name: '暂无数据', value: 0 }];
+        var hasData = data.length > 0;
+        if (!hasData) {
+          data = [{ name: '暂无数据', value: 1, itemStyle: { color: 'rgba(203,213,225,0.45)' } }];
         }
 
-        window.categoryPieChart.setOption({ series: [{ data: data }] });
+        window.categoryPieChart.setOption({
+          series: [{ data: data, label: { show: hasData } }],
+          graphic: [{
+            type: 'text',
+            left: 'center',
+            top: 'middle',
+            style: { text: hasData ? '' : '暂无数据', fill: '#9CA3AF', fontSize: 13, fontWeight: 500 }
+          }]
+        });
       }
 
       function updateHeatmap(sessions) {
@@ -296,7 +402,13 @@
 
         window.focusHeatmap.setOption({
           visualMap: { max: Math.max(maxValue, 1) },
-          series: [{ data: matrix }]
+          series: [{ data: matrix }],
+          graphic: maxValue > 0 ? [] : [{
+            type: 'text',
+            left: 'center',
+            top: 'middle',
+            style: { text: '暂无数据', fill: '#9CA3AF', fontSize: 13 }
+          }]
         });
       }
 
@@ -354,6 +466,9 @@
           var slotElement = container.querySelector('[data-slot="' + slot.slot + '"]');
           if (!slotElement) return;
 
+          var oldBadge = slotElement.querySelector('.slot-best-indicator');
+          if (oldBadge) oldBadge.remove();
+
           var countElement = slotElement.querySelector('.slot-count');
           if (countElement) {
             animateValue(countElement, Number(slot.tasksCompleted || 0), '项');
@@ -361,6 +476,10 @@
 
           if (slot.slot === bestSlot && slot.tasksCompleted > 0) {
             slotElement.classList.add('best-slot');
+            var badge = document.createElement('div');
+            badge.className = 'slot-best-indicator text-xs text-yellow-600 mt-3 flex items-center font-medium';
+            badge.innerHTML = '<i class="fas fa-crown crown-badge mr-2"></i>最佳效率时段';
+            slotElement.appendChild(badge);
           } else {
             slotElement.classList.remove('best-slot');
           }
@@ -376,10 +495,19 @@
         ];
       }
 
+      function getNoDataSuggestion() {
+        return '暂无有效数据，快去创建待办、开启专注，生成专属效率建议吧';
+      }
+
+      function hasValidReportData(context) {
+        var c = context || {};
+        return Number(c.completedTasks || 0) > 0 || Number(c.focusSessions || 0) > 0;
+      }
+
       function renderSmartSuggestions(items) {
         var list = document.getElementById('smart-suggestions-list');
         if (!list) return;
-        var values = Array.isArray(items) && items.length ? items : getDefaultSuggestions();
+        var values = Array.isArray(items) && items.length ? items : [getNoDataSuggestion()];
         list.innerHTML = values.map(function (text) {
           return '<div class="suggestion-card flex items-start">' +
             '<i class="fas fa-lightbulb text-yellow-500 mt-1 mr-3 flex-shrink-0"></i>' +
@@ -414,6 +542,9 @@
           return JSON.parse(text);
         }
         var context = buildReportAiContext();
+        if (!hasValidReportData(context)) {
+          return Promise.resolve([getNoDataSuggestion()]);
+        }
         var prompt = [
           '你是效率分析助手，请基于用户周报数据生成4条可执行建议。',
           '要求：每条建议不超过30字，中文。返回纯JSON。',
@@ -451,6 +582,11 @@
 
       function scheduleAiSuggestionsLoad() {
         var run = function () {
+          var context = buildReportAiContext();
+          if (!hasValidReportData(context)) {
+            renderSmartSuggestions([getNoDataSuggestion()]);
+            return Promise.resolve();
+          }
           return requestAiSmartSuggestions().then(function (items) {
             renderSmartSuggestions(items);
           }).catch(function () {
@@ -469,14 +605,76 @@
         var selected = validValues.indexOf(value) >= 0 ? value : '本周';
 
         var textEl = document.getElementById('time-range-text');
-        if (textEl) textEl.textContent = selected;
+        if (textEl) textEl.textContent = (selected === '自定义' ? '近30天' : selected);
 
         document.querySelectorAll('#time-range-dropdown .custom-select-option').forEach(function (opt) {
-          var isSelected = opt.textContent.trim() === selected;
+          var text = opt.textContent.trim();
+          var isSelected = text === selected || (selected === '自定义' && text === '近30天');
           opt.classList.toggle('selected', isSelected);
         });
 
+        syncTimeRangeTabs(selected);
+
         return selected;
+      }
+
+      function showReportChartDetail(title, content) {
+        var modal = document.getElementById('report-chart-modal');
+        var titleEl = document.getElementById('report-chart-modal-title');
+        var contentEl = document.getElementById('report-chart-modal-content');
+        if (!modal || !titleEl || !contentEl) return;
+        titleEl.textContent = title || '数据详情';
+        contentEl.textContent = content || '暂无详情';
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+
+      function hideReportChartDetail() {
+        var modal = document.getElementById('report-chart-modal');
+        if (!modal) return;
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+
+      function bindReportChartInteractions() {
+        if (window.taskTrendChart && !window.__reportTaskTrendClickBound) {
+          window.__reportTaskTrendClickBound = true;
+          window.taskTrendChart.on('click', function (params) {
+            showReportChartDetail('任务完成趋势', (params.name || '') + ' 完成任务：' + (params.value || 0) + ' 项');
+          });
+        }
+        if (window.focusBarChart && !window.__reportFocusBarClickBound) {
+          window.__reportFocusBarClickBound = true;
+          window.focusBarChart.on('click', function (params) {
+            showReportChartDetail('番茄专注分析', (params.name || '') + ' 专注时长：' + (params.value || 0) + ' 小时');
+          });
+        }
+        if (window.categoryPieChart && !window.__reportCategoryClickBound) {
+          window.__reportCategoryClickBound = true;
+          window.categoryPieChart.on('click', function (params) {
+            showReportChartDetail('任务分类统计', (params.name || '') + '：' + (params.value || 0) + ' 项');
+          });
+        }
+        if (window.focusHeatmap && !window.__reportHeatmapClickBound) {
+          window.__reportHeatmapClickBound = true;
+          window.focusHeatmap.on('click', function (params) {
+            var v = params.value || [0, 0, 0];
+            var days = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+            var spans = ['0-2', '2-4', '4-6', '6-8', '8-10', '10-12', '12-14', '14-16', '16-18', '18-20', '20-22', '22-24'];
+            showReportChartDetail('专注时间段分布', (days[v[1]] || '未知') + ' ' + (spans[v[0]] || '未知') + ' 点段专注：' + (v[2] || 0) + ' 次');
+          });
+        }
+      }
+
+      function bindReportChartModalEvents() {
+        var modal = document.getElementById('report-chart-modal');
+        var closeBtn = document.getElementById('report-chart-modal-close');
+        if (closeBtn) closeBtn.addEventListener('click', hideReportChartDetail);
+        if (modal) {
+          modal.addEventListener('click', function (e) {
+            if (e.target === modal) hideReportChartDetail();
+          });
+        }
       }
 
       function updateWeeklyStats(options) {
@@ -492,10 +690,12 @@
           var overview = calculateOverview(completedTasks, focusSessions);
 
           updateOverviewCards(overview);
+          updateCompareAndRating(overview, range);
           updateTrendCharts(range, completedTasks, focusSessions);
           updateCategoryChart(completedTasks);
           updateHeatmap(focusSessions);
           updateTimeSlots(completedTasks);
+          bindReportChartInteractions();
         }
 
         if (shouldSync && typeof syncReportStateFromServer === 'function') {
@@ -536,6 +736,8 @@
         var savedRange = null;
         try { savedRange = localStorage.getItem('report-time-range'); } catch (e) { savedRange = null; }
         applyTimeRangeSelection(savedRange || '本周');
+        bindTimeRangeTabs();
+        bindReportChartModalEvents();
 
         Promise.resolve()
           .then(function () { return updateWeeklyStats({ sync: false }); })
@@ -549,6 +751,9 @@
 
             // AI 建议在空闲时加载，降低与首屏渲染竞争。
             scheduleAiSuggestionsLoad();
+
+            // 图表实例通常在空闲时初始化，做一次延迟绑定确保点击详情可用。
+            setTimeout(bindReportChartInteractions, 420);
           })
           .catch(function (err) { console.error('updateWeeklyStats init error:', err); })
           .finally(revealBottomTab);
@@ -556,15 +761,30 @@
         var aiRefreshBtn = document.getElementById('ai-suggestions-refresh');
         if (aiRefreshBtn) {
           aiRefreshBtn.addEventListener('click', function () {
+            var context = buildReportAiContext();
             aiRefreshBtn.disabled = true;
+            var oldText = aiRefreshBtn.textContent;
+            aiRefreshBtn.textContent = '刷新中...';
+            aiRefreshBtn.classList.add('opacity-70');
             requestAiSmartSuggestions().then(function (items) {
               renderSmartSuggestions(items);
-              showToast('智能建议已更新', 'success');
+              if (!hasValidReportData(context)) {
+                showToast('暂无新增有效数据，仍显示空状态', 'info');
+              } else {
+                showToast('智能建议已更新', 'success');
+              }
             }).catch(function () {
-              renderSmartSuggestions(getDefaultSuggestions());
-              showToast('AI 不可用，已展示默认建议', 'warning');
+              if (!hasValidReportData(context)) {
+                renderSmartSuggestions([getNoDataSuggestion()]);
+                showToast('暂无有效数据，建议暂不可生成', 'info');
+              } else {
+                renderSmartSuggestions(getDefaultSuggestions());
+                showToast('AI 不可用，已展示默认建议', 'warning');
+              }
             }).finally(function () {
               aiRefreshBtn.disabled = false;
+              aiRefreshBtn.textContent = oldText;
+              aiRefreshBtn.classList.remove('opacity-70');
             });
           });
         }

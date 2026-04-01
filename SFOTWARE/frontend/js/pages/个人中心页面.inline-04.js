@@ -12,6 +12,39 @@
         }
       }
 
+      function getAvatarFallbackDataUrl(size) {
+        var s = Number(size || 160);
+        var center = Math.floor(s / 2);
+        var headR = Math.floor(s * 0.165);
+        var bodyY = Math.floor(s * 0.63);
+        var pad = Math.floor(s * 0.21);
+        var svg = ''
+          + '<svg xmlns="http://www.w3.org/2000/svg" width="' + s + '" height="' + s + '" viewBox="0 0 ' + s + ' ' + s + '">'
+          + '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">'
+          + '<stop offset="0%" stop-color="#a5b4fc"/><stop offset="100%" stop-color="#c4b5fd"/>'
+          + '</linearGradient></defs>'
+          + '<circle cx="' + center + '" cy="' + center + '" r="' + center + '" fill="url(#g)"/>'
+          + '<circle cx="' + center + '" cy="' + Math.floor(s * 0.39) + '" r="' + headR + '" fill="rgba(255,255,255,0.9)"/>'
+          + '<path d="M' + pad + ' ' + Math.floor(s * 0.86) + 'c' + Math.floor(s * 0.04) + '-' + Math.floor(s * 0.15)
+          + ' ' + Math.floor(s * 0.16) + '-' + Math.floor(s * 0.24)
+          + ' ' + Math.floor(s * 0.29) + '-' + Math.floor(s * 0.24)
+          + 's' + Math.floor(s * 0.25) + ' ' + Math.floor(s * 0.09)
+          + ' ' + Math.floor(s * 0.29) + ' ' + Math.floor(s * 0.24)
+          + '" fill="rgba(255,255,255,0.9)"/>'
+          + '</svg>';
+        return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+      }
+
+      function safeAvatarSrc(src, fallbackSize) {
+        var value = String(src || '').trim();
+        if (!value) return getAvatarFallbackDataUrl(fallbackSize);
+        var low = value.toLowerCase();
+        if (low === 'null' || low === 'undefined' || low === '[object object]') {
+          return getAvatarFallbackDataUrl(fallbackSize);
+        }
+        return value;
+      }
+
       // ✅ 自定义下拉列表通用函数
       function initCustomSelect(selectElement) {
         if (!selectElement) return;
@@ -83,6 +116,8 @@
           achievement.style.display = 'block';
           visibleCount += 1;
         });
+        var empty = document.getElementById('achievement-empty');
+        if (empty) empty.style.display = visibleCount === 0 ? 'block' : 'none';
       }
 
       function toggleAchievementFilter() {
@@ -200,6 +235,78 @@
         
         closeDndModal();
         showToast('✅ 勿扰时间已设置：' + startTime + ' - ' + endTime);
+      }
+
+      function bindProfileQuickAnchor() {
+        var root = document.getElementById('profile-quick-anchor');
+        var toggle = document.getElementById('profile-anchor-toggle');
+        var panel = document.getElementById('profile-anchor-panel');
+        if (!root || !toggle || !panel) return;
+        var scrollTimer = null;
+
+        var items = Array.prototype.slice.call(panel.querySelectorAll('.profile-anchor-item[data-target]'));
+
+        function setActiveAnchor(targetId) {
+          items.forEach(function (item) {
+            var current = item.getAttribute('data-target');
+            item.classList.toggle('active', current === targetId);
+          });
+        }
+
+        toggle.addEventListener('click', function (e) {
+          e.stopPropagation();
+          panel.classList.toggle('hidden');
+        });
+
+        items.forEach(function (item) {
+          item.addEventListener('click', function () {
+            var targetId = item.getAttribute('data-target');
+            var target = targetId ? document.getElementById(targetId) : null;
+            if (!target) return;
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setActiveAnchor(targetId);
+            panel.classList.add('hidden');
+          });
+        });
+
+        var observed = items.map(function (item) {
+          var id = item.getAttribute('data-target');
+          return { id: id, node: id ? document.getElementById(id) : null };
+        }).filter(function (x) { return !!x.node; });
+
+        if (observed.length) {
+          setActiveAnchor(observed[0].id);
+        }
+
+        if ('IntersectionObserver' in window && observed.length) {
+          var io = new IntersectionObserver(function (entries) {
+            var visible = entries.filter(function (entry) { return entry.isIntersecting; });
+            if (!visible.length) return;
+            visible.sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; });
+            var top = visible[0].target;
+            if (!top || !top.id) return;
+            setActiveAnchor(top.id);
+          }, {
+            root: null,
+            threshold: [0.2, 0.35, 0.55],
+            rootMargin: '-15% 0px -55% 0px'
+          });
+
+          observed.forEach(function (x) { io.observe(x.node); });
+        }
+
+        document.addEventListener('click', function (e) {
+          if (!root.contains(e.target)) panel.classList.add('hidden');
+        });
+
+        window.addEventListener('scroll', function () {
+          panel.classList.add('hidden');
+          root.classList.add('is-scrolling');
+          if (scrollTimer) clearTimeout(scrollTimer);
+          scrollTimer = setTimeout(function () {
+            root.classList.remove('is-scrolling');
+          }, 140);
+        }, { passive: true });
       }
 
       function loadDndSettings() {
@@ -369,12 +476,26 @@
           var displayName = (AppState.user && AppState.user.name) || '轻悦用户';
           var displayEmail = (AppState.user && AppState.user.email) || 'demo@ringnote.com';
           var displayPhone = (AppState.user && AppState.user.phone) || '';
-          if (profileAvatar) profileAvatar.src = (AppState.user && AppState.user.avatar) || profileAvatar.src;
+          if (profileAvatar) {
+            profileAvatar.src = safeAvatarSrc((AppState.user && AppState.user.avatar) || profileAvatar.src, 160);
+            profileAvatar.onerror = function () {
+              profileAvatar.onerror = null;
+              profileAvatar.src = getAvatarFallbackDataUrl(160);
+            };
+          }
           if (userName) userName.value = displayName;
           if (userEmail) userEmail.textContent = displayEmail;
           if (userPhone) userPhone.textContent = displayPhone ? maskPhoneNumber(displayPhone) : '未绑定';
           var headerUserName = document.querySelector('.header-user-name');
           if (headerUserName) headerUserName.textContent = displayName;
+          var headerAvatar = document.querySelector('.header-user-avatar');
+          if (headerAvatar) {
+            headerAvatar.src = safeAvatarSrc((AppState.user && AppState.user.avatar) || headerAvatar.src, 96);
+            headerAvatar.onerror = function () {
+              headerAvatar.onerror = null;
+              headerAvatar.src = getAvatarFallbackDataUrl(96);
+            };
+          }
           if (typeof window.refreshUnifiedUserIdentityUi === 'function') {
             window.refreshUnifiedUserIdentityUi();
           }
@@ -409,14 +530,18 @@
               : 'px-3 py-1.5 rounded-lg border border-gray-200 text-xs text-gray-600 hover:border-primary hover:bg-gray-50 transition-all duration-200';
           }
 
-          function syncProviderBtn(btn, bound, titleBound, titleUnbound) {
+          function syncProviderBtn(btn, bound, titleBound, titleUnbound, stateEl) {
             if (!btn) return;
             btn.classList.toggle('opacity-60', !bound);
             btn.title = bound ? titleBound : titleUnbound;
+            if (stateEl) {
+              stateEl.textContent = bound ? '已绑定' : '去绑定';
+              stateEl.className = bound ? 'text-[10px] text-emerald-600' : 'text-[10px] text-gray-500';
+            }
           }
-          syncProviderBtn(bindWechatBtn, !!u.wechatBound, '微信已绑定', '点击绑定微信');
-          syncProviderBtn(bindAppleBtn, !!u.appleBound, '苹果已绑定', '点击绑定苹果');
-          syncProviderBtn(bindGoogleBtn, !!u.googleBound, '谷歌已绑定', '点击绑定谷歌');
+          syncProviderBtn(bindWechatBtn, !!u.wechatBound, '微信已绑定', '点击绑定微信', document.getElementById('bind-wechat-state'));
+          syncProviderBtn(bindAppleBtn, !!u.appleBound, '苹果已绑定', '点击绑定苹果', document.getElementById('bind-apple-state'));
+          syncProviderBtn(bindGoogleBtn, !!u.googleBound, '谷歌已绑定', '点击绑定谷歌', document.getElementById('bind-google-state'));
         }
 
         function openSecurityBindForm(mode, provider) {
@@ -787,6 +912,19 @@
 
         initializeSettings();
 
+        var settingsGroupToggles = document.querySelectorAll('.settings-group-toggle');
+        settingsGroupToggles.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var targetId = btn.getAttribute('data-target');
+            if (!targetId) return;
+            var body = document.getElementById(targetId);
+            if (!body) return;
+            var isExpanded = btn.getAttribute('aria-expanded') !== 'false';
+            btn.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
+            body.classList.toggle('hidden', isExpanded);
+          });
+        });
+
         function normalizeThemeMode(mode) {
           if (mode === 'dark' || mode === 'night') return 'night';
           if (mode === 'system') {
@@ -1075,6 +1213,7 @@
         
         // ✅ 加载勿扰设置
         loadDndSettings();
+        bindProfileQuickAnchor();
       });
 
       function initializeSettings() {
@@ -1178,6 +1317,12 @@
         }
         if (maxStreakEl) animateNumber(maxStreakEl, maxStreak, ' 天');
         if (totalPomodorosEl) animateNumber(totalPomodorosEl, totalPomodoros);
+
+        var statsEmpty = document.getElementById('profile-stats-empty');
+        if (statsEmpty) {
+          var hasAny = completedTasks > 0 || totalFocusMinutes > 0 || maxStreak > 0 || totalPomodoros > 0;
+          statsEmpty.style.display = hasAny ? 'none' : 'block';
+        }
 
         if (typeof renderExpProfile === 'function') renderExpProfile();
         if (typeof window.refreshUnifiedUserIdentityUi === 'function') window.refreshUnifiedUserIdentityUi();
