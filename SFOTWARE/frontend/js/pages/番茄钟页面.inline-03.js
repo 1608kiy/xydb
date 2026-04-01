@@ -45,6 +45,7 @@
               timeLeft: 25 * 60,
               isRunning: false,
               timerId: null,
+              lastBeatSecond: null,
               selectedTaskId: '',
               sessionTaskName: '',
               todayPomodoro: 0,
@@ -61,6 +62,8 @@
               modeBtns: Array.from(document.querySelectorAll('.mode-btn')),
               currentModeLabel: document.getElementById('current-mode-label'),
               progressCircle: document.getElementById('progress-circle'),
+              timerShell: document.getElementById('timer-shell'),
+              timerCore: document.getElementById('timer-core'),
               taskSelect: document.getElementById('task-select'),
               taskSelectContainer: document.getElementById('task-select-container'),
               taskSelectDisplay: document.getElementById('task-select-display'),
@@ -84,6 +87,8 @@
               summaryCycle: document.getElementById('summary-cycle'),
               summarySuggest: document.getElementById('summary-suggest'),
               modeTip: document.getElementById('mode-tip'),
+              noTaskEmpty: document.getElementById('no-task-empty'),
+              emptyPickTaskBtn: document.getElementById('empty-pick-task-btn'),
               streakDisplay: document.getElementById('streak-display'),
               totalPomodoro: document.getElementById('total-pomodoro')
             };
@@ -142,6 +147,50 @@
             this.updateStatsUI();
             this.checkNotificationPermission();
             this.updateAchievementStats();
+            this.setRunningVisual(false);
+            if (!this.state.selectedTaskId && this.tasks.length > 0) {
+              this.toggleDropdown();
+            }
+          }
+
+          setRunningVisual(running) {
+            document.body.classList.toggle('pomodoro-running', !!running);
+          }
+
+          triggerFocusBurst() {
+            var host = document.getElementById('focus-burst');
+            if (!host) return;
+            var htmlEl = document.documentElement;
+            var bodyEl = document.body;
+            var isDark = htmlEl.classList.contains('unified-dark-mode') || bodyEl.classList.contains('theme-night');
+            var count = isDark ? 22 : 16;
+            var palette = isDark
+              ? ['#22d3ee', '#818cf8', '#38bdf8', '#a78bfa']
+              : ['#fb7185', '#f59e0b', '#f97316', '#f43f5e'];
+            for (var i = 0; i < count; i++) {
+              var p = document.createElement('span');
+              p.className = 'focus-particle';
+              var angle = (Math.PI * 2 * i) / count;
+              var dist = (isDark ? 54 : 40) + Math.random() * (isDark ? 88 : 64);
+              var tx = Math.cos(angle) * dist;
+              var ty = Math.sin(angle) * dist;
+              var c1 = palette[Math.floor(Math.random() * palette.length)];
+              var c2 = palette[Math.floor(Math.random() * palette.length)];
+              var size = (isDark ? 5.5 : 4.5) + Math.random() * (isDark ? 6 : 5);
+              p.style.setProperty('--tx', tx + 'px');
+              p.style.setProperty('--ty', ty + 'px');
+              p.style.background = 'linear-gradient(135deg, ' + c1 + ', ' + c2 + ')';
+              p.style.width = size + 'px';
+              p.style.height = size + 'px';
+              p.style.animationDuration = (isDark ? 840 : 740) + Math.random() * 160 + 'ms';
+              p.style.animationDelay = (Math.random() * 90) + 'ms';
+              host.appendChild(p);
+              setTimeout(function (node) {
+                return function () {
+                  if (node && node.parentNode) node.parentNode.removeChild(node);
+                };
+              }(p), 1080);
+            }
           }
 
           loadStorage() {
@@ -310,6 +359,9 @@
             if (this.dom.currentTaskLabel) {
               this.dom.currentTaskLabel.textContent = selected ? selected.name : '未选择任务';
             }
+            if (this.dom.noTaskEmpty) {
+              this.dom.noTaskEmpty.classList.toggle('hidden', !!selected);
+            }
           }
 
           toggleDropdown() {
@@ -332,14 +384,27 @@
             if (!this.dom.timerDisplay || !this.dom.progressCircle) return;
             this.dom.timerDisplay.textContent = this.formatTime(this.state.timeLeft);
             const total = this.config.modes[this.state.currentMode].seconds;
-            const progress = 1 - this.state.timeLeft / total;
-            const degrees = progress * 360;
+            const remaining = this.state.timeLeft / total;
+            const degrees = remaining * 360;
             this.dom.progressCircle.style.transform = `rotate(${degrees - 90}deg)`;
+
+            if (this.state.isRunning && this.state.timeLeft >= 0 && this.state.lastBeatSecond !== this.state.timeLeft) {
+              this.state.lastBeatSecond = this.state.timeLeft;
+              this.triggerClockBeat();
+            }
 
             if (this.state.timeLeft <= 10 && this.state.currentMode === 'focus' && this.state.isRunning) {
               this.dom.timerDisplay.classList.add('text-danger', 'animate-pulse');
             } else {
               this.dom.timerDisplay.classList.remove('text-danger', 'animate-pulse');
+            }
+          }
+
+          triggerClockBeat() {
+            if (this.dom.timerShell) {
+              this.dom.timerShell.classList.remove('tick-beat');
+              void this.dom.timerShell.offsetWidth;
+              this.dom.timerShell.classList.add('tick-beat');
             }
           }
 
@@ -374,13 +439,13 @@
             const longMinutes = this.config.modes.long.seconds / 60;
             
             if (focusBtn) {
-              focusBtn.innerHTML = `<i class="fas fa-fire mr-1"></i>专注 ${focusMinutes}'`;
+              focusBtn.textContent = `专注${focusMinutes}分钟`;
             }
             if (shortBtn) {
-              shortBtn.innerHTML = `<i class="fas fa-coffee mr-1"></i>短休 ${shortMinutes}'`;
+              shortBtn.textContent = `短休${shortMinutes}分钟`;
             }
             if (longBtn) {
-              longBtn.innerHTML = `<i class="fas fa-bed mr-1"></i>长休 ${longMinutes}'`;
+              longBtn.textContent = `长休${longMinutes}分钟`;
             }
           }
 
@@ -434,6 +499,8 @@
             this.state.sessionTaskName = this.getTaskNameById(this.state.selectedTaskId) || '未关联任务';
             if (this.dom.taskSelect) this.dom.taskSelect.disabled = true;
             this.setTaskCardsDisabled(true);
+            this.setRunningVisual(true);
+            this.state.lastBeatSecond = null;
             this.dom.startBtn.innerHTML = '<i class="fas fa-pause"></i><span class="ml-2" id="start-btn-text">暂停</span>';
             this.state.timerId = setInterval(() => {
               this.state.timeLeft -= 1;
@@ -453,6 +520,8 @@
               this.state.timerId = null;
             }
             this.state.isRunning = false;
+            this.state.lastBeatSecond = null;
+            this.setRunningVisual(false);
             this.dom.startBtn.innerHTML = '<i class="fas fa-play"></i><span class="ml-2" id="start-btn-text">开始</span>';
             if (this.dom.taskSelect) this.dom.taskSelect.disabled = false;
             this.setTaskCardsDisabled(false);
@@ -537,6 +606,7 @@
               this.updateHistoryUI();
               this.updateStatsUI();
               this.updateAchievementStats();
+              this.triggerFocusBurst();
               this.notify('番茄完成', `完成 ${taskName} 的一个番茄`);
             }
             this.saveStorage();
@@ -574,10 +644,27 @@
             this.dom.sessionHistory.innerHTML = '';
             if (this.state.history.length === 0) {
               const li = document.createElement('li');
-              li.className = 'text-gray-400 text-center py-4 bg-primary/5 rounded-lg';
-              li.textContent = '暂无记录';
+              li.className = 'text-center py-5 bg-white/70 rounded-xl border border-dashed border-primary/30';
+              li.innerHTML = '<div class="text-lg mb-1">🕒</div><div class="text-sm text-gray-700 font-medium">还没有今日专注记录</div><div class="text-xs text-gray-500 mt-1">选择任务并点击开始，完成你的第一个番茄。</div><button id="history-start-btn" class="mt-3 btn-primary px-4 py-2 rounded-xl text-xs" type="button">开始专注</button>';
               this.dom.sessionHistory.appendChild(li);
+              if (this.dom.clearHistoryBtn) {
+                this.dom.clearHistoryBtn.classList.add('opacity-40', 'pointer-events-none');
+              }
+              var historyStartBtn = document.getElementById('history-start-btn');
+              if (historyStartBtn) {
+                historyStartBtn.addEventListener('click', () => {
+                  if (!this.state.selectedTaskId && this.tasks.length > 0) {
+                    this.toggleDropdown();
+                    this.showToast('请先选择一个待办任务');
+                    return;
+                  }
+                  this.start();
+                });
+              }
               return;
+            }
+            if (this.dom.clearHistoryBtn) {
+              this.dom.clearHistoryBtn.classList.remove('opacity-40', 'pointer-events-none');
             }
             this.state.history.forEach((record) => {
               const li = document.createElement('li');
@@ -686,6 +773,14 @@
               this.dom.mobileTaskModal.addEventListener('click', (e) => {
                 if (e.target === this.dom.mobileTaskModal) {
                   this.dom.mobileTaskModal.classList.add('hidden');
+                }
+              });
+            }
+
+            if (this.dom.emptyPickTaskBtn) {
+              this.dom.emptyPickTaskBtn.addEventListener('click', () => {
+                if (this.dom.mobileTaskModal) {
+                  this.dom.mobileTaskModal.classList.remove('hidden');
                 }
               });
             }

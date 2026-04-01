@@ -1,7 +1,7 @@
 ﻿
       try { document.documentElement.classList.add('defer-unified-tab'); } catch (e) {}
       if (typeof checkAuthOnLoad === 'function') { checkAuthOnLoad().catch(function(){}); }
-      window.__reportSyncNoop = false;
+      window.__reportSyncNoop = true;
       // Fetch server data (tasks, pomodoros) and render aggregated weekly stats and charts
       function parseDateVal(v) {
         if (v === null || v === undefined || v === '') return null;
@@ -26,22 +26,6 @@
       }
 
       function normalizeTask(t) {
-        var labels = [];
-        if (Array.isArray(t.tags)) {
-          labels = t.tags;
-        } else if (typeof t.tags === 'string' && t.tags.trim()) {
-          try {
-            var parsedTags = JSON.parse(t.tags);
-            if (Array.isArray(parsedTags)) labels = parsedTags;
-          } catch (e) {
-            labels = [t.tags];
-          }
-        } else if (Array.isArray(t.labels)) {
-          labels = t.labels;
-        } else if (t.tagNames && Array.isArray(t.tagNames)) {
-          labels = t.tagNames;
-        }
-
         return {
           id: String(t.id || t.taskId || t.idStr || ''),
           title: t.title || t.name || '',
@@ -49,7 +33,7 @@
           dueAt: parseDateVal(t.dueAt || t.due_at || t.dueAtStr || t.dueTime),
           status: t.status || t.state || 'pending',
           priority: t.priority || 'medium',
-          labels: labels,
+          labels: (t.tags && Array.isArray(t.tags)) ? t.tags : (t.labels || t.tagNames || []),
           createdAt: parseDateVal(t.createdAt || t.created_at),
           updatedAt: parseDateVal(t.updatedAt || t.updated_at)
         };
@@ -131,43 +115,9 @@
       }
 
       function syncReportStateFromServer() {
-        function extractList(resp) {
-          if (!resp || resp.status !== 200 || !resp.body || resp.body.code !== 200) return null;
-          var data = resp.body.data;
-          if (Array.isArray(data)) return data;
-          if (data && Array.isArray(data.records)) return data.records;
-          if (data && Array.isArray(data.list)) return data.list;
-          return null;
-        }
-
-        return Promise.allSettled([
-          apiRequest('/api/tasks', { method: 'GET' }),
-          apiRequest('/api/pomodoros', { method: 'GET' })
-        ]).then(function (results) {
-          var taskResp = results[0] && results[0].status === 'fulfilled' ? results[0].value : null;
-          var pomoResp = results[1] && results[1].status === 'fulfilled' ? results[1].value : null;
-
-          var taskList = extractList(taskResp);
-          var pomoList = extractList(pomoResp);
-
-          var hasAnyRemote = false;
-          if (taskList) {
-            AppState.tasks = taskList.map(normalizeTask);
-            hasAnyRemote = true;
-          }
-          if (pomoList) {
-            AppState.pomodoroSessions = pomoList.map(normalizePomo);
-            hasAnyRemote = true;
-          }
-
-          if (hasAnyRemote) {
-            AppState.save();
-            return;
-          }
-
-          console.warn('syncReportStateFromServer: no valid remote data', taskResp, pomoResp);
-        }).catch(function (err) {
-          console.error('syncReportStateFromServer error', err);
-        });
+        // 后端没有提供 /api/tasks 和 /api/pomodoros 接口，仅使用本地数据
+        window.__reportSyncNoop = true;
+        return Promise.resolve();
+        // 本地数据已经及时编程加载到 AppState 中
       }
     

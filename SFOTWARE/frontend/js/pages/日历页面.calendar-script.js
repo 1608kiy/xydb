@@ -58,6 +58,9 @@
         var categoryChips = Array.prototype.slice.call(document.querySelectorAll('.category-chip[data-category]'));
         var taskPoolView = 'grid';
         var activeCategory = 'all';
+        var selectedDaySortMode = 'time';
+        var selectedDayMultiMode = false;
+        var selectedDayBatchIds = [];
         var viewSwitchTimer = null;
         var isSwitchingView = false;
         var CALENDAR_RENDER_TASK_LIMIT = 1200;
@@ -874,16 +877,122 @@
           return new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0);
         }
 
+        function openCreateTaskForDate(date) {
+          var d = ensureValidDate(date, new Date());
+          var dateValue = toDateValueYMD(d);
+          var targetUrl = '待办页面.html?openModal=new-task&prefillDate=' + encodeURIComponent(dateValue);
+          if (typeof safeNavigate === 'function') safeNavigate(targetUrl);
+          else window.location.href = targetUrl;
+        }
+
+        function getSelectedDateTasks() {
+          var selected = ensureCalendarSelectedDate();
+          var key = getDateKey(selected);
+          var tasksByDate = getTasksByDueDateCached().map;
+          var list = (tasksByDate[key] || []).slice();
+
+          if (selectedDaySortMode === 'priority') {
+            var order = { high: 1, medium: 2, low: 3 };
+            list.sort(function (a, b) {
+              return (order[a.priority] || 4) - (order[b.priority] || 4);
+            });
+            return list;
+          }
+
+          if (selectedDaySortMode === 'label') {
+            list.sort(function (a, b) {
+              return String(getPrimaryTaskLabel(a)).localeCompare(String(getPrimaryTaskLabel(b)));
+            });
+            return list;
+          }
+
+          list.sort(function (a, b) {
+            if (!a.dueAt) return 1;
+            if (!b.dueAt) return -1;
+            return new Date(a.dueAt) - new Date(b.dueAt);
+          });
+          return list;
+        }
+
+        function renderSelectedDayTaskList() {
+          var titleEl = document.getElementById('selected-day-title');
+          var listEl = document.getElementById('selected-day-task-list');
+          var emptyEl = document.getElementById('selected-day-empty');
+          var batchEl = document.getElementById('selected-day-batch-actions');
+          var batchTipEl = document.getElementById('selected-day-batch-tip');
+          if (!listEl || !emptyEl) return;
+
+          var selected = ensureCalendarSelectedDate();
+          var addTaskBtnTop = document.getElementById('add-task-btn');
+          if (addTaskBtnTop) {
+            addTaskBtnTop.setAttribute('href', '待办页面.html?prefillDate=' + encodeURIComponent(toDateValueYMD(selected)));
+          }
+          if (titleEl) titleEl.textContent = formatDayTitle(selected) + ' · 任务';
+
+          var tasks = getSelectedDateTasks();
+          selectedDayBatchIds = selectedDayBatchIds.filter(function (id) {
+            return tasks.some(function (t) { return String(t.id) === String(id); });
+          });
+
+          if (!tasks.length) {
+            listEl.innerHTML = '';
+            emptyEl.classList.remove('hidden');
+            if (batchEl) batchEl.classList.add('hidden');
+            return;
+          }
+
+          emptyEl.classList.add('hidden');
+          if (batchEl) {
+            if (selectedDayMultiMode) batchEl.classList.remove('hidden');
+            else batchEl.classList.add('hidden');
+          }
+          if (batchTipEl) batchTipEl.textContent = selectedDayBatchIds.length ? ('已选择 ' + selectedDayBatchIds.length + ' 项') : '请选择任务';
+
+          var html = tasks.map(function (task) {
+            var selectedClass = selectedDayBatchIds.indexOf(String(task.id)) > -1 ? ' ring-2 ring-primary/35' : '';
+            var doneClass = task.status === 'completed' ? ' done' : '';
+            var checked = task.status === 'completed' ? 'checked' : '';
+            var multiBox = selectedDayMultiMode
+              ? ('<input class="selected-day-multi mr-2" type="checkbox" data-task-id="' + String(task.id) + '" ' + (selectedDayBatchIds.indexOf(String(task.id)) > -1 ? 'checked' : '') + ' />')
+              : '';
+            return '<div class="calendar-task-item' + doneClass + selectedClass + ' p-3" data-task-id="' + String(task.id) + '">' +
+              '<div class="flex items-start justify-between gap-2">' +
+                '<div class="min-w-0 flex-1">' +
+                  '<div class="flex items-center text-sm font-medium text-gray-800">' + multiBox + escapeHtml(task.title || '未命名任务') + '</div>' +
+                  '<div class="text-xs text-gray-500 mt-1">' + escapeHtml(task.description || '无描述') + '</div>' +
+                  '<div class="text-xs text-gray-500 mt-1"><i class="fas fa-clock mr-1 text-primary"></i>' + formatDisplayDate(task.dueAt) + '</div>' +
+                '</div>' +
+                '<div class="flex items-center gap-2">' +
+                  '<button class="task-complete-btn btn-glass text-xs px-2 py-1" data-task-id="' + String(task.id) + '"><input type="checkbox" ' + checked + ' /></button>' +
+                  '<button class="task-edit-btn btn-glass text-xs px-2 py-1" data-task-id="' + String(task.id) + '"><i class="fas fa-pen"></i></button>' +
+                  '<button class="task-delete-btn btn-glass text-xs px-2 py-1 text-danger" data-task-id="' + String(task.id) + '"><i class="fas fa-trash"></i></button>' +
+                '</div>' +
+              '</div>' +
+            '</div>';
+          }).join('');
+
+          listEl.innerHTML = html;
+        }
+
         function renderTaskPool() {
           if (!taskPool) return;
 
           var poolTasks = getFilteredTasks((AppState.tasks || []).filter(function (t) {
-            return t && t.status !== 'completed';
+            return t && t.status !== 'completed' && !t.dueAt;
           })).sort(sortTaskPoolItems).slice(0, 18);
 
           if (poolTasks.length === 0) {
             taskPool.className = 'space-y-2';
-            taskPool.innerHTML = '<div class="p-3 rounded-xl border border-dashed border-primary/35 bg-primary/5 text-sm text-gray-500">暂无待办任务，点击右上角“添加任务”开始规划。</div>';
+            taskPool.innerHTML = '<div class="calendar-empty p-4 text-center">' +
+              '<div class="text-sm text-gray-600 mb-2">暂无待办任务，点击添加开始规划</div>' +
+              '<button class="calendar-empty-cta btn-primary px-4 py-2 text-sm" id="task-pool-empty-add">添加任务</button>' +
+              '</div>';
+            var poolAddBtn = document.getElementById('task-pool-empty-add');
+            if (poolAddBtn) {
+              poolAddBtn.addEventListener('click', function () {
+                openCreateTaskForDate(calendarState.selectedDate);
+              });
+            }
             return;
           }
 
@@ -1080,7 +1189,16 @@
           }).slice(0, 10);
 
           if (tasks.length === 0) {
-            list.innerHTML = '<div class="text-xs text-gray-500">暂无已排任务</div>';
+            list.innerHTML = '<div class="calendar-empty p-4 text-center">' +
+              '<div class="text-sm text-gray-600 mb-2">还没有安排任务，去添加并安排时间吧</div>' +
+              '<button class="calendar-empty-cta btn-glass px-4 py-2 text-sm" id="scheduled-empty-add">去添加任务</button>' +
+              '</div>';
+            var addScheduledBtn = document.getElementById('scheduled-empty-add');
+            if (addScheduledBtn) {
+              addScheduledBtn.addEventListener('click', function () {
+                openCreateTaskForDate(calendarState.selectedDate);
+              });
+            }
             return;
           }
 
@@ -1131,8 +1249,17 @@
             if (isSameDay(date, new Date())) {
               cell.classList.add('today');
             }
+            if (isSameDay(date, calendarState.selectedDate)) {
+              cell.classList.add('selected-date-cell', 'date-tap');
+            }
             cell.dataset.date = dateKey;
-            cell.innerHTML = "<div class='flex justify-between items-start'><span class='font-medium'>" + day + "</span></div>";
+            var completedCount = dayTasks.filter(function (t) { return String(t.status || '').toLowerCase() === 'completed'; }).length;
+            if (dayTasks.length > 0 && completedCount === dayTasks.length) {
+              cell.classList.add('has-all-completed');
+            }
+            cell.innerHTML = "<div class='flex justify-between items-start'><span class='font-medium'>" + day + "</span>" +
+              (dayTasks.length > 0 ? ("<span class='task-count-badge'>" + dayTasks.length + "</span>") : "") +
+              "</div>" + (dayTasks.length > 0 && completedCount === dayTasks.length ? "<div class='text-[10px] text-gray-500 mt-1'><i class='fas fa-check mr-1'></i>已完成</div>" : "");
 
             var dotContainer = document.createElement('div');
             dotContainer.className = 'mt-1.5 flex flex-wrap gap-1.5';
@@ -1181,11 +1308,10 @@
             });
             cell.addEventListener('click', function () {
               var dateStr = this.dataset.date;
-              var dayTasks2 = tasksByDate[dateStr] || [];
-              if (dayTasks2.length > 0) {
-                openTaskDetail(dayTasks2[0]);
-                showToast('已打开当日首个任务详情', 'info');
-              }
+              var picked = new Date(dateStr + 'T00:00:00');
+              calendarState.selectedDate = picked;
+              renderMonthGrid();
+              renderSelectedDayTaskList();
             });
 
             monthGrid.appendChild(cell);
@@ -1318,13 +1444,16 @@
         function renderActiveCalendarView() {
           if (calendarState.view === 'week') {
             renderWeekView();
+            renderSelectedDayTaskList();
             return;
           }
           if (calendarState.view === 'day') {
             renderDayView();
+            renderSelectedDayTaskList();
             return;
           }
           renderMonthGrid();
+          renderSelectedDayTaskList();
         }
 
         function openTaskDetail(task) {
@@ -1449,6 +1578,7 @@
         updateCurrentDateLabel();
 
         var todayBtn = document.getElementById('today-btn');
+        var todayQuickBtn = document.getElementById('today-quick-btn');
         if (todayBtn) {
           todayBtn.addEventListener('click', function () {
             monthDate = new Date();
@@ -1456,6 +1586,16 @@
             calendarState.selectedDate = new Date();
             switchToView('month');
             renderMonthGrid();
+            renderSelectedDayTaskList();
+            showToast('已回到今天', 'success');
+          });
+        }
+        if (todayQuickBtn) {
+          todayQuickBtn.addEventListener('click', function () {
+            monthDate = new Date();
+            monthDate.setDate(1);
+            calendarState.selectedDate = new Date();
+            renderActiveCalendarView();
             showToast('已回到今天', 'success');
           });
         }
@@ -1528,22 +1668,22 @@
         }
 
 
-        // ✅ 批量完成按钮
+        // ✅ 批量完成按钮（仅针对当前多选）
         var batchCompleteBtn = document.getElementById('batch-complete-btn');
         if (batchCompleteBtn) {
           batchCompleteBtn.addEventListener('click', function () {
-            var tasks = AppState.tasks || [];
-            if (tasks.length === 0) {
-              showToast('当前无任务', 'warning');
+            if (!selectedDayMultiMode || !selectedDayBatchIds.length) {
+              showToast('请先在当日任务中多选', 'warning');
               return;
             }
             var count = 0;
-            tasks.forEach(function (t) {
-              if (t.status !== 'completed') {
+            (AppState.tasks || []).forEach(function (t) {
+              if (selectedDayBatchIds.indexOf(String(t.id)) > -1 && t.status !== 'completed') {
                 t.status = 'completed';
                 count++;
               }
             });
+            selectedDayBatchIds = [];
             saveCalendarState();
             renderScheduledTaskList();
             renderActiveCalendarView();
@@ -1551,33 +1691,114 @@
           });
         }
 
-        // ✅ 批量删除按钮
+        // ✅ 批量删除按钮（仅针对当前多选）
         var batchDeleteBtn = document.getElementById('batch-delete-btn');
         if (batchDeleteBtn) {
           batchDeleteBtn.addEventListener('click', function () {
-            var currentTasks = AppState.tasks || [];
-            if (currentTasks.length === 0) {
-              showToast('当前无任务可删除', 'warning');
+            if (!selectedDayMultiMode || !selectedDayBatchIds.length) {
+              showToast('请先在当日任务中多选', 'warning');
               return;
             }
-
-            var completedCount = currentTasks.filter(function (t) {
-              return t.status === 'completed';
-            }).length;
-            if (completedCount === 0) {
-              showToast('暂无已完成任务可批量删除', 'warning');
-              return;
-            }
-
-            AppState.tasks = currentTasks.filter(function (t) {
-              return t.status !== 'completed';
+            var before = (AppState.tasks || []).length;
+            AppState.tasks = (AppState.tasks || []).filter(function (t) {
+              return selectedDayBatchIds.indexOf(String(t.id)) === -1;
             });
+            var deleted = before - AppState.tasks.length;
+            selectedDayBatchIds = [];
             saveCalendarState();
             renderScheduledTaskList();
             renderActiveCalendarView();
-            showToast('已删除 ' + completedCount + ' 个已完成任务', 'success');
+            showToast('已删除 ' + deleted + ' 个任务', 'success');
           });
         }
+
+        var daySort = document.getElementById('selected-day-sort');
+        if (daySort) {
+          daySort.addEventListener('change', function () {
+            selectedDaySortMode = this.value || 'time';
+            renderSelectedDayTaskList();
+          });
+        }
+
+        var multiToggle = document.getElementById('selected-day-multi-toggle');
+        if (multiToggle) {
+          multiToggle.addEventListener('click', function () {
+            selectedDayMultiMode = !selectedDayMultiMode;
+            if (!selectedDayMultiMode) selectedDayBatchIds = [];
+            this.textContent = selectedDayMultiMode ? '退出多选' : '多选';
+            renderSelectedDayTaskList();
+          });
+        }
+
+        var selectedDayList = document.getElementById('selected-day-task-list');
+        if (selectedDayList) {
+          selectedDayList.addEventListener('click', function (e) {
+            var completeBtn = e.target.closest('.task-complete-btn');
+            var editBtn = e.target.closest('.task-edit-btn');
+            var deleteBtn = e.target.closest('.task-delete-btn');
+            var multiCb = e.target.closest('.selected-day-multi');
+
+            if (multiCb) {
+              var id = String(multiCb.getAttribute('data-task-id') || '');
+              if (!id) return;
+              if (multiCb.checked && selectedDayBatchIds.indexOf(id) === -1) selectedDayBatchIds.push(id);
+              if (!multiCb.checked) selectedDayBatchIds = selectedDayBatchIds.filter(function (x) { return x !== id; });
+              renderSelectedDayTaskList();
+              return;
+            }
+
+            if (completeBtn) {
+              var id1 = String(completeBtn.getAttribute('data-task-id') || '');
+              var task1 = (AppState.tasks || []).find(function (t) { return String(t.id) === id1; });
+              if (!task1) return;
+              task1.status = task1.status === 'completed' ? 'pending' : 'completed';
+              saveCalendarState();
+              renderScheduledTaskList();
+              renderActiveCalendarView();
+              return;
+            }
+
+            if (editBtn) {
+              var id2 = String(editBtn.getAttribute('data-task-id') || '');
+              var task2 = (AppState.tasks || []).find(function (t) { return String(t.id) === id2; });
+              if (task2) openTaskDetail(task2);
+              return;
+            }
+
+            if (deleteBtn) {
+              var id3 = String(deleteBtn.getAttribute('data-task-id') || '');
+              AppState.tasks = (AppState.tasks || []).filter(function (t) { return String(t.id) !== id3; });
+              saveCalendarState();
+              renderScheduledTaskList();
+              renderActiveCalendarView();
+            }
+          });
+        }
+
+        var selectedDayEmptyAdd = document.getElementById('selected-day-empty-add');
+        if (selectedDayEmptyAdd) {
+          selectedDayEmptyAdd.addEventListener('click', function () {
+            openCreateTaskForDate(calendarState.selectedDate);
+          });
+        }
+
+        var calendarFab = document.getElementById('calendar-add-fab');
+        if (calendarFab) {
+          calendarFab.addEventListener('click', function () {
+            openCreateTaskForDate(calendarState.selectedDate);
+          });
+        }
+
+        function bindSecondaryToggle(toggleId, bodyId) {
+          var t = document.getElementById(toggleId);
+          var b = document.getElementById(bodyId);
+          if (!t || !b) return;
+          t.addEventListener('click', function () {
+            b.classList.toggle('hidden');
+          });
+        }
+        bindSecondaryToggle('secondary-scheduled-toggle', 'secondary-scheduled-body');
+        bindSecondaryToggle('secondary-pool-toggle', 'secondary-pool-body');
 
         // ✅ 排序下拉列表 - 修复层级问题
         var sortFilterBtn = document.getElementById('sort-filter-btn');
