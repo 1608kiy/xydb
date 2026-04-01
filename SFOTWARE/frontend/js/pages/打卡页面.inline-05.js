@@ -542,7 +542,7 @@
           var dateStr = formatLocalDateKey(now);
           var timeStr = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
 
-          // 乐观更新：先禁用按钮，随后尝试同步到后端，失败回退到本地保存
+          // 先禁用按钮，待后端写入成功后再确认今日状态
           btn.disabled = true;
           btn.classList.add('opacity-50', 'cursor-not-allowed');
 
@@ -578,26 +578,19 @@
               status.className = 'text-[11px] text-success text-center font-medium';
               if (noteInput) noteInput.value = '';
             } else {
-              // 服务端返回异常，保存到本地
-              upsertCheckinByDate(normalizeCheckinItem({ date: dateStr, time: timeStr, type: selectedType, note: note, status: '今日' }, dateStr, timeStr));
-              AppState.save();
-              showToast('网络异常，已保存本地记录', 'error');
-              renderCheckins();
-              updateStreak();
-              renderCalendar(currentCalendarDate);
-              status.textContent = '今日已打卡 ✓';
-              status.className = 'text-[11px] text-success text-center font-medium';
+              btn.disabled = false;
+              btn.classList.remove('opacity-50', 'cursor-not-allowed');
+              status.textContent = '等待打卡';
+              status.className = 'text-[11px] text-gray-500 text-center';
+              showToast((resp && resp.body && resp.body.message) || '打卡失败，请稍后重试', 'error');
             }
           }).catch(function (err) {
             console.error('保存打卡失败', err);
-            upsertCheckinByDate(normalizeCheckinItem({ date: dateStr, time: timeStr, type: selectedType, note: note, status: '今日' }, dateStr, timeStr));
-            AppState.save();
-            showToast('网络错误，已保存本地记录', 'error');
-            renderCheckins();
-            updateStreak();
-            renderCalendar(currentCalendarDate);
-            status.textContent = '今日已打卡 ✓';
-            status.className = 'text-[11px] text-success text-center font-medium';
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            status.textContent = '等待打卡';
+            status.className = 'text-[11px] text-gray-500 text-center';
+            showToast('网络错误，打卡失败', 'error');
           });
         });
 

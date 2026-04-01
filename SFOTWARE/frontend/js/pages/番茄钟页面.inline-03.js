@@ -490,10 +490,31 @@
                 endedAt: new Date().toISOString(),
                 completed: true
               };
-              if (!Array.isArray(AppState.pomodoroSessions)) AppState.pomodoroSessions = [];
-              AppState.pomodoroSessions.push(pomodoroSession);
-              AppState.save();
-              // 仅保存到本地，后端不提供这个接口
+              apiRequest('/api/pomodoros', {
+                method: 'POST',
+                body: JSON.stringify({
+                  taskId: pomodoroSession.taskId,
+                  mode: pomodoroSession.mode,
+                  plannedMinutes: pomodoroSession.plannedMinutes,
+                  actualMinutes: pomodoroSession.actualMinutes,
+                  startedAt: pomodoroSession.startedAt,
+                  endedAt: pomodoroSession.endedAt,
+                  completed: true
+                })
+              }).then((resp) => {
+                if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+                  const saved = (resp.body && resp.body.data) || pomodoroSession;
+                  if (!Array.isArray(AppState.pomodoroSessions)) AppState.pomodoroSessions = [];
+                  AppState.pomodoroSessions.push(saved);
+                  AppState.save();
+                  return;
+                }
+                const msg = (resp && resp.body && resp.body.message) || '番茄记录同步失败';
+                this.showToast(msg);
+              }).catch((err) => {
+                console.error('sync pomodoro failed', err);
+                this.showToast('网络异常，番茄记录同步失败');
+              });
               
               this.updateHistoryUI();
               this.updateStatsUI();
