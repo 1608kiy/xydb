@@ -706,7 +706,7 @@
         }
       }).catch(function (err) { 
         console.error('fetchTasksFromServer error', err);
-        // 后端不可用时使用本地数据（已在 loadFromLocalStorage 中加载）
+        showToast('任务同步失败，请检查网络或后端服务', 'error');
         return Promise.resolve();
       });
     }
@@ -729,6 +729,18 @@
       }).then(function (resp) {
         if (resp.status === 200 && resp.body && resp.body.code === 200) return resp.body.data;
         throw new Error((resp.body && resp.body.message) || '更新失败');
+      });
+    }
+
+    function createTagOnServer(tagName) {
+      return apiRequest('/api/tags', {
+        method: 'POST',
+        body: JSON.stringify({ name: tagName })
+      }).then(function (resp) {
+        if (!(resp && (resp.status === 200 || resp.status === 201) && resp.body && resp.body.code === 200)) {
+          throw new Error((resp && resp.body && resp.body.message) || '创建标签失败');
+        }
+        return (resp.body && resp.body.data) || {};
       });
     }
 
@@ -1109,21 +1121,34 @@
         return;
       }
 
-      tags.push({ key: tagKey, name: tagName, color: selectedTagColor });
+      createTagOnServer(tagName).then(function (serverTag) {
+        var serverKey = String((serverTag && (serverTag.key || serverTag.code || serverTag.name)) || tagKey).trim();
+        if (!serverKey) serverKey = tagKey;
+        var finalTag = {
+          key: serverKey,
+          name: String((serverTag && (serverTag.name || serverTag.label)) || tagName).trim() || tagName,
+          color: selectedTagColor
+        };
 
-      var taskModal = document.getElementById('new-task-modal');
-      var taskModalVisible = !!(taskModal && !taskModal.classList.contains('hidden'));
-      if (taskModalVisible) {
-        selectedModalTag = tagKey;
-        renderModalTagButtons();
-        updateModalTagButtons();
-      }
+        tags.push(finalTag);
 
-      renderSidebarTags();
-      updateCountStats();
-      saveToLocalStorage();
-      window.closeTagModalFunc();
-      showToast('✅ 标签 "' + tagName + '" 创建成功！');
+        var taskModal = document.getElementById('new-task-modal');
+        var taskModalVisible = !!(taskModal && !taskModal.classList.contains('hidden'));
+        if (taskModalVisible) {
+          selectedModalTag = finalTag.key;
+          renderModalTagButtons();
+          updateModalTagButtons();
+        }
+
+        renderSidebarTags();
+        updateCountStats();
+        saveToLocalStorage();
+        window.closeTagModalFunc();
+        showToast('✅ 标签 "' + finalTag.name + '" 创建成功！');
+      }).catch(function (err) {
+        console.error('createTag error', err);
+        showToast((err && err.message) || '创建标签失败', 'error');
+      });
     };
 
     window.selectModalPriority = function (priority) {
@@ -1202,42 +1227,6 @@
       });
     }
 
-    function createTaskLocalFallback(payload, title, description, dueAt, time, tag, message) {
-      var localId = 'local_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
-      var fallbackTask = {
-        id: localId,
-        title: title,
-        description: description,
-        priority: selectedModalPriority,
-        tag: tag,
-        status: 'pending',
-        completed: false,
-        dueAt: dueAt,
-        time: time,
-        subtasks: []
-      };
-
-      pendingCreateQueue.push({
-        localId: localId,
-        payload: payload,
-        fallbackTag: tag,
-        createdAt: new Date().toISOString()
-      });
-      savePendingQueue();
-      updateSyncStatusBadge('pending');
-
-      var fallbackDue = fallbackTask.dueAt ? fallbackTask.dueAt.split('T')[0] : null;
-      var fallbackToday = new Date().toISOString().slice(0, 10);
-      if (fallbackDue === fallbackToday) tasks.today.unshift(fallbackTask);
-      else tasks.tomorrow.unshift(fallbackTask);
-
-      renderTaskLists();
-      updateCountStats();
-      saveToLocalStorage();
-      window.closeModalFunc();
-      showToast(message || '网络异常，已保存到本地', 'error');
-    }
-
     window.createTaskFunc = function () {
       var modalTitle = document.getElementById('modal-title');
       var modalDesc = document.getElementById('modal-description');
@@ -1260,9 +1249,6 @@
         status: 'pending',
         dueAt: (modalDate && modalDate.value ? (modalDate.value + 'T' + ((modalTime && modalTime.value) ? modalTime.value : '12:00') + ':00') : null)
       };
-      var localDesc = modalDesc ? modalDesc.value.trim() : '';
-      var localDueAt = (modalDate ? (modalDate.value + 'T' + (modalTime ? modalTime.value : '12:00') + ':00') : null);
-      var localTime = (modalTime ? modalTime.value : '12:00');
 
       apiRequest('/api/tasks', {
         method: 'POST',
@@ -1314,14 +1300,13 @@
             return;
           }
 
-          var fallbackMsg = (resp.status === 404 || resp.status === 405)
-            ? '后端接口不可用，已保存到本地'
-            : ('服务暂不可用（HTTP ' + resp.status + '），已保存到本地');
-          createTaskLocalFallback(payload, title, localDesc, localDueAt, localTime, selectedModalTag, fallbackMsg);
+          var errMsg = (resp.body && resp.body.message)
+            || (resp.status ? ('创建任务失败（HTTP ' + resp.status + '）') : '创建任务失败，请稍后重试');
+          showToast(errMsg, 'error');
         }
       }).catch(function (err) {
         console.error(err);
-        createTaskLocalFallback(payload, title, localDesc, localDueAt, localTime, selectedModalTag, '网络异常，已保存到本地');
+        showToast('网络异常，创建任务失败', 'error');
       });
     };
 
@@ -1815,9 +1800,25 @@
 
     window.changeDetailTag = function (tagKey) {
       if (currentEditingTask) {
+        var previousTag = currentEditingTask.tag;
         currentEditingTask.tag = tagKey;
         renderDetailTags();
-        saveToLocalStorage();
+
+        if (isLocalTaskId(currentEditingTask.id)) {
+          saveToLocalStorage();
+          return;
+        }
+
+        updateTaskOnServer(currentEditingTask.id, {
+          tags: JSON.stringify([tagKey])
+        }).then(function () {
+          saveToLocalStorage();
+        }).catch(function (err) {
+          console.error('changeDetailTag error', err);
+          currentEditingTask.tag = previousTag;
+          renderDetailTags();
+          showToast((err && err.message) || '标签同步失败', 'error');
+        });
       }
     };
 
