@@ -1311,6 +1311,37 @@ function normalizeApiBaseCandidate(base) {
   return value.replace(/\/$/, '');
 }
 
+function readRuntimeApiBase() {
+  try {
+    var search = (window.location && window.location.search) || '';
+    if (search && search.indexOf('apiBase=') !== -1 && window.URLSearchParams) {
+      var qs = new URLSearchParams(search);
+      var byQuery = normalizeApiBaseCandidate(qs.get('apiBase'));
+      if (byQuery) {
+        try { localStorage.setItem('apiBase', byQuery); } catch (e) {}
+        return byQuery;
+      }
+    }
+  } catch (e) { /* ignore query parse errors */ }
+
+  var byWindow = normalizeApiBaseCandidate(window.__SERVER_API_BASE__);
+  if (byWindow) return byWindow;
+
+  try {
+    var runtime = window.__RUNTIME_CONFIG__ || window.RUNTIME_CONFIG || {};
+    var byRuntime = normalizeApiBaseCandidate(runtime.apiBase || runtime.API_BASE);
+    if (byRuntime) return byRuntime;
+  } catch (e) { /* ignore runtime config errors */ }
+
+  try {
+    var meta = document.querySelector('meta[name="xydb-api-base"]');
+    var byMeta = normalizeApiBaseCandidate(meta && meta.getAttribute('content'));
+    if (byMeta) return byMeta;
+  } catch (e) { /* ignore meta read errors */ }
+
+  return '';
+}
+
 function resolveApiBase() {
   var explicitBase = normalizeApiBaseCandidate(window.__API_BASE__);
   if (explicitBase) {
@@ -1323,6 +1354,11 @@ function resolveApiBase() {
       return storedBase;
     }
   } catch (e) { /* ignore localStorage read errors */ }
+
+  var runtimeBase = readRuntimeApiBase();
+  if (runtimeBase) {
+    return runtimeBase;
+  }
 
   var locationInfo = window.location || {};
   var hostname = (locationInfo.hostname || '').toLowerCase();
@@ -1338,6 +1374,12 @@ function resolveApiBase() {
     return origin.replace(/\/$/, '');
   }
 
+  // For packaged software (file://), never silently fallback to localhost.
+  // Require explicit runtime API base to avoid deployment misrouting.
+  if (/^file:/i.test(protocol) || !origin || origin === 'null') {
+    return '';
+  }
+
   return 'http://localhost:8080';
 }
 
@@ -1348,15 +1390,18 @@ function apiRequest(path, options) {
   // 优先级：window.__API_BASE__ > localStorage.apiBase > 同源；同源失败时自动回退 localhost:8080
   var explicitBase = normalizeApiBaseCandidate(window.__API_BASE__);
   var storedBase = '';
+  var runtimeBase = '';
   try {
     storedBase = normalizeApiBaseCandidate(localStorage.getItem('apiBase'));
   } catch (e) {
     storedBase = '';
   }
+  runtimeBase = readRuntimeApiBase();
 
   var candidateBases = [];
   if (explicitBase) candidateBases.push(explicitBase);
   if (storedBase && candidateBases.indexOf(storedBase) === -1) candidateBases.push(storedBase);
+  if (runtimeBase && candidateBases.indexOf(runtimeBase) === -1) candidateBases.push(runtimeBase);
 
   var protocol = (window.location && window.location.protocol) || '';
   var hostname = ((window.location && window.location.hostname) || '').toLowerCase();
@@ -1430,6 +1475,13 @@ function apiRequest(path, options) {
   if (path.startsWith('http')) {
     return fetchWithTimeout(path, options).then(parseResponse).catch(function (err) {
       return { status: 0, body: { message: err && err.name === 'AbortError' ? 'Request timeout' : 'Network error' } };
+    });
+  }
+
+  if (!candidateBases.length && path.indexOf('/api/') === 0) {
+    return Promise.resolve({
+      status: 0,
+      body: { message: 'API base not configured. Set window.__API_BASE__, localStorage.apiBase, window.__SERVER_API_BASE__, or meta[name="xydb-api-base"].' }
     });
   }
 

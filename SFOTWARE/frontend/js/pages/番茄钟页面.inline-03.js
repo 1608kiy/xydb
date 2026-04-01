@@ -468,6 +468,22 @@
           completeCurrentSession() {
             this.stop();
             if (this.state.currentMode === 'focus') {
+              const prevTodayPomodoro = this.state.todayPomodoro;
+              const prevPomodoroIndex = this.state.pomodoroIndex;
+              const prevCycle = this.state.cycle;
+              const prevHistory = this.state.history.slice();
+
+              const rollbackFocusState = () => {
+                this.state.todayPomodoro = prevTodayPomodoro;
+                this.state.pomodoroIndex = prevPomodoroIndex;
+                this.state.cycle = prevCycle;
+                this.state.history = prevHistory;
+                this.updateHistoryUI();
+                this.updateStatsUI();
+                this.updateAchievementStats();
+                this.saveStorage();
+              };
+
               this.state.todayPomodoro += 1;
               this.state.pomodoroIndex += 1;
               const nowText = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
@@ -509,10 +525,12 @@
                   AppState.save();
                   return;
                 }
+                rollbackFocusState();
                 const msg = (resp && resp.body && resp.body.message) || '番茄记录同步失败';
                 this.showToast(msg);
               }).catch((err) => {
                 console.error('sync pomodoro failed', err);
+                rollbackFocusState();
                 this.showToast('网络异常，番茄记录同步失败');
               });
               

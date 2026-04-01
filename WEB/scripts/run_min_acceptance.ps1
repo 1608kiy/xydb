@@ -197,7 +197,7 @@ try {
 }
 catch {
   $msg = $_.Exception.Message
-  if ($runningCase -ne $null -and -not $runningCase.passed) {
+  if ($null -ne $runningCase -and -not $runningCase.passed) {
     $runningCase.error = $msg
     $cases += $runningCase
   }

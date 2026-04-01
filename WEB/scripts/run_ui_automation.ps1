@@ -8,13 +8,19 @@ param()
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
-$node = Join-Path $root 'tools\node\node.exe'
-$npm = Join-Path $root 'tools\node\npm.cmd'
-$npx = Join-Path $root 'tools\node\npx.cmd'
+$localNode = Join-Path $root 'tools\node\node.exe'
+$localNpm = Join-Path $root 'tools\node\npm.cmd'
+$localNpx = Join-Path $root 'tools\node\npx.cmd'
+
+$node = if (Test-Path $localNode) { $localNode } else { (Get-Command node -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -First 1) }
+$npm = if (Test-Path $localNpm) { $localNpm } else { (Get-Command npm -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -First 1) }
+$npx = if (Test-Path $localNpx) { $localNpx } else { (Get-Command npx -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -First 1) }
 $e2eDir = Join-Path $root 'scripts\e2e'
 $scriptPath = Join-Path $e2eDir 'ui_automation_smoke.cjs'
 
 if (-not (Test-Path $node)) { throw "找不到 node.exe: $node" }
+if (-not $npm) { throw '找不到 npm，请先安装 Node.js 或补齐 tools/node' }
+if (-not $npx) { throw '找不到 npx，请先安装 Node.js 或补齐 tools/node' }
 if (-not (Test-Path $scriptPath)) { throw "找不到脚本: $scriptPath" }
 
 Push-Location $e2eDir
