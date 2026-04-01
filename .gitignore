@@ -2,6 +2,9 @@ tools/node/
 scripts/e2e/node_modules/
 scripts/e2e/package-lock.json
 scripts/e2e/test-results/
+WEB/scripts/e2e/node_modules/
+WEB/scripts/e2e/package-lock.json
+WEB/scripts/e2e/test-results/
 *.log
 backend/backend_run.*
 backend/regression_start.*.log

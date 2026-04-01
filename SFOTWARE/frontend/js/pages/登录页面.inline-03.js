@@ -107,52 +107,6 @@
           return msg || fallback;
         }
 
-        function shouldEnterLocalMode(resp) {
-          if (!resp) return true;
-          var status = Number(resp.status || 0);
-          if (status === 0 || status === 504) return true;
-          if (status >= 500) return true;
-          var msg = String((resp.body && resp.body.message) || '').toLowerCase();
-          return msg.indexOf('timeout') !== -1 || msg.indexOf('network') !== -1;
-        }
-
-        function enterLocalMode(accountHint) {
-          var display = String(accountHint || '').trim();
-          if (!display) display = '本地用户';
-          var userName = display;
-          if (display.indexOf('@') > -1) {
-            userName = display.split('@')[0] || '本地用户';
-          }
-          if (/^1\d{10}$/.test(display)) {
-            userName = '用户' + display.slice(-4);
-          }
-
-          try {
-            localStorage.setItem('token', 'dev-local-' + Date.now());
-            localStorage.setItem('devSkipAuth', '1');
-            if (window.AppState) {
-              var localProfile = { name: userName };
-              if (display.indexOf('@') > -1) {
-                localProfile.email = display;
-              }
-              if (/^1\d{10}$/.test(display)) {
-                localProfile.phone = display;
-                localProfile.email = display + '@mobile.local';
-              }
-
-              if (typeof window.AppState.switchUser === 'function') {
-                window.AppState.switchUser(localProfile);
-              } else {
-                window.AppState.user = Object.assign({}, window.AppState.user || {}, localProfile);
-                if (typeof window.AppState.save === 'function') window.AppState.save();
-              }
-            }
-          } catch (e) {}
-
-          showToast('服务繁忙，已切换本地快速登录');
-          setTimeout(function () { safeNavigate('待办页面.html'); }, 320);
-        }
-
         var heroThemeIcon = document.getElementById('hero-theme-icon');
         var authHeroPreview = document.getElementById('auth-hero-preview');
         var syncHeroThemeIcon = function () {
@@ -223,7 +177,6 @@
                 var token = resp.body.data && resp.body.data.token;
                 if (token) {
                   localStorage.setItem('token', token);
-                  try { localStorage.removeItem('devSkipAuth'); } catch (e) {}
                   apiRequest('/api/me', { method: 'GET', timeoutMs: 8000 }).then(function (meResp) {
                     var me = (meResp && meResp.status === 200 && meResp.body && meResp.body.code === 200)
                       ? (meResp.body.data || {})
@@ -267,15 +220,11 @@
                   return;
                 }
               }
-              if (shouldEnterLocalMode(resp)) {
-                enterLocalMode(account);
-                return;
-              }
               var msg = authErrorMessage(resp, '登录失败，请检查账号密码');
               showToast(msg);
             }).catch(function (err) {
               console.error('login error', err);
-              enterLocalMode(account);
+              showToast('网络错误，请稍后重试');
             });
         });
 
@@ -286,7 +235,6 @@
             backendRegisterAndLoginByPhone(phone).then(function (resp) {
               if (resp && resp.status === 200 && resp.body && resp.body.code === 200 && resp.body.data && resp.body.data.token) {
                 localStorage.setItem('token', resp.body.data.token);
-                try { localStorage.removeItem('devSkipAuth'); } catch (e) {}
                 var mobileEmail = phone + '@mobile.local';
                 if (window.AppState && typeof window.AppState.switchUser === 'function') {
                   window.AppState.switchUser({
