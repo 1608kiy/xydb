@@ -505,9 +505,10 @@ a,
   }
 
   #sort-filter-menu {
-    left: 0 !important;
-    right: auto !important;
-    min-width: 132px;
+    left: auto !important;
+    right: 0 !important;
+    min-width: 7.5rem;
+    max-width: calc(100vw - 16px) !important;
   }
 
   #sort-filter-menu .dropdown-item {
@@ -550,6 +551,15 @@ a,
   .software-app #todo-app-shell {
     overflow: visible !important;
     min-height: 0;
+  }
+
+  /* 待办页移动端改为整页单滚动，避免 main 内层滚动造成“分层感” */
+  .software-app #todo-main {
+    overflow-y: visible !important;
+    overflow-x: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    -webkit-overflow-scrolling: auto !important;
   }
 
   /* Collapse desktop sidebars on mobile app */
@@ -607,6 +617,31 @@ a,
 }
 
 @media (max-width: 900px) {
+  .unified-top-header-dock .unified-top-header-shell#main-header.mobile-search-open {
+    overflow: visible !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell#main-header.mobile-search-open .container,
+  .unified-top-header-dock .unified-top-header-shell#main-header.mobile-search-open > div:first-child {
+    flex-wrap: wrap !important;
+    align-items: flex-start !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell#main-header.mobile-search-open .container > :nth-child(3),
+  .unified-top-header-dock .unified-top-header-shell#main-header.mobile-search-open > div:first-child > :nth-child(3) {
+    display: block !important;
+    order: 3 !important;
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-top: 6px;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell#main-header.mobile-search-open .container > :nth-child(3) .input-glass,
+  .unified-top-header-dock .unified-top-header-shell#main-header.mobile-search-open > div:first-child > :nth-child(3) .input-glass {
+    width: 100% !important;
+  }
+
   .software-app .card-hover:hover,
   .software-app .tab-item:hover,
   .software-app .btn-primary:hover,

@@ -20,6 +20,7 @@
     var currentTagFilter = null;
     var currentSearchKeyword = '';
     var currentSortMode = 'time';
+    var isBatchMode = false;
     var pendingCreateQueue = [];
     var syncingPendingCreates = false;
     var PENDING_CREATE_KEY = 'todoPendingCreates_v1';
@@ -555,18 +556,18 @@
       var status = mode || (syncingPendingCreates ? 'syncing' : (pendingCount > 0 ? 'pending' : 'synced'));
 
       if (status === 'syncing') {
-        badge.className = 'inline-flex items-center text-xs px-3 py-2 rounded-xl bg-blue-100 text-blue-700';
+        badge.className = 'sync-status-text';
         badge.innerHTML = '<i class="fas fa-arrows-rotate animate-spin mr-1"></i>同步中' + (pendingCount > 0 ? '（' + pendingCount + '）' : '');
         return;
       }
 
       if (status === 'pending') {
-        badge.className = 'inline-flex items-center text-xs px-3 py-2 rounded-xl bg-amber-100 text-amber-700';
+        badge.className = 'sync-status-text';
         badge.innerHTML = '<i class="fas fa-cloud-arrow-up mr-1"></i>待同步（' + pendingCount + '）';
         return;
       }
 
-      badge.className = 'inline-flex items-center text-xs px-3 py-2 rounded-xl bg-emerald-100 text-emerald-700';
+      badge.className = 'sync-status-text';
       badge.innerHTML = '<i class="fas fa-check-circle mr-1"></i>已同步';
     }
 
@@ -1009,6 +1010,51 @@
       });
     }
 
+    function formatDateLabel(offsetDays) {
+      var now = new Date();
+      now.setDate(now.getDate() + offsetDays);
+      var weeks = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+      return (now.getMonth() + 1) + '月' + now.getDate() + '日 · ' + weeks[now.getDay()];
+    }
+
+    function updateGroupDateInfo() {
+      var todayInfo = document.getElementById('today-date-info');
+      var tomorrowInfo = document.getElementById('tomorrow-date-info');
+      if (todayInfo) todayInfo.textContent = formatDateLabel(0);
+      if (tomorrowInfo) tomorrowInfo.textContent = formatDateLabel(1);
+    }
+
+    function updateBatchModeUI() {
+      var selectBtn = document.getElementById('select-mode-btn');
+      var batchRow = document.getElementById('batch-actions-row');
+      var tip = document.getElementById('batch-selected-tip');
+      var checkedCount = selectedBatchTasks.length;
+
+      if (selectBtn) {
+        if (isBatchMode) {
+          selectBtn.classList.add('bg-primary', 'text-white');
+          selectBtn.innerHTML = '<i class="fas fa-list-check mr-2"></i>选择中';
+        } else {
+          selectBtn.classList.remove('bg-primary', 'text-white');
+          selectBtn.innerHTML = '<i class="fas fa-list-check mr-2"></i>选择模式';
+        }
+      }
+
+      if (batchRow) {
+        if (isBatchMode) batchRow.classList.remove('hidden');
+        else batchRow.classList.add('hidden');
+      }
+
+      if (tip) tip.textContent = '已选择 ' + checkedCount + ' 项';
+    }
+
+    function setBatchMode(enabled) {
+      isBatchMode = !!enabled;
+      if (!isBatchMode) selectedBatchTasks = [];
+      updateBatchModeUI();
+      renderTaskLists();
+    }
+
     function setTodoChromeVisible(visible) {
       var selector = '.unified-top-header-dock, .unified-bottom-tab-dock, #main-header, footer.glass-tab';
       document.querySelectorAll(selector).forEach(function (el) {
@@ -1313,7 +1359,7 @@
     window.confirmBatchComplete = function () {
       var targets = getBatchTargets();
       if (targets.length === 0) {
-        showToast('⚠️ 当前没有可批量完成的任务', 'error');
+        showToast('⚠️ 请先在选择模式中勾选任务', 'warning');
         return;
       }
 
@@ -1330,6 +1376,8 @@
 
       var done = function (failCount) {
         selectedBatchTasks = [];
+        isBatchMode = false;
+        updateBatchModeUI();
         renderTaskLists();
         updateCountStats();
         saveToLocalStorage();
@@ -1374,7 +1422,7 @@
     window.confirmBatchDelete = function () {
       var targets = getBatchTargets();
       if (targets.length === 0) {
-        showToast('⚠️ 当前没有可批量删除的任务', 'error');
+        showToast('⚠️ 请先在选择模式中勾选任务', 'warning');
         return;
       }
 
@@ -1392,6 +1440,8 @@
 
       var commitLocalDelete = function () {
         selectedBatchTasks = [];
+        isBatchMode = false;
+        updateBatchModeUI();
         renderTaskLists();
         updateCountStats();
         saveToLocalStorage();
@@ -1438,15 +1488,7 @@
 
     function getBatchTargets() {
       if (selectedBatchTasks.length > 0) return selectedBatchTasks.slice();
-
-      var targets = [];
-      getFilteredTasks(tasks.today, true).forEach(function (t) {
-        targets.push({ id: t.id, isToday: true });
-      });
-      getFilteredTasks(tasks.tomorrow, false).forEach(function (t) {
-        targets.push({ id: t.id, isToday: false });
-      });
-      return targets;
+      return [];
     }
 
     function toggleBatchSelection(taskId, isToday) {
@@ -1478,6 +1520,8 @@
 
     window.clearBatchSelection = function () {
       selectedBatchTasks = [];
+      isBatchMode = false;
+      updateBatchModeUI();
       renderTaskLists();
       showToast('✅ 已清空选择');
     };
@@ -1493,18 +1537,29 @@
       var isSelected = selectedBatchTasks.some(function (t) { return t.id === task.id; });
       var selectedClass = isSelected ? 'selected' : '';
       var subtaskInfo = task.subtasks && task.subtasks.length > 0 ?
-        '<div class="flex items-center text-xs text-gray-500 mt-1"><i class="fas fa-check-square mr-1 text-success"></i>' + task.subtasks.length + ' 个子任务</div>' : '';
+        '<span class="text-xs text-gray-500"><i class="fas fa-check-square mr-1 text-success"></i>' + task.subtasks.length + ' 子任务</span>' : '';
+      var statusBadge = task.completed
+        ? '<span class="task-status-badge completed">已完成</span>'
+        : '<span class="task-status-badge pending">进行中</span>';
+      var timeText = (task.time && String(task.time).trim()) ? String(task.time) : '未设置时间';
+      var checkboxClass = isBatchMode ? '' : ' style="visibility:hidden;pointer-events:none"';
 
       return '<div class="task-card bg-white/85 backdrop-blur-sm rounded-xl p-4 cursor-pointer ' + priorityClass + ' ' + completedClass + ' ' + selectedClass + ' card-hover" data-task-id="' + task.id + '" data-is-today="' + isToday + '">' +
-        '<div class="flex items-start">' +
-        '<div class="flex-shrink-0 mr-4"><input class="task-checkbox custom-checkbox" type="checkbox" ' + (task.completed ? 'checked' : '') + '/></div>' +
-        '<div class="flex-1">' +
-        '<div class="flex justify-between items-start">' +
-        '<h3 class="text-base font-medium ' + (task.completed ? 'line-through text-gray-500' : '') + '">' + task.title + '</h3>' +
-        '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ' + 'tag-' + tagColor + '"><i class="fas ' + tagIcon + ' mr-1"></i>' + tagName + '</span>' +
+        '<div class="flex items-start gap-3">' +
+        '<div class="flex-shrink-0"><input class="task-checkbox custom-checkbox" type="checkbox" ' + (task.completed ? 'checked' : '') + checkboxClass + '/></div>' +
+        '<div class="flex-1 min-w-0">' +
+        '<div class="flex items-start justify-between gap-2">' +
+        '<h3 class="text-[15px] font-semibold text-slate-700 truncate ' + (task.completed ? 'line-through text-gray-500' : '') + '">' + escapeHtml(task.title || '') + '</h3>' +
+        statusBadge +
         '</div>' +
-        '<div class="mt-2 text-sm text-gray-500"><i class="fas fa-clock mr-2 text-primary"></i>' + (isToday ? '今天' : '明天') + ' ' + task.time + '</div>' +
+        '<div class="mt-2 flex items-center gap-2 text-sm text-gray-500">' +
+        '<i class="fas fa-clock text-primary"></i>' +
+        '<span>' + (isToday ? '今日' : '明日') + ' · ' + escapeHtml(timeText) + '</span>' +
+        '</div>' +
+        '<div class="mt-2 flex items-center gap-2">' +
+        '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium tag-' + tagColor + '"><i class="fas ' + tagIcon + ' mr-1"></i>' + escapeHtml(tagName) + '</span>' +
         subtaskInfo +
+        '</div>' +
         '</div>' +
         '<div class="task-actions">' +
         '<button class="task-action-btn share" onclick="event.stopPropagation(); handleTaskAction(' + JSON.stringify(task.id) + ', ' + isToday + ', \'share\')" title="分享"><i class="fas fa-share-alt"></i></button>' +
@@ -1577,10 +1632,10 @@
       tomorrowList.innerHTML = filteredTomorrow.map(function (t) { return generateTaskCard(t, false); }).join('');
 
       if (filteredToday.length === 0) {
-        todayList.innerHTML = '<div class="text-center text-sm text-gray-400 py-6">当前筛选下暂无任务</div>';
+        todayList.innerHTML = '<div class="task-empty-state"><i class="fas fa-seedling"></i><div class="title">今天很清爽</div><div class="desc">点击右下角 + 新增任务，开始你的第一项待办</div></div>';
       }
       if (filteredTomorrow.length === 0) {
-        tomorrowList.innerHTML = '<div class="text-center text-sm text-gray-400 py-6">当前筛选下暂无任务</div>';
+        tomorrowList.innerHTML = '<div class="task-empty-state"><i class="fas fa-rocket"></i><div class="title">明天先留白</div><div class="desc">提前规划 1-2 项关键任务，效率会更稳</div></div>';
       }
 
       var todayCount = document.getElementById('today-task-count');
@@ -1589,6 +1644,8 @@
       if (tomorrowCount) tomorrowCount.textContent = filteredTomorrow.length;
 
       updateSidebarActiveState();
+      updateBatchModeUI();
+      updateGroupDateInfo();
 
       bindTaskEvents();
     }
@@ -1679,8 +1736,9 @@
           var taskId = this.dataset.taskId;
           var isToday = this.dataset.isToday === 'true';
 
-          if (e.ctrlKey || e.metaKey || e.shiftKey) {
+          if (isBatchMode || e.ctrlKey || e.metaKey || e.shiftKey) {
             toggleBatchSelection(taskId, isToday);
+            updateBatchModeUI();
             renderTaskLists();
             return;
           }
@@ -1861,7 +1919,8 @@
       var addTaskButtons = [
         'add-task-header-btn',
         'add-today-task-btn',
-        'add-tomorrow-task-btn'
+        'add-tomorrow-task-btn',
+        'add-task-fab'
       ];
       addTaskButtons.forEach(function (id) {
         var btn = document.getElementById(id);
@@ -1873,6 +1932,23 @@
           });
         }
       });
+
+      var selectModeBtn = document.getElementById('select-mode-btn');
+      if (selectModeBtn) {
+        selectModeBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          setBatchMode(!isBatchMode);
+        });
+      }
+
+      var batchCancelBtn = document.getElementById('batch-cancel-btn');
+      if (batchCancelBtn) {
+        batchCancelBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          setBatchMode(false);
+          showToast('已退出选择模式');
+        });
+      }
 
       var todoLogoutLink = document.getElementById('todo-logout-link');
       if (todoLogoutLink) {
@@ -2319,89 +2395,15 @@
         updateSortMenuState();
         var sortMenuContainer = sortFilterBtn.parentElement;
         var lastSortTouchTs = 0;
-        var sortMenuOriginalParent = sortFilterMenu.parentElement;
-        var sortMenuOriginalNextSibling = sortFilterMenu.nextSibling;
-        var sortMenuMountedToBody = false;
-
-        function mountSortMenuToBody() {
-          if (sortMenuMountedToBody) return;
-          try {
-            sortMenuOriginalParent = sortFilterMenu.parentElement || sortMenuOriginalParent;
-            sortMenuOriginalNextSibling = sortFilterMenu.nextSibling || sortMenuOriginalNextSibling;
-            // append first so it can be measured in layout
-            document.body.appendChild(sortFilterMenu);
-            // prepare for measurement
-            var prevDisplay = sortFilterMenu.style.display || '';
-            var prevVisibility = sortFilterMenu.style.visibility || '';
-            sortFilterMenu.style.position = 'absolute';
-            sortFilterMenu.style.zIndex = '99999';
-            sortFilterMenu.style.left = '0';
-            sortFilterMenu.style.top = '0';
-            sortFilterMenu.style.right = 'auto';
-            // ensure it can be measured even if hidden by CSS: show it but keep invisible
-            sortFilterMenu.style.display = 'block';
-            sortFilterMenu.style.visibility = 'hidden';
-            sortFilterMenu.style.boxSizing = 'border-box';
-
-            // measure content width
-            var contentW = sortFilterMenu.scrollWidth || sortFilterMenu.offsetWidth || 160;
-            var rect = sortFilterBtn.getBoundingClientRect();
-            var btnWidth = Math.ceil(rect.width || 0);
-            var maxAllowed = Math.max(160, window.innerWidth - 16);
-            var desiredW = Math.min(Math.max(btnWidth, contentW), maxAllowed);
-
-            sortFilterMenu.style.minWidth = desiredW + 'px';
-            sortFilterMenu.style.maxWidth = Math.min(maxAllowed, desiredW) + 'px';
-
-            var left = Math.round(rect.left + window.scrollX);
-            var top = Math.round(rect.bottom + window.scrollY + 8);
-            if (left + desiredW > window.innerWidth) {
-              left = Math.max(8, Math.round(window.innerWidth - desiredW - 8));
-            }
-
-            sortFilterMenu.style.left = left + 'px';
-            sortFilterMenu.style.top = top + 'px';
-
-            // restore visibility/display - actual show is controlled by .show class
-            sortFilterMenu.style.visibility = prevVisibility;
-            sortFilterMenu.style.display = prevDisplay;
-            sortMenuMountedToBody = true;
-          } catch (err) {
-            console.warn('mountSortMenuToBody failed', err);
-          }
-        }
-
-        function restoreSortMenuPosition() {
-          if (!sortMenuMountedToBody) return;
-          try {
-            if (sortMenuOriginalParent) {
-              if (sortMenuOriginalNextSibling && sortMenuOriginalNextSibling.parentElement === sortMenuOriginalParent) {
-                sortMenuOriginalParent.insertBefore(sortFilterMenu, sortMenuOriginalNextSibling);
-              } else {
-                sortMenuOriginalParent.appendChild(sortFilterMenu);
-              }
-            }
-            sortFilterMenu.style.position = '';
-            sortFilterMenu.style.left = '';
-            sortFilterMenu.style.top = '';
-            sortFilterMenu.style.right = '';
-            sortFilterMenu.style.zIndex = '';
-            sortMenuMountedToBody = false;
-          } catch (err) {
-            console.warn('restoreSortMenuPosition failed', err);
-          }
-        }
 
         function closeSortMenu() {
           sortFilterMenu.classList.remove('show');
           if (sortMenuContainer) {
             sortMenuContainer.classList.remove('software-menu-open');
           }
-          restoreSortMenuPosition();
         }
 
         function openSortMenu() {
-          mountSortMenuToBody();
           sortFilterMenu.classList.add('show');
           if (sortMenuContainer) {
             sortMenuContainer.classList.add('software-menu-open');
@@ -2490,30 +2492,53 @@
         });
       }
 
-      // 搜索功能
-      var searchInput = document.getElementById('search-input');
-      var clearSearch = document.getElementById('clear-search');
-      if (searchInput && clearSearch) {
-        currentSearchKeyword = searchInput.value || '';
-        searchInput.addEventListener('input', function () {
-          clearSearch.style.opacity = this.value ? '1' : '0';
-          currentSearchKeyword = this.value || '';
-          renderTaskLists();
+      // 搜索功能（桌面头部 + 移动端下拉面板）
+      var searchInputs = [
+        document.getElementById('search-input'),
+        document.getElementById('mobile-toolbar-search-input')
+      ].filter(function (el) { return !!el; });
+
+      var clearButtons = [
+        document.getElementById('clear-search'),
+        document.getElementById('mobile-toolbar-clear-search')
+      ].filter(function (el) { return !!el; });
+
+      function syncSearchControls(value) {
+        var v = value || '';
+        searchInputs.forEach(function (input) {
+          if (input && input.value !== v) input.value = v;
         });
-        clearSearch.addEventListener('click', function () {
-          searchInput.value = '';
-          clearSearch.style.opacity = '0';
-          currentSearchKeyword = '';
-          renderTaskLists();
-          searchInput.focus();
+        clearButtons.forEach(function (btn) {
+          if (btn) btn.style.opacity = v ? '1' : '0';
         });
-        searchInput.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape' && this.value) {
-            this.value = '';
-            clearSearch.style.opacity = '0';
-            currentSearchKeyword = '';
+      }
+
+      if (searchInputs.length > 0) {
+        currentSearchKeyword = searchInputs[0].value || '';
+        syncSearchControls(currentSearchKeyword);
+
+        searchInputs.forEach(function (input) {
+          input.addEventListener('input', function () {
+            currentSearchKeyword = this.value || '';
+            syncSearchControls(currentSearchKeyword);
             renderTaskLists();
-          }
+          });
+          input.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && this.value) {
+              currentSearchKeyword = '';
+              syncSearchControls('');
+              renderTaskLists();
+            }
+          });
+        });
+
+        clearButtons.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            currentSearchKeyword = '';
+            syncSearchControls('');
+            renderTaskLists();
+            if (searchInputs[0]) searchInputs[0].focus();
+          });
         });
       }
 
@@ -2719,7 +2744,19 @@
 
       // 移动端搜索：增强兼容性，支持 touch/click、避免双触发，并在 header 上切换 class 控制可见性
       var mobileSearchBtn = document.getElementById('mobile-search-btn');
-      var mainHeaderEl = document.getElementById('main-header');
+      function getActiveMainHeader() {
+        return document.querySelector('.unified-top-header-dock .unified-top-header-shell#main-header') || document.getElementById('main-header');
+      }
+
+      function getActiveSearchInput() {
+        var isMobile = window.matchMedia && window.matchMedia('(max-width: 900px)').matches;
+        var mobileInput = document.getElementById('mobile-toolbar-search-input');
+        if (isMobile && mobileInput) return mobileInput;
+        var header = getActiveMainHeader();
+        return header ? header.querySelector('#search-input') : document.getElementById('search-input');
+      }
+
+      var mainHeaderEl = getActiveMainHeader();
       if (mobileSearchBtn) {
         (function () {
           var lastSearchTouchTs = 0;
@@ -2737,18 +2774,44 @@
               e && e.stopPropagation && e.stopPropagation();
             } catch (err) {}
 
-            var searchInput = document.getElementById('search-input');
+            var searchInput = getActiveSearchInput();
             if (!searchInput) return;
             var parent = searchInput.parentElement;
             if (!parent) return;
+            var isMobile = window.matchMedia && window.matchMedia('(max-width: 900px)').matches;
+            var mobilePanel = document.getElementById('mobile-toolbar-search-panel');
+            if (isMobile && mobilePanel) {
+              if (mobilePanel.classList.contains('hidden')) {
+                mobilePanel.classList.remove('hidden');
+                try { searchInput.focus(); } catch (err) {}
+              } else {
+                mobilePanel.classList.add('hidden');
+              }
+              return;
+            }
+            mainHeaderEl = getActiveMainHeader();
             var isVisible = !parent.classList.contains('hidden');
             if (isVisible) {
               parent.classList.add('hidden');
               if (mainHeaderEl) mainHeaderEl.classList.remove('mobile-search-open');
+              try {
+                window.applyTodoMobileSearchOffset && window.applyTodoMobileSearchOffset(false);
+                requestAnimationFrame(function () {
+                  window.applyTodoMobileSearchOffset && window.applyTodoMobileSearchOffset(false);
+                });
+              } catch (err) {}
             } else {
               parent.classList.remove('hidden');
               if (mainHeaderEl) mainHeaderEl.classList.add('mobile-search-open');
               try { searchInput.focus(); } catch (err) {}
+              try {
+                window.applyTodoMobileSearchOffset && window.applyTodoMobileSearchOffset(true);
+                requestAnimationFrame(function () {
+                  requestAnimationFrame(function () {
+                    window.applyTodoMobileSearchOffset && window.applyTodoMobileSearchOffset(true);
+                  });
+                });
+              } catch (err) {}
             }
           }
 
@@ -2760,14 +2823,35 @@
 
           // 点击页面任意处关闭搜索（仅当搜索已展开时）
           document.addEventListener('click', function (ev) {
-            var searchInput = document.getElementById('search-input');
+            var searchInput = getActiveSearchInput();
             if (!searchInput) return;
+            var isMobile = window.matchMedia && window.matchMedia('(max-width: 900px)').matches;
+            var mobilePanel = document.getElementById('mobile-toolbar-search-panel');
+            if (isMobile && mobilePanel && !mobilePanel.classList.contains('hidden')) {
+              if (ev.target === mobileSearchBtn || mobileSearchBtn.contains(ev.target) || mobilePanel.contains(ev.target)) return;
+              mobilePanel.classList.add('hidden');
+              return;
+            }
             var parent = searchInput.parentElement;
             if (!parent || parent.classList.contains('hidden')) return;
+            mainHeaderEl = getActiveMainHeader();
             if (ev.target === mobileSearchBtn || mobileSearchBtn.contains(ev.target) || parent.contains(ev.target)) return;
             parent.classList.add('hidden');
             if (mainHeaderEl) mainHeaderEl.classList.remove('mobile-search-open');
+            try {
+              window.applyTodoMobileSearchOffset && window.applyTodoMobileSearchOffset(false);
+              requestAnimationFrame(function () {
+                window.applyTodoMobileSearchOffset && window.applyTodoMobileSearchOffset(false);
+              });
+            } catch (err) {}
           });
+
+          try {
+            var initialInput = getActiveSearchInput();
+            var initialParent = initialInput && initialInput.parentElement;
+            var initiallyOpen = !!(initialParent && !initialParent.classList.contains('hidden'));
+            window.applyTodoMobileSearchOffset && window.applyTodoMobileSearchOffset(initiallyOpen);
+          } catch (err) {}
         })();
       }
     });

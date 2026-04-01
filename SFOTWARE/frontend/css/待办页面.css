@@ -263,9 +263,160 @@
       background: rgba(255, 255, 255, 0.95);
     }
 
+    .todo-quick-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .quick-action-item {
+      flex: 0 0 auto;
+    }
+
+    .quick-action-btn {
+      padding: 9px 14px;
+      min-height: 40px;
+      white-space: nowrap;
+    }
+
+    .quick-action-chip {
+      min-height: 40px;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+
+    .todo-toolbar {
+      background: rgba(255, 255, 255, 0.74);
+      border: 1px solid rgba(226, 232, 240, 0.85);
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+    }
+
+    .todo-toolbar-main {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .todo-toolbar-batch {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .sync-status-text {
+      margin-left: auto;
+      font-size: 12px;
+      color: #64748B;
+      background: rgba(148, 163, 184, 0.12);
+      border: 1px solid rgba(148, 163, 184, 0.24);
+      border-radius: 999px;
+      padding: 6px 10px;
+      line-height: 1;
+    }
+
+    .batch-selected-tip {
+      font-size: 12px;
+      color: #4F46E5;
+      background: rgba(79, 70, 229, 0.12);
+      border-radius: 999px;
+      padding: 6px 10px;
+      line-height: 1;
+    }
+
+    .task-group-card {
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+    }
+
+    .task-empty-state {
+      text-align: center;
+      color: #64748B;
+      padding: 20px 10px;
+      border: 1px dashed rgba(148, 163, 184, 0.45);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.45);
+    }
+
+    .task-empty-state i {
+      display: block;
+      font-size: 26px;
+      color: #94A3B8;
+      margin-bottom: 8px;
+    }
+
+    .task-empty-state .title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 4px;
+    }
+
+    .task-empty-state .desc {
+      font-size: 12px;
+      color: #64748B;
+    }
+
+    .task-status-badge {
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 999px;
+      padding: 4px 8px;
+      line-height: 1;
+      margin-left: 8px;
+    }
+
+    .task-status-badge.pending {
+      color: #B45309;
+      background: rgba(245, 158, 11, 0.16);
+    }
+
+    .task-status-badge.completed {
+      color: #047857;
+      background: rgba(16, 185, 129, 0.16);
+    }
+
+    .todo-fab {
+      position: fixed;
+      right: 18px;
+      bottom: calc(78px + env(safe-area-inset-bottom, 0px));
+      width: 52px;
+      height: 52px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #4F46E5, #6366F1);
+      color: #fff;
+      font-size: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 12px 24px rgba(79, 70, 229, 0.35);
+      z-index: 60;
+    }
+
+    @media (max-width: 768px) {
+      .todo-quick-actions {
+        flex-wrap: wrap;
+        overflow: visible;
+        row-gap: 8px;
+        column-gap: 8px;
+      }
+
+      .quick-action-btn,
+      .quick-action-chip {
+        min-height: 38px;
+      }
+    }
+
     .input-glass {
       width: 100%;
-      padding: 10px 16px;
+      padding: 8px 14px;
       border-radius: 12px;
       background: rgba(255, 255, 255, 0.65);
       backdrop-filter: blur(16px);
@@ -370,6 +521,38 @@
       opacity: 1;
       transform: translateY(0);
       pointer-events: auto;
+    }
+
+    #sort-filter-menu {
+      width: 272px;
+      min-width: 272px;
+      max-width: calc(100vw - 16px);
+      padding-top: 6px;
+      padding-bottom: 6px;
+      overflow: visible;
+    }
+
+    #sort-filter-menu [data-sort] {
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap !important;
+      word-break: keep-all;
+      writing-mode: horizontal-tb;
+      text-orientation: mixed;
+      font-size: 13px;
+      line-height: 1.2;
+      padding: 8px 12px;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    #sort-filter-menu [data-sort] i {
+      width: 14px;
+      flex: 0 0 14px;
+      text-align: center;
+      margin-right: 0 !important;
     }
 
     .notification-toast {
