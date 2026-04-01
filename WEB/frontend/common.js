@@ -411,110 +411,6 @@ function ensureUnifiedDarkThemeStyle() {
     color: #ffffff !important;
     text-shadow: none;
   }
-  html.unified-dark-mode .modal-content,
-  html.unified-dark-mode .confirm-modal-card,
-  html.unified-dark-mode .detail-modal,
-  html.unified-dark-mode #mobile-task-modal > div,
-  html.unified-dark-mode #forgot-password-modal > div {
-    color: #ffffff !important;
-  }
-  html.unified-dark-mode .modal-content p,
-  html.unified-dark-mode .modal-content span,
-  html.unified-dark-mode .modal-content label,
-  html.unified-dark-mode .modal-content li,
-  html.unified-dark-mode .modal-content div,
-  html.unified-dark-mode .modal-content small,
-  html.unified-dark-mode .modal-content strong,
-  html.unified-dark-mode .modal-content h1,
-  html.unified-dark-mode .modal-content h2,
-  html.unified-dark-mode .modal-content h3,
-  html.unified-dark-mode .modal-content h4,
-  html.unified-dark-mode .modal-content h5,
-  html.unified-dark-mode .modal-content h6,
-  html.unified-dark-mode .confirm-modal-card p,
-  html.unified-dark-mode .confirm-modal-card span,
-  html.unified-dark-mode .confirm-modal-card label,
-  html.unified-dark-mode .confirm-modal-card li,
-  html.unified-dark-mode .confirm-modal-card div,
-  html.unified-dark-mode .confirm-modal-card small,
-  html.unified-dark-mode .confirm-modal-card strong,
-  html.unified-dark-mode .detail-modal p,
-  html.unified-dark-mode .detail-modal span,
-  html.unified-dark-mode .detail-modal label,
-  html.unified-dark-mode .detail-modal li,
-  html.unified-dark-mode .detail-modal div,
-  html.unified-dark-mode .detail-modal small,
-  html.unified-dark-mode .detail-modal strong {
-    color: #ffffff !important;
-  }
-  html.unified-dark-mode .modal-content .text-gray-900,
-  html.unified-dark-mode .modal-content .text-gray-800,
-  html.unified-dark-mode .modal-content .text-gray-700,
-  html.unified-dark-mode .modal-content .text-gray-600,
-  html.unified-dark-mode .modal-content .text-gray-500,
-  html.unified-dark-mode .modal-content .text-gray-400,
-  html.unified-dark-mode .confirm-modal-card .text-gray-900,
-  html.unified-dark-mode .confirm-modal-card .text-gray-800,
-  html.unified-dark-mode .confirm-modal-card .text-gray-700,
-  html.unified-dark-mode .confirm-modal-card .text-gray-600,
-  html.unified-dark-mode .confirm-modal-card .text-gray-500,
-  html.unified-dark-mode .confirm-modal-card .text-gray-400,
-  html.unified-dark-mode .detail-modal .text-gray-900,
-  html.unified-dark-mode .detail-modal .text-gray-800,
-  html.unified-dark-mode .detail-modal .text-gray-700,
-  html.unified-dark-mode .detail-modal .text-gray-600,
-  html.unified-dark-mode .detail-modal .text-gray-500,
-  html.unified-dark-mode .detail-modal .text-gray-400 {
-    color: #ffffff !important;
-  }
-  html.unified-dark-mode .modal-content i,
-  html.unified-dark-mode .confirm-modal-card i,
-  html.unified-dark-mode .detail-modal i {
-    color: var(--ud-muted) !important;
-  }
-  html.unified-dark-mode .modal-content i.text-primary,
-  html.unified-dark-mode .confirm-modal-card i.text-primary,
-  html.unified-dark-mode .detail-modal i.text-primary {
-    color: var(--ud-accent) !important;
-  }
-  html.unified-dark-mode .modal-content i.text-success,
-  html.unified-dark-mode .confirm-modal-card i.text-success,
-  html.unified-dark-mode .detail-modal i.text-success {
-    color: var(--ud-success) !important;
-  }
-  html.unified-dark-mode .modal-content i.text-warning,
-  html.unified-dark-mode .confirm-modal-card i.text-warning,
-  html.unified-dark-mode .detail-modal i.text-warning {
-    color: var(--ud-warning) !important;
-  }
-  html.unified-dark-mode .modal-content i.text-danger,
-  html.unified-dark-mode .confirm-modal-card i.text-danger,
-  html.unified-dark-mode .detail-modal i.text-danger {
-    color: var(--ud-danger) !important;
-  }
-  html.unified-dark-mode .modal-content i.text-gray-900,
-  html.unified-dark-mode .modal-content i.text-gray-800,
-  html.unified-dark-mode .modal-content i.text-gray-700,
-  html.unified-dark-mode .modal-content i.text-gray-600,
-  html.unified-dark-mode .modal-content i.text-gray-500,
-  html.unified-dark-mode .modal-content i.text-gray-400,
-  html.unified-dark-mode .modal-content i.text-white,
-  html.unified-dark-mode .confirm-modal-card i.text-gray-900,
-  html.unified-dark-mode .confirm-modal-card i.text-gray-800,
-  html.unified-dark-mode .confirm-modal-card i.text-gray-700,
-  html.unified-dark-mode .confirm-modal-card i.text-gray-600,
-  html.unified-dark-mode .confirm-modal-card i.text-gray-500,
-  html.unified-dark-mode .confirm-modal-card i.text-gray-400,
-  html.unified-dark-mode .confirm-modal-card i.text-white,
-  html.unified-dark-mode .detail-modal i.text-gray-900,
-  html.unified-dark-mode .detail-modal i.text-gray-800,
-  html.unified-dark-mode .detail-modal i.text-gray-700,
-  html.unified-dark-mode .detail-modal i.text-gray-600,
-  html.unified-dark-mode .detail-modal i.text-gray-500,
-  html.unified-dark-mode .detail-modal i.text-gray-400,
-  html.unified-dark-mode .detail-modal i.text-white {
-    color: var(--ud-muted) !important;
-  }
   html.unified-dark-mode .unified-toast,
   html.unified-dark-mode .unified-toast .unified-toast-text {
     color: #ffffff !important;
@@ -2640,9 +2536,9 @@ function ensureUnifiedModalLiquidStyle() {
   body:not(.software-app) #mobile-task-modal,
   body:not(.software-app) #forgot-password-modal,
   body:not(.software-app) #task-detail-panel {
-    background: rgba(15, 23, 42, 0.08) !important;
-    backdrop-filter: blur(4px) saturate(110%) contrast(102%) !important;
-    -webkit-backdrop-filter: blur(4px) saturate(110%) contrast(102%) !important;
+    background: rgba(15, 23, 42, 0.16) !important;
+    backdrop-filter: blur(9px) saturate(132%) contrast(104%) !important;
+    -webkit-backdrop-filter: blur(9px) saturate(132%) contrast(104%) !important;
   }
 
   body:not(.software-app) .modal-content,
@@ -2653,19 +2549,12 @@ function ensureUnifiedModalLiquidStyle() {
     position: relative !important;
     isolation: isolate !important;
     overflow: hidden !important;
-    width: min(94vw, 468px) !important;
-    max-width: min(94vw, 468px) !important;
-    min-height: 0 !important;
-    height: auto !important;
-    max-height: min(72vh, calc(100dvh - 160px)) !important;
-    overflow-y: auto !important;
-    padding: 16px !important;
-    border-radius: 18px !important;
+    border-radius: 22px !important;
     border: 0 !important;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 52%, rgba(255, 255, 255, 0.022) 100%) !important;
-    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.44), inset 0 -1px 0 rgba(255, 255, 255, 0.1) !important;
-    backdrop-filter: blur(10px) saturate(112%) contrast(103%) brightness(103%) !important;
-    -webkit-backdrop-filter: blur(10px) saturate(112%) contrast(103%) brightness(103%) !important;
+    background: linear-gradient(140deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.12) 44%, rgba(255, 255, 255, 0.05) 100%) !important;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.56), inset 0 -1px 0 rgba(255, 255, 255, 0.16) !important;
+    backdrop-filter: blur(24px) saturate(165%) contrast(106%) brightness(104%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(165%) contrast(106%) brightness(104%) !important;
   }
 
   body:not(.software-app) .modal-content::before,
@@ -2675,13 +2564,13 @@ function ensureUnifiedModalLiquidStyle() {
   body:not(.software-app) #forgot-password-modal > div::before {
     content: "";
     position: absolute;
-    inset: -10px -8px;
+    inset: -16px -14px;
     border-radius: inherit;
     pointer-events: none;
-    background: rgba(255, 255, 255, 0.01);
-    backdrop-filter: blur(3px) saturate(108%) contrast(104%) brightness(104%);
-    -webkit-backdrop-filter: blur(3px) saturate(108%) contrast(104%) brightness(104%);
-    opacity: 0.2;
+    background: rgba(255, 255, 255, 0.018);
+    backdrop-filter: blur(6px) saturate(112%) contrast(108%) brightness(108%);
+    -webkit-backdrop-filter: blur(6px) saturate(112%) contrast(108%) brightness(108%);
+    opacity: 0.3;
     transform: scale(1.02);
   }
 
@@ -2696,9 +2585,9 @@ function ensureUnifiedModalLiquidStyle() {
     border-radius: inherit;
     pointer-events: none;
     background:
-      radial-gradient(126% 166% at 10% 10%, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 44%),
-      radial-gradient(116% 146% at 90% 88%, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 52%);
-    opacity: 0.38;
+      radial-gradient(130% 180% at 8% 8%, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0) 44%),
+      radial-gradient(120% 160% at 88% 88%, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 50%);
+    opacity: 0.6;
   }
 
   body:not(.software-app) .modal-content > *,
@@ -2714,11 +2603,11 @@ function ensureUnifiedModalLiquidStyle() {
   body:not(.software-app) .modal-content .input-glass,
   body:not(.software-app) .confirm-modal-card .modal-input,
   body:not(.software-app) #forgot-password-modal input {
-    background: rgba(255, 255, 255, 0.18) !important;
-    border-color: rgba(255, 255, 255, 0.26) !important;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28) !important;
-    backdrop-filter: blur(4px) saturate(108%) !important;
-    -webkit-backdrop-filter: blur(4px) saturate(108%) !important;
+    background: rgba(255, 255, 255, 0.34) !important;
+    border-color: rgba(255, 255, 255, 0.42) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.46) !important;
+    backdrop-filter: blur(7px) saturate(120%) !important;
+    -webkit-backdrop-filter: blur(7px) saturate(120%) !important;
   }
   `;
   document.head.appendChild(style);
@@ -3283,108 +3172,6 @@ function ensureUnifiedThemeStyle() {
   body.theme-night .task-card:hover,
   body.theme-night .card-hover:hover {
     background: rgba(30, 41, 59, 0.62) !important;
-  }
-  body.theme-night .modal-content,
-  body.theme-night .confirm-modal-card,
-  body.theme-night .detail-modal {
-    color: #ffffff !important;
-  }
-  body.theme-night .modal-content p,
-  body.theme-night .modal-content span,
-  body.theme-night .modal-content label,
-  body.theme-night .modal-content li,
-  body.theme-night .modal-content div,
-  body.theme-night .modal-content small,
-  body.theme-night .modal-content strong,
-  body.theme-night .modal-content h1,
-  body.theme-night .modal-content h2,
-  body.theme-night .modal-content h3,
-  body.theme-night .modal-content h4,
-  body.theme-night .modal-content h5,
-  body.theme-night .modal-content h6,
-  body.theme-night .confirm-modal-card p,
-  body.theme-night .confirm-modal-card span,
-  body.theme-night .confirm-modal-card label,
-  body.theme-night .confirm-modal-card li,
-  body.theme-night .confirm-modal-card div,
-  body.theme-night .confirm-modal-card small,
-  body.theme-night .confirm-modal-card strong,
-  body.theme-night .detail-modal p,
-  body.theme-night .detail-modal span,
-  body.theme-night .detail-modal label,
-  body.theme-night .detail-modal li,
-  body.theme-night .detail-modal div,
-  body.theme-night .detail-modal small,
-  body.theme-night .detail-modal strong {
-    color: #ffffff !important;
-  }
-  body.theme-night .modal-content .text-gray-900,
-  body.theme-night .modal-content .text-gray-800,
-  body.theme-night .modal-content .text-gray-700,
-  body.theme-night .modal-content .text-gray-600,
-  body.theme-night .modal-content .text-gray-500,
-  body.theme-night .modal-content .text-gray-400,
-  body.theme-night .confirm-modal-card .text-gray-900,
-  body.theme-night .confirm-modal-card .text-gray-800,
-  body.theme-night .confirm-modal-card .text-gray-700,
-  body.theme-night .confirm-modal-card .text-gray-600,
-  body.theme-night .confirm-modal-card .text-gray-500,
-  body.theme-night .confirm-modal-card .text-gray-400,
-  body.theme-night .detail-modal .text-gray-900,
-  body.theme-night .detail-modal .text-gray-800,
-  body.theme-night .detail-modal .text-gray-700,
-  body.theme-night .detail-modal .text-gray-600,
-  body.theme-night .detail-modal .text-gray-500,
-  body.theme-night .detail-modal .text-gray-400 {
-    color: #ffffff !important;
-  }
-  body.theme-night .modal-content i,
-  body.theme-night .confirm-modal-card i,
-  body.theme-night .detail-modal i {
-    color: var(--night-text-sub) !important;
-  }
-  body.theme-night .modal-content i.text-primary,
-  body.theme-night .confirm-modal-card i.text-primary,
-  body.theme-night .detail-modal i.text-primary {
-    color: #93c5fd !important;
-  }
-  body.theme-night .modal-content i.text-success,
-  body.theme-night .confirm-modal-card i.text-success,
-  body.theme-night .detail-modal i.text-success {
-    color: #86efac !important;
-  }
-  body.theme-night .modal-content i.text-warning,
-  body.theme-night .confirm-modal-card i.text-warning,
-  body.theme-night .detail-modal i.text-warning {
-    color: #fcd34d !important;
-  }
-  body.theme-night .modal-content i.text-danger,
-  body.theme-night .confirm-modal-card i.text-danger,
-  body.theme-night .detail-modal i.text-danger {
-    color: #fca5a5 !important;
-  }
-  body.theme-night .modal-content i.text-gray-900,
-  body.theme-night .modal-content i.text-gray-800,
-  body.theme-night .modal-content i.text-gray-700,
-  body.theme-night .modal-content i.text-gray-600,
-  body.theme-night .modal-content i.text-gray-500,
-  body.theme-night .modal-content i.text-gray-400,
-  body.theme-night .modal-content i.text-white,
-  body.theme-night .confirm-modal-card i.text-gray-900,
-  body.theme-night .confirm-modal-card i.text-gray-800,
-  body.theme-night .confirm-modal-card i.text-gray-700,
-  body.theme-night .confirm-modal-card i.text-gray-600,
-  body.theme-night .confirm-modal-card i.text-gray-500,
-  body.theme-night .confirm-modal-card i.text-gray-400,
-  body.theme-night .confirm-modal-card i.text-white,
-  body.theme-night .detail-modal i.text-gray-900,
-  body.theme-night .detail-modal i.text-gray-800,
-  body.theme-night .detail-modal i.text-gray-700,
-  body.theme-night .detail-modal i.text-gray-600,
-  body.theme-night .detail-modal i.text-gray-500,
-  body.theme-night .detail-modal i.text-gray-400,
-  body.theme-night .detail-modal i.text-white {
-    color: var(--night-text-sub) !important;
   }
   body.theme-night .unified-bottom-tab-dock .unified-tab-row {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.018), rgba(255, 255, 255, 0.008)) !important;

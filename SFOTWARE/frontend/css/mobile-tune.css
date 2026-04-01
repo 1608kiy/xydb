@@ -1695,9 +1695,9 @@ a,
   body #mobile-task-modal,
   body #forgot-password-modal,
   body #task-detail-panel {
-    background: rgba(15, 23, 42, 0.08) !important;
-    backdrop-filter: blur(4px) saturate(110%) contrast(102%) !important;
-    -webkit-backdrop-filter: blur(4px) saturate(110%) contrast(102%) !important;
+    background: rgba(15, 23, 42, 0.14) !important;
+    backdrop-filter: blur(8px) saturate(128%) contrast(104%) !important;
+    -webkit-backdrop-filter: blur(8px) saturate(128%) contrast(104%) !important;
   }
 
   body .modal-content,
@@ -1708,35 +1708,28 @@ a,
     position: relative !important;
     isolation: isolate !important;
     overflow: hidden !important;
-    width: min(82vw, 318px) !important;
-    max-width: min(82vw, 318px) !important;
-    min-height: 0 !important;
-    height: auto !important;
-    max-height: min(62vh, calc(100dvh - 190px)) !important;
-    overflow-y: auto !important;
+    width: min(88vw, 360px) !important;
+    max-width: min(88vw, 360px) !important;
+    max-height: min(78vh, 640px) !important;
     margin-left: auto !important;
-    margin-right: 10px !important;
-    padding: 14px 14px 12px !important;
-    border-radius: 16px !important;
+    margin-right: auto !important;
+    border-radius: 18px !important;
     border: 0 !important;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 52%, rgba(255, 255, 255, 0.022) 100%) !important;
-    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.44), inset 0 -1px 0 rgba(255, 255, 255, 0.1) !important;
-    backdrop-filter: blur(8px) saturate(112%) contrast(103%) brightness(103%) !important;
-    -webkit-backdrop-filter: blur(8px) saturate(112%) contrast(103%) brightness(103%) !important;
+    background: linear-gradient(140deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.12) 44%, rgba(255, 255, 255, 0.05) 100%) !important;
+    box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.54), inset 0 -1px 0 rgba(255, 255, 255, 0.14) !important;
+    backdrop-filter: blur(20px) saturate(160%) contrast(106%) brightness(104%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(160%) contrast(106%) brightness(104%) !important;
   }
 
   body #task-detail-panel .modal-content,
   body #task-detail-panel .task-detail-content {
-    width: min(86vw, 336px) !important;
-    max-width: min(86vw, 336px) !important;
-    max-height: min(64vh, calc(100dvh - 180px)) !important;
-    overflow-y: auto !important;
+    width: min(92vw, 392px) !important;
+    max-width: min(92vw, 392px) !important;
   }
 
   body #mobile-task-modal > div {
-    width: min(84vw, 326px) !important;
-    max-width: min(84vw, 326px) !important;
-    max-height: min(58vh, calc(100dvh - 210px)) !important;
+    width: min(90vw, 372px) !important;
+    max-width: min(90vw, 372px) !important;
     margin-bottom: calc(10px + env(safe-area-inset-bottom, 0px)) !important;
   }
 
@@ -1747,13 +1740,13 @@ a,
   body #forgot-password-modal > div::before {
     content: "";
     position: absolute;
-    inset: -10px -8px;
+    inset: -14px -12px;
     border-radius: inherit;
     pointer-events: none;
-    background: rgba(255, 255, 255, 0.01);
-    backdrop-filter: blur(3px) saturate(108%) contrast(104%) brightness(104%);
-    -webkit-backdrop-filter: blur(3px) saturate(108%) contrast(104%) brightness(104%);
-    opacity: 0.2;
+    background: rgba(255, 255, 255, 0.016);
+    backdrop-filter: blur(5px) saturate(112%) contrast(108%) brightness(108%);
+    -webkit-backdrop-filter: blur(5px) saturate(112%) contrast(108%) brightness(108%);
+    opacity: 0.3;
     transform: scale(1.02);
   }
 
@@ -1768,9 +1761,9 @@ a,
     border-radius: inherit;
     pointer-events: none;
     background:
-      radial-gradient(126% 166% at 10% 10%, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 44%),
-      radial-gradient(116% 146% at 90% 88%, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 52%);
-    opacity: 0.38;
+      radial-gradient(128% 176% at 8% 10%, rgba(255, 255, 255, 0.36), rgba(255, 255, 255, 0) 44%),
+      radial-gradient(120% 156% at 88% 88%, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 50%);
+    opacity: 0.58;
   }
 
   body .modal-content > *,
@@ -1786,11 +1779,11 @@ a,
   body .modal-content .input-glass,
   body .confirm-modal-card .modal-input,
   body #forgot-password-modal input {
-    background: rgba(255, 255, 255, 0.18) !important;
-    border-color: rgba(255, 255, 255, 0.26) !important;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28) !important;
-    backdrop-filter: blur(4px) saturate(108%) !important;
-    -webkit-backdrop-filter: blur(4px) saturate(108%) !important;
+    background: rgba(255, 255, 255, 0.34) !important;
+    border-color: rgba(255, 255, 255, 0.42) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.44) !important;
+    backdrop-filter: blur(7px) saturate(120%) !important;
+    -webkit-backdrop-filter: blur(7px) saturate(120%) !important;
   }
 }
 
@@ -1800,94 +1793,19 @@ a,
   body .detail-modal,
   body #mobile-task-modal > div,
   body #forgot-password-modal > div {
-    width: min(84vw, 284px) !important;
-    max-width: min(84vw, 284px) !important;
-    border-radius: 15px !important;
-    margin-right: 8px !important;
-    max-height: min(56vh, calc(100dvh - 190px)) !important;
-    padding: 12px 12px 10px !important;
+    width: min(90vw, 334px) !important;
+    max-width: min(90vw, 334px) !important;
+    border-radius: 16px !important;
   }
 
   body #task-detail-panel .modal-content,
   body #task-detail-panel .task-detail-content {
-    width: min(86vw, 304px) !important;
-    max-width: min(86vw, 304px) !important;
-    max-height: min(58vh, calc(100dvh - 176px)) !important;
+    width: min(94vw, 354px) !important;
+    max-width: min(94vw, 354px) !important;
   }
 }
 
 @media (max-width: 900px) {
-  html.unified-dark-mode body.software-app .modal-content,
-  html.unified-dark-mode body.software-app .confirm-modal-card,
-  html.unified-dark-mode body.software-app .detail-modal,
-  html.unified-dark-mode body.software-app #mobile-task-modal > div,
-  html.unified-dark-mode body.software-app #forgot-password-modal > div {
-    color: #ffffff !important;
-  }
-
-  html.unified-dark-mode body.software-app .modal-content p,
-  html.unified-dark-mode body.software-app .modal-content span,
-  html.unified-dark-mode body.software-app .modal-content label,
-  html.unified-dark-mode body.software-app .modal-content li,
-  html.unified-dark-mode body.software-app .confirm-modal-card p,
-  html.unified-dark-mode body.software-app .confirm-modal-card span,
-  html.unified-dark-mode body.software-app .confirm-modal-card label,
-  html.unified-dark-mode body.software-app .confirm-modal-card li,
-  html.unified-dark-mode body.software-app .detail-modal p,
-  html.unified-dark-mode body.software-app .detail-modal span,
-  html.unified-dark-mode body.software-app .detail-modal label,
-  html.unified-dark-mode body.software-app .detail-modal li {
-    color: #ffffff !important;
-  }
-  html.unified-dark-mode body.software-app .modal-content i,
-  html.unified-dark-mode body.software-app .confirm-modal-card i,
-  html.unified-dark-mode body.software-app .detail-modal i {
-    color: #c8d4e8 !important;
-  }
-  html.unified-dark-mode body.software-app .modal-content i.text-primary,
-  html.unified-dark-mode body.software-app .confirm-modal-card i.text-primary,
-  html.unified-dark-mode body.software-app .detail-modal i.text-primary {
-    color: #93c5fd !important;
-  }
-  html.unified-dark-mode body.software-app .modal-content i.text-success,
-  html.unified-dark-mode body.software-app .confirm-modal-card i.text-success,
-  html.unified-dark-mode body.software-app .detail-modal i.text-success {
-    color: #86efac !important;
-  }
-  html.unified-dark-mode body.software-app .modal-content i.text-warning,
-  html.unified-dark-mode body.software-app .confirm-modal-card i.text-warning,
-  html.unified-dark-mode body.software-app .detail-modal i.text-warning {
-    color: #fcd34d !important;
-  }
-  html.unified-dark-mode body.software-app .modal-content i.text-danger,
-  html.unified-dark-mode body.software-app .confirm-modal-card i.text-danger,
-  html.unified-dark-mode body.software-app .detail-modal i.text-danger {
-    color: #fca5a5 !important;
-  }
-  html.unified-dark-mode body.software-app .modal-content i.text-gray-900,
-  html.unified-dark-mode body.software-app .modal-content i.text-gray-800,
-  html.unified-dark-mode body.software-app .modal-content i.text-gray-700,
-  html.unified-dark-mode body.software-app .modal-content i.text-gray-600,
-  html.unified-dark-mode body.software-app .modal-content i.text-gray-500,
-  html.unified-dark-mode body.software-app .modal-content i.text-gray-400,
-  html.unified-dark-mode body.software-app .modal-content i.text-white,
-  html.unified-dark-mode body.software-app .confirm-modal-card i.text-gray-900,
-  html.unified-dark-mode body.software-app .confirm-modal-card i.text-gray-800,
-  html.unified-dark-mode body.software-app .confirm-modal-card i.text-gray-700,
-  html.unified-dark-mode body.software-app .confirm-modal-card i.text-gray-600,
-  html.unified-dark-mode body.software-app .confirm-modal-card i.text-gray-500,
-  html.unified-dark-mode body.software-app .confirm-modal-card i.text-gray-400,
-  html.unified-dark-mode body.software-app .confirm-modal-card i.text-white,
-  html.unified-dark-mode body.software-app .detail-modal i.text-gray-900,
-  html.unified-dark-mode body.software-app .detail-modal i.text-gray-800,
-  html.unified-dark-mode body.software-app .detail-modal i.text-gray-700,
-  html.unified-dark-mode body.software-app .detail-modal i.text-gray-600,
-  html.unified-dark-mode body.software-app .detail-modal i.text-gray-500,
-  html.unified-dark-mode body.software-app .detail-modal i.text-gray-400,
-  html.unified-dark-mode body.software-app .detail-modal i.text-white {
-    color: #c8d4e8 !important;
-  }
-
   html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-row {
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)) !important;
     border-color: rgba(255, 255, 255, 0.24) !important;
@@ -1926,77 +1844,6 @@ a,
 }
 
 @media (max-width: 900px) {
-  body.software-app.theme-night .modal-content,
-  body.software-app.theme-night .confirm-modal-card,
-  body.software-app.theme-night .detail-modal,
-  body.software-app.theme-night #mobile-task-modal > div,
-  body.software-app.theme-night #forgot-password-modal > div {
-    color: #ffffff !important;
-  }
-
-  body.software-app.theme-night .modal-content p,
-  body.software-app.theme-night .modal-content span,
-  body.software-app.theme-night .modal-content label,
-  body.software-app.theme-night .modal-content li,
-  body.software-app.theme-night .confirm-modal-card p,
-  body.software-app.theme-night .confirm-modal-card span,
-  body.software-app.theme-night .confirm-modal-card label,
-  body.software-app.theme-night .confirm-modal-card li,
-  body.software-app.theme-night .detail-modal p,
-  body.software-app.theme-night .detail-modal span,
-  body.software-app.theme-night .detail-modal label,
-  body.software-app.theme-night .detail-modal li {
-    color: #ffffff !important;
-  }
-  body.software-app.theme-night .modal-content i,
-  body.software-app.theme-night .confirm-modal-card i,
-  body.software-app.theme-night .detail-modal i {
-    color: #c8d4e8 !important;
-  }
-  body.software-app.theme-night .modal-content i.text-primary,
-  body.software-app.theme-night .confirm-modal-card i.text-primary,
-  body.software-app.theme-night .detail-modal i.text-primary {
-    color: #93c5fd !important;
-  }
-  body.software-app.theme-night .modal-content i.text-success,
-  body.software-app.theme-night .confirm-modal-card i.text-success,
-  body.software-app.theme-night .detail-modal i.text-success {
-    color: #86efac !important;
-  }
-  body.software-app.theme-night .modal-content i.text-warning,
-  body.software-app.theme-night .confirm-modal-card i.text-warning,
-  body.software-app.theme-night .detail-modal i.text-warning {
-    color: #fcd34d !important;
-  }
-  body.software-app.theme-night .modal-content i.text-danger,
-  body.software-app.theme-night .confirm-modal-card i.text-danger,
-  body.software-app.theme-night .detail-modal i.text-danger {
-    color: #fca5a5 !important;
-  }
-  body.software-app.theme-night .modal-content i.text-gray-900,
-  body.software-app.theme-night .modal-content i.text-gray-800,
-  body.software-app.theme-night .modal-content i.text-gray-700,
-  body.software-app.theme-night .modal-content i.text-gray-600,
-  body.software-app.theme-night .modal-content i.text-gray-500,
-  body.software-app.theme-night .modal-content i.text-gray-400,
-  body.software-app.theme-night .modal-content i.text-white,
-  body.software-app.theme-night .confirm-modal-card i.text-gray-900,
-  body.software-app.theme-night .confirm-modal-card i.text-gray-800,
-  body.software-app.theme-night .confirm-modal-card i.text-gray-700,
-  body.software-app.theme-night .confirm-modal-card i.text-gray-600,
-  body.software-app.theme-night .confirm-modal-card i.text-gray-500,
-  body.software-app.theme-night .confirm-modal-card i.text-gray-400,
-  body.software-app.theme-night .confirm-modal-card i.text-white,
-  body.software-app.theme-night .detail-modal i.text-gray-900,
-  body.software-app.theme-night .detail-modal i.text-gray-800,
-  body.software-app.theme-night .detail-modal i.text-gray-700,
-  body.software-app.theme-night .detail-modal i.text-gray-600,
-  body.software-app.theme-night .detail-modal i.text-gray-500,
-  body.software-app.theme-night .detail-modal i.text-gray-400,
-  body.software-app.theme-night .detail-modal i.text-white {
-    color: #c8d4e8 !important;
-  }
-
   body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item {
     color: rgba(255, 255, 255, 0.84) !important;
   }

@@ -411,110 +411,6 @@ function ensureUnifiedDarkThemeStyle() {
     color: #ffffff !important;
     text-shadow: none;
   }
-  html.unified-dark-mode .modal-content,
-  html.unified-dark-mode .confirm-modal-card,
-  html.unified-dark-mode .detail-modal,
-  html.unified-dark-mode #mobile-task-modal > div,
-  html.unified-dark-mode #forgot-password-modal > div {
-    color: #ffffff !important;
-  }
-  html.unified-dark-mode .modal-content p,
-  html.unified-dark-mode .modal-content span,
-  html.unified-dark-mode .modal-content label,
-  html.unified-dark-mode .modal-content li,
-  html.unified-dark-mode .modal-content div,
-  html.unified-dark-mode .modal-content small,
-  html.unified-dark-mode .modal-content strong,
-  html.unified-dark-mode .modal-content h1,
-  html.unified-dark-mode .modal-content h2,
-  html.unified-dark-mode .modal-content h3,
-  html.unified-dark-mode .modal-content h4,
-  html.unified-dark-mode .modal-content h5,
-  html.unified-dark-mode .modal-content h6,
-  html.unified-dark-mode .confirm-modal-card p,
-  html.unified-dark-mode .confirm-modal-card span,
-  html.unified-dark-mode .confirm-modal-card label,
-  html.unified-dark-mode .confirm-modal-card li,
-  html.unified-dark-mode .confirm-modal-card div,
-  html.unified-dark-mode .confirm-modal-card small,
-  html.unified-dark-mode .confirm-modal-card strong,
-  html.unified-dark-mode .detail-modal p,
-  html.unified-dark-mode .detail-modal span,
-  html.unified-dark-mode .detail-modal label,
-  html.unified-dark-mode .detail-modal li,
-  html.unified-dark-mode .detail-modal div,
-  html.unified-dark-mode .detail-modal small,
-  html.unified-dark-mode .detail-modal strong {
-    color: #ffffff !important;
-  }
-  html.unified-dark-mode .modal-content .text-gray-900,
-  html.unified-dark-mode .modal-content .text-gray-800,
-  html.unified-dark-mode .modal-content .text-gray-700,
-  html.unified-dark-mode .modal-content .text-gray-600,
-  html.unified-dark-mode .modal-content .text-gray-500,
-  html.unified-dark-mode .modal-content .text-gray-400,
-  html.unified-dark-mode .confirm-modal-card .text-gray-900,
-  html.unified-dark-mode .confirm-modal-card .text-gray-800,
-  html.unified-dark-mode .confirm-modal-card .text-gray-700,
-  html.unified-dark-mode .confirm-modal-card .text-gray-600,
-  html.unified-dark-mode .confirm-modal-card .text-gray-500,
-  html.unified-dark-mode .confirm-modal-card .text-gray-400,
-  html.unified-dark-mode .detail-modal .text-gray-900,
-  html.unified-dark-mode .detail-modal .text-gray-800,
-  html.unified-dark-mode .detail-modal .text-gray-700,
-  html.unified-dark-mode .detail-modal .text-gray-600,
-  html.unified-dark-mode .detail-modal .text-gray-500,
-  html.unified-dark-mode .detail-modal .text-gray-400 {
-    color: #ffffff !important;
-  }
-  html.unified-dark-mode .modal-content i,
-  html.unified-dark-mode .confirm-modal-card i,
-  html.unified-dark-mode .detail-modal i {
-    color: var(--ud-muted) !important;
-  }
-  html.unified-dark-mode .modal-content i.text-primary,
-  html.unified-dark-mode .confirm-modal-card i.text-primary,
-  html.unified-dark-mode .detail-modal i.text-primary {
-    color: var(--ud-accent) !important;
-  }
-  html.unified-dark-mode .modal-content i.text-success,
-  html.unified-dark-mode .confirm-modal-card i.text-success,
-  html.unified-dark-mode .detail-modal i.text-success {
-    color: var(--ud-success) !important;
-  }
-  html.unified-dark-mode .modal-content i.text-warning,
-  html.unified-dark-mode .confirm-modal-card i.text-warning,
-  html.unified-dark-mode .detail-modal i.text-warning {
-    color: var(--ud-warning) !important;
-  }
-  html.unified-dark-mode .modal-content i.text-danger,
-  html.unified-dark-mode .confirm-modal-card i.text-danger,
-  html.unified-dark-mode .detail-modal i.text-danger {
-    color: var(--ud-danger) !important;
-  }
-  html.unified-dark-mode .modal-content i.text-gray-900,
-  html.unified-dark-mode .modal-content i.text-gray-800,
-  html.unified-dark-mode .modal-content i.text-gray-700,
-  html.unified-dark-mode .modal-content i.text-gray-600,
-  html.unified-dark-mode .modal-content i.text-gray-500,
-  html.unified-dark-mode .modal-content i.text-gray-400,
-  html.unified-dark-mode .modal-content i.text-white,
-  html.unified-dark-mode .confirm-modal-card i.text-gray-900,
-  html.unified-dark-mode .confirm-modal-card i.text-gray-800,
-  html.unified-dark-mode .confirm-modal-card i.text-gray-700,
-  html.unified-dark-mode .confirm-modal-card i.text-gray-600,
-  html.unified-dark-mode .confirm-modal-card i.text-gray-500,
-  html.unified-dark-mode .confirm-modal-card i.text-gray-400,
-  html.unified-dark-mode .confirm-modal-card i.text-white,
-  html.unified-dark-mode .detail-modal i.text-gray-900,
-  html.unified-dark-mode .detail-modal i.text-gray-800,
-  html.unified-dark-mode .detail-modal i.text-gray-700,
-  html.unified-dark-mode .detail-modal i.text-gray-600,
-  html.unified-dark-mode .detail-modal i.text-gray-500,
-  html.unified-dark-mode .detail-modal i.text-gray-400,
-  html.unified-dark-mode .detail-modal i.text-white {
-    color: var(--ud-muted) !important;
-  }
   html.unified-dark-mode .unified-toast,
   html.unified-dark-mode .unified-toast .unified-toast-text {
     color: #ffffff !important;
@@ -1990,6 +1886,23 @@ function ensureUnifiedBottomTabStyle() {
     transform: translateX(-50%) translateY(10px);
   }
   .unified-bottom-tab-dock .unified-tab-row {
+    --unified-jelly-tx: 0px;
+    --unified-jelly-ty: 0px;
+    --unified-jelly-rot: 0deg;
+    --unified-jelly-sx: 1;
+    --unified-jelly-sy: 1;
+    --unified-jelly-hx: 0px;
+    --unified-jelly-hy: 0px;
+    --unified-jelly-aura-x: 0px;
+    --unified-jelly-aura-y: 0px;
+    --unified-jelly-breath: 0;
+    --unified-jelly-shadow-y: 18px;
+    --unified-jelly-shadow-blur: 42px;
+    --unified-jelly-shadow-alpha: 0.12;
+    --unified-jelly-icon-tx: 0px;
+    --unified-jelly-icon-ty: 0px;
+    --unified-jelly-label-tx: 0px;
+    --unified-jelly-label-ty: 0px;
     position: relative;
     isolation: isolate;
     display: flex !important;
@@ -2001,10 +1914,29 @@ function ensureUnifiedBottomTabStyle() {
     padding: 10px 18px;
     border-radius: 9999px;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.015), rgba(255, 255, 255, 0.006));
-    border: 1px solid rgba(255, 255, 255, 0.28);
-    box-shadow: 0 18px 42px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.52), inset 0 -1px 0 rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, calc(0.24 + var(--unified-jelly-breath) * 0.18));
+    box-shadow: 0 var(--unified-jelly-shadow-y) var(--unified-jelly-shadow-blur) rgba(15, 23, 42, var(--unified-jelly-shadow-alpha)), inset 0 1px 0 rgba(255, 255, 255, 0.52), inset 0 -1px 0 rgba(255, 255, 255, 0.14);
     backdrop-filter: blur(24px) saturate(180%);
     -webkit-backdrop-filter: blur(24px) saturate(180%);
+    transform: translate3d(var(--unified-jelly-tx), var(--unified-jelly-ty), 0) rotate(var(--unified-jelly-rot));
+    transform-origin: center bottom;
+    will-change: transform;
+    transition: transform 620ms cubic-bezier(0.16, 1.3, 0.24, 1), box-shadow 220ms ease, border-color 220ms ease;
+    touch-action: manipulation;
+  }
+  .unified-bottom-tab-dock .unified-tab-row.unified-jelly-dragging {
+    transition: box-shadow 140ms ease;
+    box-shadow: 0 20px 44px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.58), inset 0 -1px 0 rgba(255, 255, 255, 0.16);
+  }
+  .unified-bottom-tab-dock .unified-tab-row.unified-jelly-dragging .unified-tab-icon,
+  .unified-bottom-tab-dock .unified-tab-row.unified-jelly-dragging .unified-tab-label,
+  .unified-bottom-tab-dock .unified-tab-row.unified-jelly-rebound .unified-tab-icon,
+  .unified-bottom-tab-dock .unified-tab-row.unified-jelly-rebound .unified-tab-label {
+    filter: none !important;
+    text-shadow: none !important;
+  }
+  .unified-bottom-tab-dock .unified-tab-row.unified-jelly-rebound {
+    transition: transform 760ms cubic-bezier(0.18, 1.22, 0.22, 1), box-shadow 220ms ease;
   }
   .unified-bottom-tab-dock .unified-tab-row::before {
     content: "";
@@ -2015,7 +1947,9 @@ function ensureUnifiedBottomTabStyle() {
       radial-gradient(120% 90% at 50% 48%, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.1) 42%, rgba(255, 255, 255, 0) 76%),
       radial-gradient(120% 75% at 50% 100%, rgba(15, 23, 42, 0.1) 0%, rgba(15, 23, 42, 0) 72%);
     filter: blur(9px);
-    opacity: 0.9;
+    opacity: calc(0.86 + var(--unified-jelly-breath) * 0.22);
+    transform: translate3d(var(--unified-jelly-aura-x), var(--unified-jelly-aura-y), 0) scale(calc(1 + var(--unified-jelly-breath) * 0.04));
+    transition: transform 260ms ease, opacity 260ms ease;
     pointer-events: none;
     z-index: -2;
   }
@@ -2026,7 +1960,9 @@ function ensureUnifiedBottomTabStyle() {
     border-radius: inherit;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.16) 46%, rgba(15, 23, 42, 0.1) 100%);
     mix-blend-mode: screen;
-    opacity: 0.55;
+    opacity: calc(0.5 + var(--unified-jelly-breath) * 0.24);
+    transform: translate3d(var(--unified-jelly-hx), var(--unified-jelly-hy), 0);
+    transition: transform 220ms ease, opacity 220ms ease;
     pointer-events: none;
     z-index: -1;
   }
@@ -2070,6 +2006,10 @@ function ensureUnifiedBottomTabStyle() {
   .unified-bottom-tab-dock .unified-tab-label {
     position: relative;
     z-index: 1;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
   }
   .unified-bottom-tab-dock .unified-tab-icon {
     width: 32px;
@@ -2081,7 +2021,8 @@ function ensureUnifiedBottomTabStyle() {
     font-size: 15px;
     background: rgba(255, 255, 255, 0.12);
     box-shadow: none;
-    transition: background 220ms ease, color 220ms ease, box-shadow 220ms ease, transform 220ms ease, filter 220ms ease;
+    transform: translate3d(var(--unified-jelly-icon-tx), var(--unified-jelly-icon-ty), 0);
+    transition: background 220ms ease, color 220ms ease, box-shadow 220ms ease, transform 300ms cubic-bezier(0.2, 0.9, 0.28, 1), filter 220ms ease;
   }
   .unified-bottom-tab-dock .unified-tab-label {
     font-size: 11px;
@@ -2089,7 +2030,8 @@ function ensureUnifiedBottomTabStyle() {
     font-weight: 600;
     letter-spacing: 0.18px;
     white-space: nowrap;
-    transition: text-shadow 220ms ease, filter 220ms ease;
+    transform: translate3d(var(--unified-jelly-label-tx), var(--unified-jelly-label-ty), 0);
+    transition: text-shadow 220ms ease, filter 220ms ease, transform 320ms cubic-bezier(0.2, 0.9, 0.28, 1);
   }
   .unified-bottom-tab-dock .unified-tab-item.active {
     color: rgb(37, 99, 235) !important;
@@ -2099,7 +2041,7 @@ function ensureUnifiedBottomTabStyle() {
     color: rgb(37, 99, 235);
     background: rgba(255, 255, 255, 0.18);
     box-shadow: 0 6px 14px rgba(37, 99, 235, 0.1);
-    transform: translateY(-0.5px) scale(1.02);
+    transform: translate3d(var(--unified-jelly-icon-tx), calc(var(--unified-jelly-icon-ty) - 0.5px), 0) scale(1.02);
   }
   .unified-bottom-tab-dock .unified-tab-item:not(.active):hover .unified-tab-icon {
     filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));
@@ -2192,6 +2134,224 @@ function syncUnifiedBottomContentOffset() {
   });
 }
 
+var unifiedBottomJellyState = {
+  initialized: false,
+  activeRow: null,
+  startX: 0,
+  startY: 0,
+  lastX: 0,
+  lastY: 0,
+  lastMoveTs: 0,
+  velocityX: 0,
+  velocityY: 0,
+  rafId: 0,
+  reboundTimer: 0,
+  nudgeTimer: 0,
+  settleTimer: 0
+};
+
+function clampUnifiedBottomJelly(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function isUnifiedBottomJellyEnabled() {
+  if (!document.body || !document.body.classList.contains('software-app')) return false;
+  if (window.matchMedia) return window.matchMedia('(max-width: 900px)').matches;
+  return window.innerWidth <= 900;
+}
+
+function applyUnifiedBottomJellyTransform(row, dx, dy) {
+  if (!row) return;
+  var tx = clampUnifiedBottomJelly(dx * 0.21, -12, 12);
+  var ty = clampUnifiedBottomJelly(dy * 0.34, -17, 17);
+  var rot = clampUnifiedBottomJelly(dx * 0.05, -2.8, 2.8);
+  var energy = clampUnifiedBottomJelly((Math.abs(dx) * 0.46 + Math.abs(dy) * 0.78) / 34, 0, 1);
+  var highlightX = clampUnifiedBottomJelly(dx * 0.22, -9, 9);
+  var highlightY = clampUnifiedBottomJelly(dy * 0.18, -7, 7);
+  var auraX = clampUnifiedBottomJelly(dx * 0.14, -6, 6);
+  var auraY = clampUnifiedBottomJelly(dy * 0.22, -8, 8);
+  var iconLagX = clampUnifiedBottomJelly(dx * -0.065, -3.0, 3.0);
+  var iconLagY = clampUnifiedBottomJelly(dy * -0.092, -4.2, 4.2);
+  var labelLagX = clampUnifiedBottomJelly(dx * -0.03, -1.5, 1.5);
+  var labelLagY = clampUnifiedBottomJelly(dy * -0.046, -2.0, 2.0);
+  var shadowY = 18 + energy * 11;
+  var shadowBlur = 42 + energy * 20;
+  var shadowAlpha = 0.12 + energy * 0.08;
+  row.style.setProperty('--unified-jelly-tx', tx.toFixed(2) + 'px');
+  row.style.setProperty('--unified-jelly-ty', ty.toFixed(2) + 'px');
+  row.style.setProperty('--unified-jelly-rot', rot.toFixed(2) + 'deg');
+  row.style.setProperty('--unified-jelly-sx', '1');
+  row.style.setProperty('--unified-jelly-sy', '1');
+  row.style.setProperty('--unified-jelly-hx', highlightX.toFixed(2) + 'px');
+  row.style.setProperty('--unified-jelly-hy', highlightY.toFixed(2) + 'px');
+  row.style.setProperty('--unified-jelly-aura-x', auraX.toFixed(2) + 'px');
+  row.style.setProperty('--unified-jelly-aura-y', auraY.toFixed(2) + 'px');
+  row.style.setProperty('--unified-jelly-breath', energy.toFixed(4));
+  row.style.setProperty('--unified-jelly-shadow-y', shadowY.toFixed(2) + 'px');
+  row.style.setProperty('--unified-jelly-shadow-blur', shadowBlur.toFixed(2) + 'px');
+  row.style.setProperty('--unified-jelly-shadow-alpha', shadowAlpha.toFixed(4));
+  row.style.setProperty('--unified-jelly-icon-tx', iconLagX.toFixed(2) + 'px');
+  row.style.setProperty('--unified-jelly-icon-ty', iconLagY.toFixed(2) + 'px');
+  row.style.setProperty('--unified-jelly-label-tx', labelLagX.toFixed(2) + 'px');
+  row.style.setProperty('--unified-jelly-label-ty', labelLagY.toFixed(2) + 'px');
+}
+
+function clearUnifiedBottomJellyTimers() {
+  if (unifiedBottomJellyState.reboundTimer) {
+    window.clearTimeout(unifiedBottomJellyState.reboundTimer);
+    unifiedBottomJellyState.reboundTimer = 0;
+  }
+  if (unifiedBottomJellyState.nudgeTimer) {
+    window.clearTimeout(unifiedBottomJellyState.nudgeTimer);
+    unifiedBottomJellyState.nudgeTimer = 0;
+  }
+  if (unifiedBottomJellyState.settleTimer) {
+    window.clearTimeout(unifiedBottomJellyState.settleTimer);
+    unifiedBottomJellyState.settleTimer = 0;
+  }
+}
+
+function resetUnifiedBottomJellyTransform(row) {
+  if (!row) return;
+  row.classList.remove('unified-jelly-dragging');
+  row.classList.remove('unified-jelly-rebound');
+  row.style.setProperty('--unified-jelly-tx', '0px');
+  row.style.setProperty('--unified-jelly-ty', '0px');
+  row.style.setProperty('--unified-jelly-rot', '0deg');
+  row.style.setProperty('--unified-jelly-sx', '1');
+  row.style.setProperty('--unified-jelly-sy', '1');
+  row.style.setProperty('--unified-jelly-hx', '0px');
+  row.style.setProperty('--unified-jelly-hy', '0px');
+  row.style.setProperty('--unified-jelly-aura-x', '0px');
+  row.style.setProperty('--unified-jelly-aura-y', '0px');
+  row.style.setProperty('--unified-jelly-breath', '0');
+  row.style.setProperty('--unified-jelly-shadow-y', '18px');
+  row.style.setProperty('--unified-jelly-shadow-blur', '42px');
+  row.style.setProperty('--unified-jelly-shadow-alpha', '0.12');
+  row.style.setProperty('--unified-jelly-icon-tx', '0px');
+  row.style.setProperty('--unified-jelly-icon-ty', '0px');
+  row.style.setProperty('--unified-jelly-label-tx', '0px');
+  row.style.setProperty('--unified-jelly-label-ty', '0px');
+}
+
+function queueUnifiedBottomJellyRender() {
+  if (unifiedBottomJellyState.rafId) return;
+  unifiedBottomJellyState.rafId = window.requestAnimationFrame(function () {
+    unifiedBottomJellyState.rafId = 0;
+    var row = unifiedBottomJellyState.activeRow;
+    if (!row || !row.isConnected) return;
+    applyUnifiedBottomJellyTransform(
+      row,
+      unifiedBottomJellyState.lastX - unifiedBottomJellyState.startX,
+      unifiedBottomJellyState.lastY - unifiedBottomJellyState.startY
+    );
+  });
+}
+
+function startUnifiedBottomJelly(row, x, y) {
+  if (!row) return;
+  if (unifiedBottomJellyState.activeRow && unifiedBottomJellyState.activeRow !== row) {
+    resetUnifiedBottomJellyTransform(unifiedBottomJellyState.activeRow);
+  }
+  clearUnifiedBottomJellyTimers();
+  unifiedBottomJellyState.activeRow = row;
+  unifiedBottomJellyState.startX = x;
+  unifiedBottomJellyState.startY = y;
+  unifiedBottomJellyState.lastX = x;
+  unifiedBottomJellyState.lastY = y;
+  unifiedBottomJellyState.lastMoveTs = performance.now();
+  unifiedBottomJellyState.velocityX = 0;
+  unifiedBottomJellyState.velocityY = 0;
+  row.classList.remove('unified-jelly-rebound');
+  row.classList.add('unified-jelly-dragging');
+  queueUnifiedBottomJellyRender();
+}
+
+function updateUnifiedBottomJelly(x, y) {
+  if (!unifiedBottomJellyState.activeRow) return;
+  var now = performance.now();
+  var dt = Math.max(8, now - (unifiedBottomJellyState.lastMoveTs || now));
+  var moveX = x - unifiedBottomJellyState.lastX;
+  var moveY = y - unifiedBottomJellyState.lastY;
+  var instantVX = moveX / dt;
+  var instantVY = moveY / dt;
+  unifiedBottomJellyState.velocityX = unifiedBottomJellyState.velocityX * 0.62 + instantVX * 0.38;
+  unifiedBottomJellyState.velocityY = unifiedBottomJellyState.velocityY * 0.56 + instantVY * 0.44;
+  unifiedBottomJellyState.lastX = x;
+  unifiedBottomJellyState.lastY = y;
+  unifiedBottomJellyState.lastMoveTs = now;
+  queueUnifiedBottomJellyRender();
+}
+
+function endUnifiedBottomJelly() {
+  var row = unifiedBottomJellyState.activeRow;
+  var dx = unifiedBottomJellyState.lastX - unifiedBottomJellyState.startX;
+  var dy = unifiedBottomJellyState.lastY - unifiedBottomJellyState.startY;
+  var velocityX = unifiedBottomJellyState.velocityX;
+  var velocityY = unifiedBottomJellyState.velocityY;
+  unifiedBottomJellyState.activeRow = null;
+  if (unifiedBottomJellyState.rafId) {
+    window.cancelAnimationFrame(unifiedBottomJellyState.rafId);
+    unifiedBottomJellyState.rafId = 0;
+  }
+  if (!row) return;
+  clearUnifiedBottomJellyTimers();
+  row.classList.remove('unified-jelly-dragging');
+  row.classList.add('unified-jelly-rebound');
+
+  var reboundDx = clampUnifiedBottomJelly(velocityX * 28 + dx * 0.09, -34, 34);
+  var reboundDy = clampUnifiedBottomJelly(velocityY * 34 + dy * 0.14, -42, 42);
+  applyUnifiedBottomJellyTransform(row, reboundDx, reboundDy);
+
+  unifiedBottomJellyState.reboundTimer = window.setTimeout(function () {
+    if (!row.isConnected) return;
+    applyUnifiedBottomJellyTransform(row, reboundDx * -0.6, reboundDy * -0.7);
+  }, 110);
+
+  unifiedBottomJellyState.nudgeTimer = window.setTimeout(function () {
+    if (!row.isConnected) return;
+    applyUnifiedBottomJellyTransform(row, reboundDx * 0.24, reboundDy * 0.3);
+  }, 210);
+
+  unifiedBottomJellyState.settleTimer = window.setTimeout(function () {
+    resetUnifiedBottomJellyTransform(row);
+  }, 460);
+}
+
+function ensureUnifiedBottomTabJellyInteraction() {
+  if (unifiedBottomJellyState.initialized) return;
+  unifiedBottomJellyState.initialized = true;
+
+  document.addEventListener('pointerdown', function (event) {
+    if (!isUnifiedBottomJellyEnabled()) return;
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    var row = event.target && event.target.closest ? event.target.closest('.unified-bottom-tab-dock .unified-tab-row') : null;
+    if (!row) return;
+    startUnifiedBottomJelly(row, event.clientX, event.clientY);
+  }, { passive: true });
+
+  window.addEventListener('pointermove', function (event) {
+    if (!unifiedBottomJellyState.activeRow) return;
+    updateUnifiedBottomJelly(event.clientX, event.clientY);
+  }, { passive: true });
+
+  window.addEventListener('pointerup', function () {
+    endUnifiedBottomJelly();
+  }, { passive: true });
+
+  window.addEventListener('pointercancel', function () {
+    endUnifiedBottomJelly();
+  }, { passive: true });
+
+  window.addEventListener('blur', function () {
+    endUnifiedBottomJelly();
+  });
+
+  window.addEventListener('resize', function () {
+    if (!isUnifiedBottomJellyEnabled()) endUnifiedBottomJelly();
+  });
+}
+
 function decorateUnifiedTabs(root) {
   if (!root) return;
   var tabs = Array.prototype.slice.call(root.querySelectorAll('.tab-item'));
@@ -2218,6 +2378,7 @@ function initUnifiedBottomTabs() {
   }
 
   ensureUnifiedBottomTabStyle();
+  ensureUnifiedBottomTabJellyInteraction();
   document.body.classList.add('has-unified-bottom-tab');
 
   document.querySelectorAll('.unified-bottom-tab-dock').forEach(function (el) { el.remove(); });
@@ -3045,108 +3206,6 @@ function ensureUnifiedThemeStyle() {
   body.theme-night .task-card:hover,
   body.theme-night .card-hover:hover {
     background: rgba(30, 41, 59, 0.62) !important;
-  }
-  body.theme-night .modal-content,
-  body.theme-night .confirm-modal-card,
-  body.theme-night .detail-modal {
-    color: #ffffff !important;
-  }
-  body.theme-night .modal-content p,
-  body.theme-night .modal-content span,
-  body.theme-night .modal-content label,
-  body.theme-night .modal-content li,
-  body.theme-night .modal-content div,
-  body.theme-night .modal-content small,
-  body.theme-night .modal-content strong,
-  body.theme-night .modal-content h1,
-  body.theme-night .modal-content h2,
-  body.theme-night .modal-content h3,
-  body.theme-night .modal-content h4,
-  body.theme-night .modal-content h5,
-  body.theme-night .modal-content h6,
-  body.theme-night .confirm-modal-card p,
-  body.theme-night .confirm-modal-card span,
-  body.theme-night .confirm-modal-card label,
-  body.theme-night .confirm-modal-card li,
-  body.theme-night .confirm-modal-card div,
-  body.theme-night .confirm-modal-card small,
-  body.theme-night .confirm-modal-card strong,
-  body.theme-night .detail-modal p,
-  body.theme-night .detail-modal span,
-  body.theme-night .detail-modal label,
-  body.theme-night .detail-modal li,
-  body.theme-night .detail-modal div,
-  body.theme-night .detail-modal small,
-  body.theme-night .detail-modal strong {
-    color: #ffffff !important;
-  }
-  body.theme-night .modal-content .text-gray-900,
-  body.theme-night .modal-content .text-gray-800,
-  body.theme-night .modal-content .text-gray-700,
-  body.theme-night .modal-content .text-gray-600,
-  body.theme-night .modal-content .text-gray-500,
-  body.theme-night .modal-content .text-gray-400,
-  body.theme-night .confirm-modal-card .text-gray-900,
-  body.theme-night .confirm-modal-card .text-gray-800,
-  body.theme-night .confirm-modal-card .text-gray-700,
-  body.theme-night .confirm-modal-card .text-gray-600,
-  body.theme-night .confirm-modal-card .text-gray-500,
-  body.theme-night .confirm-modal-card .text-gray-400,
-  body.theme-night .detail-modal .text-gray-900,
-  body.theme-night .detail-modal .text-gray-800,
-  body.theme-night .detail-modal .text-gray-700,
-  body.theme-night .detail-modal .text-gray-600,
-  body.theme-night .detail-modal .text-gray-500,
-  body.theme-night .detail-modal .text-gray-400 {
-    color: #ffffff !important;
-  }
-  body.theme-night .modal-content i,
-  body.theme-night .confirm-modal-card i,
-  body.theme-night .detail-modal i {
-    color: var(--night-text-sub) !important;
-  }
-  body.theme-night .modal-content i.text-primary,
-  body.theme-night .confirm-modal-card i.text-primary,
-  body.theme-night .detail-modal i.text-primary {
-    color: #93c5fd !important;
-  }
-  body.theme-night .modal-content i.text-success,
-  body.theme-night .confirm-modal-card i.text-success,
-  body.theme-night .detail-modal i.text-success {
-    color: #86efac !important;
-  }
-  body.theme-night .modal-content i.text-warning,
-  body.theme-night .confirm-modal-card i.text-warning,
-  body.theme-night .detail-modal i.text-warning {
-    color: #fcd34d !important;
-  }
-  body.theme-night .modal-content i.text-danger,
-  body.theme-night .confirm-modal-card i.text-danger,
-  body.theme-night .detail-modal i.text-danger {
-    color: #fca5a5 !important;
-  }
-  body.theme-night .modal-content i.text-gray-900,
-  body.theme-night .modal-content i.text-gray-800,
-  body.theme-night .modal-content i.text-gray-700,
-  body.theme-night .modal-content i.text-gray-600,
-  body.theme-night .modal-content i.text-gray-500,
-  body.theme-night .modal-content i.text-gray-400,
-  body.theme-night .modal-content i.text-white,
-  body.theme-night .confirm-modal-card i.text-gray-900,
-  body.theme-night .confirm-modal-card i.text-gray-800,
-  body.theme-night .confirm-modal-card i.text-gray-700,
-  body.theme-night .confirm-modal-card i.text-gray-600,
-  body.theme-night .confirm-modal-card i.text-gray-500,
-  body.theme-night .confirm-modal-card i.text-gray-400,
-  body.theme-night .confirm-modal-card i.text-white,
-  body.theme-night .detail-modal i.text-gray-900,
-  body.theme-night .detail-modal i.text-gray-800,
-  body.theme-night .detail-modal i.text-gray-700,
-  body.theme-night .detail-modal i.text-gray-600,
-  body.theme-night .detail-modal i.text-gray-500,
-  body.theme-night .detail-modal i.text-gray-400,
-  body.theme-night .detail-modal i.text-white {
-    color: var(--night-text-sub) !important;
   }
   body.theme-night .unified-bottom-tab-dock .unified-tab-row {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.018), rgba(255, 255, 255, 0.008)) !important;
