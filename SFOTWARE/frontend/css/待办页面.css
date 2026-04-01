@@ -290,6 +290,7 @@
       background: rgba(255, 255, 255, 0.74);
       border: 1px solid rgba(226, 232, 240, 0.85);
       box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+      transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
     }
 
     .todo-toolbar-main {
@@ -305,6 +306,28 @@
       align-items: center;
       gap: 8px;
       flex-wrap: wrap;
+      padding: 10px;
+      border-radius: 12px;
+      background: rgba(79, 70, 229, 0.08);
+      border: 1px solid rgba(79, 70, 229, 0.2);
+    }
+
+    .todo-toolbar.batch-mode-active {
+      border-color: rgba(79, 70, 229, 0.35);
+      box-shadow: 0 10px 24px rgba(79, 70, 229, 0.16);
+      background: rgba(255, 255, 255, 0.86);
+    }
+
+    .todo-toolbar.batch-mode-active .todo-toolbar-main > *:not(#select-mode-btn):not(.sync-status-text) {
+      opacity: 0.55;
+      filter: saturate(0.85);
+      transition: opacity 0.2s ease;
+    }
+
+    #select-mode-btn.select-mode-active {
+      background: rgba(79, 70, 229, 0.14);
+      border-color: rgba(79, 70, 229, 0.45);
+      color: #4338CA;
     }
 
     .sync-status-text {
@@ -333,6 +356,18 @@
       border-radius: 16px;
       padding: 14px;
       box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+      animation: groupFadeIn 0.5s cubic-bezier(0.2, 0.75, 0.25, 1) both;
+    }
+
+    @keyframes groupFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
     .task-empty-state {
@@ -342,6 +377,7 @@
       border: 1px dashed rgba(148, 163, 184, 0.45);
       border-radius: 14px;
       background: rgba(255, 255, 255, 0.45);
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
     }
 
     .task-empty-state i {
@@ -349,6 +385,22 @@
       font-size: 26px;
       color: #94A3B8;
       margin-bottom: 8px;
+      animation: emptyBreath 1.7s cubic-bezier(0.37, 0, 0.2, 1) infinite;
+    }
+
+    @keyframes emptyBreath {
+      0%, 100% { transform: translateY(0) scale(1); opacity: 0.86; }
+      50% { transform: translateY(-5px) scale(1.12); opacity: 1; }
+    }
+
+    .task-empty-state.clickable {
+      cursor: pointer;
+    }
+
+    .task-empty-state.clickable:hover {
+      transform: translateY(-3px) scale(1.01);
+      border-color: rgba(79, 70, 229, 0.35);
+      box-shadow: 0 14px 30px rgba(79, 70, 229, 0.2);
     }
 
     .task-empty-state .title {
@@ -389,15 +441,113 @@
       width: 52px;
       height: 52px;
       border-radius: 999px;
-      border: none;
-      background: linear-gradient(135deg, #4F46E5, #6366F1);
+      border: 1px solid rgba(255, 255, 255, 0.52);
+      background: linear-gradient(160deg, rgba(255, 255, 255, 0.48) 0%, rgba(191, 219, 254, 0.24) 42%, rgba(99, 102, 241, 0.3) 100%);
       color: #fff;
       font-size: 20px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 12px 24px rgba(79, 70, 229, 0.35);
+      box-shadow: 0 16px 34px rgba(79, 70, 229, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.68), inset 0 -6px 12px rgba(79, 70, 229, 0.22);
       z-index: 60;
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      overflow: hidden;
+      backdrop-filter: blur(8px) saturate(150%);
+      -webkit-backdrop-filter: blur(8px) saturate(150%);
+      transition: box-shadow 0.22s ease, transform 0.22s ease, border-color 0.22s ease;
+      will-change: left, top, transform;
+      animation: fabFloat 2.1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    .todo-fab::before {
+      content: '';
+      position: absolute;
+      left: 9px;
+      top: 7px;
+      width: 22px;
+      height: 14px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.18));
+      filter: blur(0.2px);
+      pointer-events: none;
+    }
+
+    .todo-fab::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.5), rgba(99, 102, 241, 0) 60%);
+      opacity: 0;
+      transform: scale(0.94);
+      pointer-events: none;
+      animation: fabRipple 2.1s ease-in-out infinite;
+    }
+
+    @keyframes fabFloat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      35% { transform: translateY(-4px) scale(1.02); }
+      68% { transform: translateY(-1px) scale(1); }
+    }
+
+    @keyframes fabRipple {
+      0%, 100% {
+        opacity: 0.08;
+        transform: scale(0.94);
+      }
+      50% {
+        opacity: 0.36;
+        transform: scale(1.08);
+      }
+    }
+
+    .todo-fab:active {
+      transform: scale(0.93);
+      border-color: rgba(255, 255, 255, 0.72);
+    }
+
+    .todo-fab.dragging {
+      cursor: grabbing;
+      animation: none;
+      transform: scale(1.08);
+      box-shadow: 0 18px 36px rgba(79, 70, 229, 0.44), inset 0 1px 0 rgba(255, 255, 255, 0.72), inset 0 -8px 14px rgba(79, 70, 229, 0.26);
+      transition: none;
+    }
+
+    .todo-fab.snapping {
+      transition: left 0.24s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.24s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .task-card.task-card-enter {
+      animation: taskCardIn 0.44s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes taskCardIn {
+      from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.985);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    html.unified-dark-mode body.software-app .task-status-badge.pending,
+    body.software-app.theme-night .task-status-badge.pending {
+      color: #FDE68A;
+      background: rgba(245, 158, 11, 0.22);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    html.unified-dark-mode body.software-app .task-status-badge.completed,
+    body.software-app.theme-night .task-status-badge.completed {
+      color: #6EE7B7;
+      background: rgba(16, 185, 129, 0.22);
+      border: 1px solid rgba(16, 185, 129, 0.3);
     }
 
     @media (max-width: 768px) {

@@ -1028,14 +1028,15 @@
       var selectBtn = document.getElementById('select-mode-btn');
       var batchRow = document.getElementById('batch-actions-row');
       var tip = document.getElementById('batch-selected-tip');
+      var toolbar = document.getElementById('todo-toolbar');
       var checkedCount = selectedBatchTasks.length;
 
       if (selectBtn) {
         if (isBatchMode) {
-          selectBtn.classList.add('bg-primary', 'text-white');
+          selectBtn.classList.add('select-mode-active');
           selectBtn.innerHTML = '<i class="fas fa-list-check mr-2"></i>选择中';
         } else {
-          selectBtn.classList.remove('bg-primary', 'text-white');
+          selectBtn.classList.remove('select-mode-active');
           selectBtn.innerHTML = '<i class="fas fa-list-check mr-2"></i>选择模式';
         }
       }
@@ -1045,7 +1046,23 @@
         else batchRow.classList.add('hidden');
       }
 
+      if (toolbar) {
+        if (isBatchMode) toolbar.classList.add('batch-mode-active');
+        else toolbar.classList.remove('batch-mode-active');
+      }
+
       if (tip) tip.textContent = '已选择 ' + checkedCount + ' 项';
+
+      // Apply checkbox fade-in animation when entering batch mode
+      if (isBatchMode) {
+        setTimeout(function () {
+          document.querySelectorAll('.task-card .task-checkbox').forEach(function (cb) {
+            if (!cb.classList.contains('batch-appear')) {
+              cb.classList.add('batch-appear');
+            }
+          });
+        }, 50);
+      }
     }
 
     function setBatchMode(enabled) {
@@ -1334,6 +1351,10 @@
           var today = new Date().toISOString().slice(0, 10);
           if (due === today) tasks.today.unshift(created);
           else tasks.tomorrow.unshift(created);
+          
+          // Store new task ID for animation
+          window._lastCreatedTaskId = created.id;
+          
           renderTaskLists();
           updateCountStats();
           saveToLocalStorage();
@@ -1542,11 +1563,11 @@
         ? '<span class="task-status-badge completed">已完成</span>'
         : '<span class="task-status-badge pending">进行中</span>';
       var timeText = (task.time && String(task.time).trim()) ? String(task.time) : '未设置时间';
-      var checkboxClass = isBatchMode ? '' : ' style="visibility:hidden;pointer-events:none"';
+      var checkboxHiddenClass = isBatchMode ? '' : 'checkbox-hidden';
 
       return '<div class="task-card bg-white/85 backdrop-blur-sm rounded-xl p-4 cursor-pointer ' + priorityClass + ' ' + completedClass + ' ' + selectedClass + ' card-hover" data-task-id="' + task.id + '" data-is-today="' + isToday + '">' +
         '<div class="flex items-start gap-3">' +
-        '<div class="flex-shrink-0"><input class="task-checkbox custom-checkbox" type="checkbox" ' + (task.completed ? 'checked' : '') + checkboxClass + '/></div>' +
+        '<div class="flex-shrink-0"><input class="task-checkbox custom-checkbox ' + checkboxHiddenClass + '" type="checkbox" ' + (task.completed ? 'checked' : '') + '/></div>' +
         '<div class="flex-1 min-w-0">' +
         '<div class="flex items-start justify-between gap-2">' +
         '<h3 class="text-[15px] font-semibold text-slate-700 truncate ' + (task.completed ? 'line-through text-gray-500' : '') + '">' + escapeHtml(task.title || '') + '</h3>' +
@@ -1588,31 +1609,37 @@
         });
       } else if (action === 'delete') {
         if (confirm('确定要删除任务 "' + task.title + '" 吗？')) {
-          if (String(taskId).indexOf('local_') === 0) {
-            var localIndex = list.findIndex(function (t) { return String(t.id) === String(taskId); });
-            if (localIndex > -1) list.splice(localIndex, 1);
-            removePendingByLocalId(taskId);
-            renderTaskLists();
-            updateCountStats();
-            saveToLocalStorage();
-            showToast('🗑️ 本地离线任务已删除');
-            return;
+          var card = document.querySelector('[data-task-id="' + CSS.escape(String(taskId)) + '"]');
+          if (card) {
+            card.classList.add('task-delete-exit');
           }
-          apiRequest('/api/tasks/' + taskId, { method: 'DELETE' }).then(function (resp) {
-            if (resp.status === 200 && resp.body && resp.body.code === 200) {
-              var index = list.findIndex(function (t) { return t.id === taskId; });
-              if (index > -1) list.splice(index, 1);
+          setTimeout(function () {
+            if (String(taskId).indexOf('local_') === 0) {
+              var localIndex = list.findIndex(function (t) { return String(t.id) === String(taskId); });
+              if (localIndex > -1) list.splice(localIndex, 1);
+              removePendingByLocalId(taskId);
               renderTaskLists();
               updateCountStats();
               saveToLocalStorage();
-              showToast('🗑️ 任务已删除');
-            } else {
-              showToast((resp.body && resp.body.message) || '删除失败', 'error');
+              showToast('🗑️ 本地离线任务已删除');
+              return;
             }
-          }).catch(function (err) {
-            console.error(err);
-            showToast('网络错误，删除任务失败', 'error');
-          });
+            apiRequest('/api/tasks/' + taskId, { method: 'DELETE' }).then(function (resp) {
+              if (resp.status === 200 && resp.body && resp.body.code === 200) {
+                var index = list.findIndex(function (t) { return t.id === taskId; });
+                if (index > -1) list.splice(index, 1);
+                renderTaskLists();
+                updateCountStats();
+                saveToLocalStorage();
+                showToast('🗑️ 任务已删除');
+              } else {
+                showToast((resp.body && resp.body.message) || '删除失败', 'error');
+              }
+            }).catch(function (err) {
+              console.error(err);
+              showToast('网络错误，删除任务失败', 'error');
+            });
+          }, 220);
         }
       }
     };
@@ -1632,11 +1659,29 @@
       tomorrowList.innerHTML = filteredTomorrow.map(function (t) { return generateTaskCard(t, false); }).join('');
 
       if (filteredToday.length === 0) {
-        todayList.innerHTML = '<div class="task-empty-state"><i class="fas fa-seedling"></i><div class="title">今天很清爽</div><div class="desc">点击右下角 + 新增任务，开始你的第一项待办</div></div>';
+        todayList.innerHTML = '<div class="task-empty-state clickable" data-action="add-task"><i class="fas fa-seedling"></i><div class="title">今天很清爽</div><div class="desc">点击右下角 + 新增任务，开始你的第一项待办</div></div>';
       }
       if (filteredTomorrow.length === 0) {
-        tomorrowList.innerHTML = '<div class="task-empty-state"><i class="fas fa-rocket"></i><div class="title">明天先留白</div><div class="desc">提前规划 1-2 项关键任务，效率会更稳</div></div>';
+        tomorrowList.innerHTML = '<div class="task-empty-state clickable" data-action="add-task"><i class="fas fa-rocket"></i><div class="title">明天先留白</div><div class="desc">提前规划 1-2 项关键任务，效率会更稳</div></div>';
       }
+
+      var cards = document.querySelectorAll('#today-task-list .task-card, #tomorrow-task-list .task-card');
+      cards.forEach(function (card, idx) {
+        card.classList.add('task-card-enter');
+        card.style.animationDelay = (idx * 0.05) + 's';
+        
+        // Apply special new-task animation if this is the newly created task
+        var taskId = card.dataset.taskId;
+        if (window._lastCreatedTaskId && String(taskId) === String(window._lastCreatedTaskId)) {
+          card.classList.remove('task-card-enter');
+          card.classList.add('task-new-enter');
+          card.style.animationDelay = '0s';
+          // Clear the marker after animation
+          setTimeout(function () {
+            window._lastCreatedTaskId = null;
+          }, 200);
+        }
+      });
 
       var todayCount = document.getElementById('today-task-count');
       var tomorrowCount = document.getElementById('tomorrow-task-count');
@@ -1708,24 +1753,37 @@
           var isToday = card.dataset.isToday === 'true';
           var list = isToday ? tasks.today : tasks.tomorrow;
           var task = list.find(function (x) { return String(x.id) === String(taskId); });
-          // optimistic UI change will be handled after server response
+          // Trigger exit animation when marking as complete
           var checked = this.checked;
-          if (String(taskId).indexOf('local_') === 0) {
+          if (checked) {
+            card.classList.add('task-complete-exit');
+            setTimeout(function () {
+              if (String(taskId).indexOf('local_') === 0) {
+                if (task) {
+                  task.completed = true;
+                  task.status = 'completed';
+                }
+                renderTaskLists();
+                updateCountStats();
+                saveToLocalStorage();
+                return;
+              }
+              toggleTaskCompleteServer(taskId, true, isToday ? 'today' : 'tomorrow').then(function () {
+                // success handled inside toggleTaskCompleteServer
+              }).catch(function () {
+                try { cb.checked = false; } catch (err) {}
+              });
+            }, 250);
+          } else {
+            // Unchecking - immediately update
             if (task) {
-              task.completed = checked;
-              task.status = checked ? 'completed' : 'pending';
+              task.completed = false;
+              task.status = 'pending';
             }
             renderTaskLists();
             updateCountStats();
             saveToLocalStorage();
-            return;
           }
-          toggleTaskCompleteServer(taskId, checked, isToday ? 'today' : 'tomorrow').then(function () {
-            // success handled inside toggleTaskCompleteServer
-          }).catch(function () {
-            // rollback checkbox on failure
-            try { cb.checked = !checked; } catch (e) {}
-          });
         });
       });
 
@@ -1748,6 +1806,14 @@
           if (task) {
             currentEditingTask = task;
             openTaskDetail(task);
+          }
+        });
+      });
+
+      document.querySelectorAll('.task-empty-state[data-action="add-task"]').forEach(function (emptyCard) {
+        emptyCard.addEventListener('click', function () {
+          if (typeof window.openModalFunc === 'function') {
+            window.openModalFunc();
           }
         });
       });
@@ -1919,8 +1985,7 @@
       var addTaskButtons = [
         'add-task-header-btn',
         'add-today-task-btn',
-        'add-tomorrow-task-btn',
-        'add-task-fab'
+        'add-tomorrow-task-btn'
       ];
       addTaskButtons.forEach(function (id) {
         var btn = document.getElementById(id);
@@ -1932,6 +1997,227 @@
           });
         }
       });
+
+      (function initDraggableFab() {
+        var fab = document.getElementById('add-task-fab');
+        if (!fab) return;
+
+        var storageKey = 'todoFabPosition_v1';
+        var pointerId = null;
+        var dragging = false;
+        var moved = false;
+        var suppressClick = false;
+        var startPointerX = 0;
+        var startPointerY = 0;
+        var startLeft = 0;
+        var startTop = 0;
+        var pendingLeft = 0;
+        var pendingTop = 0;
+        var rafId = 0;
+        var inertiaRafId = 0;
+        var velocityX = 0;
+        var velocityY = 0;
+        var lastMoveTs = 0;
+        var lastMoveX = 0;
+        var lastMoveY = 0;
+
+        function clampPosition(left, top) {
+          var margin = 8;
+          var fabW = fab.offsetWidth || 52;
+          var fabH = fab.offsetHeight || 52;
+          var minLeft = margin;
+          var maxLeft = Math.max(margin, window.innerWidth - fabW - margin);
+          var minTop = 68;
+          var reservedBottom = 92;
+          var maxTop = Math.max(minTop, window.innerHeight - fabH - reservedBottom);
+          return {
+            left: Math.min(maxLeft, Math.max(minLeft, left)),
+            top: Math.min(maxTop, Math.max(minTop, top))
+          };
+        }
+
+        function applyPosition(left, top) {
+          var pos = clampPosition(left, top);
+          fab.style.left = Math.round(pos.left) + 'px';
+          fab.style.top = Math.round(pos.top) + 'px';
+          fab.style.right = 'auto';
+          fab.style.bottom = 'auto';
+        }
+
+        function snapToEdge() {
+          var margin = 8;
+          var fabW = fab.offsetWidth || 52;
+          var maxLeft = Math.max(margin, window.innerWidth - fabW - margin);
+          var currentLeft = parseFloat(fab.style.left) || fab.getBoundingClientRect().left;
+          var currentTop = parseFloat(fab.style.top) || fab.getBoundingClientRect().top;
+          var toLeft = currentLeft < (maxLeft / 2);
+          var targetLeft = toLeft ? margin : maxLeft;
+          var overshoot = toLeft ? 6 : -6;
+          var clamped = clampPosition(targetLeft + overshoot, currentTop);
+
+          fab.classList.add('snapping');
+          applyPosition(clamped.left, clamped.top);
+          setTimeout(function () {
+            var settle = clampPosition(targetLeft, currentTop);
+            applyPosition(settle.left, settle.top);
+            savePosition();
+          }, 90);
+
+          setTimeout(function () {
+            fab.classList.remove('snapping');
+          }, 260);
+        }
+
+        function cancelInertia() {
+          if (inertiaRafId) {
+            cancelAnimationFrame(inertiaRafId);
+            inertiaRafId = 0;
+          }
+        }
+
+        function runInertiaThenSnap() {
+          cancelInertia();
+          var left = parseFloat(fab.style.left) || fab.getBoundingClientRect().left;
+          var top = parseFloat(fab.style.top) || fab.getBoundingClientRect().top;
+          var vx = velocityX;
+          var vy = velocityY;
+          var friction = 0.92;
+          var minSpeed = 0.06;
+          var frame = 0;
+
+          function step() {
+            frame++;
+            left += vx * 16;
+            top += vy * 16;
+            var clamped = clampPosition(left, top);
+            left = clamped.left;
+            top = clamped.top;
+            applyPosition(left, top);
+
+            vx *= friction;
+            vy *= friction;
+
+            if (frame > 18 || (Math.abs(vx) + Math.abs(vy)) < minSpeed) {
+              inertiaRafId = 0;
+              snapToEdge();
+              return;
+            }
+            inertiaRafId = requestAnimationFrame(step);
+          }
+
+          inertiaRafId = requestAnimationFrame(step);
+        }
+
+        function savePosition() {
+          try {
+            localStorage.setItem(storageKey, JSON.stringify({
+              left: parseFloat(fab.style.left) || 0,
+              top: parseFloat(fab.style.top) || 0
+            }));
+          } catch (err) {}
+        }
+
+        function flushFrame() {
+          rafId = 0;
+          applyPosition(pendingLeft, pendingTop);
+        }
+
+        function queuePosition(left, top) {
+          pendingLeft = left;
+          pendingTop = top;
+          if (!rafId) rafId = requestAnimationFrame(flushFrame);
+        }
+
+        function initPosition() {
+          var rect = fab.getBoundingClientRect();
+          applyPosition(rect.left, rect.top);
+          try {
+            var raw = localStorage.getItem(storageKey);
+            if (!raw) return;
+            var saved = JSON.parse(raw);
+            if (!saved || typeof saved.left !== 'number' || typeof saved.top !== 'number') return;
+            applyPosition(saved.left, saved.top);
+          } catch (err) {}
+        }
+
+        initPosition();
+
+        fab.addEventListener('pointerdown', function (e) {
+          if (e.button !== 0) return;
+          cancelInertia();
+          pointerId = e.pointerId;
+          dragging = true;
+          moved = false;
+          suppressClick = false;
+          startPointerX = e.clientX;
+          startPointerY = e.clientY;
+          lastMoveX = e.clientX;
+          lastMoveY = e.clientY;
+          lastMoveTs = performance.now();
+          velocityX = 0;
+          velocityY = 0;
+          startLeft = parseFloat(fab.style.left) || fab.getBoundingClientRect().left;
+          startTop = parseFloat(fab.style.top) || fab.getBoundingClientRect().top;
+          fab.classList.add('dragging');
+          try { fab.setPointerCapture(pointerId); } catch (err) {}
+          e.preventDefault();
+        });
+
+        fab.addEventListener('pointermove', function (e) {
+          if (!dragging || e.pointerId !== pointerId) return;
+          var nowTs = performance.now();
+          var dt = Math.max(1, nowTs - lastMoveTs);
+          var dx = e.clientX - startPointerX;
+          var dy = e.clientY - startPointerY;
+          if (Math.abs(dx) + Math.abs(dy) > 4) moved = true;
+          velocityX = (e.clientX - lastMoveX) / dt;
+          velocityY = (e.clientY - lastMoveY) / dt;
+          lastMoveX = e.clientX;
+          lastMoveY = e.clientY;
+          lastMoveTs = nowTs;
+          queuePosition(startLeft + dx, startTop + dy);
+        });
+
+        function endDrag(e) {
+          if (!dragging || e.pointerId !== pointerId) return;
+          dragging = false;
+          pointerId = null;
+          fab.classList.remove('dragging');
+          try { fab.releasePointerCapture(e.pointerId); } catch (err) {}
+          if (moved) {
+            runInertiaThenSnap();
+            suppressClick = true;
+            setTimeout(function () { suppressClick = false; }, 0);
+          }
+        }
+
+        fab.addEventListener('pointerup', endDrag);
+        fab.addEventListener('pointercancel', endDrag);
+
+        fab.addEventListener('click', function (e) {
+          if (suppressClick) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+          }
+          e.preventDefault();
+          e.stopPropagation();
+          if (typeof window.openModalFunc === 'function') {
+            window.openModalFunc();
+          }
+        });
+
+        window.addEventListener('resize', function () {
+          var left = parseFloat(fab.style.left);
+          var top = parseFloat(fab.style.top);
+          if (isNaN(left) || isNaN(top)) {
+            initPosition();
+            return;
+          }
+          applyPosition(left, top);
+          savePosition();
+        });
+      })();
 
       var selectModeBtn = document.getElementById('select-mode-btn');
       if (selectModeBtn) {
