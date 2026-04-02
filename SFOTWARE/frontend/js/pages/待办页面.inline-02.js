@@ -2,7 +2,7 @@
 
 // ... existing code ...
 
-    // ==================== 全局变量 ====================
+    // ==================== 鍏ㄥ眬鍙橀噺 ====================
     var tasks = { today: [], tomorrow: [] };
     var tags = [
       { key: 'work', name: '工作', color: 'task-work' },
@@ -479,15 +479,15 @@
     function shareOrCopyText(text, successMessage) {
       if (navigator.share) {
         return navigator.share({ title: '任务详情', text: text }).then(function () {
-          showToast(successMessage || '已分享任务');
+          showToast(successMessage || '任务已分享');
         }).catch(function () {
           return copyTextToClipboard(text).then(function () {
-            showToast('已复制分享内容');
+            showToast('分享内容已复制');
           });
         });
       }
       return copyTextToClipboard(text).then(function () {
-        showToast('已复制分享内容');
+        showToast('分享内容已复制');
       });
     }
 
@@ -515,7 +515,7 @@
     function saveToLocalStorage() {
       // 统一使用 AppState 保存，确保跨页面同步
       try {
-        // 将当前页面的任务合并回 AppState
+        // 灏嗗綋鍓嶉〉闈㈢殑浠诲姟鍚堝苟鍥?AppState
         var allTasks = (tasks.today || []).concat(tasks.tomorrow || []);
         var sharedState = getSharedAppState();
         if (sharedState && typeof sharedState.save === 'function') {
@@ -523,7 +523,7 @@
           sharedState.save();
           localStorage.setItem(getLegacyTodoTagsKey(), JSON.stringify(tags));
         } else {
-          // 回退到旧 key，避免 data.js 异常时无法保存
+          // 鍥為€€鍒版棫 key锛岄伩鍏?data.js 寮傚父鏃舵棤娉曚繚瀛?
           localStorage.setItem(getLegacyTodoTasksKey(), JSON.stringify(tasks));
           localStorage.setItem(getLegacyTodoTagsKey(), JSON.stringify(tags));
         }
@@ -533,7 +533,7 @@
       try {
         localStorage.setItem(getPendingCreateStorageKey(), JSON.stringify(pendingCreateQueue));
         updateSyncStatusBadge();
-      } catch (e) { console.error('待同步队列保存失败:', e); }
+      } catch (e) { console.error('待同步队列保存失败', e); }
     }
 
     function loadPendingQueue() {
@@ -542,7 +542,7 @@
         pendingCreateQueue = raw ? JSON.parse(raw) : [];
         if (!Array.isArray(pendingCreateQueue)) pendingCreateQueue = [];
       } catch (e) {
-        console.error('待同步队列加载失败:', e);
+        console.error('待同步队列加载失败', e);
         pendingCreateQueue = [];
       }
       updateSyncStatusBadge();
@@ -651,7 +651,7 @@
         updateSyncStatusBadge();
         renderTaskLists();
         updateCountStats();
-        // 同步 AppState 确保跨页面更新
+        // 鍚屾 AppState 纭繚璺ㄩ〉闈㈡洿鏂?
         var allTasks = (tasks.today || []).concat(tasks.tomorrow || []);
         AppState.tasks = allTasks;
         AppState.save();
@@ -722,7 +722,7 @@
       });
     }
 
-    // 更新任务（部分或全部字段）
+    // 鏇存柊浠诲姟锛堥儴鍒嗘垨鍏ㄩ儴瀛楁锛?
     function updateTaskOnServer(taskId, payload) {
       return apiRequest('/api/tasks/' + taskId, {
         method: 'PUT',
@@ -745,7 +745,7 @@
       });
     }
 
-    // 切换任务完成状态（本地 UI 调用）
+    // 鍒囨崲浠诲姟瀹屾垚鐘舵€侊紙鏈湴 UI 璋冪敤锛?
     function toggleTaskCompleteServer(taskId, isComplete, listName) {
       var newStatus = isComplete ? 'completed' : 'pending';
       updateTaskStatusOnServer(taskId, newStatus).then(function (updated) {
@@ -767,7 +767,7 @@
     }
 
     function loadFromLocalStorage() {
-      // 统一从 AppState 加载，保证数据一致性
+      // 缁熶竴浠?AppState 鍔犺浇锛屼繚璇佹暟鎹竴鑷存€?
       try {
         var allTasks = [];
         var sharedState = getSharedAppState();
@@ -931,7 +931,7 @@
       if (task.assignedToMe === true) return true;
       if (task.assignee === 'me') return true;
       if (me && assigneeId && assigneeId === me) return true;
-      // 单人模式兜底：无指派字段时视为“分配给我”
+      // 鍗曚汉妯″紡鍏滃簳锛氭棤鎸囨淳瀛楁鏃惰涓衡€滃垎閰嶇粰鎴戔€?
       if (!task.assigneeId && typeof task.assignedToMe === 'undefined' && !task.assignee) return true;
       return false;
     }
@@ -1173,7 +1173,7 @@
 
       var tagName = tagNameInput.value.trim();
       if (!tagName) {
-        showToast('⚠️ 请输入标签名称', 'error');
+        showToast('请输入标签名称', 'error');
         return;
       }
 
@@ -1207,7 +1207,7 @@
         updateCountStats();
         saveToLocalStorage();
         window.closeTagModalFunc();
-        showToast('✅ 标签 "' + finalTag.name + '" 创建成功！');
+        showToast('标签 "' + finalTag.name + '" 创建成功');
       }).catch(function (err) {
         console.error('createTag error', err);
         showToast((err && err.message) || '创建标签失败', 'error');
@@ -1299,7 +1299,7 @@
       if (!modalTitle) return;
       var title = modalTitle.value.trim();
       if (!title) {
-        showToast('⚠️ 请输入任务标题', 'error');
+        showToast('请输入任务标题', 'error');
         return;
       }
 
@@ -1359,7 +1359,7 @@
           updateCountStats();
           saveToLocalStorage();
           window.closeModalFunc();
-          showToast('✅ 任务创建成功！');
+          showToast('任务创建成功');
         } else {
           if (resp.status === 401 || resp.status === 403) {
             var authMsg = (resp.body && resp.body.message) || ('创建任务失败（HTTP ' + resp.status + '）');
@@ -1380,7 +1380,7 @@
     window.confirmBatchComplete = function () {
       var targets = getBatchTargets();
       if (targets.length === 0) {
-        showToast('⚠️ 请先在选择模式中勾选任务', 'warning');
+        showToast('请先在选择模式中勾选任务', 'warning');
         return;
       }
 
@@ -1405,7 +1405,7 @@
         if (failCount > 0) {
           showToast('已完成 ' + (targets.length - failCount) + ' 个任务，' + failCount + ' 个同步失败', 'warning');
         } else {
-          showToast('✅ 已批量完成 ' + targets.length + ' 个任务');
+          showToast('已批量完成 ' + targets.length + ' 个任务');
         }
       };
 
@@ -1443,7 +1443,7 @@
     window.confirmBatchDelete = function () {
       var targets = getBatchTargets();
       if (targets.length === 0) {
-        showToast('⚠️ 请先在选择模式中勾选任务', 'warning');
+        showToast('请先在选择模式中勾选任务', 'warning');
         return;
       }
 
@@ -1470,7 +1470,7 @@
 
       if (remoteDeletes.length === 0) {
         commitLocalDelete();
-        showToast('🗑️ 已批量删除 ' + targets.length + ' 个任务');
+        showToast('已批量删除 ' + targets.length + ' 个任务');
         return;
       }
 
@@ -1491,7 +1491,7 @@
         if (failCount > 0) {
           showToast('已删除 ' + (targets.length - failCount) + ' 个任务，' + failCount + ' 个删除失败', 'warning');
         } else {
-          showToast('🗑️ 已批量删除 ' + targets.length + ' 个任务');
+          showToast('已批量删除 ' + targets.length + ' 个任务');
         }
       }).catch(function () {
         commitLocalDelete();
@@ -1526,17 +1526,17 @@
     window.completeAllTasks = function () {
       var count = tasks.today.length + tasks.tomorrow.length;
       if (count === 0) {
-        showToast('⚠️ 暂无任务可完成', 'error');
+        showToast('暂无任务可完成', 'error');
         return;
       }
-      // 直接完成所有任务（无需二次确认）
+      // 鐩存帴瀹屾垚鎵€鏈変换鍔★紙鏃犻渶浜屾纭锛?
       tasks.today.forEach(function (t) { t.completed = true; });
       tasks.tomorrow.forEach(function (t) { t.completed = true; });
       selectedBatchTasks = [];
       renderTaskLists();
       updateCountStats();
       saveToLocalStorage();
-      showToast('✅ 已完成全部 ' + count + ' 个任务');
+      showToast('已完成全部 ' + count + ' 个任务');
     };
 
     window.clearBatchSelection = function () {
@@ -1544,7 +1544,7 @@
       isBatchMode = false;
       updateBatchModeUI();
       renderTaskLists();
-      showToast('✅ 已清空选择');
+      showToast('已清空选择');
     };
 
     // 任务卡片生成
@@ -1598,17 +1598,17 @@
       if (!task) return;
 
       if (action === 'share') {
-        shareOrCopyText(buildTaskExportText(task), '📤 任务已分享').catch(function () {
+        shareOrCopyText(buildTaskExportText(task), '任务已分享').catch(function () {
           showToast('分享任务失败', 'error');
         });
       } else if (action === 'copy') {
         copyTextToClipboard(buildTaskExportText(task)).then(function () {
-          showToast('📋 任务内容已复制');
+          showToast('任务内容已复制');
         }).catch(function () {
           showToast('复制任务失败', 'error');
         });
       } else if (action === 'delete') {
-        if (confirm('确定要删除任务 "' + task.title + '" 吗？')) {
+        if (confirm('确定要删除任务“' + task.title + '”吗？')) {
           var card = document.querySelector('[data-task-id="' + CSS.escape(String(taskId)) + '"]');
           if (card) {
             card.classList.add('task-delete-exit');
@@ -1621,7 +1621,7 @@
               renderTaskLists();
               updateCountStats();
               saveToLocalStorage();
-              showToast('🗑️ 本地离线任务已删除');
+              showToast('本地离线任务已删除');
               return;
             }
             apiRequest('/api/tasks/' + taskId, { method: 'DELETE' }).then(function (resp) {
@@ -1631,7 +1631,7 @@
                 renderTaskLists();
                 updateCountStats();
                 saveToLocalStorage();
-                showToast('🗑️ 任务已删除');
+                showToast('任务已删除');
               } else {
                 showToast((resp.body && resp.body.message) || '删除失败', 'error');
               }
@@ -1662,7 +1662,7 @@
         todayList.innerHTML = '<div class="task-empty-state clickable" data-action="add-task"><i class="fas fa-seedling"></i><div class="title">今天很清爽</div><div class="desc">点击右下角 + 新增任务，开始你的第一项待办</div></div>';
       }
       if (filteredTomorrow.length === 0) {
-        tomorrowList.innerHTML = '<div class="task-empty-state clickable" data-action="add-task"><i class="fas fa-rocket"></i><div class="title">明天先留白</div><div class="desc">提前规划 1-2 项关键任务，效率会更稳</div></div>';
+        tomorrowList.innerHTML = '<div class="task-empty-state clickable" data-action="add-task"><i class="fas fa-rocket"></i><div class="title">明天先留白</div><div class="desc">提前规划 1-2 项关键任务，效率会更高</div></div>';
       }
 
       var cards = document.querySelectorAll('#today-task-list .task-card, #tomorrow-task-list .task-card');
@@ -1695,7 +1695,7 @@
       bindTaskEvents();
     }
 
-    // 渲染侧边栏标签
+    // 娓叉煋渚ц竟鏍忔爣绛?
     function renderSidebarTags() {
       var tagListContainer = document.getElementById('sidebar-tag-list');
       if (!tagListContainer) return;
@@ -1720,7 +1720,7 @@
       tagListContainer.innerHTML = html;
     }
 
-    // 更新统计数据
+    // 鏇存柊缁熻鏁版嵁
     function updateCountStats() {
       var countAll = document.getElementById('count-all');
       var countToday = document.getElementById('count-today');
@@ -1743,7 +1743,7 @@
       });
     }
 
-    // 绑定事件
+    // 缁戝畾浜嬩欢
     function bindTaskEvents() {
       document.querySelectorAll('.task-checkbox').forEach(function (cb) {
         cb.addEventListener('click', function (e) {
@@ -1880,7 +1880,7 @@
         currentEditingTask.subtasks.splice(index, 1);
         syncCurrentSubtasksToServer().then(function () {
           renderSubtasks();
-          showToast('✅ 子任务已删除');
+          showToast('子任务已删除');
         }).catch(function (err) {
           console.error(err);
           currentEditingTask.subtasks = backup;
@@ -1946,7 +1946,641 @@
       }
     };
 
-    // 页面初始化
+    // 椤甸潰鍒濆鍖?
+    function initLiquidJellyFab() {
+      var fab = document.getElementById('add-task-fab');
+      if (!fab) return;
+      var glass = fab.querySelector('.todo-liquid-fab__glass');
+      var icon = fab.querySelector('.todo-liquid-fab__icon');
+      if (!glass) return;
+      var tabDock = document.querySelector('footer.glass-tab');
+      var tabContainer = tabDock ? tabDock.querySelector('.container') : null;
+      var tabBubble = null;
+      var tabRipple = null;
+      var tabItems = [];
+      var lastPressTs = 0;
+
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function getStorageKey() {
+        try {
+          if (window.AppState && typeof window.AppState.getCurrentUserKey === 'function') {
+            return 'todoLiquidFabPos::' + window.AppState.getCurrentUserKey();
+          }
+        } catch (err) {}
+        return 'todoLiquidFabPos';
+      }
+
+      function getBottomDockHeight() {
+        var dock = document.querySelector('footer.glass-tab');
+        if (!dock) return 68;
+        var rect = dock.getBoundingClientRect();
+        if (!rect || !rect.height) return 68;
+        return Math.ceil(rect.height) + 8;
+      }
+
+      function getTopSafeHeight() {
+        var header = document.querySelector('.unified-top-header-dock .unified-top-header-shell#main-header') || document.getElementById('main-header');
+        if (!header) return 78;
+        var rect = header.getBoundingClientRect();
+        var height = Math.ceil(rect && rect.height ? rect.height : 0);
+        return Math.max(74, height + 12);
+      }
+
+      function getBounds() {
+        var size = fab.offsetWidth || 62;
+        var viewportW = Math.max(window.innerWidth || 0, 320);
+        var viewportH = Math.max(window.innerHeight || 0, 480);
+        var margin = 10;
+        var minX = margin;
+        var maxX = Math.max(minX, viewportW - size - margin);
+        var minY = getTopSafeHeight();
+        var bottomAvoid = getBottomDockHeight() + 14;
+        var maxY = Math.max(minY, viewportH - size - bottomAvoid);
+        return {
+          minX: minX,
+          maxX: maxX,
+          minY: minY,
+          maxY: maxY
+        };
+      }
+
+      var mobileQuery = window.matchMedia ? window.matchMedia('(max-width: 900px)') : null;
+      var state = {
+        x: 0,
+        y: 0,
+        targetX: 0,
+        targetY: 0,
+        vx: 0,
+        vy: 0,
+        dragVX: 0,
+        dragVY: 0,
+        isDragging: false,
+        pointerId: null,
+        pressTs: 0,
+        dragTravel: 0,
+        lastMoveTs: 0,
+        lastMoveX: 0,
+        lastMoveY: 0,
+        dragOffsetX: 0,
+        dragOffsetY: 0,
+        lastTs: 0,
+        prevX: 0,
+        prevY: 0,
+        lastAngle: 0,
+        snapTargetX: null,
+        snapRestX: null,
+        snapReboundX: null,
+        snapPhase: 'idle',
+        snapSpringActive: false,
+        snapCurveActive: false,
+        snapStartTs: 0,
+        snapFromX: 0,
+        snapDuration: 760,
+        snapAmplitude: 0,
+        snapOvershoot: false,
+        snapDistance: 0,
+        snapStiffness: 210,
+        snapDamping: 22,
+        snapMass: 1,
+        springVX: 0,
+        snapBounceCount: 0,
+        snapBounceTarget: 1,
+        snapEdgeRestitution: 0.55,
+        dockSide: 'right',
+        rafId: 0,
+        movedByDrag: false,
+        suppressClickUntil: 0
+      };
+
+      function isMobileView() {
+        return !mobileQuery || !!mobileQuery.matches;
+      }
+
+      function setBubbleByRect(targetRect, immediate) {
+        if (!tabDock || !tabContainer || !tabBubble || !targetRect) return;
+        var containerRect = tabContainer.getBoundingClientRect();
+        var x = targetRect.left - containerRect.left;
+        var w = targetRect.width;
+        tabDock.style.setProperty('--tab-bubble-x', x.toFixed(2) + 'px');
+        tabDock.style.setProperty('--tab-bubble-w', w.toFixed(2) + 'px');
+        if (immediate) {
+          tabBubble.style.transition = 'none';
+          requestAnimationFrame(function () {
+            tabBubble.style.transition = '';
+          });
+        }
+      }
+
+      function refreshActiveTabBubble(immediate) {
+        if (!tabContainer || !tabItems.length) return;
+        var active = tabContainer.querySelector('.tab-item.active') || tabItems[0];
+        if (!active) return;
+        setBubbleByRect(active.getBoundingClientRect(), immediate);
+      }
+
+      function pressTabItem(item) {
+        if (!item) return;
+        item.classList.remove('liquid-press');
+        item.offsetWidth;
+        item.classList.add('liquid-press');
+        lastPressTs = Date.now();
+      }
+
+      function ensureTabSystem() {
+        if (!tabContainer) return;
+        tabItems = Array.prototype.slice.call(tabContainer.querySelectorAll('.tab-item'));
+        if (!tabItems.length) return;
+
+        if (!tabBubble) {
+          tabBubble = document.createElement('span');
+          tabBubble.className = 'liquid-tab-bubble';
+          tabContainer.insertBefore(tabBubble, tabContainer.firstChild);
+        }
+        if (!tabRipple) {
+          tabRipple = document.createElement('span');
+          tabRipple.className = 'liquid-tab-ripple';
+          tabContainer.insertBefore(tabRipple, tabContainer.firstChild);
+        }
+
+        tabItems.forEach(function (item) {
+          if (item.__liquidBound) return;
+          item.__liquidBound = true;
+          var onPress = function () {
+            pressTabItem(item);
+            setBubbleByRect(item.getBoundingClientRect(), false);
+            setTimeout(function () {
+              refreshActiveTabBubble(false);
+            }, 340);
+          };
+          item.addEventListener('pointerdown', onPress, { passive: true });
+          item.addEventListener('touchstart', onPress, { passive: true });
+        });
+
+        refreshActiveTabBubble(true);
+      }
+
+      function updateTabDockCoupling() {
+        if (!tabDock) return;
+        var dockRect = tabDock.getBoundingClientRect();
+        if (!dockRect || !dockRect.width || !dockRect.height) return;
+        var size = fab.offsetWidth || 62;
+        var centerX = state.x + size * 0.5;
+        var dxOutside = 0;
+        if (centerX < dockRect.left) dxOutside = dockRect.left - centerX;
+        else if (centerX > dockRect.right) dxOutside = centerX - dockRect.right;
+        var verticalGap = Math.max(0, dockRect.top - (state.y + size));
+        var reach = Math.sqrt(verticalGap * verticalGap + dxOutside * dxOutside * 0.72);
+        var impact = clamp(1 - reach / 260, 0, 1);
+        var impactX = clamp((centerX - dockRect.left) / dockRect.width, 0, 1);
+        tabDock.style.setProperty('--liquid-impact', impact.toFixed(3));
+        tabDock.style.setProperty('--liquid-impact-x', impactX.toFixed(3));
+        tabDock.style.setProperty('--tab-bubble-scale', (1 + impact * 0.16).toFixed(3));
+        if (impact > 0.015) tabDock.classList.add('liquid-contact');
+        else tabDock.classList.remove('liquid-contact');
+        if (impact > 0.28 && Date.now() - lastPressTs > 220) {
+          lastPressTs = Date.now();
+          tabDock.classList.remove('liquid-impact-pulse');
+          tabDock.offsetWidth;
+          tabDock.classList.add('liquid-impact-pulse');
+        }
+      }
+
+      function saveFabPosition() {
+        try {
+          localStorage.setItem(getStorageKey(), JSON.stringify({
+            x: Math.round(state.x),
+            y: Math.round(state.y),
+            dockSide: state.dockSide
+          }));
+        } catch (err) {}
+      }
+
+      function applyInitialPosition() {
+        var bounds = getBounds();
+        var loaded = null;
+        try {
+          var raw = localStorage.getItem(getStorageKey());
+          if (raw) loaded = JSON.parse(raw);
+        } catch (err) {}
+
+        if (loaded && typeof loaded.x === 'number' && typeof loaded.y === 'number') {
+          state.x = clamp(loaded.x, bounds.minX, bounds.maxX);
+          state.y = clamp(loaded.y, bounds.minY, bounds.maxY);
+          state.dockSide = (loaded.dockSide === 'left') ? 'left' : 'right';
+        } else {
+          state.dockSide = 'right';
+          state.x = bounds.maxX;
+          state.y = clamp(bounds.maxY - 12, bounds.minY, bounds.maxY);
+        }
+
+        state.targetX = state.x;
+        state.targetY = state.y;
+        state.prevX = state.x;
+        state.prevY = state.y;
+        fab.style.transform = 'translate3d(' + state.x.toFixed(2) + 'px,' + state.y.toFixed(2) + 'px,0)';
+      }
+
+      function updateLiquidVisual(ts) {
+        var motionVX = state.isDragging ? (state.dragVX + (state.targetX - state.x) * 0.85) : state.vx;
+        var motionVY = state.isDragging ? (state.dragVY + (state.targetY - state.y) * 0.85) : state.vy;
+        var speed = Math.sqrt(motionVX * motionVX + motionVY * motionVY);
+        var stretch = clamp(speed * 0.022, 0, state.isDragging ? 0.3 : 0.24);
+        if (state.isDragging) stretch = clamp(stretch + 0.024, 0.04, 0.3);
+
+        var angle = state.lastAngle;
+        if (speed > 0.01) {
+          angle = Math.atan2(motionVY, motionVX) * (180 / Math.PI);
+          state.lastAngle = angle;
+        }
+
+        var bounds = getBounds();
+        var edgeNear = Math.min(state.x - bounds.minX, bounds.maxX - state.x);
+        var edgeRatio = clamp((36 - edgeNear) / 36, 0, 1);
+        var wallSquash = edgeRatio * (state.isDragging ? 0.1 : 0.06);
+        var edgeLeftRatio = clamp((24 - (state.x - bounds.minX)) / 24, 0, 1);
+        var edgeRightRatio = clamp((24 - (bounds.maxX - state.x)) / 24, 0, 1);
+        var edgeForce = Math.max(edgeLeftRatio, edgeRightRatio) * (state.isDragging ? 1 : 0.68);
+        var edgeShiftX = (edgeLeftRatio - edgeRightRatio) * (state.isDragging ? 2 : 1.2);
+        var edgeLocked = !state.isDragging && edgeNear < 2;
+        if (edgeLocked) {
+          wallSquash = 0;
+          edgeForce = 0;
+          edgeShiftX = 0;
+          stretch = 0;
+          angle = 0;
+        } else if (!state.isDragging && edgeNear < 12) {
+          wallSquash = 0;
+          edgeForce *= 0.18;
+          edgeShiftX *= 0.2;
+          stretch *= 0.3;
+        }
+
+        var scaleX = 1 + stretch - wallSquash;
+        var scaleY = 1 - stretch * 0.72 + wallSquash * 0.74 + edgeForce * 0.1;
+        var idlePulse = (!state.isDragging && speed < 0.16) ? Math.sin(ts / 760) * 0.014 : 0;
+        if (edgeLocked) {
+          scaleX = 1 + idlePulse * 0.9;
+          scaleY = 1 + idlePulse * 0.9;
+        } else {
+          scaleX += idlePulse;
+          scaleY += idlePulse * 0.8;
+        }
+        scaleX = clamp(scaleX, 0.8, 1.35);
+        scaleY = clamp(scaleY, 0.74, 1.25);
+
+        if (!state.isDragging && speed < 0.18) angle = 0;
+
+        glass.style.transform = 'translate3d(' + edgeShiftX.toFixed(2) + 'px,0,0) rotate(' + angle.toFixed(2) + 'deg) scale(' + scaleX.toFixed(3) + ',' + scaleY.toFixed(3) + ')';
+
+        if (icon) {
+          var iconScale = clamp(1 - stretch * 0.18 + idlePulse * 0.2, 0.92, 1.06);
+          icon.style.transform = 'translate3d(calc(-50% + ' + (edgeShiftX * 0.12).toFixed(2) + 'px), -50%, 0) scale(' + iconScale.toFixed(3) + ')';
+        }
+
+        if (speed > 0.05) {
+          var nx = motionVX / speed;
+          var ny = motionVY / speed;
+          fab.style.setProperty('--sheen-x', (42 + nx * 11).toFixed(2) + '%');
+          fab.style.setProperty('--sheen-y', (32 + ny * 9).toFixed(2) + '%');
+        }
+      }
+
+      function step(ts) {
+        if (!isMobileView()) {
+          state.rafId = 0;
+          return;
+        }
+
+        if (!state.lastTs) {
+          state.lastTs = ts;
+          state.prevX = state.x;
+          state.prevY = state.y;
+        }
+
+        var dt = clamp(ts - state.lastTs, 8, 33);
+        var frame = dt / 16.667;
+        state.lastTs = ts;
+        var bounds = getBounds();
+
+        if (state.isDragging) {
+          var follow = 0.34 * frame;
+          state.x += (state.targetX - state.x) * follow;
+          state.y += (state.targetY - state.y) * follow;
+          state.vx = (state.x - state.prevX) / Math.max(0.4, frame);
+          state.vy = (state.y - state.prevY) / Math.max(0.4, frame);
+        } else {
+          if (state.snapSpringActive && state.snapRestX !== null) {
+            var dtSec = dt / 1000;
+            var displacement = state.x - state.snapRestX;
+            var accel = ((-state.snapStiffness * displacement) - (state.snapDamping * state.springVX)) / Math.max(0.8, state.snapMass);
+            state.springVX += accel * dtSec;
+            state.springVX = clamp(state.springVX, -2200, 2200);
+            state.x += state.springVX * dtSec;
+
+            // Edge contact: keep center on-screen, then rebound inward like iOS elastic collision.
+            var hitEdge = false;
+            if (state.dockSide === 'left' && state.x < state.snapRestX) {
+              state.x = state.snapRestX;
+              if (state.springVX < 0) {
+                state.springVX *= -state.snapEdgeRestitution;
+                hitEdge = true;
+              }
+            } else if (state.dockSide === 'right' && state.x > state.snapRestX) {
+              state.x = state.snapRestX;
+              if (state.springVX > 0) {
+                state.springVX *= -state.snapEdgeRestitution;
+                hitEdge = true;
+              }
+            }
+            if (hitEdge) {
+              state.snapBounceCount += 1;
+              state.springVX *= 0.96;
+            }
+
+            state.vx = state.springVX * 0.016667;
+            var elapsedSpring = ts - state.snapStartTs;
+            var reachedBounceTarget = state.snapBounceCount >= state.snapBounceTarget;
+            var settleByVelocity = Math.abs(state.springVX) < 2.4;
+            var settleByPosition = Math.abs(state.x - state.snapRestX) < 0.12;
+            var settleByTime = elapsedSpring > state.snapDuration;
+            if (((elapsedSpring > 420) && reachedBounceTarget && settleByVelocity && settleByPosition) || settleByTime) {
+              state.x = state.snapRestX;
+              state.targetX = state.snapRestX;
+              state.vx = 0;
+              state.springVX = 0;
+              state.snapSpringActive = false;
+              state.snapCurveActive = false;
+              state.snapTargetX = null;
+              state.snapRestX = null;
+              state.snapReboundX = null;
+              state.snapPhase = 'idle';
+              state.snapOvershoot = false;
+              state.snapDistance = 0;
+              state.snapBounceCount = 0;
+              state.snapBounceTarget = 1;
+              fab.classList.remove('snapping');
+              saveFabPosition();
+            }
+          } else if (state.snapTargetX !== null) {
+            var dx = state.snapTargetX - state.x;
+            var k = state.snapStiffness / 240;
+            var c = state.snapDamping / 42;
+            state.vx += (dx * k - state.vx * c) * frame;
+            state.x += state.vx * frame;
+          } else {
+            state.vx += (state.targetX - state.x) * 0.07 * frame;
+            state.vx *= Math.pow(0.82, frame);
+            state.x += state.vx * frame;
+          }
+
+          state.vy += (state.targetY - state.y) * 0.08 * frame;
+          state.vy *= Math.pow(0.8, frame);
+          state.y += state.vy * frame;
+        }
+
+        if (state.x < bounds.minX) {
+          state.x = bounds.minX;
+          if (state.snapTargetX === null) state.vx *= -0.24;
+        } else if (state.x > bounds.maxX) {
+          state.x = bounds.maxX;
+          if (state.snapTargetX === null) state.vx *= -0.24;
+        }
+        if (state.y < bounds.minY) {
+          state.y = bounds.minY;
+          state.vy *= -0.24;
+        } else if (state.y > bounds.maxY) {
+          state.y = bounds.maxY;
+          state.vy *= -0.24;
+        }
+
+        fab.style.transform = 'translate3d(' + state.x.toFixed(2) + 'px,' + state.y.toFixed(2) + 'px,0)';
+        updateLiquidVisual(ts);
+        updateTabDockCoupling();
+        state.prevX = state.x;
+        state.prevY = state.y;
+        state.rafId = window.requestAnimationFrame(step);
+      }
+
+      function ensureAnimation() {
+        if (state.rafId) return;
+        state.lastTs = 0;
+        state.rafId = window.requestAnimationFrame(step);
+      }
+
+      function startSnap(side, baseDistance) {
+        var bounds = getBounds();
+        var travelSpan = Math.max(1, bounds.maxX - bounds.minX);
+        state.dockSide = side === 'left' ? 'left' : 'right';
+        state.snapRestX = (state.dockSide === 'left') ? bounds.minX : bounds.maxX;
+        state.snapPhase = 'spring';
+        state.snapTargetX = state.snapRestX;
+        state.targetX = state.snapRestX;
+        state.snapDistance = clamp(Math.max(baseDistance || 0, state.dragTravel), 8, bounds.maxX - bounds.minX);
+        var distRatio = clamp(state.snapDistance / travelSpan, 0, 1);
+        state.snapStiffness = 186 + distRatio * 74; // 186 - 260
+        state.snapDamping = 26 - distRatio * 8; // 26 - 18
+        state.snapMass = 1.2 - distRatio * 0.4; // 1.2 - 0.8
+        state.snapBounceTarget = Math.round(1 + distRatio * 3); // near: 1, far: 4
+        state.snapBounceCount = 0;
+        state.snapEdgeRestitution = 0.5 + distRatio * 0.24; // near: 0.5, far: 0.74
+        state.snapSpringActive = true;
+        state.snapCurveActive = false;
+        state.snapStartTs = performance.now();
+        state.snapFromX = state.x;
+        state.snapDuration = clamp(980 + state.snapDistance * 2.6, 980, 2100);
+        state.snapAmplitude = clamp(4 + state.snapDistance * 0.08, 4, 26);
+        state.snapReboundX = state.snapRestX + (state.dockSide === 'left' ? state.snapAmplitude : -state.snapAmplitude);
+        state.snapOvershoot = false;
+        var edgeDirection = state.dockSide === 'left' ? -1 : 1;
+        var releaseV = state.dragVX * 56;
+        var distanceKick = 220 + distRatio * 760;
+        state.springVX = releaseV * 0.5 + edgeDirection * distanceKick;
+        state.vx = state.springVX * 0.016667;
+        fab.classList.add('snapping');
+      }
+
+      function onPointerDown(e) {
+        if (!isMobileView()) return;
+        if (typeof e.button === 'number' && e.button !== 0) return;
+        state.pointerId = e.pointerId;
+        state.isDragging = true;
+        state.pressTs = Date.now();
+        state.dragTravel = 0;
+        state.movedByDrag = false;
+        state.snapTargetX = null;
+        state.snapRestX = null;
+        state.snapReboundX = null;
+        state.snapPhase = 'idle';
+        state.snapSpringActive = false;
+        state.snapCurveActive = false;
+        state.snapStartTs = 0;
+        state.snapFromX = state.x;
+        state.snapDuration = 760;
+        state.snapAmplitude = 0;
+        state.snapOvershoot = false;
+        state.snapDistance = 0;
+        state.snapMass = 1;
+        state.springVX = 0;
+        state.snapBounceCount = 0;
+        state.snapBounceTarget = 1;
+        state.snapEdgeRestitution = 0.55;
+        fab.classList.remove('snapping');
+        state.vx *= 0.35;
+        state.vy *= 0.35;
+        state.dragOffsetX = e.clientX - state.x;
+        state.dragOffsetY = e.clientY - state.y;
+        state.lastMoveX = e.clientX;
+        state.lastMoveY = e.clientY;
+        state.lastMoveTs = performance.now();
+        state.targetX = state.x;
+        state.targetY = state.y;
+        fab.classList.add('dragging');
+        try { fab.setPointerCapture && fab.setPointerCapture(e.pointerId); } catch (err) {}
+        e.preventDefault();
+      }
+
+      function onPointerMove(e) {
+        if (!state.isDragging) return;
+        if (state.pointerId !== null && e.pointerId !== state.pointerId) return;
+        var now = performance.now();
+        var dt = Math.max(8, now - state.lastMoveTs);
+        var dx = e.clientX - state.lastMoveX;
+        var dy = e.clientY - state.lastMoveY;
+        state.dragVX = state.dragVX * 0.62 + (dx / dt * 16.667) * 0.38;
+        state.dragVY = state.dragVY * 0.62 + (dy / dt * 16.667) * 0.38;
+        state.lastMoveX = e.clientX;
+        state.lastMoveY = e.clientY;
+        state.lastMoveTs = now;
+
+        var bounds = getBounds();
+        var rawX = clamp(e.clientX - state.dragOffsetX, bounds.minX, bounds.maxX);
+        var rawY = clamp(e.clientY - state.dragOffsetY, bounds.minY, bounds.maxY);
+
+        state.dragTravel += Math.sqrt(Math.pow(rawX - state.targetX, 2) + Math.pow(rawY - state.targetY, 2));
+        state.movedByDrag = state.dragTravel > 7;
+        state.targetX = rawX;
+        state.targetY = rawY;
+        e.preventDefault();
+      }
+
+      function openNewTaskModal() {
+        if (typeof window.openModalFunc === 'function') {
+          window.openModalFunc();
+        }
+      }
+
+      function onPointerUp(e) {
+        if (state.pointerId !== null && e.pointerId !== state.pointerId) return;
+        try { fab.releasePointerCapture && fab.releasePointerCapture(e.pointerId); } catch (err) {}
+        var pressDuration = Date.now() - state.pressTs;
+        var dragged = state.movedByDrag;
+        state.isDragging = false;
+        state.pointerId = null;
+        fab.classList.remove('dragging');
+
+        if (!dragged && pressDuration < 260) {
+          state.suppressClickUntil = Date.now() + 320;
+          openNewTaskModal();
+          return;
+        }
+
+        state.vx += state.dragVX * 0.38;
+        state.vy += state.dragVY * 0.9;
+        var bounds = getBounds();
+        var distLeft = state.targetX - bounds.minX;
+        var distRight = bounds.maxX - state.targetX;
+        var threshold = 188;
+        if (distLeft < threshold || distRight < threshold) {
+          var side = distLeft <= distRight ? 'left' : 'right';
+          var snapBaseDistance = Math.abs((side === 'left' ? bounds.minX : bounds.maxX) - state.x);
+          startSnap(side, snapBaseDistance);
+        } else {
+          state.snapTargetX = null;
+          state.snapRestX = null;
+          state.snapReboundX = null;
+          state.snapPhase = 'idle';
+          state.snapSpringActive = false;
+          state.snapCurveActive = false;
+          state.snapStartTs = 0;
+          state.snapFromX = state.x;
+          state.snapDuration = 760;
+          state.snapAmplitude = 0;
+          state.snapOvershoot = false;
+          state.snapDistance = 0;
+          state.snapMass = 1;
+          state.springVX = 0;
+          state.snapBounceCount = 0;
+          state.snapBounceTarget = 1;
+          state.snapEdgeRestitution = 0.55;
+          state.dockSide = state.targetX < (bounds.minX + bounds.maxX) / 2 ? 'left' : 'right';
+          saveFabPosition();
+        }
+        state.dragVX = 0;
+        state.dragVY = 0;
+      }
+
+      fab.addEventListener('pointerdown', onPointerDown);
+      fab.addEventListener('pointermove', onPointerMove);
+      fab.addEventListener('pointerup', onPointerUp);
+      fab.addEventListener('pointercancel', onPointerUp);
+      fab.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (Date.now() < state.suppressClickUntil) return;
+        if (state.movedByDrag) return;
+        openNewTaskModal();
+      });
+      fab.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        e.preventDefault();
+        openNewTaskModal();
+      });
+
+      window.addEventListener('resize', function () {
+        var bounds = getBounds();
+        state.x = clamp(state.x, bounds.minX, bounds.maxX);
+        state.y = clamp(state.y, bounds.minY, bounds.maxY);
+        state.targetX = clamp(state.targetX, bounds.minX, bounds.maxX);
+        state.targetY = clamp(state.targetY, bounds.minY, bounds.maxY);
+        if (!state.isDragging && state.snapTargetX !== null) {
+          state.snapTargetX = state.dockSide === 'left' ? bounds.minX : bounds.maxX;
+          state.snapRestX = state.snapTargetX;
+          if (state.snapSpringActive || state.snapCurveActive) {
+            state.snapFromX = state.x;
+            state.snapStartTs = performance.now();
+            state.snapAmplitude = clamp(2 + state.snapDistance * 0.052, 2, 16);
+            state.snapReboundX = state.snapRestX + (state.dockSide === 'left' ? state.snapAmplitude : -state.snapAmplitude);
+            state.springVX *= 0.88;
+          }
+        }
+        ensureTabSystem();
+        refreshActiveTabBubble(true);
+      }, { passive: true });
+
+      if (mobileQuery && typeof mobileQuery.addEventListener === 'function') {
+        mobileQuery.addEventListener('change', function () {
+          if (isMobileView()) ensureAnimation();
+        });
+      }
+
+      document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState !== 'visible') {
+          saveFabPosition();
+        } else {
+          ensureTabSystem();
+          refreshActiveTabBubble(true);
+          ensureAnimation();
+        }
+      });
+
+      ensureTabSystem();
+      applyInitialPosition();
+      refreshActiveTabBubble(true);
+      ensureAnimation();
+    }
     document.addEventListener('DOMContentLoaded', function () {
       if (typeof checkAuthOnLoad === 'function') { checkAuthOnLoad().catch(function(){}); }
       var sharedState = getSharedAppState();
@@ -1958,7 +2592,7 @@
       updateSyncStatusBadge();
       renderSidebarTags();
       renderModalTagButtons();
-      // 优先从服务端拉取最新任务
+      // 浼樺厛浠庢湇鍔＄鎷夊彇鏈€鏂颁换鍔?
       fetchTasksFromServer().then(function(){
         // fallback: if server empty, keep local
         renderSidebarTags();
@@ -1981,7 +2615,7 @@
         dateEl.textContent = now.getFullYear() + '年' + (now.getMonth() + 1) + '月' + now.getDate() + '日 ' + weeks[now.getDay()];
       }
 
-      // 绑定所有新建任务按钮
+      // 缁戝畾鎵€鏈夋柊寤轰换鍔℃寜閽?
       var addTaskButtons = [
         'add-task-header-btn',
         'add-today-task-btn',
@@ -1997,228 +2631,7 @@
           });
         }
       });
-
-      (function initDraggableFab() {
-        var fab = document.getElementById('add-task-fab');
-        if (!fab) return;
-
-        var storageKey = 'todoFabPosition_v1';
-        var pointerId = null;
-        var dragging = false;
-        var moved = false;
-        var suppressClick = false;
-        var startPointerX = 0;
-        var startPointerY = 0;
-        var startLeft = 0;
-        var startTop = 0;
-        var pendingLeft = 0;
-        var pendingTop = 0;
-        var rafId = 0;
-        var inertiaRafId = 0;
-        var velocityX = 0;
-        var velocityY = 0;
-        var lastMoveTs = 0;
-        var lastMoveX = 0;
-        var lastMoveY = 0;
-
-        function clampPosition(left, top) {
-          var margin = 8;
-          var fabW = fab.offsetWidth || 52;
-          var fabH = fab.offsetHeight || 52;
-          var minLeft = margin;
-          var maxLeft = Math.max(margin, window.innerWidth - fabW - margin);
-          var minTop = 68;
-          var reservedBottom = 92;
-          var maxTop = Math.max(minTop, window.innerHeight - fabH - reservedBottom);
-          return {
-            left: Math.min(maxLeft, Math.max(minLeft, left)),
-            top: Math.min(maxTop, Math.max(minTop, top))
-          };
-        }
-
-        function applyPosition(left, top) {
-          var pos = clampPosition(left, top);
-          fab.style.left = Math.round(pos.left) + 'px';
-          fab.style.top = Math.round(pos.top) + 'px';
-          fab.style.right = 'auto';
-          fab.style.bottom = 'auto';
-        }
-
-        function snapToEdge() {
-          var margin = 8;
-          var fabW = fab.offsetWidth || 52;
-          var maxLeft = Math.max(margin, window.innerWidth - fabW - margin);
-          var currentLeft = parseFloat(fab.style.left) || fab.getBoundingClientRect().left;
-          var currentTop = parseFloat(fab.style.top) || fab.getBoundingClientRect().top;
-          var toLeft = currentLeft < (maxLeft / 2);
-          var targetLeft = toLeft ? margin : maxLeft;
-          var overshoot = toLeft ? 6 : -6;
-          var clamped = clampPosition(targetLeft + overshoot, currentTop);
-
-          fab.classList.add('snapping');
-          applyPosition(clamped.left, clamped.top);
-          setTimeout(function () {
-            var settle = clampPosition(targetLeft, currentTop);
-            applyPosition(settle.left, settle.top);
-            savePosition();
-          }, 90);
-
-          setTimeout(function () {
-            fab.classList.remove('snapping');
-          }, 260);
-        }
-
-        function cancelInertia() {
-          if (inertiaRafId) {
-            cancelAnimationFrame(inertiaRafId);
-            inertiaRafId = 0;
-          }
-        }
-
-        function runInertiaThenSnap() {
-          cancelInertia();
-          var left = parseFloat(fab.style.left) || fab.getBoundingClientRect().left;
-          var top = parseFloat(fab.style.top) || fab.getBoundingClientRect().top;
-          var vx = velocityX;
-          var vy = velocityY;
-          var friction = 0.92;
-          var minSpeed = 0.06;
-          var frame = 0;
-
-          function step() {
-            frame++;
-            left += vx * 16;
-            top += vy * 16;
-            var clamped = clampPosition(left, top);
-            left = clamped.left;
-            top = clamped.top;
-            applyPosition(left, top);
-
-            vx *= friction;
-            vy *= friction;
-
-            if (frame > 18 || (Math.abs(vx) + Math.abs(vy)) < minSpeed) {
-              inertiaRafId = 0;
-              snapToEdge();
-              return;
-            }
-            inertiaRafId = requestAnimationFrame(step);
-          }
-
-          inertiaRafId = requestAnimationFrame(step);
-        }
-
-        function savePosition() {
-          try {
-            localStorage.setItem(storageKey, JSON.stringify({
-              left: parseFloat(fab.style.left) || 0,
-              top: parseFloat(fab.style.top) || 0
-            }));
-          } catch (err) {}
-        }
-
-        function flushFrame() {
-          rafId = 0;
-          applyPosition(pendingLeft, pendingTop);
-        }
-
-        function queuePosition(left, top) {
-          pendingLeft = left;
-          pendingTop = top;
-          if (!rafId) rafId = requestAnimationFrame(flushFrame);
-        }
-
-        function initPosition() {
-          var rect = fab.getBoundingClientRect();
-          applyPosition(rect.left, rect.top);
-          try {
-            var raw = localStorage.getItem(storageKey);
-            if (!raw) return;
-            var saved = JSON.parse(raw);
-            if (!saved || typeof saved.left !== 'number' || typeof saved.top !== 'number') return;
-            applyPosition(saved.left, saved.top);
-          } catch (err) {}
-        }
-
-        initPosition();
-
-        fab.addEventListener('pointerdown', function (e) {
-          if (e.button !== 0) return;
-          cancelInertia();
-          pointerId = e.pointerId;
-          dragging = true;
-          moved = false;
-          suppressClick = false;
-          startPointerX = e.clientX;
-          startPointerY = e.clientY;
-          lastMoveX = e.clientX;
-          lastMoveY = e.clientY;
-          lastMoveTs = performance.now();
-          velocityX = 0;
-          velocityY = 0;
-          startLeft = parseFloat(fab.style.left) || fab.getBoundingClientRect().left;
-          startTop = parseFloat(fab.style.top) || fab.getBoundingClientRect().top;
-          fab.classList.add('dragging');
-          try { fab.setPointerCapture(pointerId); } catch (err) {}
-          e.preventDefault();
-        });
-
-        fab.addEventListener('pointermove', function (e) {
-          if (!dragging || e.pointerId !== pointerId) return;
-          var nowTs = performance.now();
-          var dt = Math.max(1, nowTs - lastMoveTs);
-          var dx = e.clientX - startPointerX;
-          var dy = e.clientY - startPointerY;
-          if (Math.abs(dx) + Math.abs(dy) > 4) moved = true;
-          velocityX = (e.clientX - lastMoveX) / dt;
-          velocityY = (e.clientY - lastMoveY) / dt;
-          lastMoveX = e.clientX;
-          lastMoveY = e.clientY;
-          lastMoveTs = nowTs;
-          queuePosition(startLeft + dx, startTop + dy);
-        });
-
-        function endDrag(e) {
-          if (!dragging || e.pointerId !== pointerId) return;
-          dragging = false;
-          pointerId = null;
-          fab.classList.remove('dragging');
-          try { fab.releasePointerCapture(e.pointerId); } catch (err) {}
-          if (moved) {
-            runInertiaThenSnap();
-            suppressClick = true;
-            setTimeout(function () { suppressClick = false; }, 0);
-          }
-        }
-
-        fab.addEventListener('pointerup', endDrag);
-        fab.addEventListener('pointercancel', endDrag);
-
-        fab.addEventListener('click', function (e) {
-          if (suppressClick) {
-            e.preventDefault();
-            e.stopPropagation();
-            return;
-          }
-          e.preventDefault();
-          e.stopPropagation();
-          if (typeof window.openModalFunc === 'function') {
-            window.openModalFunc();
-          }
-        });
-
-        window.addEventListener('resize', function () {
-          var left = parseFloat(fab.style.left);
-          var top = parseFloat(fab.style.top);
-          if (isNaN(left) || isNaN(top)) {
-            initPosition();
-            return;
-          }
-          applyPosition(left, top);
-          savePosition();
-        });
-      })();
-
+      initLiquidJellyFab();
       var selectModeBtn = document.getElementById('select-mode-btn');
       if (selectModeBtn) {
         selectModeBtn.addEventListener('click', function (e) {
@@ -2271,9 +2684,9 @@
         });
       }
 
-      // 绑定添加标签按钮
+      // 缁戝畾娣诲姞鏍囩鎸夐挳
 
-      // 支持通过 URL 参数直接打开新建任务模态框（用于日历页跳转）
+      // 鏀寔閫氳繃 URL 鍙傛暟鐩存帴鎵撳紑鏂板缓浠诲姟妯℃€佹锛堢敤浜庢棩鍘嗛〉璺宠浆锛?
       (function openModalFromQuery() {
         var params;
         try {
@@ -2328,7 +2741,7 @@
         });
       }
 
-      // 关闭详情面板
+      // 鍏抽棴璇︽儏闈㈡澘
       var detailDatetimeTrigger = document.getElementById('detail-datetime-trigger');
       var detailDatetimeShell = document.getElementById('detail-datetime-shell');
       var detailDateShell = document.getElementById('detail-date-shell');
@@ -2607,7 +3020,7 @@
         }
       });
 
-      // 取消编辑
+      // 鍙栨秷缂栬緫
       var cancelEditBtn = document.getElementById('cancel-edit-btn');
       if (cancelEditBtn) {
         cancelEditBtn.addEventListener('click', function () {
@@ -2637,7 +3050,7 @@
               updateCountStats();
               saveToLocalStorage();
               closeTaskDetailModal();
-              showToast('✅ 本地离线任务已保存');
+              showToast('本地离线任务已保存');
               return;
             }
             updateTaskOnServer(currentEditingTask.id, updatedPayload).then(function (updated) {
@@ -2651,7 +3064,7 @@
               updateCountStats();
               saveToLocalStorage();
               closeTaskDetailModal();
-              showToast('✅ 任务保存成功！');
+              showToast('任务保存成功');
             }).catch(function (err) {
               console.error(err);
               showToast('保存任务失败', 'error');
@@ -2660,7 +3073,7 @@
         });
       }
 
-      // 批量操作
+      // 鎵归噺鎿嶄綔
       var batchCompleteBtn = document.getElementById('batch-complete-btn');
       var batchDeleteBtn = document.getElementById('batch-delete-btn');
       if (batchCompleteBtn) {
@@ -2674,7 +3087,7 @@
         });
       }
 
-      // 排序筛选菜单
+      // 鎺掑簭绛涢€夎彍鍗?
       var sortFilterBtn = document.getElementById('sort-filter-btn');
       var sortFilterMenu = document.getElementById('sort-filter-menu');
       if (sortFilterBtn && sortFilterMenu) {
@@ -2751,7 +3164,7 @@
         });
       }
 
-      // 侧边栏主分类筛选
+      // 渚ц竟鏍忎富鍒嗙被绛涢€?
       var sidebarMainList = document.getElementById('sidebar-main-list');
       if (sidebarMainList) {
         sidebarMainList.addEventListener('click', function (e) {
@@ -2828,7 +3241,7 @@
         });
       }
 
-      // 删除任务（详情页）
+      // 鍒犻櫎浠诲姟锛堣鎯呴〉锛?
       var deleteTaskBtn = document.getElementById('delete-task-btn');
       if (deleteTaskBtn) {
         deleteTaskBtn.addEventListener('click', function () {
@@ -2843,7 +3256,7 @@
               updateCountStats();
               saveToLocalStorage();
               closeTaskDetailModal();
-              showToast('🗑️ 本地离线任务已删除');
+              showToast('本地离线任务已删除');
               return;
             }
             apiRequest('/api/tasks/' + currentEditingTask.id, { method: 'DELETE' }).then(function (resp) {
@@ -2856,7 +3269,7 @@
                 updateCountStats();
                 saveToLocalStorage();
                 closeTaskDetailModal();
-                showToast('🗑️ 任务已删除');
+                showToast('任务已删除');
               } else {
                 showToast((resp.body && resp.body.message) || '删除失败', 'error');
               }
@@ -2868,13 +3281,13 @@
         });
       }
 
-      // 分享/复制任务（详情页）
+      // 鍒嗕韩/澶嶅埗浠诲姟锛堣鎯呴〉锛?
       var shareTaskBtn = document.getElementById('share-task-btn');
       var copyTaskBtn = document.getElementById('copy-task-btn');
       if (shareTaskBtn) {
         shareTaskBtn.addEventListener('click', function () {
           if (!currentEditingTask) return;
-          shareOrCopyText(buildTaskExportText(currentEditingTask), '📤 任务已分享').catch(function () {
+          shareOrCopyText(buildTaskExportText(currentEditingTask), '任务已分享').catch(function () {
             showToast('分享任务失败', 'error');
           });
         });
@@ -2883,7 +3296,7 @@
         copyTaskBtn.addEventListener('click', function () {
           if (!currentEditingTask) return;
           copyTextToClipboard(buildTaskExportText(currentEditingTask)).then(function () {
-            showToast('📋 任务内容已复制');
+            showToast('任务内容已复制');
           }).catch(function () {
             showToast('复制任务失败', 'error');
           });
@@ -2927,7 +3340,7 @@
         });
       }
 
-      // 子任务功能
+      // 瀛愪换鍔″姛鑳?
       var addSubtaskBtn = document.getElementById('add-subtask-btn');
       var newSubtaskInput = document.getElementById('new-subtask-input');
       if (addSubtaskBtn && newSubtaskInput) {
@@ -2972,7 +3385,7 @@
             renderSubtasks();
             saveToLocalStorage();
             newSubtaskInput.value = '';
-            showToast('✅ 子任务已添加');
+            showToast('子任务已添加');
           }).catch(function (err) {
             console.error(err);
             currentEditingTask.subtasks.pop();
@@ -2990,7 +3403,7 @@
         });
       }
 
-      // 全部完成子任务
+      // 鍏ㄩ儴瀹屾垚瀛愪换鍔?
       var completeAllSubtasks = document.getElementById('complete-all-subtasks');
       if (completeAllSubtasks) {
         completeAllSubtasks.addEventListener('click', function () {
@@ -3009,7 +3422,7 @@
             syncCurrentSubtasksToServer().then(function () {
               renderSubtasks();
               saveToLocalStorage();
-              showToast('✅ 所有子任务已标记完成');
+              showToast('所有子任务已标记完成');
             }).catch(function (err) {
               console.error(err);
               currentEditingTask.subtasks.forEach(function (s, idx) { s.completed = !!backup[idx]; });
@@ -3028,7 +3441,7 @@
         });
       }
 
-      // 移动端搜索：增强兼容性，支持 touch/click、避免双触发，并在 header 上切换 class 控制可见性
+      // 绉诲姩绔悳绱細澧炲己鍏煎鎬э紝鏀寔 touch/click銆侀伩鍏嶅弻瑙﹀彂锛屽苟鍦?header 涓婂垏鎹?class 鎺у埗鍙鎬?
       var mobileSearchBtn = document.getElementById('mobile-search-btn');
       function getActiveMainHeader() {
         return document.querySelector('.unified-top-header-dock .unified-top-header-shell#main-header') || document.getElementById('main-header');
@@ -3141,4 +3554,3 @@
         })();
       }
     });
-  

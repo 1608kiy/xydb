@@ -1,4 +1,4 @@
-﻿
+
     * {
       margin: 0;
       padding: 0;
@@ -357,6 +357,25 @@
       padding: 14px;
       box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
       animation: groupFadeIn 0.5s cubic-bezier(0.2, 0.75, 0.25, 1) both;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .task-group-card::before {
+      content: "";
+      position: absolute;
+      inset: -20% -30%;
+      pointer-events: none;
+      background: radial-gradient(48% 32% at 18% 12%, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0));
+      opacity: 0.55;
+      transform: translate3d(-10%, 0, 0);
+      animation: cardLiquidSheen 7.2s linear infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .task-group-card::before {
+        animation: none !important;
+      }
     }
 
     @keyframes groupFadeIn {
@@ -434,91 +453,177 @@
       background: rgba(16, 185, 129, 0.16);
     }
 
-    .todo-fab {
+    .todo-liquid-fab {
+      --fab-size: 62px;
+      --fab-icon-color: rgba(15, 23, 42, 0.84);
+      --sheen-x: 42%;
+      --sheen-y: 32%;
       position: fixed;
-      right: 18px;
-      bottom: calc(78px + env(safe-area-inset-bottom, 0px));
-      width: 52px;
-      height: 52px;
+      left: 0;
+      top: 0;
+      width: var(--fab-size);
+      height: var(--fab-size);
+      padding: 0;
+      border: 0;
       border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.52);
-      background: linear-gradient(160deg, rgba(255, 255, 255, 0.48) 0%, rgba(191, 219, 254, 0.24) 42%, rgba(99, 102, 241, 0.3) 100%);
-      color: #fff;
-      font-size: 20px;
+      background: transparent;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+      outline: none;
+      display: none;
+      z-index: 58;
+      will-change: transform;
+      transform: translate3d(0, 0, 0);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .todo-liquid-fab:focus-visible {
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.22);
+    }
+
+    .todo-liquid-fab.dragging {
+      cursor: grabbing;
+    }
+
+    .todo-liquid-fab__glass {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      border: 1px solid rgba(255, 255, 255, 0.34);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.12) 56%, rgba(255, 255, 255, 0.2)),
+        radial-gradient(115% 150% at var(--sheen-x) var(--sheen-y), rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06) 48%, rgba(255, 255, 255, 0.1));
+      box-shadow:
+        0 8px 18px rgba(15, 23, 42, 0.1),
+        inset 0 1px 1px rgba(255, 255, 255, 0.54),
+        inset 0 -10px 14px rgba(148, 163, 184, 0.12),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+      backdrop-filter: blur(2.8px) saturate(108%) contrast(106%) brightness(106%);
+      -webkit-backdrop-filter: blur(2.8px) saturate(108%) contrast(106%) brightness(106%);
+      transform: translate3d(0, 0, 0);
+      transform-origin: 50% 50%;
+      will-change: transform;
+      animation: none;
+      overflow: hidden;
+      isolation: isolate;
+      pointer-events: none;
+      opacity: 0.96;
+    }
+
+    .todo-liquid-fab__glass::before,
+    .todo-liquid-fab__glass::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+    }
+
+    .todo-liquid-fab__glass::before {
+      background:
+        radial-gradient(80% 76% at 28% 20%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.08) 54%, rgba(255, 255, 255, 0));
+      opacity: 0.64;
+      animation: none;
+    }
+
+    .todo-liquid-fab__glass::after {
+      inset: -10px;
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(4px) saturate(106%);
+      -webkit-backdrop-filter: blur(4px) saturate(106%);
+      opacity: 0.24;
+    }
+
+    .todo-liquid-fab__icon {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      margin-left: 0;
+      margin-top: 0;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 16px 34px rgba(79, 70, 229, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.68), inset 0 -6px 12px rgba(79, 70, 229, 0.22);
-      z-index: 60;
-      cursor: grab;
-      touch-action: none;
-      user-select: none;
-      -webkit-user-select: none;
-      overflow: hidden;
-      backdrop-filter: blur(8px) saturate(150%);
-      -webkit-backdrop-filter: blur(8px) saturate(150%);
-      transition: box-shadow 0.22s ease, transform 0.22s ease, border-color 0.22s ease;
-      will-change: left, top, transform;
-      animation: fabFloat 2.1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-    }
-
-    .todo-fab::before {
-      content: '';
-      position: absolute;
-      left: 9px;
-      top: 7px;
-      width: 22px;
-      height: 14px;
-      border-radius: 50%;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.18));
-      filter: blur(0.2px);
+      transform: translate3d(-50%, -50%, 0);
+      color: var(--fab-icon-color);
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 1;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      will-change: transform;
       pointer-events: none;
+      text-shadow: 0 1px 1px rgba(15, 23, 42, 0.16);
     }
 
-    .todo-fab::after {
-      content: '';
-      position: absolute;
-      inset: -3px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.5), rgba(99, 102, 241, 0) 60%);
-      opacity: 0;
-      transform: scale(0.94);
-      pointer-events: none;
-      animation: fabRipple 2.1s ease-in-out infinite;
+    .todo-liquid-fab__icon i {
+      font-size: 1em;
+      line-height: 1;
+      transform: translateY(-0.5px);
     }
 
-    @keyframes fabFloat {
-      0%, 100% { transform: translateY(0) scale(1); }
-      35% { transform: translateY(-4px) scale(1.02); }
-      68% { transform: translateY(-1px) scale(1); }
+    .todo-liquid-fab.snapping .todo-liquid-fab__glass {
+      box-shadow:
+        0 10px 20px rgba(15, 23, 42, 0.12),
+        inset 0 1px 1px rgba(255, 255, 255, 0.56),
+        inset 0 -10px 14px rgba(148, 163, 184, 0.12),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.16);
     }
 
-    @keyframes fabRipple {
-      0%, 100% {
-        opacity: 0.08;
-        transform: scale(0.94);
-      }
-      50% {
-        opacity: 0.36;
-        transform: scale(1.08);
+    @keyframes liquidFabBreath {
+      0%, 100% { filter: brightness(1) saturate(1); }
+      50% { filter: brightness(1.06) saturate(1.03); }
+    }
+
+    @keyframes liquidFabSheen {
+      0% { transform: translate3d(-6%, -2%, 0); }
+      50% { transform: translate3d(5%, 2%, 0); }
+      100% { transform: translate3d(-6%, -2%, 0); }
+    }
+
+    @media (max-width: 900px) {
+      .todo-liquid-fab {
+        display: block;
       }
     }
 
-    .todo-fab:active {
-      transform: scale(0.93);
-      border-color: rgba(255, 255, 255, 0.72);
+    @keyframes cardLiquidSheen {
+      0% { transform: translate3d(-10%, 0, 0); }
+      50% { transform: translate3d(14%, 0, 0); }
+      100% { transform: translate3d(-10%, 0, 0); }
     }
 
-    .todo-fab.dragging {
-      cursor: grabbing;
-      animation: none;
-      transform: scale(1.08);
-      box-shadow: 0 18px 36px rgba(79, 70, 229, 0.44), inset 0 1px 0 rgba(255, 255, 255, 0.72), inset 0 -8px 14px rgba(79, 70, 229, 0.26);
-      transition: none;
+    @media (prefers-reduced-motion: reduce) {
+      .todo-liquid-fab__glass,
+      .todo-liquid-fab__glass::before {
+        animation: none !important;
+      }
     }
 
-    .todo-fab.snapping {
-      transition: left 0.24s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.24s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease, transform 0.2s ease;
+    html.unified-dark-mode body.software-app .todo-liquid-fab,
+    body.software-app.theme-night .todo-liquid-fab {
+      --fab-icon-color: rgba(241, 245, 249, 0.9);
+    }
+
+    html.unified-dark-mode body.software-app .todo-liquid-fab__glass,
+    body.software-app.theme-night .todo-liquid-fab__glass {
+      border-color: rgba(255, 255, 255, 0.24);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06) 56%, rgba(255, 255, 255, 0.12)),
+        radial-gradient(110% 136% at var(--sheen-x) var(--sheen-y), rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05) 48%, rgba(255, 255, 255, 0.08));
+      box-shadow:
+        0 10px 22px rgba(2, 6, 23, 0.34),
+        inset 0 1px 1px rgba(255, 255, 255, 0.24),
+        inset 0 -10px 14px rgba(15, 23, 42, 0.2),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+      opacity: 0.95;
+    }
+
+    html.unified-dark-mode body.software-app .todo-liquid-fab__icon,
+    body.software-app.theme-night .todo-liquid-fab__icon {
+      text-shadow: 0 1px 1px rgba(2, 6, 23, 0.52);
     }
 
     .task-card.task-card-enter {
@@ -549,7 +654,6 @@
       background: rgba(16, 185, 129, 0.22);
       border: 1px solid rgba(16, 185, 129, 0.3);
     }
-
     @media (max-width: 768px) {
       .todo-quick-actions {
         flex-wrap: wrap;
@@ -1312,13 +1416,139 @@
       box-shadow: none;
     }
 
+    footer.glass-tab {
+      --liquid-impact: 0;
+      --liquid-impact-x: 0.5;
+      --tab-bubble-x: 0px;
+      --tab-bubble-w: 54px;
+      --tab-bubble-scale: 1;
+      overflow: visible;
+      transform-origin: 50% 100%;
+      transition: transform 0.28s cubic-bezier(0.2, 0.9, 0.2, 1), filter 0.28s ease;
+    }
+
+    footer.glass-tab .container {
+      position: relative;
+      isolation: isolate;
+      transform-origin: 50% 100%;
+      transition: transform 0.22s ease;
+      will-change: transform;
+      overflow: visible !important;
+    }
+
+    footer.glass-tab .liquid-tab-bubble {
+      position: absolute;
+      left: 0;
+      top: 2px;
+      width: var(--tab-bubble-w);
+      height: 44px;
+      border-radius: 999px;
+      pointer-events: none;
+      z-index: 1;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.07) 60%, rgba(255, 255, 255, 0.14)),
+        radial-gradient(130% 190% at 28% 18%, rgba(255, 255, 255, 0.33), rgba(255, 255, 255, 0.04) 54%, rgba(255, 255, 255, 0));
+      border: 1px solid rgba(255, 255, 255, 0.26);
+      box-shadow:
+        0 8px 18px rgba(15, 23, 42, 0.12),
+        inset 0 1px 1px rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(4px) saturate(112%);
+      -webkit-backdrop-filter: blur(4px) saturate(112%);
+      transform: translate3d(var(--tab-bubble-x), 0, 0) scale(var(--tab-bubble-scale));
+      transition:
+        transform 0.42s cubic-bezier(0.18, 1.08, 0.22, 1),
+        width 0.42s cubic-bezier(0.18, 1.08, 0.22, 1),
+        opacity 0.26s ease;
+      will-change: transform, width;
+      opacity: 0.98;
+      filter: saturate(1.16) brightness(1.07);
+    }
+
+    footer.glass-tab .liquid-tab-ripple {
+      position: absolute;
+      inset: -7px -4px;
+      border-radius: 999px;
+      pointer-events: none;
+      z-index: 1;
+      background:
+        radial-gradient(120px 54px at calc(var(--liquid-impact-x) * 100%) 100%, rgba(255, 255, 255, calc(0.32 * var(--liquid-impact))), rgba(255, 255, 255, 0) 66%);
+      opacity: calc(0.18 + var(--liquid-impact) * 0.95);
+      transition: opacity 0.16s linear, transform 0.16s ease;
+      transform: translateY(calc(var(--liquid-impact) * -2px));
+      mix-blend-mode: normal;
+    }
+
+    footer.glass-tab.liquid-impact-pulse .liquid-tab-ripple {
+      animation: tabImpactPulse 420ms cubic-bezier(0.18, 1, 0.24, 1);
+    }
+
+    @keyframes tabImpactPulse {
+      0% { transform: translateY(0) scale(0.9); opacity: 0.16; }
+      45% { transform: translateY(-1.2px) scale(1.05); opacity: 0.72; }
+      100% { transform: translateY(-2px) scale(1.14); opacity: 0; }
+    }
+
+    footer.glass-tab.liquid-contact .container {
+      transform: translate3d(0, calc(var(--liquid-impact) * -1.4px), 0) scaleX(calc(1 + var(--liquid-impact) * 0.012));
+    }
+
+    html.unified-dark-mode body.software-app footer.glass-tab .liquid-tab-bubble,
+    body.software-app.theme-night footer.glass-tab .liquid-tab-bubble {
+      border-color: rgba(255, 255, 255, 0.24);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04) 56%, rgba(255, 255, 255, 0.1)),
+        radial-gradient(130% 190% at 28% 18%, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.03) 52%, rgba(255, 255, 255, 0));
+      box-shadow:
+        0 8px 20px rgba(2, 6, 23, 0.34),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    }
+
+    html.unified-dark-mode body.software-app footer.glass-tab .liquid-tab-ripple,
+    body.software-app.theme-night footer.glass-tab .liquid-tab-ripple {
+      mix-blend-mode: lighten;
+    }
+
     .tab-item {
       position: relative;
-      transition: all 0.3s ease;
+      z-index: 3;
+      transition: transform 0.26s cubic-bezier(0.2, 0.9, 0.2, 1), color 0.24s ease;
+      transform-origin: 50% 100%;
+      will-change: transform;
+    }
+
+    @media (max-width: 900px) {
+      body.software-app footer.glass-tab .liquid-tab-bubble {
+        border-color: rgba(255, 255, 255, 0.34) !important;
+        box-shadow:
+          0 10px 18px rgba(15, 23, 42, 0.16),
+          inset 0 1px 1px rgba(255, 255, 255, 0.55) !important;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.1) 62%, rgba(255, 255, 255, 0.2)),
+          radial-gradient(130% 190% at 28% 18%, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.06) 54%, rgba(255, 255, 255, 0)) !important;
+      }
+
+      html.unified-dark-mode body.software-app footer.glass-tab .liquid-tab-bubble,
+      body.software-app.theme-night footer.glass-tab .liquid-tab-bubble {
+        border-color: rgba(255, 255, 255, 0.3) !important;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06) 62%, rgba(255, 255, 255, 0.14)),
+          radial-gradient(130% 190% at 28% 18%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05) 54%, rgba(255, 255, 255, 0)) !important;
+      }
     }
 
     .tab-item:hover {
-      transform: scale(1.1);
+      transform: translateY(-1px) scale(1.04);
+    }
+
+    .tab-item.liquid-press {
+      animation: tabLiquidPress 260ms cubic-bezier(0.2, 0.9, 0.22, 1);
+    }
+
+    @keyframes tabLiquidPress {
+      0% { transform: translateY(0) scale(1); }
+      36% { transform: translateY(1.4px) scale(0.94, 0.92); }
+      72% { transform: translateY(-0.8px) scale(1.04, 1.02); }
+      100% { transform: translateY(0) scale(1); }
     }
 
     .tab-item.active .tab-indicator {
@@ -1529,4 +1759,3 @@
     body.theme-night .theme-header-icon--moon {
       display: inline-flex;
     }
-  
