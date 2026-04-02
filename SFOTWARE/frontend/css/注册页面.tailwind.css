@@ -1,180 +1,401 @@
-﻿
-      @layer utilities {
-          .text-shadow { text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-          .bg-gradient-full { background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
-          .card-hover { @apply transition-all duration-500 hover:shadow-2xl hover:-translate-y-1; }
-          .input-focus { @apply focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all duration-300; }
-          .btn-primary { @apply bg-primary text-white font-medium py-3 px-4 rounded-xl transition-all duration-300 hover:bg-primary/90 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]; }
-          .btn-social { @apply flex flex-col items-center justify-center py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-300 hover:scale-105 active:scale-95; }
-          .form-enter { animation: formSlideIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
-          @keyframes formSlideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-          .icon-bounce { animation: iconBounce 2s ease-in-out infinite; }
-          @keyframes iconBounce { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-10deg); } 75% { transform: rotate(10deg); } }
-          .avatar-float { animation: avatarFloat 3s ease-in-out infinite; }
-          @keyframes avatarFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-          
-          /* ===== 动画效果 ===== */
-          .orb-float { animation: orbFloat 8s ease-in-out infinite; }
-          @keyframes orbFloat { 
-              0%, 100% { transform: translate(0, 0) scale(1); } 
-              25% { transform: translate(20px, -30px) scale(1.1); } 
-              50% { transform: translate(-10px, 20px) scale(0.95); } 
-              75% { transform: translate(15px, 10px) scale(1.05); } 
-          }
-          
-          .pulse-glow { animation: pulseGlow 3s ease-in-out infinite; }
-          @keyframes pulseGlow { 
-              0%, 100% { opacity: 0.3; transform: scale(1); } 
-              50% { opacity: 0.6; transform: scale(1.1); } 
-          }
-          
-          .gradient-flow { animation: gradientFlow 6s linear infinite; }
-          @keyframes gradientFlow { 
-              0% { background-position: 0% 50%; } 
-              50% { background-position: 100% 50%; } 
-              100% { background-position: 0% 50%; } 
-          }
-          
-          .particle-float { animation: particleFloat 15s linear infinite; }
-          @keyframes particleFloat { 
-              0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 
-              10% { opacity: 1; } 
-              90% { opacity: 1; } 
-              100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; } 
-          }
-          
-          .card-glow { animation: cardGlow 4s ease-in-out infinite; }
-          @keyframes cardGlow { 
-              0%, 100% { box-shadow: 0 0 30px rgba(79, 70, 229, 0.3); } 
-              50% { box-shadow: 0 0 50px rgba(124, 58, 237, 0.5); } 
-          }
-          
-          /* ===== 标题渐变 - 柔和色调 ===== */
-          .text-gradient-soft { 
-              background: linear-gradient(90deg, #e0e7ff, #c4b5fd, #e0e7ff, #a5f3fc, #e0e7ff); 
-              background-size: 300% auto; 
-              -webkit-background-clip: text; 
-              -webkit-text-fill-color: transparent; 
-              animation: gradientFlow 5s linear infinite; 
-          }
-          
-          /* ===== 图片轻微倾斜浮动 ===== */
-          .image-tilt-float { animation: imageTiltFloat 6s ease-in-out infinite; }
-          @keyframes imageTiltFloat { 
-              0%, 100% { transform: rotate(-2deg) translateY(0); } 
-              25% { transform: rotate(-1deg) translateY(-8px); } 
-              50% { transform: rotate(0deg) translateY(-5px); } 
-              75% { transform: rotate(1deg) translateY(-8px); } 
-          }
-          
-          /* ===== 毛玻璃增强 - 卡片透明度优化 ===== */
-          .glass-strong { 
-              background: rgba(255, 255, 255, 0.15); 
-              backdrop-filter: blur(20px); 
-              -webkit-backdrop-filter: blur(20px); 
-              border: 1px solid rgba(255, 255, 255, 0.2); 
-          }
-          
-          .glass-card { 
-              background: rgba(255, 255, 255, 0.85); 
-              backdrop-filter: blur(40px); 
-              -webkit-backdrop-filter: blur(40px); 
-              border: 1px solid rgba(255, 255, 255, 0.3); 
-              box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 0 30px rgba(255, 255, 255, 0.1); 
-          }
+@layer utilities {
+    :root {
+        --brand-500: #6366f1;
+        --brand-600: #4f46e5;
+        --brand-700: #4338ca;
+        --brand-500-rgb: 99, 102, 241;
+        --text-strong: #1f2937;
+        --text-muted: #6b7280;
+        --input-border: #e5e7eb;
+        --surface-glass: rgba(255, 255, 255, 0.85);
+    }
 
-          .glass-input {
-              background: rgba(249, 250, 251, 0.6);
-              backdrop-filter: blur(10px);
-              -webkit-backdrop-filter: blur(10px);
-          }
-          
-          /* 按钮光效 */
-          .btn-glow { 
-              position: relative; 
-              overflow: hidden; 
-          }
-          .btn-glow::before { 
-              content: ''; 
-              position: absolute; 
-              top: 0; left: -100%; 
-              width: 100%; height: 100%; 
-              background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); 
-              transition: left 0.5s; 
-          }
-          .btn-glow:hover::before { left: 100%; }
-          
-          /* 光晕边框 */
-          .glow-border {
-              position: relative;
-          }
-          .glow-border::after {
-              content: '';
-              position: absolute;
-              inset: -2px;
-              background: linear-gradient(45deg, #4F46E5, #7C3AED, #a5f3fc, #4F46E5);
-              background-size: 400% 400%;
-              border-radius: inherit;
-              z-index: -1;
-              animation: gradientFlow 3s ease infinite;
-              filter: blur(10px);
-              opacity: 0.5;
-          }
-          
-          /* ===== 输入框图标样式 - 更明显 ===== */
-          .input-icon {
-              @apply text-slate-700 transition-all duration-200;
-              z-index: 2;
-              pointer-events: none;
-          }
-          .input-icon i {
-              width: 2rem;
-              height: 2rem;
-              display: inline-flex;
-              align-items: center;
-              justify-content: center;
-              border-radius: 0.65rem;
-              border: 1px solid #cbd5e1;
-              background: #f3f6fb;
-              box-shadow: none;
-              font-size: 0.95rem;
-              color: #64748b;
-          }
-          .group:hover .input-icon i {
-              border-color: #cbd5e1;
-              background: #f3f6fb;
-          }
-          .group:focus-within .input-icon {
-              @apply text-slate-700;
-          }
-          .group:focus-within .input-icon i {
-              transform: none;
-              border-color: #cbd5e1;
-              background: #f3f6fb;
-              box-shadow: none;
-          }
-          body.theme-night .input-icon,
-          html.unified-dark-mode .input-icon {
-              color: #e2e8f0 !important;
-          }
-          body.theme-night .input-icon i,
-          html.unified-dark-mode .input-icon i {
-              border-color: #94a3b8;
-              background: #334155;
-              box-shadow: none;
-              color: #f8fafc;
-          }
-          
-          /* ===== 社交按钮优化 - 图标 + 文字 ===== */
-          .btn-social {
-              @apply flex flex-col items-center justify-center py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-300 hover:scale-105 active:scale-95;
-          }
-          .btn-social .social-icon {
-              @apply text-xl mb-1 transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-lg;
-          }
-          .btn-social .social-text {
-              @apply text-xs text-gray-600 font-medium;
-          }
-          
-      }
-    
+    .bg-gradient-full {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background: linear-gradient(160deg, #e8e4fb 0%, #eeebfc 36%, #edf2fb 70%, #e5effa 100%);
+    }
+
+    .auth-orb {
+        position: absolute;
+        z-index: 0;
+        border-radius: 9999px;
+        filter: blur(32px);
+        pointer-events: none;
+        animation: floatOrb 5s ease-in-out infinite;
+    }
+
+    .auth-orb-1 {
+        width: 160px;
+        height: 160px;
+        background: rgba(127, 119, 221, 0.2);
+        left: -12px;
+        top: 56px;
+        animation-delay: 0s;
+    }
+
+    .auth-orb-2 {
+        width: 120px;
+        height: 120px;
+        background: rgba(180, 200, 255, 0.24);
+        right: 8px;
+        top: 98px;
+        animation-delay: 1.2s;
+    }
+
+    .auth-orb-3 {
+        width: 100px;
+        height: 100px;
+        background: rgba(200, 185, 255, 0.22);
+        left: 22px;
+        top: 62%;
+        animation-delay: 2.5s;
+    }
+
+    .auth-page-shell {
+        padding-top: max(20px, env(safe-area-inset-top, 0px));
+        padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .auth-brand-block {
+        animation: fadeUp 0.5s ease 0.1s both;
+    }
+
+    .auth-brand-logo {
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #f9c848, #f5a623);
+        box-shadow: 0 4px 16px rgba(245, 166, 35, 0.3);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+    }
+
+    .auth-brand-title {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 600;
+        color: #373080;
+    }
+
+    .auth-brand-subtitle {
+        margin-top: 6px;
+        font-size: 12px;
+        color: #55508f;
+        font-weight: 500;
+    }
+
+    .glass-card {
+        border-radius: 0;
+        background: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        border: 0;
+        box-shadow: none;
+        padding: 0;
+        animation: fadeUp 0.55s ease 0.2s both;
+    }
+
+    #register-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    #register-form > div > label {
+        color: var(--text-strong);
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    #register-form .group {
+        position: relative;
+        border-radius: 12px;
+        border: 1px solid var(--input-border);
+        background: rgba(255, 255, 255, 0.9);
+        transition: all 0.2s ease;
+    }
+
+    #register-form .group:hover {
+        border-color: #d1d5db;
+    }
+
+    #register-form .group:focus-within {
+        border-width: 2px;
+        border-color: var(--brand-500);
+        box-shadow: 0 0 0 3px rgba(var(--brand-500-rgb), 0.15);
+        background: #ffffff;
+    }
+
+    #register-form .group input {
+        height: 48px;
+        border: 0 !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        color: var(--text-strong);
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    #register-form .group input::placeholder {
+        color: #9ca3af;
+    }
+
+    .input-focus {
+        outline: none;
+        transition: all 0.2s ease;
+    }
+
+    .input-icon {
+        color: #9ca3af;
+        pointer-events: none;
+        transition: color 0.2s ease;
+    }
+
+    .input-icon i {
+        width: 16px;
+        height: 16px;
+        font-size: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: inherit;
+    }
+
+    #register-form .group:focus-within .input-icon {
+        color: var(--brand-500);
+    }
+
+    #toggle-register-password {
+        min-width: 44px;
+        min-height: 44px;
+        color: #9ca3af;
+    }
+
+    #register-form .group:focus-within #toggle-register-password {
+        color: var(--brand-500);
+    }
+
+    #register-confirm-match {
+        color: #10b981;
+    }
+
+    #password-strength-wrap {
+        margin-top: 10px;
+    }
+
+    .password-strength-row {
+        gap: 8px;
+    }
+
+    .password-strength-tip {
+        color: #6b7280 !important;
+        white-space: nowrap;
+    }
+
+    #password-strength-segment-1,
+    #password-strength-segment-2,
+    #password-strength-segment-3 {
+        min-height: 4px;
+        border-radius: 9999px;
+    }
+
+    .btn-primary {
+        width: 100%;
+        min-height: 48px;
+        border-radius: 12px;
+        border: 0;
+        background: linear-gradient(90deg, #6366f1, #8b5cf6);
+        color: #ffffff;
+        font-size: 15px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        box-shadow: 0 8px 20px rgba(var(--brand-500-rgb), 0.28);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-primary:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+    }
+
+    .btn-primary:active {
+        filter: brightness(0.92);
+        box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.18);
+        transform: translateY(0);
+    }
+
+    .btn-primary.is-loading {
+        pointer-events: none;
+        opacity: 0.9;
+    }
+
+    .btn-primary .btn-loading-icon {
+        width: 14px;
+        height: 14px;
+        border-radius: 9999px;
+        border: 2px solid rgba(255, 255, 255, 0.6);
+        border-top-color: #ffffff;
+        animation: spin 0.8s linear infinite;
+    }
+
+    .auth-divider-line {
+        height: 1px;
+        background: linear-gradient(90deg, rgba(209, 213, 219, 0), #d1d5db, rgba(209, 213, 219, 0));
+    }
+
+    .auth-alt-divider {
+        font-size: 14px;
+        color: #6b7280;
+        background: rgba(255, 255, 255, 0.75);
+    }
+
+    .auth-social-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .btn-social {
+        width: 56px;
+        height: 56px;
+        min-width: 56px;
+        min-height: 56px;
+        border-radius: 9999px;
+        border: 1px solid #e5e7eb;
+        background: rgba(255, 255, 255, 0.92);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s ease;
+    }
+
+    .btn-social:hover {
+        background: #f3f4f6;
+        transform: scale(1.05);
+    }
+
+    .btn-social .social-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        margin: 0;
+    }
+
+    .btn-social .social-text {
+        display: none;
+    }
+
+    .auth-switch-note {
+        font-size: 12px;
+        color: #888888;
+    }
+
+    .auth-switch-note a {
+        color: var(--brand-500);
+        font-weight: 500;
+    }
+
+    .auth-switch-note a:hover {
+        text-decoration: underline;
+    }
+
+    .auth-privacy-note {
+        margin-top: 24px;
+        font-size: 12px;
+        color: #6b7280;
+    }
+
+    .auth-privacy-note a {
+        color: var(--brand-500);
+        text-decoration: none;
+    }
+
+    .auth-privacy-note a:hover {
+        text-decoration: underline;
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible {
+        outline: 2px solid var(--brand-500);
+        outline-offset: 2px;
+    }
+
+    .unified-top-header-dock,
+    .software-status-bar,
+    .status-bar {
+        animation: fadeIn 0.4s ease 0s both;
+    }
+
+    body.software-app .unified-bottom-tab-dock,
+    body.software-app .glass-tab {
+        animation: fadeIn 0.5s ease 0.35s both;
+    }
+
+    @keyframes floatOrb {
+        0%,
+        100% {
+            transform: translateY(0px) scale(1);
+        }
+        50% {
+            transform: translateY(-14px) scale(1.04);
+        }
+    }
+
+    @keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(22px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .auth-orb,
+        .auth-brand-block,
+        .glass-card,
+        .unified-top-header-dock,
+        .software-status-bar,
+        .status-bar,
+        body.software-app .unified-bottom-tab-dock,
+        body.software-app .glass-tab {
+            animation: fadeIn 0.2s ease both !important;
+            transform: none !important;
+        }
+
+        .btn-primary,
+        .btn-social,
+        .group {
+            transition: none !important;
+            animation: none !important;
+        }
+    }
+}

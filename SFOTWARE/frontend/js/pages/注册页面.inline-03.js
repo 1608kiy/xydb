@@ -87,65 +87,107 @@
           return msg || fallback;
         }
 
+        function enterGuestMode() {
+          try {
+            localStorage.removeItem('token');
+            localStorage.removeItem('devSkipAuth');
+          } catch (e) {}
+
+          if (window.AppState) {
+            if (typeof window.AppState.switchUser === 'function') {
+              window.AppState.switchUser({ name: '访客', avatar: '' });
+            } else {
+              window.AppState.currentUserKey = 'guest';
+              window.AppState.user = { name: '访客', avatar: '' };
+              if (typeof window.AppState.save === 'function') window.AppState.save();
+            }
+          }
+
+          showToast('已进入访客体验');
+          setTimeout(function () { safeNavigate('待办页面.html'); }, 320);
+        }
+
         var registerPassword = document.getElementById('register-password');
         var toggleRegisterPassword = document.getElementById('toggle-register-password');
         var passwordStrengthWrap = document.getElementById('password-strength-wrap');
         var passwordStrengthLabel = document.getElementById('password-strength-label');
-        var passwordStrengthBar = document.getElementById('password-strength-bar');
+        var passwordStrengthSegment1 = document.getElementById('password-strength-segment-1');
+        var passwordStrengthSegment2 = document.getElementById('password-strength-segment-2');
+        var passwordStrengthSegment3 = document.getElementById('password-strength-segment-3');
+        var registerConfirm = document.getElementById('register-confirm');
+        var registerConfirmMatch = document.getElementById('register-confirm-match');
+        var registerForm = document.getElementById('register-form');
+        var registerSubmitBtn = registerForm ? registerForm.querySelector('button[type="submit"]') : null;
+
+        function setSubmitButtonLoading(button, loading, idleText) {
+          if (!button) return;
+          if (loading) {
+            button.classList.add('is-loading');
+            button.disabled = true;
+            button.innerHTML = '<span class="btn-loading-icon" aria-hidden="true"></span><span>处理中...</span>';
+          } else {
+            button.classList.remove('is-loading');
+            button.disabled = false;
+            button.textContent = idleText;
+          }
+        }
+
+        function paintStrength(level, label, labelClass, segmentGradient) {
+          var segments = [passwordStrengthSegment1, passwordStrengthSegment2, passwordStrengthSegment3];
+          segments.forEach(function (segment, index) {
+            if (!segment) return;
+            segment.className = 'flex-1 rounded-[2px] transition-colors duration-300';
+            if (index < level) {
+              segment.style.background = segmentGradient;
+            } else {
+              segment.style.background = '#E5E7EB';
+            }
+          });
+          if (passwordStrengthLabel) {
+            passwordStrengthLabel.textContent = label;
+            passwordStrengthLabel.className = 'text-[11px] font-medium ' + labelClass;
+          }
+        }
 
         function updateStrength() {
           var pwd = registerPassword.value;
-          var score = 0;
-          if (pwd.length >= 6) score++;
-          if (/[0-9]/.test(pwd) && /[a-zA-Z]/.test(pwd)) score++;
-          if (/[A-Z]/.test(pwd) && /[^a-zA-Z0-9]/.test(pwd)) score++;
-          if (pwd.length >= 12) score++;
           if (!pwd) {
             if (passwordStrengthWrap) passwordStrengthWrap.classList.add('hidden');
             if (passwordStrengthLabel) {
               passwordStrengthLabel.textContent = '待检测';
               passwordStrengthLabel.className = 'text-[11px] font-medium text-gray-500';
             }
-            if (passwordStrengthBar) {
-              passwordStrengthBar.style.width = '0%';
-              passwordStrengthBar.className = 'h-full w-0 rounded-full transition-all duration-300 bg-red-400';
-            }
+            paintStrength(0, '待检测', 'text-gray-500', 'linear-gradient(90deg,#F59E0B,#FBBF24)');
+            updateConfirmMatch();
             return;
           }
           if (passwordStrengthWrap) passwordStrengthWrap.classList.remove('hidden');
 
-          var text = '弱';
-          var width = '25%';
-          var color = 'bg-red-400';
-          var textColor = 'text-red-500';
-          if (score === 2) {
-            text = '一般';
-            width = '50%';
-            color = 'bg-yellow-400';
-            textColor = 'text-yellow-500';
-          } else if (score === 3) {
-            text = '良好';
-            width = '75%';
-            color = 'bg-blue-500';
-            textColor = 'text-blue-500';
-          } else if (score >= 4) {
-            text = '很强';
-            width = '100%';
-            color = 'bg-green-500';
-            textColor = 'text-green-500';
+          var hasLetters = /[a-zA-Z]/.test(pwd);
+          var hasNumbers = /[0-9]/.test(pwd);
+          var hasSpecial = /[^a-zA-Z0-9]/.test(pwd);
+          if (pwd.length < 6 || /^\d+$/.test(pwd)) {
+            paintStrength(1, '弱', 'text-amber-500', 'linear-gradient(90deg,#F59E0B,#FBBF24)');
+          } else if (hasLetters && hasNumbers && hasSpecial && pwd.length >= 8) {
+            paintStrength(3, '强', 'text-green-500', 'linear-gradient(90deg,#22C55E,#16A34A)');
+          } else if (hasLetters && hasNumbers) {
+            paintStrength(2, '中', 'text-yellow-500', 'linear-gradient(90deg,#FBBF24,#FACC15)');
+          } else {
+            paintStrength(1, '弱', 'text-amber-500', 'linear-gradient(90deg,#F59E0B,#FBBF24)');
           }
 
-          if (passwordStrengthLabel) {
-            passwordStrengthLabel.textContent = text;
-            passwordStrengthLabel.className = 'text-[11px] font-medium ' + textColor;
-          }
-          if (passwordStrengthBar) {
-            passwordStrengthBar.style.width = width;
-            passwordStrengthBar.className = 'h-full rounded-full transition-all duration-300 ' + color;
-          }
+          updateConfirmMatch();
         }
 
         registerPassword.addEventListener('input', updateStrength);
+
+        function updateConfirmMatch() {
+          if (!registerConfirmMatch) return;
+          var isMatch = !!registerPassword.value && registerPassword.value === registerConfirm.value;
+          registerConfirmMatch.style.opacity = isMatch ? '1' : '0';
+        }
+
+        registerConfirm.addEventListener('input', updateConfirmMatch);
 
         toggleRegisterPassword.addEventListener('click', function () {
           var type = registerPassword.getAttribute('type') === 'password' ? 'text' : 'password';
@@ -155,26 +197,30 @@
           icon.classList.toggle('fa-eye-slash');
         });
 
-        var registerForm = document.getElementById('register-form');
         registerForm.addEventListener('submit', function (e) {
           e.preventDefault();
           var account = document.getElementById('register-account').value.trim();
           var password = registerPassword.value;
-          var confirm = document.getElementById('register-confirm').value;
+          var confirm = registerConfirm.value;
 
           var emailMobileRegex = /^(\S+@\S+\.\S+|1\d{10})$/;
           if (!account || !password || !confirm) {
             showToast('请完整填写所有信息');
+            setSubmitButtonLoading(registerSubmitBtn, false, '注 册');
             return;
           }
           if (!emailMobileRegex.test(account)) {
             showToast('请输入有效的邮箱或手机号');
+            setSubmitButtonLoading(registerSubmitBtn, false, '注 册');
             return;
           }
           if (password !== confirm) {
             showToast('两次输入的密码不一致');
+            setSubmitButtonLoading(registerSubmitBtn, false, '注 册');
             return;
           }
+
+          setSubmitButtonLoading(registerSubmitBtn, true, '注 册');
 
           var payload = {
             nickname: account.includes('@') ? account.split('@')[0] : ('用户' + account.slice(-4)),
@@ -191,19 +237,26 @@
                   localStorage.setItem('token', token);
                   showToast('注册并登录成功，正在跳转...');
                   setTimeout(function () { safeNavigate('待办页面.html'); }, 400);
+                  setSubmitButtonLoading(registerSubmitBtn, false, '注 册');
                   return;
                 }
               }
               var msg = authErrorMessage(resp, '注册失败');
               showToast(msg);
+              setSubmitButtonLoading(registerSubmitBtn, false, '注 册');
             }).catch(function (err) {
               console.error('register error', err);
               showToast('网络错误，请稍后重试');
+              setSubmitButtonLoading(registerSubmitBtn, false, '注 册');
             });
         });
 
         document.querySelectorAll('.btn-social').forEach(function (button) {
           button.addEventListener('click', function () {
+            if (this.getAttribute('data-social-auth') === 'guest') {
+              enterGuestMode();
+              return;
+            }
             showToast('扫码注册中...');
             socialRegisterAndLogin().then(function (resp) {
               if (resp && resp.status === 200 && resp.body && resp.body.code === 200 && resp.body.data && resp.body.data.token) {
