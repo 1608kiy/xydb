@@ -1024,6 +1024,98 @@
       if (tomorrowInfo) tomorrowInfo.textContent = formatDateLabel(1);
     }
 
+    function toggleToolbarDropdownPanel(panel, shouldOpen) {
+      if (!panel) return;
+      if (typeof window.toggleTodoDropdownPanel === 'function') {
+        window.toggleTodoDropdownPanel(panel, shouldOpen, { duration: 220 });
+        return;
+      }
+      if (panel._todoHideTimer) {
+        clearTimeout(panel._todoHideTimer);
+        panel._todoHideTimer = null;
+      }
+      if (shouldOpen) {
+        if (!panel.classList.contains('hidden') && panel.classList.contains('show')) return;
+        panel.classList.remove('hidden');
+        panel.classList.remove('dropdown-closing');
+        panel.style.display = 'block';
+        var targetHeight = Math.max(1, panel.scrollHeight || panel.getBoundingClientRect().height || 1);
+        panel.style.setProperty('--panel-open-height', targetHeight + 'px');
+        panel.classList.add('show');
+        requestAnimationFrame(function () {
+          var nextHeight = Math.max(1, panel.scrollHeight || panel.getBoundingClientRect().height || targetHeight || 1);
+          panel.style.setProperty('--panel-open-height', nextHeight + 'px');
+        });
+        return;
+      }
+      if (panel.classList.contains('hidden') && !panel.classList.contains('show')) return;
+      var closingHeight = Math.max(1, panel.scrollHeight || panel.getBoundingClientRect().height || 1);
+      panel.style.setProperty('--panel-open-height', closingHeight + 'px');
+      panel.classList.remove('show');
+      panel.classList.add('dropdown-closing');
+      panel._todoHideTimer = setTimeout(function () {
+        panel.classList.add('hidden');
+        panel.classList.remove('dropdown-closing');
+        panel.style.removeProperty('--panel-open-height');
+        panel.style.display = '';
+        panel._todoHideTimer = null;
+      }, 220);
+    }
+
+    function animateTaskListReflow(mutator) {
+      if (typeof mutator !== 'function') return;
+      var list = document.getElementById('task-list-container');
+      var reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+      if (!list || reduceMotion) {
+        mutator();
+        return;
+      }
+
+      var beforeTop = list.getBoundingClientRect().top;
+      mutator();
+
+      requestAnimationFrame(function () {
+        var afterTop = list.getBoundingClientRect().top;
+        var deltaY = beforeTop - afterTop;
+        if (Math.abs(deltaY) < 0.6) return;
+
+        list.style.transition = 'none';
+        list.style.transform = 'translate3d(0,' + deltaY.toFixed(2) + 'px,0)';
+        list.style.willChange = 'transform';
+
+        requestAnimationFrame(function () {
+          var cleaned = false;
+          var cleanup = function () {
+            if (cleaned) return;
+            cleaned = true;
+            list.style.transition = '';
+            list.style.transform = '';
+            list.style.willChange = '';
+          };
+          list.style.transition = 'transform 0.26s cubic-bezier(0.22, 1, 0.36, 1)';
+          list.style.transform = 'translate3d(0,0,0)';
+          list.addEventListener('transitionend', cleanup, { once: true });
+          setTimeout(cleanup, 340);
+        });
+      });
+    }
+
+    function toggleToolbarDropdownPanelWithListAnimation(panel, shouldOpen) {
+      if (!panel) return;
+      var isOpen = !panel.classList.contains('hidden') && panel.classList.contains('show');
+      if (isOpen === !!shouldOpen) {
+        toggleToolbarDropdownPanel(panel, shouldOpen);
+        return;
+      }
+      animateTaskListReflow(function () {
+        toggleToolbarDropdownPanel(panel, shouldOpen);
+      });
+    }
+
+    window.toggleTodoToolbarPanelWithListAnimation = function (panel, shouldOpen) {
+      toggleToolbarDropdownPanelWithListAnimation(panel, !!shouldOpen);
+    };
+
     function updateBatchModeUI() {
       var selectBtn = document.getElementById('select-mode-btn');
       var batchRow = document.getElementById('batch-actions-row');
@@ -1042,8 +1134,7 @@
       }
 
       if (batchRow) {
-        if (isBatchMode) batchRow.classList.remove('hidden');
-        else batchRow.classList.add('hidden');
+        toggleToolbarDropdownPanelWithListAnimation(batchRow, !!isBatchMode);
       }
 
       if (toolbar) {
@@ -1102,13 +1193,152 @@
     }
 
     // ==================== 模态框全局函数 ====================
-    window.closeModalFunc = function () {
+    var NEW_TASK_MODAL_OPEN_MS = 340;
+    var NEW_TASK_MODAL_CLOSE_MS = 300;
+    var newTaskModalCloseTimer = null;
+    var newTaskModalClassTimer = null;
+    var newTaskFabMorphTimer = null;
+    var newTaskModalOpenedFromFab = false;
+
+    function clampModalNumber(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function clearNewTaskModalAnimation(modal) {
+      if (!modal) return;
+      modal.classList.remove('fab-modal-opening');
+      modal.classList.remove('fab-modal-closing');
+      modal.style.removeProperty('--fab-launch-x');
+      modal.style.removeProperty('--fab-launch-y');
+      modal.style.removeProperty('--fab-launch-scale');
+      modal.style.removeProperty('--fab-launch-blur');
+      modal.style.removeProperty('--fab-launch-rotate');
+      modal.style.removeProperty('--fab-launch-depth');
+      modal.style.removeProperty('--fab-launch-stretch');
+    }
+
+    function triggerFabMorph(className, duration) {
+      var fab = document.getElementById('add-task-fab');
+      if (!fab) return;
+
+      if (newTaskFabMorphTimer) {
+        clearTimeout(newTaskFabMorphTimer);
+        newTaskFabMorphTimer = null;
+      }
+
+      fab.classList.remove('fab-launch-charge');
+      fab.classList.remove('fab-absorb-bounce');
+
+      if (!className) return;
+      fab.classList.add(className);
+      newTaskFabMorphTimer = setTimeout(function () {
+        var currentFab = document.getElementById('add-task-fab');
+        if (currentFab) currentFab.classList.remove(className);
+        newTaskFabMorphTimer = null;
+      }, Math.max(120, duration || 220));
+    }
+
+    function getNewTaskModalFabMetrics(modal) {
+      if (!modal) return null;
+      var content = modal.querySelector('.modal-content');
+      var fab = document.getElementById('add-task-fab');
+      if (!content || !fab) return null;
+
+      var fabRect = fab.getBoundingClientRect();
+      var contentRect = content.getBoundingClientRect();
+      if (!fabRect || !contentRect || fabRect.width < 8 || fabRect.height < 8 || contentRect.width < 24 || contentRect.height < 24) {
+        return null;
+      }
+
+      var fabCenterX = fabRect.left + fabRect.width / 2;
+      var fabCenterY = fabRect.top + fabRect.height / 2;
+      var contentCenterX = contentRect.left + contentRect.width / 2;
+      var contentCenterY = contentRect.top + contentRect.height / 2;
+      var launchX = fabCenterX - contentCenterX;
+      var launchY = fabCenterY - contentCenterY;
+      var launchScale = Math.min(fabRect.width / contentRect.width, fabRect.height / contentRect.height);
+      var launchDistance = Math.sqrt(launchX * launchX + launchY * launchY);
+      var viewportW = Math.max(window.innerWidth || 390, 320);
+      var viewportH = Math.max(window.innerHeight || 720, 480);
+      var viewportDiag = Math.sqrt(viewportW * viewportW + viewportH * viewportH);
+      var distanceRatio = clampModalNumber(launchDistance / Math.max(320, viewportDiag), 0, 1);
+      var rotateSign = launchX >= 0 ? -1 : 1;
+      var rotate = clampModalNumber(10 + distanceRatio * 11 + Math.abs(launchX) / viewportW * 8, 9, 24) * rotateSign;
+      var depth = clampModalNumber(34 + distanceRatio * 114, 34, 148);
+      var stretch = clampModalNumber(0.18 + distanceRatio * 0.24, 0.18, 0.42);
+
+      return {
+        x: launchX,
+        y: launchY,
+        scale: clampModalNumber(launchScale, 0.14, 0.5),
+        blur: clampModalNumber(launchDistance / 14, 5, 16),
+        rotate: rotate,
+        depth: depth,
+        stretch: stretch
+      };
+    }
+
+    function applyNewTaskModalFabMetrics(modal, metrics) {
+      if (!modal || !metrics) return;
+      modal.style.setProperty('--fab-launch-x', metrics.x.toFixed(2) + 'px');
+      modal.style.setProperty('--fab-launch-y', metrics.y.toFixed(2) + 'px');
+      modal.style.setProperty('--fab-launch-scale', metrics.scale.toFixed(4));
+      modal.style.setProperty('--fab-launch-blur', metrics.blur.toFixed(2) + 'px');
+      modal.style.setProperty('--fab-launch-rotate', metrics.rotate.toFixed(2) + 'deg');
+      modal.style.setProperty('--fab-launch-depth', metrics.depth.toFixed(2) + 'px');
+      modal.style.setProperty('--fab-launch-stretch', metrics.stretch.toFixed(4));
+    }
+
+    function hideNewTaskModal(modal) {
+      if (!modal) return;
+      modal.classList.add('hidden');
+      clearNewTaskModalAnimation(modal);
+      newTaskModalOpenedFromFab = false;
+      window.__todoPauseFabPhysics = false;
+    }
+
+    window.closeModalFunc = function (options) {
       var modal = document.getElementById('new-task-modal');
-      if (modal) modal.classList.add('hidden');
+      if (!modal) {
+        closeModalDateTimeMenus();
+        return;
+      }
+
+      var immediate = !!(options && options.immediate);
+      if (newTaskModalCloseTimer) {
+        clearTimeout(newTaskModalCloseTimer);
+        newTaskModalCloseTimer = null;
+      }
+      if (newTaskModalClassTimer) {
+        clearTimeout(newTaskModalClassTimer);
+        newTaskModalClassTimer = null;
+      }
+
+      if (immediate || modal.classList.contains('hidden')) {
+        hideNewTaskModal(modal);
+        closeModalDateTimeMenus();
+        return;
+      }
+
+      var metrics = newTaskModalOpenedFromFab ? getNewTaskModalFabMetrics(modal) : null;
+      if (!metrics) {
+        hideNewTaskModal(modal);
+        closeModalDateTimeMenus();
+        return;
+      }
+
+      clearNewTaskModalAnimation(modal);
+      applyNewTaskModalFabMetrics(modal, metrics);
+      modal.classList.add('fab-modal-closing');
       closeModalDateTimeMenus();
+      newTaskModalCloseTimer = setTimeout(function () {
+        hideNewTaskModal(modal);
+        triggerFabMorph('fab-absorb-bounce', 300);
+        newTaskModalCloseTimer = null;
+      }, NEW_TASK_MODAL_CLOSE_MS);
     };
 
-    window.openModalFunc = function () {
+    window.openModalFunc = function (options) {
       var modal = document.getElementById('new-task-modal');
       var modalTitle = document.getElementById('modal-title');
       var modalDesc = document.getElementById('modal-description');
@@ -1116,18 +1346,51 @@
       var modalTime = document.getElementById('modal-time');
 
       if (modal) {
+        if (newTaskModalCloseTimer) {
+          clearTimeout(newTaskModalCloseTimer);
+          newTaskModalCloseTimer = null;
+        }
+        if (newTaskModalClassTimer) {
+          clearTimeout(newTaskModalClassTimer);
+          newTaskModalClassTimer = null;
+        }
+        clearNewTaskModalAnimation(modal);
         modal.classList.remove('hidden');
-        if (modalTitle) modalTitle.value = '';
-        if (modalDesc) modalDesc.value = '';
-        if (modalDate) modalDate.value = new Date().toISOString().slice(0, 10);
-        if (modalTime) modalTime.value = '12:00';
-        refreshModalDateTimeSelectors();
-        selectedModalPriority = 'medium';
-        selectedModalTag = (tags && tags.length) ? tags[0].key : 'work';
-        renderModalTagButtons();
-        updateModalPriorityButtons();
-        updateModalTagButtons();
-        if (modalTitle) setTimeout(function () { modalTitle.focus(); }, 100);
+        window.__todoPauseFabPhysics = true;
+        var initModalFields = function () {
+          if (modalTitle) modalTitle.value = '';
+          if (modalDesc) modalDesc.value = '';
+          if (modalDate) modalDate.value = new Date().toISOString().slice(0, 10);
+          if (modalTime) modalTime.value = '12:00';
+          refreshModalDateTimeSelectors();
+          selectedModalPriority = 'medium';
+          selectedModalTag = (tags && tags.length) ? tags[0].key : 'work';
+          renderModalTagButtons();
+          updateModalPriorityButtons();
+          updateModalTagButtons();
+        };
+
+        var openFromFab = !!(options && options.source === 'fab');
+        var metrics = openFromFab ? getNewTaskModalFabMetrics(modal) : null;
+        newTaskModalOpenedFromFab = !!metrics;
+        if (metrics) {
+          applyNewTaskModalFabMetrics(modal, metrics);
+          triggerFabMorph('fab-launch-charge', 190);
+          modal.classList.add('fab-modal-opening');
+          requestAnimationFrame(function () {
+            initModalFields();
+          });
+          newTaskModalClassTimer = setTimeout(function () {
+            modal.classList.remove('fab-modal-opening');
+            newTaskModalClassTimer = null;
+          }, NEW_TASK_MODAL_OPEN_MS + 60);
+        } else {
+          initModalFields();
+        }
+
+        if (modalTitle) {
+          setTimeout(function () { modalTitle.focus(); }, metrics ? 250 : 100);
+        }
       }
     };
 
@@ -1959,9 +2222,105 @@
       var tabRipple = null;
       var tabItems = [];
       var lastPressTs = 0;
+      var dockStyleCache = Object.create(null);
+      var bridgeVisible = false;
+      var perfCache = {
+        valid: false,
+        lastComputeTs: 0,
+        bounds: { minX: 10, maxX: 10, minY: 78, maxY: 78 },
+        viewportW: 320,
+        viewportH: 480,
+        fabSize: 62,
+        topSafe: 78,
+        bottomDockHeight: 68,
+        dockRect: null,
+        tabCenters: []
+      };
 
       function clamp(value, min, max) {
         return Math.max(min, Math.min(max, value));
+      }
+
+      function lerp(from, to, t) {
+        return from + (to - from) * t;
+      }
+
+      function dist(ax, ay, bx, by) {
+        var dx = bx - ax;
+        var dy = by - ay;
+        return Math.sqrt(dx * dx + dy * dy);
+      }
+
+      function refreshLayoutCache(ts, force) {
+        var nowTs = typeof ts === 'number' ? ts : performance.now();
+        var shouldRefresh = !!force || !perfCache.valid || (nowTs - perfCache.lastComputeTs > 260);
+        if (!shouldRefresh) return;
+
+        var size = fab.offsetWidth || 62;
+        var viewportW = Math.max(window.innerWidth || 0, 320);
+        var viewportH = Math.max(window.innerHeight || 0, 480);
+
+        var header = document.querySelector('.unified-top-header-dock .unified-top-header-shell#main-header') || document.getElementById('main-header');
+        var topSafe = 78;
+        if (header) {
+          var headerRect = header.getBoundingClientRect();
+          if (headerRect && headerRect.height) {
+            topSafe = Math.max(74, Math.ceil(headerRect.height) + 12);
+          }
+        }
+
+        var dockRect = null;
+        var bottomDockHeight = 68;
+        if (tabDock) {
+          var rawDockRect = tabDock.getBoundingClientRect();
+          if (rawDockRect && rawDockRect.width) {
+            dockRect = {
+              left: rawDockRect.left,
+              right: rawDockRect.right,
+              top: rawDockRect.top,
+              bottom: rawDockRect.bottom,
+              width: rawDockRect.width,
+              height: rawDockRect.height
+            };
+            bottomDockHeight = Math.ceil(rawDockRect.height || 60) + 8;
+          }
+        }
+
+        var tabCenters = [];
+        if (tabContainer) {
+          var tabs = tabContainer.querySelectorAll('.tab-item');
+          for (var i = 0; i < tabs.length; i++) {
+            var rect = tabs[i].getBoundingClientRect();
+            if (!rect || !rect.width) continue;
+            tabCenters.push(rect.left + rect.width * 0.5);
+          }
+        }
+
+        var margin = 10;
+        var minX = margin;
+        var maxX = Math.max(minX, viewportW - size - margin);
+        var minY = topSafe;
+        var bottomAvoid = bottomDockHeight + 14;
+        var maxY = Math.max(minY, viewportH - size - bottomAvoid);
+
+        perfCache.lastComputeTs = nowTs;
+        perfCache.valid = true;
+        perfCache.viewportW = viewportW;
+        perfCache.viewportH = viewportH;
+        perfCache.fabSize = size;
+        perfCache.topSafe = topSafe;
+        perfCache.bottomDockHeight = bottomDockHeight;
+        perfCache.dockRect = dockRect;
+        perfCache.tabCenters = tabCenters;
+        perfCache.bounds = { minX: minX, maxX: maxX, minY: minY, maxY: maxY };
+      }
+
+      function setDockVar(name, value) {
+        if (!tabDock) return;
+        var str = String(value);
+        if (dockStyleCache[name] === str) return;
+        dockStyleCache[name] = str;
+        tabDock.style.setProperty(name, str);
       }
 
       function getStorageKey() {
@@ -1974,40 +2333,30 @@
       }
 
       function getBottomDockHeight() {
-        var dock = document.querySelector('footer.glass-tab');
-        if (!dock) return 68;
-        var rect = dock.getBoundingClientRect();
-        if (!rect || !rect.height) return 68;
-        return Math.ceil(rect.height) + 8;
+        refreshLayoutCache(undefined, false);
+        return perfCache.bottomDockHeight;
       }
 
       function getTopSafeHeight() {
-        var header = document.querySelector('.unified-top-header-dock .unified-top-header-shell#main-header') || document.getElementById('main-header');
-        if (!header) return 78;
-        var rect = header.getBoundingClientRect();
-        var height = Math.ceil(rect && rect.height ? rect.height : 0);
-        return Math.max(74, height + 12);
+        refreshLayoutCache(undefined, false);
+        return perfCache.topSafe;
       }
 
       function getBounds() {
-        var size = fab.offsetWidth || 62;
-        var viewportW = Math.max(window.innerWidth || 0, 320);
-        var viewportH = Math.max(window.innerHeight || 0, 480);
-        var margin = 10;
-        var minX = margin;
-        var maxX = Math.max(minX, viewportW - size - margin);
-        var minY = getTopSafeHeight();
-        var bottomAvoid = getBottomDockHeight() + 14;
-        var maxY = Math.max(minY, viewportH - size - bottomAvoid);
-        return {
-          minX: minX,
-          maxX: maxX,
-          minY: minY,
-          maxY: maxY
-        };
+        refreshLayoutCache(undefined, false);
+        return perfCache.bounds;
       }
 
       var mobileQuery = window.matchMedia ? window.matchMedia('(max-width: 900px)') : null;
+      var mergeConfig = {
+        attractDistance: 120,
+        stretchDistance: 84,
+        mergeDistance: 44,
+        releaseDistance: 142,
+        attractGainX: 0.18,
+        attractGainY: 0.22,
+        fusionSpring: { stiffness: 188, damping: 22, mass: 1 }
+      };
       var state = {
         x: 0,
         y: 0,
@@ -2039,6 +2388,7 @@
         snapStartTs: 0,
         snapFromX: 0,
         snapDuration: 760,
+        snapApproachDuration: 220,
         snapAmplitude: 0,
         snapOvershoot: false,
         snapDistance: 0,
@@ -2052,7 +2402,15 @@
         dockSide: 'right',
         rafId: 0,
         movedByDrag: false,
-        suppressClickUntil: 0
+        suppressClickUntil: 0,
+        pauseVisualApplied: false,
+        phase: 'idle',
+        attract: 0,
+        stretch: 0,
+        merge: 0,
+        release: 0,
+        lastMerge: 0,
+        edgeImpactSquash: 0
       };
 
       function isMobileView() {
@@ -2120,13 +2478,15 @@
         });
 
         refreshActiveTabBubble(true);
+        refreshLayoutCache(performance.now(), true);
       }
 
       function updateTabDockCoupling() {
         if (!tabDock) return;
-        var dockRect = tabDock.getBoundingClientRect();
+        refreshLayoutCache(undefined, false);
+        var dockRect = perfCache.dockRect;
         if (!dockRect || !dockRect.width || !dockRect.height) return;
-        var size = fab.offsetWidth || 62;
+        var size = perfCache.fabSize || fab.offsetWidth || 62;
         var centerX = state.x + size * 0.5;
         var dxOutside = 0;
         if (centerX < dockRect.left) dxOutside = dockRect.left - centerX;
@@ -2135,9 +2495,9 @@
         var reach = Math.sqrt(verticalGap * verticalGap + dxOutside * dxOutside * 0.72);
         var impact = clamp(1 - reach / 260, 0, 1);
         var impactX = clamp((centerX - dockRect.left) / dockRect.width, 0, 1);
-        tabDock.style.setProperty('--liquid-impact', impact.toFixed(3));
-        tabDock.style.setProperty('--liquid-impact-x', impactX.toFixed(3));
-        tabDock.style.setProperty('--tab-bubble-scale', (1 + impact * 0.16).toFixed(3));
+        setDockVar('--liquid-impact', impact.toFixed(3));
+        setDockVar('--liquid-impact-x', impactX.toFixed(3));
+        setDockVar('--tab-bubble-scale', (1 + impact * 0.16).toFixed(3));
         if (impact > 0.015) tabDock.classList.add('liquid-contact');
         else tabDock.classList.remove('liquid-contact');
         if (impact > 0.28 && Date.now() - lastPressTs > 220) {
@@ -2145,6 +2505,224 @@
           tabDock.classList.remove('liquid-impact-pulse');
           tabDock.offsetWidth;
           tabDock.classList.add('liquid-impact-pulse');
+        }
+      }
+
+      function createBridgeCanvas() {
+        var canvas = document.createElement('canvas');
+        canvas.className = 'liquid-merge-canvas';
+        document.body.appendChild(canvas);
+        var context = null;
+        try {
+          context = canvas.getContext('2d', { alpha: true, desynchronized: true });
+        } catch (err) {
+          context = canvas.getContext('2d');
+        }
+        return { canvas: canvas, ctx: context, dpr: 1 };
+      }
+
+      var bridgeLayer = createBridgeCanvas();
+      var bridgeCanvas = bridgeLayer.canvas;
+      var bridgeCtx = bridgeLayer.ctx;
+
+      function resizeBridgeCanvas() {
+        if (!bridgeCanvas || !bridgeCtx) return;
+        var dpr = Math.max(1, Math.min(1.5, window.devicePixelRatio || 1));
+        bridgeLayer.dpr = dpr;
+        var w = Math.max(1, Math.floor(window.innerWidth || 1));
+        var h = Math.max(1, Math.floor(window.innerHeight || 1));
+        bridgeCanvas.width = Math.floor(w * dpr);
+        bridgeCanvas.height = Math.floor(h * dpr);
+        bridgeCanvas.style.width = w + 'px';
+        bridgeCanvas.style.height = h + 'px';
+        bridgeCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function clearBridge() {
+        if (!bridgeCtx) return;
+        bridgeCtx.clearRect(0, 0, bridgeCanvas.width, bridgeCanvas.height);
+        bridgeVisible = false;
+      }
+
+      function drawBasicBridge(ctx, ball, node, strength) {
+        var dx = node.x - ball.x;
+        var dy = node.y - ball.y;
+        var angle = Math.atan2(dy, dx);
+        var perp = angle + Math.PI * 0.5;
+        var w1 = ball.r * (0.24 + strength * 0.58);
+        var w2 = node.r * (0.28 + strength * 0.7);
+        var handle = 16 + strength * 24;
+        var p1a = { x: ball.x + Math.cos(perp) * w1, y: ball.y + Math.sin(perp) * w1 };
+        var p1b = { x: ball.x - Math.cos(perp) * w1, y: ball.y - Math.sin(perp) * w1 };
+        var p2a = { x: node.x + Math.cos(perp) * w2, y: node.y + Math.sin(perp) * w2 };
+        var p2b = { x: node.x - Math.cos(perp) * w2, y: node.y - Math.sin(perp) * w2 };
+
+        ctx.beginPath();
+        ctx.moveTo(p1a.x, p1a.y);
+        ctx.bezierCurveTo(
+          p1a.x + Math.cos(angle) * handle,
+          p1a.y + Math.sin(angle) * handle,
+          p2a.x - Math.cos(angle) * handle,
+          p2a.y - Math.sin(angle) * handle,
+          p2a.x,
+          p2a.y
+        );
+        ctx.lineTo(p2b.x, p2b.y);
+        ctx.bezierCurveTo(
+          p2b.x - Math.cos(angle) * handle,
+          p2b.y - Math.sin(angle) * handle,
+          p1b.x + Math.cos(angle) * handle,
+          p1b.y + Math.sin(angle) * handle,
+          p1b.x,
+          p1b.y
+        );
+        ctx.closePath();
+      }
+
+      function getNearestTabCenterX(preferredX) {
+        refreshLayoutCache(undefined, false);
+        if (!tabContainer) {
+          if (!perfCache.dockRect) return preferredX;
+          return (perfCache.dockRect.left + perfCache.dockRect.right) * 0.5;
+        }
+        var centers = perfCache.tabCenters || [];
+        if (!centers.length) {
+          if (!perfCache.dockRect) return preferredX;
+          return (perfCache.dockRect.left + perfCache.dockRect.right) * 0.5;
+        }
+        var bestX = preferredX;
+        var bestDist = Infinity;
+        for (var i = 0; i < centers.length; i++) {
+          var cx = centers[i];
+          var dx = Math.abs(cx - preferredX);
+          if (dx < bestDist) {
+            bestDist = dx;
+            bestX = cx;
+          }
+        }
+        return bestX;
+      }
+
+      function getDockNode(ballCenterX) {
+        if (!tabDock) return null;
+        refreshLayoutCache(undefined, false);
+        var dockRect = perfCache.dockRect;
+        if (!dockRect || !dockRect.width) return null;
+        var anchorX = getNearestTabCenterX(ballCenterX);
+        anchorX = clamp(anchorX, dockRect.left + 20, dockRect.right - 20);
+        var anchorY = dockRect.top + 8 - state.merge * 5;
+        var radius = 16 + state.merge * 10 + state.stretch * 5;
+        return { x: anchorX, y: anchorY, r: radius, rect: dockRect };
+      }
+
+      function computeFusion(ball, dockNode) {
+        if (!dockNode) return { gap: Infinity, attract: 0, stretch: 0, merge: 0 };
+        var centerDistance = dist(ball.x, ball.y, dockNode.x, dockNode.y);
+        var gap = centerDistance - (ball.r + dockNode.r);
+        var attract = clamp((mergeConfig.attractDistance - gap) / mergeConfig.attractDistance, 0, 1);
+        var stretch = clamp((mergeConfig.stretchDistance - gap) / mergeConfig.stretchDistance, 0, 1);
+        var merge = clamp((mergeConfig.mergeDistance - gap) / mergeConfig.mergeDistance, 0, 1);
+        return { gap: gap, attract: attract, stretch: stretch, merge: merge };
+      }
+
+      function updateFusionDockVisual(dockNode) {
+        if (!tabDock || !dockNode || !dockNode.rect) return;
+        var rect = dockNode.rect;
+        var xNorm = clamp((dockNode.x - rect.left) / Math.max(1, rect.width), 0, 1);
+        var pull = clamp(state.stretch * 0.72 + state.merge * 1.08 + state.release * 0.52, 0, 1);
+        setDockVar('--jelly-x', xNorm.toFixed(4));
+        setDockVar('--jelly-pull', pull.toFixed(4));
+        setDockVar('--jelly-merge', state.merge.toFixed(4));
+        if (state.merge > 0.08 || state.phase === 'merge') tabDock.classList.add('is-merging');
+        else tabDock.classList.remove('is-merging');
+      }
+
+      function metaballPath(c1, r1, c2, r2, v, handleRate, maxDistance) {
+        var d = dist(c1.x, c1.y, c2.x, c2.y);
+        if (d <= 0.001 || d > maxDistance || d <= Math.abs(r1 - r2)) return null;
+        var u1 = 0;
+        var u2 = 0;
+        if (d < r1 + r2) {
+          u1 = Math.acos(clamp((r1 * r1 + d * d - r2 * r2) / (2 * r1 * d), -1, 1));
+          u2 = Math.acos(clamp((r2 * r2 + d * d - r1 * r1) / (2 * r2 * d), -1, 1));
+        }
+        var angleBetween = Math.atan2(c2.y - c1.y, c2.x - c1.x);
+        var maxSpread = Math.acos(clamp((r1 - r2) / d, -1, 1));
+        var angle1a = angleBetween + u1 + (maxSpread - u1) * v;
+        var angle1b = angleBetween - u1 - (maxSpread - u1) * v;
+        var angle2a = angleBetween + Math.PI - u2 - (Math.PI - u2 - maxSpread) * v;
+        var angle2b = angleBetween - Math.PI + u2 + (Math.PI - u2 - maxSpread) * v;
+
+        var p1a = { x: c1.x + Math.cos(angle1a) * r1, y: c1.y + Math.sin(angle1a) * r1 };
+        var p1b = { x: c1.x + Math.cos(angle1b) * r1, y: c1.y + Math.sin(angle1b) * r1 };
+        var p2a = { x: c2.x + Math.cos(angle2a) * r2, y: c2.y + Math.sin(angle2a) * r2 };
+        var p2b = { x: c2.x + Math.cos(angle2b) * r2, y: c2.y + Math.sin(angle2b) * r2 };
+
+        var totalRadius = r1 + r2;
+        var d2 = Math.min(v * handleRate, dist(p1a.x, p1a.y, p2a.x, p2a.y) / totalRadius);
+        d2 *= Math.min(1, (d * 2) / totalRadius);
+        var h1 = r1 * d2;
+        var h2 = r2 * d2;
+
+        var h1a = { x: p1a.x + Math.cos(angle1a - Math.PI * 0.5) * h1, y: p1a.y + Math.sin(angle1a - Math.PI * 0.5) * h1 };
+        var h2a = { x: p2a.x + Math.cos(angle2a + Math.PI * 0.5) * h2, y: p2a.y + Math.sin(angle2a + Math.PI * 0.5) * h2 };
+        var h1b = { x: p1b.x + Math.cos(angle1b + Math.PI * 0.5) * h1, y: p1b.y + Math.sin(angle1b + Math.PI * 0.5) * h1 };
+        var h2b = { x: p2b.x + Math.cos(angle2b - Math.PI * 0.5) * h2, y: p2b.y + Math.sin(angle2b - Math.PI * 0.5) * h2 };
+
+        return { p1a: p1a, p1b: p1b, p2a: p2a, p2b: p2b, h1a: h1a, h1b: h1b, h2a: h2a, h2b: h2b };
+      }
+
+      function renderBridge(ball, dockNode) {
+        if (!bridgeCtx) return;
+        var strength = Math.max(state.stretch, state.merge, state.release * 0.84);
+        if (!dockNode || strength < 0.02) {
+          if (bridgeVisible) clearBridge();
+          return;
+        }
+        var motionEnergy = Math.abs(state.vx) + Math.abs(state.vy);
+        if (state.isDragging && motionEnergy > 20) {
+          state._bridgeSkip = !state._bridgeSkip;
+          if (state._bridgeSkip) return;
+        } else {
+          state._bridgeSkip = false;
+        }
+
+        clearBridge();
+
+        var grad = bridgeCtx.createLinearGradient(ball.x, ball.y, dockNode.x, dockNode.y);
+        grad.addColorStop(0, 'rgba(255,255,255,' + (0.14 + strength * 0.24).toFixed(3) + ')');
+        grad.addColorStop(0.5, 'rgba(235,245,255,' + (0.2 + strength * 0.28).toFixed(3) + ')');
+        grad.addColorStop(1, 'rgba(255,255,255,' + (0.16 + strength * 0.24).toFixed(3) + ')');
+
+        bridgeCtx.globalCompositeOperation = 'source-over';
+        bridgeCtx.fillStyle = grad;
+        var useBasic = state.isDragging || strength < 0.22;
+        if (useBasic) {
+          drawBasicBridge(bridgeCtx, ball, dockNode, strength);
+        } else {
+          var bridge = metaballPath(ball, ball.r * (0.95 + strength * 0.08), dockNode, dockNode.r, 0.62 + strength * 0.2, 2.3, mergeConfig.attractDistance + ball.r + dockNode.r + 24);
+          if (!bridge) {
+            bridgeVisible = false;
+            return;
+          }
+          bridgeCtx.beginPath();
+          bridgeCtx.moveTo(bridge.p1a.x, bridge.p1a.y);
+          bridgeCtx.bezierCurveTo(bridge.h1a.x, bridge.h1a.y, bridge.h2a.x, bridge.h2a.y, bridge.p2a.x, bridge.p2a.y);
+          bridgeCtx.lineTo(bridge.p2b.x, bridge.p2b.y);
+          bridgeCtx.bezierCurveTo(bridge.h2b.x, bridge.h2b.y, bridge.h1b.x, bridge.h1b.y, bridge.p1b.x, bridge.p1b.y);
+          bridgeCtx.closePath();
+        }
+        bridgeCtx.fill();
+        bridgeVisible = true;
+
+        var mergeGlow = Math.max(0, state.merge - 0.08);
+        if (mergeGlow > 0) {
+          bridgeCtx.globalCompositeOperation = 'screen';
+          bridgeCtx.beginPath();
+          bridgeCtx.arc(dockNode.x, dockNode.y + 2, dockNode.r * (0.8 + mergeGlow * 0.5), 0, Math.PI * 2);
+          bridgeCtx.fillStyle = 'rgba(255,255,255,' + (0.08 + mergeGlow * 0.26).toFixed(3) + ')';
+          bridgeCtx.fill();
+          bridgeCtx.globalCompositeOperation = 'source-over';
         }
       }
 
@@ -2159,6 +2737,7 @@
       }
 
       function applyInitialPosition() {
+        refreshLayoutCache(performance.now(), true);
         var bounds = getBounds();
         var loaded = null;
         try {
@@ -2183,7 +2762,7 @@
         fab.style.transform = 'translate3d(' + state.x.toFixed(2) + 'px,' + state.y.toFixed(2) + 'px,0)';
       }
 
-      function updateLiquidVisual(ts) {
+      function updateLiquidVisual(ts, bounds, frame) {
         var motionVX = state.isDragging ? (state.dragVX + (state.targetX - state.x) * 0.85) : state.vx;
         var motionVY = state.isDragging ? (state.dragVY + (state.targetY - state.y) * 0.85) : state.vy;
         var speed = Math.sqrt(motionVX * motionVX + motionVY * motionVY);
@@ -2196,7 +2775,7 @@
           state.lastAngle = angle;
         }
 
-        var bounds = getBounds();
+        bounds = bounds || getBounds();
         var edgeNear = Math.min(state.x - bounds.minX, bounds.maxX - state.x);
         var edgeRatio = clamp((36 - edgeNear) / 36, 0, 1);
         var wallSquash = edgeRatio * (state.isDragging ? 0.1 : 0.06);
@@ -2205,6 +2784,12 @@
         var edgeForce = Math.max(edgeLeftRatio, edgeRightRatio) * (state.isDragging ? 1 : 0.68);
         var edgeShiftX = (edgeLeftRatio - edgeRightRatio) * (state.isDragging ? 2 : 1.2);
         var edgeLocked = !state.isDragging && edgeNear < 2;
+        var edgeSnapped = !state.isDragging && (
+          state.snapTargetX !== null ||
+          state.snapSpringActive ||
+          state.snapCurveActive ||
+          edgeNear < 2.5
+        );
         if (edgeLocked) {
           wallSquash = 0;
           edgeForce = 0;
@@ -2221,12 +2806,38 @@
         var scaleX = 1 + stretch - wallSquash;
         var scaleY = 1 - stretch * 0.72 + wallSquash * 0.74 + edgeForce * 0.1;
         var idlePulse = (!state.isDragging && speed < 0.16) ? Math.sin(ts / 760) * 0.014 : 0;
-        if (edgeLocked) {
+        var edgeSqueeze = clamp(state.edgeImpactSquash || 0, 0, 0.95);
+        var snapPulse = 0;
+        if (state.snapCurveActive) {
+          var pulseT = Math.max(0, (ts - state.snapStartTs) / 1000);
+          snapPulse = Math.exp(-2.8 * pulseT) * Math.abs(Math.sin(pulseT * Math.PI * 6.2));
+        }
+        if (edgeSnapped) {
+          var squeezeDynamic = clamp(edgeSqueeze + snapPulse * 0.22, 0, 1.05);
+          scaleX = clamp(1 - squeezeDynamic * 0.16, 0.82, 1);
+          scaleY = clamp(1 + squeezeDynamic * 0.13, 1, 1.18);
+          angle = 0;
+          edgeShiftX = 0;
+          idlePulse = 0;
+          state.edgeImpactSquash *= Math.pow(0.92, Math.max(0.6, frame || 1));
+          if (state.edgeImpactSquash < 0.006) state.edgeImpactSquash = 0;
+        } else if (edgeLocked) {
           scaleX = 1 + idlePulse * 0.9;
           scaleY = 1 + idlePulse * 0.9;
+          state.edgeImpactSquash *= Math.pow(0.93, Math.max(0.6, frame || 1));
         } else {
           scaleX += idlePulse;
           scaleY += idlePulse * 0.8;
+          if (state.isDragging && edgeNear < 4.5) {
+            var nearRatio = clamp((4.5 - edgeNear) / 4.5, 0, 1);
+            var travelSpan = Math.max(1, bounds.maxX - bounds.minX);
+            var dragRatio = clamp(state.dragTravel / travelSpan, 0, 1);
+            var dragSqueeze = (0.14 + dragRatio * 0.48) * nearRatio;
+            if (dragSqueeze > state.edgeImpactSquash) state.edgeImpactSquash = dragSqueeze;
+          } else {
+            state.edgeImpactSquash *= Math.pow(0.95, Math.max(0.6, frame || 1));
+            if (state.edgeImpactSquash < 0.006) state.edgeImpactSquash = 0;
+          }
         }
         scaleX = clamp(scaleX, 0.8, 1.35);
         scaleY = clamp(scaleY, 0.74, 1.25);
@@ -2237,6 +2848,7 @@
 
         if (icon) {
           var iconScale = clamp(1 - stretch * 0.18 + idlePulse * 0.2, 0.92, 1.06);
+          if (edgeSnapped) iconScale = 1;
           icon.style.transform = 'translate3d(calc(-50% + ' + (edgeShiftX * 0.12).toFixed(2) + 'px), -50%, 0) scale(' + iconScale.toFixed(3) + ')';
         }
 
@@ -2263,66 +2875,114 @@
         var dt = clamp(ts - state.lastTs, 8, 33);
         var frame = dt / 16.667;
         state.lastTs = ts;
+
+        if (window.__todoPauseFabPhysics) {
+          if (!state.pauseVisualApplied) {
+            clearBridge();
+            updateFusionDockVisual(null);
+            if (tabDock) {
+              setDockVar('--liquid-impact', '0');
+              setDockVar('--liquid-impact-x', '0.5');
+              setDockVar('--tab-bubble-scale', '1');
+              setDockVar('--jelly-pull', '0');
+              tabDock.classList.remove('liquid-contact');
+              tabDock.classList.remove('is-merging');
+            }
+            state.pauseVisualApplied = true;
+          }
+          state.prevX = state.x;
+          state.prevY = state.y;
+          state.vx *= 0.7;
+          state.vy *= 0.7;
+          state.rafId = window.requestAnimationFrame(step);
+          return;
+        }
+        if (state.pauseVisualApplied) state.pauseVisualApplied = false;
+
+        refreshLayoutCache(ts, false);
         var bounds = getBounds();
+        var size = perfCache.fabSize || fab.offsetWidth || 62;
+        var ballPreview = { x: state.x + size * 0.5, y: state.y + size * 0.5, r: size * 0.5 };
+        var dockNode = getDockNode(ballPreview.x);
+        var prox = computeFusion(ballPreview, dockNode);
+        var dragReleaseTrigger = state.lastMerge > 0.18 && prox.stretch < 0.14;
+        if (dragReleaseTrigger) state.release = Math.max(state.release, state.lastMerge * 0.92);
+        if (prox.merge > 0.06) state.phase = 'merge';
+        else if (prox.stretch > 0.04) state.phase = 'stretch';
+        else if (prox.attract > 0.04) state.phase = 'attract';
+        else if (state.release > 0.03) state.phase = 'release';
+        else state.phase = 'idle';
+        var smooth = clamp(0.16 * frame, 0.08, 0.34);
+        state.attract = lerp(state.attract, prox.attract, smooth);
+        state.stretch = lerp(state.stretch, prox.stretch, smooth);
+        state.merge = lerp(state.merge, prox.merge, smooth);
+        state.release *= Math.pow(0.9, frame);
+        state.lastMerge = state.merge;
+
+        var attractX = 0;
+        var attractY = 0;
+        if (state.attract > 0.02 && dockNode) {
+          attractX = (dockNode.x - ballPreview.x) * state.attract * mergeConfig.attractGainX;
+          attractY = (dockNode.y - ballPreview.y) * state.attract * mergeConfig.attractGainY;
+        }
 
         if (state.isDragging) {
-          var follow = 0.34 * frame;
-          state.x += (state.targetX - state.x) * follow;
-          state.y += (state.targetY - state.y) * follow;
+          var follow = 0.34 * frame * (1 + state.attract * 0.35);
+          state.x += ((state.targetX + attractX) - state.x) * follow;
+          state.y += ((state.targetY + attractY) - state.y) * follow;
           state.vx = (state.x - state.prevX) / Math.max(0.4, frame);
           state.vy = (state.y - state.prevY) / Math.max(0.4, frame);
         } else {
           if (state.snapSpringActive && state.snapRestX !== null) {
-            var dtSec = dt / 1000;
-            var displacement = state.x - state.snapRestX;
-            var accel = ((-state.snapStiffness * displacement) - (state.snapDamping * state.springVX)) / Math.max(0.8, state.snapMass);
-            state.springVX += accel * dtSec;
-            state.springVX = clamp(state.springVX, -2200, 2200);
-            state.x += state.springVX * dtSec;
+            if (!state.snapCurveActive) {
+              // Stage A: visible, smooth approach to edge (avoid flashing/teleport feeling).
+              var elapsedApproach = ts - state.snapStartTs;
+              var approachDuration = Math.max(140, state.snapApproachDuration || 220);
+              var tApproach = clamp(elapsedApproach / approachDuration, 0, 1);
+              var easeApproach = 1 - Math.pow(1 - tApproach, 3);
+              state.x = state.snapFromX + (state.snapRestX - state.snapFromX) * easeApproach;
+              state.vx = (state.x - state.prevX) / Math.max(0.4, frame);
 
-            // Edge contact: keep center on-screen, then rebound inward like iOS elastic collision.
-            var hitEdge = false;
-            if (state.dockSide === 'left' && state.x < state.snapRestX) {
-              state.x = state.snapRestX;
-              if (state.springVX < 0) {
-                state.springVX *= -state.snapEdgeRestitution;
-                hitEdge = true;
+              var touchEdge = tApproach >= 1 || Math.abs(state.snapRestX - state.x) < 0.18;
+              if (touchEdge) {
+                // Stage B: inward-only rebound pulses (no wall-collision bouncing).
+                state.x = state.snapRestX;
+                state.springVX = 0;
+                state.vx = 0;
+                state.snapCurveActive = true;
+                state.snapPhase = 'rebound';
+                state.snapStartTs = ts;
               }
-            } else if (state.dockSide === 'right' && state.x > state.snapRestX) {
-              state.x = state.snapRestX;
-              if (state.springVX > 0) {
-                state.springVX *= -state.snapEdgeRestitution;
-                hitEdge = true;
-              }
-            }
-            if (hitEdge) {
-              state.snapBounceCount += 1;
-              state.springVX *= 0.96;
-            }
+            } else {
+              var elapsedRebound = ts - state.snapStartTs;
+              var tNorm = clamp(elapsedRebound / Math.max(360, state.snapDuration), 0, 1);
+              var cycles = Math.max(1, state.snapBounceTarget); // near less, far more
+              var inwardDir = state.dockSide === 'left' ? 1 : -1;
+              var envelope = Math.exp(-2.38 * tNorm);
+              var pulse = Math.pow(Math.abs(Math.sin(tNorm * Math.PI * cycles)), 1.08);
+              var offset = state.snapAmplitude * envelope * pulse;
+              state.x = state.snapRestX + inwardDir * offset;
+              state.vx = (state.x - state.prevX) / Math.max(0.4, frame);
 
-            state.vx = state.springVX * 0.016667;
-            var elapsedSpring = ts - state.snapStartTs;
-            var reachedBounceTarget = state.snapBounceCount >= state.snapBounceTarget;
-            var settleByVelocity = Math.abs(state.springVX) < 2.4;
-            var settleByPosition = Math.abs(state.x - state.snapRestX) < 0.12;
-            var settleByTime = elapsedSpring > state.snapDuration;
-            if (((elapsedSpring > 420) && reachedBounceTarget && settleByVelocity && settleByPosition) || settleByTime) {
-              state.x = state.snapRestX;
-              state.targetX = state.snapRestX;
-              state.vx = 0;
-              state.springVX = 0;
-              state.snapSpringActive = false;
-              state.snapCurveActive = false;
-              state.snapTargetX = null;
-              state.snapRestX = null;
-              state.snapReboundX = null;
-              state.snapPhase = 'idle';
-              state.snapOvershoot = false;
-              state.snapDistance = 0;
-              state.snapBounceCount = 0;
-              state.snapBounceTarget = 1;
-              fab.classList.remove('snapping');
-              saveFabPosition();
+              var reboundDone = tNorm >= 1 || (tNorm > 0.68 && offset < 0.14);
+              if (reboundDone) {
+                state.x = state.snapRestX;
+                state.targetX = state.snapRestX;
+                state.vx = 0;
+                state.springVX = 0;
+                state.snapSpringActive = false;
+                state.snapCurveActive = false;
+                state.snapTargetX = null;
+                state.snapRestX = null;
+                state.snapReboundX = null;
+                state.snapPhase = 'idle';
+                state.snapOvershoot = false;
+                state.snapDistance = 0;
+                state.snapBounceCount = 0;
+                state.snapBounceTarget = 1;
+                fab.classList.remove('snapping');
+                saveFabPosition();
+              }
             }
           } else if (state.snapTargetX !== null) {
             var dx = state.snapTargetX - state.x;
@@ -2331,14 +2991,29 @@
             state.vx += (dx * k - state.vx * c) * frame;
             state.x += state.vx * frame;
           } else {
-            state.vx += (state.targetX - state.x) * 0.07 * frame;
+            state.vx += (state.targetX - state.x) * 0.07 * frame + attractX * 0.05;
             state.vx *= Math.pow(0.82, frame);
             state.x += state.vx * frame;
           }
 
-          state.vy += (state.targetY - state.y) * 0.08 * frame;
+          state.vy += (state.targetY - state.y) * 0.08 * frame + attractY * 0.06;
           state.vy *= Math.pow(0.8, frame);
           state.y += state.vy * frame;
+
+          if (!state.snapSpringActive && state.snapTargetX === null && dockNode && state.merge > 0.06) {
+            var fusionTargetX = clamp(dockNode.x - size * 0.5, bounds.minX, bounds.maxX);
+            var fusionTargetY = clamp(dockNode.y - size * 0.5 - 12, bounds.minY, bounds.maxY);
+            var softK = mergeConfig.fusionSpring.stiffness * (0.42 + state.merge * 0.58);
+            var softD = mergeConfig.fusionSpring.damping * (0.88 + state.merge * 0.22);
+            var fxMerge = state.x - fusionTargetX;
+            var fyMerge = state.y - fusionTargetY;
+            var axMerge = ((-softK * fxMerge) - (softD * state.vx)) / mergeConfig.fusionSpring.mass;
+            var ayMerge = ((-softK * fyMerge) - (softD * state.vy)) / mergeConfig.fusionSpring.mass;
+            state.vx += (axMerge * dt) / 1000;
+            state.vy += (ayMerge * dt) / 1000;
+            state.x += state.vx * frame * 0.42;
+            state.y += state.vy * frame * 0.42;
+          }
         }
 
         if (state.x < bounds.minX) {
@@ -2357,8 +3032,12 @@
         }
 
         fab.style.transform = 'translate3d(' + state.x.toFixed(2) + 'px,' + state.y.toFixed(2) + 'px,0)';
-        updateLiquidVisual(ts);
+        updateLiquidVisual(ts, bounds, frame);
         updateTabDockCoupling();
+        ballPreview = { x: state.x + size * 0.5, y: state.y + size * 0.5, r: size * 0.5 };
+        dockNode = getDockNode(ballPreview.x);
+        updateFusionDockVisual(dockNode);
+        renderBridge(ballPreview, dockNode);
         state.prevX = state.x;
         state.prevY = state.y;
         state.rafId = window.requestAnimationFrame(step);
@@ -2380,25 +3059,26 @@
         state.targetX = state.snapRestX;
         state.snapDistance = clamp(Math.max(baseDistance || 0, state.dragTravel), 8, bounds.maxX - bounds.minX);
         var distRatio = clamp(state.snapDistance / travelSpan, 0, 1);
-        state.snapStiffness = 186 + distRatio * 74; // 186 - 260
-        state.snapDamping = 26 - distRatio * 8; // 26 - 18
-        state.snapMass = 1.2 - distRatio * 0.4; // 1.2 - 0.8
-        state.snapBounceTarget = Math.round(1 + distRatio * 3); // near: 1, far: 4
+        state.snapStiffness = 194 + distRatio * 66; // 194 - 260
+        state.snapDamping = 22 - distRatio * 3; // 22 - 19
+        state.snapMass = 1;
+        state.snapBounceTarget = Math.round(2 + distRatio * 2); // near: 2, far: 4
         state.snapBounceCount = 0;
-        state.snapEdgeRestitution = 0.5 + distRatio * 0.24; // near: 0.5, far: 0.74
+        state.snapEdgeRestitution = 0.66 + distRatio * 0.2; // near: 0.66, far: 0.86
         state.snapSpringActive = true;
         state.snapCurveActive = false;
         state.snapStartTs = performance.now();
         state.snapFromX = state.x;
-        state.snapDuration = clamp(980 + state.snapDistance * 2.6, 980, 2100);
-        state.snapAmplitude = clamp(4 + state.snapDistance * 0.08, 4, 26);
+        var releaseSpeed = Math.abs(state.dragVX || 0);
+        var speedBlend = clamp(releaseSpeed / 18, 0, 1);
+        state.snapApproachDuration = clamp(220 + state.snapDistance * 0.42 - speedBlend * 38, 180, 360);
+        state.snapDuration = clamp(840 + state.snapDistance * 2.25 + speedBlend * 120, 840, 2100);
+        state.snapAmplitude = clamp(7.5 + state.snapDistance * 0.135 + speedBlend * 3.3, 7.5, 42);
         state.snapReboundX = state.snapRestX + (state.dockSide === 'left' ? state.snapAmplitude : -state.snapAmplitude);
         state.snapOvershoot = false;
-        var edgeDirection = state.dockSide === 'left' ? -1 : 1;
-        var releaseV = state.dragVX * 56;
-        var distanceKick = 220 + distRatio * 760;
-        state.springVX = releaseV * 0.5 + edgeDirection * distanceKick;
-        state.vx = state.springVX * 0.016667;
+        state.springVX = 0;
+        state.vx = (state.snapRestX - state.x) * 0.08;
+        state.edgeImpactSquash = Math.max(state.edgeImpactSquash || 0, clamp(0.08 + distRatio * 0.3 + speedBlend * 0.1, 0.08, 0.5));
         fab.classList.add('snapping');
       }
 
@@ -2419,6 +3099,7 @@
         state.snapStartTs = 0;
         state.snapFromX = state.x;
         state.snapDuration = 760;
+        state.snapApproachDuration = 220;
         state.snapAmplitude = 0;
         state.snapOvershoot = false;
         state.snapDistance = 0;
@@ -2427,6 +3108,8 @@
         state.snapBounceCount = 0;
         state.snapBounceTarget = 1;
         state.snapEdgeRestitution = 0.55;
+        state.release = 0;
+        state.edgeImpactSquash = 0;
         fab.classList.remove('snapping');
         state.vx *= 0.35;
         state.vy *= 0.35;
@@ -2468,7 +3151,7 @@
 
       function openNewTaskModal() {
         if (typeof window.openModalFunc === 'function') {
-          window.openModalFunc();
+          window.openModalFunc({ source: 'fab' });
         }
       }
 
@@ -2489,6 +3172,7 @@
 
         state.vx += state.dragVX * 0.38;
         state.vy += state.dragVY * 0.9;
+        if (state.lastMerge > 0.08) state.release = Math.max(state.release, state.lastMerge * 0.92);
         var bounds = getBounds();
         var distLeft = state.targetX - bounds.minX;
         var distRight = bounds.maxX - state.targetX;
@@ -2507,6 +3191,7 @@
           state.snapStartTs = 0;
           state.snapFromX = state.x;
           state.snapDuration = 760;
+          state.snapApproachDuration = 220;
           state.snapAmplitude = 0;
           state.snapOvershoot = false;
           state.snapDistance = 0;
@@ -2515,6 +3200,7 @@
           state.snapBounceCount = 0;
           state.snapBounceTarget = 1;
           state.snapEdgeRestitution = 0.55;
+          state.edgeImpactSquash = 0;
           state.dockSide = state.targetX < (bounds.minX + bounds.maxX) / 2 ? 'left' : 'right';
           saveFabPosition();
         }
@@ -2540,6 +3226,8 @@
       });
 
       window.addEventListener('resize', function () {
+        resizeBridgeCanvas();
+        refreshLayoutCache(performance.now(), true);
         var bounds = getBounds();
         state.x = clamp(state.x, bounds.minX, bounds.maxX);
         state.y = clamp(state.y, bounds.minY, bounds.maxY);
@@ -2562,20 +3250,31 @@
 
       if (mobileQuery && typeof mobileQuery.addEventListener === 'function') {
         mobileQuery.addEventListener('change', function () {
-          if (isMobileView()) ensureAnimation();
+          if (isMobileView()) {
+            resizeBridgeCanvas();
+            refreshLayoutCache(performance.now(), true);
+            ensureAnimation();
+          } else {
+            clearBridge();
+          }
         });
       }
 
       document.addEventListener('visibilitychange', function () {
         if (document.visibilityState !== 'visible') {
           saveFabPosition();
+          clearBridge();
         } else {
+          resizeBridgeCanvas();
+          refreshLayoutCache(performance.now(), true);
           ensureTabSystem();
           refreshActiveTabBubble(true);
           ensureAnimation();
         }
       });
 
+      if (tabDock) tabDock.classList.add('liquid-jelly-tab');
+      resizeBridgeCanvas();
       ensureTabSystem();
       applyInitialPosition();
       refreshActiveTabBubble(true);
@@ -3480,11 +4179,10 @@
             var isMobile = window.matchMedia && window.matchMedia('(max-width: 900px)').matches;
             var mobilePanel = document.getElementById('mobile-toolbar-search-panel');
             if (isMobile && mobilePanel) {
-              if (mobilePanel.classList.contains('hidden')) {
-                mobilePanel.classList.remove('hidden');
+              var shouldOpenMobilePanel = mobilePanel.classList.contains('hidden') || !mobilePanel.classList.contains('show');
+              toggleToolbarDropdownPanelWithListAnimation(mobilePanel, shouldOpenMobilePanel);
+              if (shouldOpenMobilePanel) {
                 try { searchInput.focus(); } catch (err) {}
-              } else {
-                mobilePanel.classList.add('hidden');
               }
               return;
             }
@@ -3528,7 +4226,7 @@
             var mobilePanel = document.getElementById('mobile-toolbar-search-panel');
             if (isMobile && mobilePanel && !mobilePanel.classList.contains('hidden')) {
               if (ev.target === mobileSearchBtn || mobileSearchBtn.contains(ev.target) || mobilePanel.contains(ev.target)) return;
-              mobilePanel.classList.add('hidden');
+              toggleToolbarDropdownPanelWithListAnimation(mobilePanel, false);
               return;
             }
             var parent = searchInput.parentElement;

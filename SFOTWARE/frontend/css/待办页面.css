@@ -505,7 +505,7 @@
       transform: translate3d(0, 0, 0);
       transform-origin: 50% 50%;
       will-change: transform;
-      animation: none;
+      animation: liquidFabBreath 3.8s ease-in-out infinite;
       overflow: hidden;
       isolation: isolate;
       pointer-events: none;
@@ -525,7 +525,7 @@
       background:
         radial-gradient(80% 76% at 28% 20%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.08) 54%, rgba(255, 255, 255, 0));
       opacity: 0.64;
-      animation: none;
+      animation: liquidFabSheen 5.2s ease-in-out infinite;
     }
 
     .todo-liquid-fab__glass::after {
@@ -572,6 +572,87 @@
         inset 0 0 0 1px rgba(255, 255, 255, 0.16);
     }
 
+    .todo-liquid-fab.dragging .todo-liquid-fab__glass,
+    .todo-liquid-fab.dragging .todo-liquid-fab__glass::before {
+      animation-play-state: paused;
+    }
+
+    .todo-liquid-fab.fab-launch-charge .todo-liquid-fab__glass {
+      animation:
+        fabLaunchCharge 0.18s cubic-bezier(0.2, 0.86, 0.3, 1) both,
+        liquidFabBreath 3.8s ease-in-out infinite;
+    }
+
+    .todo-liquid-fab.fab-launch-charge .todo-liquid-fab__glass::before {
+      animation:
+        fabLaunchSheenCharge 0.18s cubic-bezier(0.2, 0.86, 0.3, 1) both,
+        liquidFabSheen 5.2s ease-in-out infinite;
+    }
+
+    .todo-liquid-fab.fab-absorb-bounce .todo-liquid-fab__glass {
+      animation:
+        fabAbsorbBounce 0.3s cubic-bezier(0.17, 0.89, 0.36, 1) both,
+        liquidFabBreath 3.8s ease-in-out infinite;
+    }
+
+    .todo-liquid-fab.fab-absorb-bounce .todo-liquid-fab__glass::before {
+      animation:
+        fabAbsorbSheenBounce 0.3s cubic-bezier(0.17, 0.89, 0.36, 1) both,
+        liquidFabSheen 5.2s ease-in-out infinite;
+    }
+
+    .todo-liquid-fab.fab-absorb-bounce .todo-liquid-fab__icon {
+      animation: fabAbsorbIconBounce 0.3s cubic-bezier(0.17, 0.89, 0.36, 1) both;
+    }
+
+    @keyframes fabLaunchCharge {
+      0% {
+        transform: scale(1);
+        filter: brightness(1.02) saturate(1.02);
+      }
+      56% {
+        transform: scale(0.92, 0.95);
+        filter: brightness(0.98) saturate(1.06);
+      }
+      100% {
+        transform: scale(1);
+        filter: brightness(1.04) saturate(1.04);
+      }
+    }
+
+    @keyframes fabLaunchSheenCharge {
+      0% { opacity: 0.64; }
+      56% { opacity: 0.76; }
+      100% { opacity: 0.66; }
+    }
+
+    @keyframes fabAbsorbBounce {
+      0% {
+        transform: scale(1);
+        filter: brightness(1.03) saturate(1.04);
+      }
+      48% {
+        transform: scale(1.055, 1.03);
+        filter: brightness(1.12) saturate(1.12);
+      }
+      100% {
+        transform: scale(1);
+        filter: brightness(1.02) saturate(1.03);
+      }
+    }
+
+    @keyframes fabAbsorbSheenBounce {
+      0% { opacity: 0.64; }
+      48% { opacity: 0.78; }
+      100% { opacity: 0.64; }
+    }
+
+    @keyframes fabAbsorbIconBounce {
+      0% { transform: translate3d(-50%, -50%, 0) scale(1); }
+      48% { transform: translate3d(-50%, -50%, 0) scale(1.06); }
+      100% { transform: translate3d(-50%, -50%, 0) scale(1); }
+    }
+
     @keyframes liquidFabBreath {
       0%, 100% { filter: brightness(1) saturate(1); }
       50% { filter: brightness(1.06) saturate(1.03); }
@@ -598,6 +679,12 @@
     @media (prefers-reduced-motion: reduce) {
       .todo-liquid-fab__glass,
       .todo-liquid-fab__glass::before {
+        animation: none !important;
+      }
+      #new-task-modal.fab-modal-opening,
+      #new-task-modal.fab-modal-closing,
+      #new-task-modal.fab-modal-opening .modal-content,
+      #new-task-modal.fab-modal-closing .modal-content {
         animation: none !important;
       }
     }
@@ -777,6 +864,38 @@
       pointer-events: auto;
     }
 
+    .toolbar-dropdown-panel {
+      --panel-open-height: 120px;
+      max-height: 0;
+      opacity: 0;
+      transform: translateY(-10px) scale(0.98);
+      overflow: hidden;
+      transition: max-height 0.24s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.24s ease, transform 0.24s ease;
+      pointer-events: none;
+      will-change: max-height, opacity, transform;
+    }
+
+    .toolbar-dropdown-panel.show {
+      max-height: var(--panel-open-height);
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .toolbar-dropdown-panel.dropdown-closing {
+      pointer-events: none;
+    }
+
+    .todo-toolbar-batch.toolbar-dropdown-panel {
+      transform-origin: 0% 0%;
+      overflow: hidden;
+    }
+
+    #mobile-toolbar-search-panel.toolbar-dropdown-panel {
+      transform-origin: 50% 0%;
+      overflow: hidden;
+    }
+
     #sort-filter-menu {
       width: 272px;
       min-width: 272px;
@@ -888,6 +1007,99 @@
       animation: taskDetailModalIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
       scrollbar-width: none;
       -ms-overflow-style: none;
+    }
+
+    #new-task-modal {
+      --fab-launch-x: 0px;
+      --fab-launch-y: 0px;
+      --fab-launch-scale: 0.2;
+      --fab-launch-blur: 8px;
+      --fab-launch-rotate: -9deg;
+      --fab-launch-depth: 52px;
+      --fab-launch-stretch: 0.18;
+      perspective: 1360px;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      contain: layout style paint;
+      will-change: opacity;
+    }
+
+    #new-task-modal .modal-content {
+      animation: none;
+      transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg);
+      opacity: 1;
+      border-radius: 28px;
+      transform-origin: 50% 50%;
+      will-change: transform, opacity, border-radius;
+      backface-visibility: hidden;
+      contain: layout style paint;
+    }
+
+    #new-task-modal.fab-modal-opening {
+      animation: fabModalOverlayOpen 0.34s cubic-bezier(0.18, 0.88, 0.24, 1) both;
+    }
+
+    #new-task-modal.fab-modal-opening .modal-content {
+      animation: fabModalOpenMorph 0.34s cubic-bezier(0.18, 0.92, 0.24, 1) both;
+    }
+
+    #new-task-modal.fab-modal-closing {
+      animation: fabModalOverlayClose 0.3s cubic-bezier(0.58, 0.04, 0.96, 0.14) both;
+    }
+
+    #new-task-modal.fab-modal-closing .modal-content {
+      pointer-events: none;
+      animation: fabModalCloseMorph 0.3s cubic-bezier(0.62, 0.02, 0.95, 0.14) both;
+    }
+
+    @keyframes fabModalOverlayOpen {
+      0% {
+        background: rgba(15, 23, 42, 0.08);
+      }
+      100% {
+        background: rgba(15, 23, 42, 0.35);
+      }
+    }
+
+    @keyframes fabModalOverlayClose {
+      0% {
+        background: rgba(15, 23, 42, 0.35);
+      }
+      100% {
+        background: rgba(15, 23, 42, 0.06);
+      }
+    }
+
+    @keyframes fabModalOpenMorph {
+      0% {
+        transform:
+          translate3d(var(--fab-launch-x), var(--fab-launch-y), var(--fab-launch-depth))
+          scale(calc(var(--fab-launch-scale) * (0.82 - var(--fab-launch-stretch) * 0.22)), calc(var(--fab-launch-scale) * (0.82 - var(--fab-launch-stretch) * 0.22)))
+          rotate(calc(var(--fab-launch-rotate) * -0.45));
+        border-radius: 999px;
+        opacity: 0.22;
+      }
+      100% {
+        transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg);
+        border-radius: 28px;
+        opacity: 1;
+      }
+    }
+
+    @keyframes fabModalCloseMorph {
+      0% {
+        transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg);
+        border-radius: 28px;
+        opacity: 1;
+      }
+      100% {
+        transform:
+          translate3d(var(--fab-launch-x), var(--fab-launch-y), var(--fab-launch-depth))
+          scale(calc(var(--fab-launch-scale) * (1.52 + var(--fab-launch-stretch) * 0.72)), calc(var(--fab-launch-scale) * (0.58 - var(--fab-launch-stretch) * 0.2)))
+          rotate(calc(var(--fab-launch-rotate) * 1.36));
+        border-radius: 999px;
+        opacity: 0.14;
+      }
     }
 
     .modal-content::-webkit-scrollbar {
@@ -1490,6 +1702,65 @@
 
     footer.glass-tab.liquid-contact .container {
       transform: translate3d(0, calc(var(--liquid-impact) * -1.4px), 0) scaleX(calc(1 + var(--liquid-impact) * 0.012));
+    }
+
+    .liquid-merge-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 55;
+      contain: layout style paint;
+      transform: translateZ(0);
+    }
+
+    footer.glass-tab.liquid-jelly-tab {
+      --jelly-pull: 0;
+      --jelly-x: 0.5;
+      --jelly-merge: 0;
+      overflow: visible;
+      isolation: isolate;
+    }
+
+    footer.glass-tab.liquid-jelly-tab::before,
+    footer.glass-tab.liquid-jelly-tab::after {
+      content: "";
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      pointer-events: none;
+      border-radius: 20px;
+      z-index: 1;
+    }
+
+    footer.glass-tab.liquid-jelly-tab::before {
+      top: -9px;
+      height: 26px;
+      background:
+        radial-gradient(128px 30px at calc(var(--jelly-x) * 100%) 100%, rgba(255, 255, 255, calc(0.18 + var(--jelly-pull) * 0.42)), rgba(255, 255, 255, 0) 72%),
+        linear-gradient(180deg, rgba(255, 255, 255, calc(0.12 + var(--jelly-merge) * 0.08)), rgba(255, 255, 255, 0));
+      transform: translateY(calc(var(--jelly-pull) * -5px)) scaleX(calc(1 + var(--jelly-pull) * 0.08));
+      opacity: calc(0.5 + var(--jelly-pull) * 0.46);
+      transition: transform 0.08s linear, opacity 0.08s linear;
+    }
+
+    footer.glass-tab.liquid-jelly-tab::after {
+      top: -14px;
+      height: 38px;
+      background: radial-gradient(136px 34px at calc(var(--jelly-x) * 100%) 100%, rgba(191, 219, 254, calc(0.06 + var(--jelly-pull) * 0.2)), rgba(191, 219, 254, 0) 74%);
+      transform: translateY(calc(var(--jelly-pull) * -3px));
+      opacity: calc(0.34 + var(--jelly-pull) * 0.66);
+      transition: transform 0.08s linear, opacity 0.08s linear;
+      mix-blend-mode: screen;
+    }
+
+    footer.glass-tab.liquid-jelly-tab .container {
+      transform: translate3d(0, calc(var(--jelly-pull) * -2.4px), 0) scaleX(calc(1 + var(--jelly-pull) * 0.015));
+      transition: transform 0.08s linear;
+      will-change: transform;
+    }
+
+    footer.glass-tab.liquid-jelly-tab.is-merging .container {
+      transform: translate3d(0, calc(var(--jelly-pull) * -3.3px), 0) scaleX(calc(1 + var(--jelly-pull) * 0.02));
     }
 
     html.unified-dark-mode body.software-app footer.glass-tab .liquid-tab-bubble,

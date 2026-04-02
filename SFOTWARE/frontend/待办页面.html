@@ -121,6 +121,42 @@
   </style>
   <script>
     // Inline quick toggle for mobile search to ensure responsiveness before main JS loads
+    window.toggleTodoDropdownPanel = function (panel, shouldOpen, options) {
+      if (!panel) return false;
+      var duration = (options && options.duration) || 220;
+      if (panel._todoHideTimer) {
+        clearTimeout(panel._todoHideTimer);
+        panel._todoHideTimer = null;
+      }
+      if (shouldOpen) {
+        if (!panel.classList.contains('hidden') && panel.classList.contains('show')) return true;
+        panel.classList.remove('hidden');
+        panel.classList.remove('dropdown-closing');
+        panel.style.display = 'block';
+        var targetHeight = Math.max(1, panel.scrollHeight || panel.getBoundingClientRect().height || 1);
+        panel.style.setProperty('--panel-open-height', targetHeight + 'px');
+        panel.classList.add('show');
+        requestAnimationFrame(function () {
+          var nextHeight = Math.max(1, panel.scrollHeight || panel.getBoundingClientRect().height || targetHeight || 1);
+          panel.style.setProperty('--panel-open-height', nextHeight + 'px');
+        });
+        return true;
+      }
+      if (panel.classList.contains('hidden') && !panel.classList.contains('show')) return false;
+      var closingHeight = Math.max(1, panel.scrollHeight || panel.getBoundingClientRect().height || 1);
+      panel.style.setProperty('--panel-open-height', closingHeight + 'px');
+      panel.classList.remove('show');
+      panel.classList.add('dropdown-closing');
+      panel._todoHideTimer = setTimeout(function () {
+        panel.classList.add('hidden');
+        panel.classList.remove('dropdown-closing');
+        panel.style.removeProperty('--panel-open-height');
+        panel.style.display = '';
+        panel._todoHideTimer = null;
+      }, duration);
+      return false;
+    };
+
     window.applyTodoMobileSearchOffset = function (isOpen) {
       try {
         var isMobile = window.matchMedia && window.matchMedia('(max-width: 900px)').matches;
@@ -150,11 +186,22 @@
       var mobilePanel = document.getElementById('mobile-toolbar-search-panel');
       var mobileInput = document.getElementById('mobile-toolbar-search-input');
       if (isMobile && mobilePanel && mobileInput) {
-        if (mobilePanel.classList.contains('hidden')) {
+        var shouldOpenMobilePanel = mobilePanel.classList.contains('hidden') || !mobilePanel.classList.contains('show');
+        if (typeof window.toggleTodoToolbarPanelWithListAnimation === 'function') {
+          window.toggleTodoToolbarPanelWithListAnimation(mobilePanel, shouldOpenMobilePanel);
+        } else if (typeof window.toggleTodoDropdownPanel === 'function') {
+          window.toggleTodoDropdownPanel(mobilePanel, shouldOpenMobilePanel, { duration: 220 });
+        } else if (shouldOpenMobilePanel) {
           mobilePanel.classList.remove('hidden');
-          try { mobileInput.focus(); } catch (err) {}
+          mobilePanel.style.display = 'block';
+          mobilePanel.classList.add('show');
         } else {
           mobilePanel.classList.add('hidden');
+          mobilePanel.classList.remove('show');
+          mobilePanel.style.display = '';
+        }
+        if (shouldOpenMobilePanel) {
+          try { mobileInput.focus(); } catch (err) {}
         }
         try { if (e && e.currentTarget) e.currentTarget.setAttribute('data-inline-search','1'); } catch (err) {}
         return;
@@ -556,7 +603,7 @@
           </button>
           <span class="sync-status-text" id="sync-status-badge">已同步</span>
         </div>
-        <div class="hidden md:hidden mt-2" id="mobile-toolbar-search-panel">
+        <div class="hidden md:hidden mt-2 toolbar-dropdown-panel" id="mobile-toolbar-search-panel">
           <div class="relative">
             <input class="input-glass pl-10 pr-10" id="mobile-toolbar-search-input" placeholder="搜索任务..." type="text" />
             <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
@@ -567,7 +614,7 @@
             </button>
           </div>
         </div>
-        <div class="todo-toolbar-batch hidden" id="batch-actions-row">
+        <div class="todo-toolbar-batch hidden toolbar-dropdown-panel" id="batch-actions-row">
           <span class="batch-selected-tip" id="batch-selected-tip">已选择 0 项</span>
           <button class="btn-secondary-glass inline-flex items-center quick-action-btn" id="batch-complete-btn" type="button">
             <i class="fas fa-check-square mr-2"></i>批量完成
