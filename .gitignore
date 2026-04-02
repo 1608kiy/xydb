@@ -10,3 +10,10 @@ backend/backend_run.*
 backend/regression_start.*.log
 REPORTS/
 tmp/
+
+# Local caches/build outputs (do not commit)
+backend/.home/
+backend/.m2/
+backend/.tmp/
+backend/target/
+Microsoft/
