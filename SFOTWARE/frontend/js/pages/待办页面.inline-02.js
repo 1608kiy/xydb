@@ -1131,6 +1131,7 @@
           getToolbarPanelTargetHeight(panel);
           requestAnimationFrame(function () {
             panel.classList.add('show');
+            if (typeof window.__todoMarkReactiveLightDirty === 'function') window.__todoMarkReactiveLightDirty();
             syncToolbarCardOffsetDeferred();
           });
           return;
@@ -1145,6 +1146,7 @@
           panel.style.display = 'none';
           panel.style.visibility = 'hidden';
           panel._todoHideTimer = null;
+          if (typeof window.__todoMarkReactiveLightDirty === 'function') window.__todoMarkReactiveLightDirty();
           syncToolbarCardOffsetDeferred();
         }, TODO_LIQUID_DROPDOWN_CLOSE_DURATION);
         return;
@@ -1278,6 +1280,7 @@
         if (prevBatchRowState !== nextBatchRowState) {
           toggleToolbarDropdownPanel(batchRow, shouldShowBatchRow);
           batchRow.dataset.todoBatchRowState = nextBatchRowState;
+          if (typeof window.__todoMarkReactiveLightDirty === 'function') window.__todoMarkReactiveLightDirty();
         }
       }
 
@@ -2414,7 +2417,6 @@
         '#main-header .sync-status-text',
         '#sync-status-badge',
         '#main-header .dropdown-menu',
-        '#main-header [class*="border"]',
         '#todo-toolbar',
         '#todo-toolbar .btn-primary-glass',
         '#todo-toolbar .btn-secondary-glass',
@@ -2431,7 +2433,6 @@
         '#todo-main .datetime-select-trigger',
         '#todo-main .datetime-select-menu',
         '#todo-main .input-glass',
-        '#todo-main [class*="border"]',
         '.modal-content',
         '.modal-content .input-glass',
         '.modal-content .btn-primary-glass',
@@ -2439,17 +2440,48 @@
         '.modal-content .task-action-btn',
         '.modal-content .priority-btn',
         '.modal-content .datetime-select-trigger',
-        '.modal-content [class*="border"]',
         '.unified-bottom-tab-dock .unified-tab-row',
+        '#main-header a',
+        '#main-header button',
         '#main-header a.rounded-xl',
         '#todo-app-shell + footer.glass-tab',
-        '#todo-app-shell + footer.glass-tab .tab-item'
       ].join(',');
       var lightTargets = [];
       var lightRectCacheTs = 0;
       var lightBindTs = 0;
+      var lightTargetsDirty = true;
+      var lastReactiveFrameTs = 0;
       var lightValueCache = new WeakMap();
       var lightSeenSet = new Set();
+      var mobileSearchPanelEl = null;
+      var batchActionsRowEl = null;
+      var fabDragVisualState = '';
+      var heavyDragLiteClassOn = false;
+
+      function isFastPanelOpen(panel) {
+        if (!panel) return false;
+        if (panel.classList.contains('hidden')) return false;
+        if (panel.classList.contains('dropdown-closing')) return false;
+        if (!panel.classList.contains('show')) return false;
+        return panel.style.display !== 'none';
+      }
+
+      function isHeavyUiDragMode() {
+        if (!state || !state.isDragging) return false;
+        if (!mobileSearchPanelEl) mobileSearchPanelEl = document.getElementById('mobile-toolbar-search-panel');
+        if (!batchActionsRowEl) batchActionsRowEl = document.getElementById('batch-actions-row');
+        return isFastPanelOpen(mobileSearchPanelEl) || isFastPanelOpen(batchActionsRowEl);
+      }
+
+      function setHeavyDragLiteClass(enabled) {
+        var body = document.body;
+        if (!body || !body.classList) return;
+        var next = !!enabled;
+        if (heavyDragLiteClassOn === next) return;
+        heavyDragLiteClassOn = next;
+        if (next) body.classList.add('todo-fab-heavy-drag');
+        else body.classList.remove('todo-fab-heavy-drag');
+      }
 
       function clamp(value, min, max) {
         return Math.max(min, Math.min(max, value));
@@ -2480,10 +2512,17 @@
         lightValueCache.set(el, { active: false, value: 0, sweep: -140, edgeX: 50, edgeY: 50, spread: 34 });
       }
 
+      function markReactiveLightDirty() {
+        lightTargetsDirty = true;
+        lightRectCacheTs = 0;
+      }
+      window.__todoMarkReactiveLightDirty = markReactiveLightDirty;
+
       function refreshReactiveLightTargets(ts, forceQuery) {
         if (!lightLayer) return;
         var nowTs = typeof ts === 'number' ? ts : performance.now();
-        if (forceQuery || !lightTargets.length || (nowTs - lightBindTs) > 980) {
+        var rebindInterval = state.isDragging ? (state._heavyUiDragMode ? 2600 : 1600) : 980;
+        if (forceQuery || lightTargetsDirty || !lightTargets.length || (nowTs - lightBindTs) > rebindInterval) {
           var staleEmptyNodes = document.querySelectorAll('#todo-main .task-empty-state.todo-light-reactive');
           for (var staleIdx = 0; staleIdx < staleEmptyNodes.length; staleIdx++) {
             clearReactiveLightNode(staleEmptyNodes[staleIdx]);
@@ -2495,6 +2534,9 @@
             var el = nodes[i];
             if (!el || el === fab || !el.isConnected) continue;
             if (lightSeenSet.has(el)) continue;
+            if (el.hasAttribute && el.hasAttribute('hidden')) continue;
+            if (el.closest && el.closest('.hidden, [hidden], .dropdown-closing')) continue;
+            if ((el.offsetWidth || 0) < 2 && (el.offsetHeight || 0) < 2) continue;
             lightSeenSet.add(el);
             var cs = null;
             try {
@@ -2502,11 +2544,26 @@
             } catch (err) {
               cs = null;
             }
+            var isHeaderBackBtn = false;
             if (cs) {
               var borderW = (parseFloat(cs.borderTopWidth) || 0) + (parseFloat(cs.borderRightWidth) || 0) + (parseFloat(cs.borderBottomWidth) || 0) + (parseFloat(cs.borderLeftWidth) || 0);
               var hasBorder = borderW > 0.28 && String(cs.borderStyle || '').toLowerCase() !== 'none';
-              var hasKnownClass = /\b(task-card|task-group-card|glass-tab|tab-item|unified-tab-row|glass-input|btn-primary-glass|btn-secondary-glass|task-action-btn|priority-btn|quick-action-btn|quick-action-chip|sync-status-text|modal-content|input-glass|datetime-select-trigger|datetime-select-menu|dropdown-menu|toolbar-dropdown-panel)\b/.test(el.className || '');
-              var isHeaderBackBtn = !!(el && el.tagName === 'A' && /\brounded-xl\b/.test(el.className || '') && el.closest && el.closest('#main-header') && el.querySelector && el.querySelector('.fa-arrow-left'));
+              var hasKnownClass = /\b(task-card|task-group-card|glass-tab|tab-item|unified-tab-row|unified-tab-item|glass-input|btn-primary-glass|btn-secondary-glass|task-action-btn|priority-btn|quick-action-btn|quick-action-chip|sync-status-text|modal-content|input-glass|datetime-select-trigger|datetime-select-menu|dropdown-menu|toolbar-dropdown-panel)\b/.test(el.className || '');
+              var tag = String(el.tagName || '').toUpperCase();
+              var backTitle = String((el.getAttribute && (el.getAttribute('title') || el.getAttribute('aria-label'))) || '');
+              var backText = String(el.textContent || '');
+              isHeaderBackBtn = !!(
+                el &&
+                (tag === 'A' || tag === 'BUTTON') &&
+                el.closest &&
+                el.closest('#main-header') &&
+                (
+                  (el.querySelector && el.querySelector('.fa-arrow-left')) ||
+                  backTitle.indexOf('返回') > -1 ||
+                  backTitle.toLowerCase().indexOf('back') > -1 ||
+                  backText.indexOf('←') > -1
+                )
+              );
               if (!hasBorder && !hasKnownClass && !isHeaderBackBtn) continue;
             }
             if (!el.classList.contains('todo-light-reactive')) {
@@ -2520,13 +2577,41 @@
               var bl = parseFloat(cs.borderLeftWidth) || 0;
               borderSize = Math.max(1, Math.min(3.2, (bt + br + bb + bl) / 4));
             }
-            lightTargets.push({ el: el, cx: 0, cy: 0, radius: 0, visible: false, left: 0, top: 0, right: 0, bottom: 0, width: 0, height: 0, borderSize: borderSize });
+            var cls = String(el.className || '');
+            var isTabRowTarget = /\bunified-tab-row\b/.test(cls);
+            var isLegacyFooterTab = !!(el.matches && el.matches('#todo-app-shell + footer.glass-tab'));
+            var isHeaderBackTarget = isHeaderBackBtn || !!(
+              el.closest &&
+              el.closest('#main-header') &&
+              (
+                (el.querySelector && el.querySelector('.fa-arrow-left')) ||
+                String((el.getAttribute && (el.getAttribute('title') || el.getAttribute('aria-label'))) || '').indexOf('返回') > -1
+              )
+            );
+            lightTargets.push({
+              el: el,
+              cx: 0,
+              cy: 0,
+              radius: 0,
+              visible: false,
+              left: 0,
+              top: 0,
+              right: 0,
+              bottom: 0,
+              width: 0,
+              height: 0,
+              borderSize: borderSize,
+              borderBoost: (isTabRowTarget || isLegacyFooterTab || isHeaderBackTarget) ? 1.28 : 1,
+              brightnessScale: (isTabRowTarget || isLegacyFooterTab) ? 0.08 : (isHeaderBackTarget ? 0.12 : 0.2)
+            });
           }
           lightBindTs = nowTs;
+          lightTargetsDirty = false;
           lightRectCacheTs = 0;
         }
 
-        if (lightRectCacheTs && (nowTs - lightRectCacheTs) < (state.isDragging ? 120 : 220)) return;
+        var rectCacheGap = state.isDragging ? (state._heavyUiDragMode ? 260 : 150) : 240;
+        if (lightRectCacheTs && (nowTs - lightRectCacheTs) < rectCacheGap) return;
         var viewportH = window.innerHeight || 0;
         for (var j = 0; j < lightTargets.length; j++) {
           var target = lightTargets[j];
@@ -2552,11 +2637,14 @@
         var el = target.el;
         if (!(strength > 0.009)) {
           var old = lightValueCache.get(el);
-          if (!old || old.active) clearReactiveLightNode(el);
+          // Critical perf path: never write reset styles for untouched nodes.
+          // Only clear when a node was previously active.
+          if (old && old.active) clearReactiveLightNode(el);
           return;
         }
 
-        var brightness = 1 + strength * 0.2;
+        var brightnessScale = (target && typeof target.brightnessScale === 'number') ? target.brightnessScale : 0.2;
+        var brightness = 1 + strength * brightnessScale;
         var glow = 0.3 + strength * 1.02;
         var borderBoost = target && target.borderBoost ? target.borderBoost : 1;
         var borderAlpha = clamp((0.32 + strength * 1.22) * borderBoost, 0, 1);
@@ -2601,6 +2689,7 @@
 
       function updateFabLighting(ts, frame, size) {
         if (!lightLayer) return;
+        var heavyUiDrag = !!state._heavyUiDragMode;
         var motionVX = state.isDragging ? state.dragVX : state.vx;
         var motionVY = state.isDragging ? state.dragVY : state.vy;
         var speed = Math.sqrt(motionVX * motionVX + motionVY * motionVY);
@@ -2622,12 +2711,18 @@
 
         var centerX = state.x + size * 0.5;
         var centerY = state.y + size * 0.5;
-        var haloSize = size * (3 + energy * 2);
-        var breath = 1 + Math.sin(ts / 260) * (0.022 + energy * 0.036);
-        var maskX = 50 + Math.sin(ts / 210 + centerX * 0.012) * (5 + energy * 6);
-        var maskY = 50 + Math.cos(ts / 240 + centerY * 0.012) * (4 + energy * 5);
-        var flowX = Math.sin(ts / 170 + centerY * 0.01) * (3 + energy * 9);
-        var flowY = Math.cos(ts / 210 + centerX * 0.01) * (2.6 + energy * 7.2);
+        var haloSize = heavyUiDrag ? (size * (2.7 + energy * 1.45)) : (size * (3 + energy * 2));
+        var breath = heavyUiDrag ? (1 + Math.sin(ts / 380) * (0.012 + energy * 0.02)) : (1 + Math.sin(ts / 260) * (0.022 + energy * 0.036));
+        var maskX = 50;
+        var maskY = 50;
+        var flowX = 0;
+        var flowY = 0;
+        if (!heavyUiDrag) {
+          maskX = 50 + Math.sin(ts / 210 + centerX * 0.012) * (5 + energy * 6);
+          maskY = 50 + Math.cos(ts / 240 + centerY * 0.012) * (4 + energy * 5);
+          flowX = Math.sin(ts / 170 + centerY * 0.01) * (3 + energy * 9);
+          flowY = Math.cos(ts / 210 + centerX * 0.01) * (2.6 + energy * 7.2);
+        }
 
         lightLayer.style.setProperty('--todo-light-size', haloSize.toFixed(2) + 'px');
         lightLayer.style.setProperty('--todo-light-energy', energy.toFixed(4));
@@ -2642,13 +2737,21 @@
 
         var highSpeedDrag = state.isDragging && speed > 12;
         if (highSpeedDrag) {
-          state._lightReactiveSkip = !state._lightReactiveSkip;
+          var skipModulo = heavyUiDrag ? (speed > 18 ? 4 : 3) : (speed > 18 ? 3 : 2);
+          state._lightReactiveSkip = ((state._lightReactiveTick = (state._lightReactiveTick || 0) + 1) % skipModulo) !== 0;
         } else {
           state._lightReactiveSkip = false;
+          state._lightReactiveTick = 0;
         }
         if (state._lightReactiveSkip) return;
 
-        refreshReactiveLightTargets(ts, state.isDragging && (ts - lightBindTs > 220));
+        var reactiveFrameGap = heavyUiDrag
+          ? (speed > 18 ? 64 : 52)
+          : (state.isDragging ? (speed > 18 ? 34 : (speed > 12 ? 26 : 20)) : 34);
+        if (lastReactiveFrameTs && (ts - lastReactiveFrameTs) < reactiveFrameGap) return;
+        lastReactiveFrameTs = ts;
+        var requestRebind = lightTargetsDirty || (!state.isDragging && (ts - lightBindTs > 1600)) || (heavyUiDrag && (ts - lightBindTs > 2600));
+        refreshReactiveLightTargets(ts, requestRebind);
         var reach = haloSize * 0.62;
         var maxRange = reach + 66;
         var maxRangeSq = maxRange * maxRange;
@@ -3301,15 +3404,23 @@
         if (!state.isDragging && speed < 0.18) angle = 0;
 
         glass.style.transform = 'translate3d(' + edgeShiftX.toFixed(2) + 'px,0,0) rotate(' + angle.toFixed(2) + 'deg) scale(' + scaleX.toFixed(3) + ',' + scaleY.toFixed(3) + ')';
-        // Force liquid-glass blur via inline style to avoid stale CSS cache taking precedence.
-        if (state.isDragging) {
-          glass.style.opacity = '0.82';
-          glass.style.backdropFilter = 'blur(56px) saturate(250%) contrast(24%) brightness(150%)';
-          glass.style.webkitBackdropFilter = 'blur(56px) saturate(250%) contrast(24%) brightness(150%)';
-        } else {
-          glass.style.opacity = '0.88';
-          glass.style.backdropFilter = 'blur(44px) saturate(220%) contrast(34%) brightness(138%)';
-          glass.style.webkitBackdropFilter = 'blur(44px) saturate(220%) contrast(34%) brightness(138%)';
+        // Avoid writing expensive backdrop-filter every frame; update only when state flips.
+        var nextVisualState = state.isDragging ? (state._heavyUiDragMode ? 'drag-lite' : 'drag') : 'idle';
+        if (fabDragVisualState !== nextVisualState) {
+          fabDragVisualState = nextVisualState;
+          if (nextVisualState === 'drag') {
+            glass.style.opacity = '0.82';
+            glass.style.backdropFilter = 'blur(56px) saturate(250%) contrast(24%) brightness(150%)';
+            glass.style.webkitBackdropFilter = 'blur(56px) saturate(250%) contrast(24%) brightness(150%)';
+          } else if (nextVisualState === 'drag-lite') {
+            glass.style.opacity = '0.8';
+            glass.style.backdropFilter = 'blur(32px) saturate(185%) contrast(48%) brightness(128%)';
+            glass.style.webkitBackdropFilter = 'blur(32px) saturate(185%) contrast(48%) brightness(128%)';
+          } else {
+            glass.style.opacity = '0.88';
+            glass.style.backdropFilter = 'blur(44px) saturate(220%) contrast(34%) brightness(138%)';
+            glass.style.webkitBackdropFilter = 'blur(44px) saturate(220%) contrast(34%) brightness(138%)';
+          }
         }
 
         if (icon) {
@@ -3328,6 +3439,7 @@
 
       function step(ts) {
         if (!isMobileView()) {
+          setHeavyDragLiteClass(false);
           resetFabLighting();
           state.rafId = 0;
           return;
@@ -3342,6 +3454,14 @@
         var dt = clamp(ts - state.lastTs, 8, 33);
         var frame = dt / 16.667;
         state.lastTs = ts;
+        state._heavyUiDragMode = isHeavyUiDragMode();
+        setHeavyDragLiteClass(state._heavyUiDragMode);
+        if (state._heavyUiDragMode) {
+          state._visualFrameTick = (state._visualFrameTick || 0) + 1;
+        } else {
+          state._visualFrameTick = 0;
+        }
+        var shouldRunFullVisual = true;
 
         if (window.__todoPauseFabPhysics) {
           if (!state.pauseVisualApplied) {
@@ -3500,13 +3620,22 @@
         }
 
         fab.style.transform = 'translate3d(' + state.x.toFixed(2) + 'px,' + state.y.toFixed(2) + 'px,0)';
-        updateLiquidVisual(ts, bounds, frame);
-        updateTabDockCoupling();
-        ballPreview = { x: state.x + size * 0.5, y: state.y + size * 0.5, r: size * 0.5 };
-        dockNode = getDockNode(ballPreview.x);
-        updateFusionDockVisual(dockNode);
-        renderBridge(ballPreview, dockNode);
-        updateFabLighting(ts, frame, size);
+        if (shouldRunFullVisual) {
+          updateLiquidVisual(ts, bounds, frame);
+          if (!state._heavyUiDragMode) updateTabDockCoupling();
+          ballPreview = { x: state.x + size * 0.5, y: state.y + size * 0.5, r: size * 0.5 };
+          dockNode = getDockNode(ballPreview.x);
+          if (!state._heavyUiDragMode) {
+            updateFusionDockVisual(dockNode);
+            renderBridge(ballPreview, dockNode);
+            updateFabLighting(ts, frame, size);
+          } else if (bridgeVisible) {
+            clearBridge();
+          }
+        } else {
+          if (bridgeVisible) clearBridge();
+        }
+        if (state._heavyUiDragMode) updateFabLighting(ts, frame, size);
         state.prevX = state.x;
         state.prevY = state.y;
         state.rafId = window.requestAnimationFrame(step);
@@ -3607,11 +3736,13 @@
         state.lastMoveY = e.clientY;
         state.lastMoveTs = now;
 
-        var bounds = getBounds();
+        var bounds = (perfCache && perfCache.valid && perfCache.bounds) ? perfCache.bounds : getBounds();
         var rawX = clamp(e.clientX - state.dragOffsetX, bounds.minX, bounds.maxX);
         var rawY = clamp(e.clientY - state.dragOffsetY, bounds.minY, bounds.maxY);
 
-        state.dragTravel += Math.sqrt(Math.pow(rawX - state.targetX, 2) + Math.pow(rawY - state.targetY, 2));
+        var moveDX = rawX - state.targetX;
+        var moveDY = rawY - state.targetY;
+        state.dragTravel += Math.sqrt(moveDX * moveDX + moveDY * moveDY);
         state.movedByDrag = state.dragTravel > 7;
         state.targetX = rawX;
         state.targetY = rawY;
@@ -3697,6 +3828,7 @@
       window.addEventListener('resize', function () {
         resizeBridgeCanvas();
         refreshLayoutCache(performance.now(), true);
+        markReactiveLightDirty();
         var bounds = getBounds();
         state.x = clamp(state.x, bounds.minX, bounds.maxX);
         state.y = clamp(state.y, bounds.minY, bounds.maxY);
@@ -3720,6 +3852,7 @@
 
       if (mobileQuery && typeof mobileQuery.addEventListener === 'function') {
         mobileQuery.addEventListener('change', function () {
+          markReactiveLightDirty();
           if (isMobileView()) {
             resizeBridgeCanvas();
             refreshLayoutCache(performance.now(), true);

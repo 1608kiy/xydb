@@ -529,6 +529,19 @@
       animation: todoFabGlowBreath 1.8s ease-out infinite;
     }
 
+    /* Heavy-drag mode: keep glow, drop expensive dispersion layer for better FPS. */
+    body.software-app.todo-fab-heavy-drag .todo-fab-light-layer {
+      filter: blur(calc(8px + var(--todo-light-energy) * 8px)) saturate(calc(106% + var(--todo-light-energy) * 44%));
+    }
+
+    body.software-app.todo-fab-heavy-drag .todo-fab-light-layer::after {
+      display: none;
+    }
+
+    body.software-app.todo-fab-heavy-drag .todo-fab-light-layer.is-active .todo-fab-light-layer__core {
+      animation: none;
+    }
+
     @keyframes todoFabGlowBreath {
       0%, 100% {
         transform: translate3d(-50%, -50%, 0) scale(0.95);
@@ -560,6 +573,17 @@
         background-color 220ms ease-out,
         transform 220ms ease-out;
       will-change: filter, box-shadow, border-color;
+    }
+
+    /* Perf mode for heavy drag (search/select panel open):
+       keep border tint/sweep, disable expensive per-frame brightness/shadow repaint. */
+    body.software-app.todo-fab-heavy-drag .todo-light-reactive {
+      filter: none !important;
+      will-change: border-color !important;
+    }
+
+    body.software-app.todo-fab-heavy-drag .todo-light-reactive.todo-light-hit {
+      box-shadow: none !important;
     }
 
     .todo-light-reactive::before {
@@ -701,6 +725,19 @@
       mix-blend-mode: screen !important;
     }
 
+    /* Emphasize border tint (not full-surface brightening) for tab outer shell and top-left back button. */
+    body.software-app .unified-bottom-tab-dock .unified-tab-row.todo-light-reactive::before,
+    body.software-app #main-header a.todo-light-reactive::before,
+    body.software-app #main-header button.todo-light-reactive::before {
+      opacity: clamp(0, calc(var(--todo-light-active) * 1.86), 1) !important;
+    }
+
+    body.software-app .unified-bottom-tab-dock .unified-tab-row.todo-light-reactive::after,
+    body.software-app #main-header a.todo-light-reactive::after,
+    body.software-app #main-header button.todo-light-reactive::after {
+      opacity: calc(var(--todo-light-active) * 0.42) !important;
+    }
+
     .todo-light-reactive.todo-light-hit {
       box-shadow:
         0 0 calc(6px + var(--todo-light-active) * 18px) rgba(84, 173, 255, calc(0.2 + var(--todo-light-glow) * 0.34)),
@@ -711,10 +748,11 @@
     .todo-liquid-fab {
       --fab-size: 62px;
       --fab-icon-color: rgba(33, 40, 52, 0.78);
+      --fab-border-highlight: rgba(255, 255, 255, 0.46);
       --sheen-x: 42%;
       --sheen-y: 32%;
-      --fab-glass-opacity: 0.84;
-      --fab-drag-opacity: 0.78;
+      --fab-glass-opacity: 0.82;
+      --fab-drag-opacity: 0.82;
       position: fixed;
       left: 0;
       top: 0;
@@ -758,7 +796,9 @@
         radial-gradient(122% 150% at var(--sheen-x) var(--sheen-y), rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.1) 46%, rgba(255, 255, 255, 0.05));
       box-shadow:
         0 9px 22px rgba(15, 23, 42, 0.12),
-        inset 0 1px 1px rgba(255, 255, 255, 0.74),
+        0 0 0 1px var(--fab-border-highlight),
+        inset 0 1px 1px rgba(255, 255, 255, 0.62),
+        inset 0 -1px 1px rgba(255, 255, 255, 0.62),
         inset 0 -8px 12px rgba(148, 163, 184, 0.1),
         inset 0 0 0 1px rgba(255, 255, 255, 0.22);
       backdrop-filter: blur(42px) saturate(210%) contrast(40%) brightness(132%);
@@ -848,7 +888,7 @@
     }
 
     .todo-liquid-fab.dragging .todo-liquid-fab__glass::after {
-      opacity: 0.96;
+      opacity: 0.9;
       backdrop-filter: blur(78px) saturate(260%) contrast(18%) brightness(156%);
       -webkit-backdrop-filter: blur(78px) saturate(260%) contrast(18%) brightness(156%);
     }
