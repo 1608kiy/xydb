@@ -86,7 +86,7 @@
     /* 【5】按钮点击反馈：scale 脉冲 (120ms) */
     .task-action-btn:active,
     .btn-primary:active,
-    button:active {
+    button:active:not(.todo-liquid-fab) {
       animation: buttonPress 0.12s ease-out !important;
     }
     @keyframes buttonPress {
@@ -133,24 +133,17 @@
         panel.classList.remove('hidden');
         panel.classList.remove('dropdown-closing');
         panel.style.display = 'block';
-        var targetHeight = Math.max(1, panel.scrollHeight || panel.getBoundingClientRect().height || 1);
-        panel.style.setProperty('--panel-open-height', targetHeight + 'px');
-        panel.classList.add('show');
         requestAnimationFrame(function () {
-          var nextHeight = Math.max(1, panel.scrollHeight || panel.getBoundingClientRect().height || targetHeight || 1);
-          panel.style.setProperty('--panel-open-height', nextHeight + 'px');
+          panel.classList.add('show');
         });
         return true;
       }
       if (panel.classList.contains('hidden') && !panel.classList.contains('show')) return false;
-      var closingHeight = Math.max(1, panel.scrollHeight || panel.getBoundingClientRect().height || 1);
-      panel.style.setProperty('--panel-open-height', closingHeight + 'px');
       panel.classList.remove('show');
       panel.classList.add('dropdown-closing');
       panel._todoHideTimer = setTimeout(function () {
         panel.classList.add('hidden');
         panel.classList.remove('dropdown-closing');
-        panel.style.removeProperty('--panel-open-height');
         panel.style.display = '';
         panel._todoHideTimer = null;
       }, duration);
@@ -160,6 +153,7 @@
     window.applyTodoMobileSearchOffset = function (isOpen) {
       try {
         var isMobile = window.matchMedia && window.matchMedia('(max-width: 900px)').matches;
+        if (isMobile && document.body && document.body.classList && document.body.classList.contains('todo-page-liquid')) return;
         var main = document.getElementById('todo-main') || document.querySelector('main');
         var header = document.querySelector('.unified-top-header-dock .unified-top-header-shell#main-header') || document.getElementById('main-header');
         if (!main || !header || !isMobile) return;
@@ -240,7 +234,7 @@
   </script>
   <link rel="prefetch" href="日历页面.html" as="document" />
   <link rel="preload" href="./js/software-mobile.js?v=20260330_app12" as="script" />
-    <link rel="preload" href="./css/mobile-tune.css?v=20260401_liquid_darkfix2" as="style" />
+    <link rel="preload" href="./css/mobile-tune.css?v=20260403_todo_fab_liquid_light1" as="style" />
   <script>
     (function(){
       function addNavTouchHandlers(){
@@ -369,8 +363,8 @@
   <script defer src="../../SHARE/data.js?v=20260325_syncfix4"></script>
   <script defer src="../../SHARE/common.js?v=20260325_syncfix4"></script>
   <script src='./js/pages/待办页面.inline-01.js?v=20260327_jssplit'></script>
-  <link rel='stylesheet' href='./css/待办页面.css?v=20260401_liquid_motion_sys6' />
-    <link rel='stylesheet' href='./css/mobile-tune.css?v=20260401_liquid_darkfix2' />
+  <link rel='stylesheet' href='./css/待办页面.css?v=20260403_todo_fab_liquid_light1' />
+    <link rel='stylesheet' href='./css/mobile-tune.css?v=20260403_todo_fab_liquid_light1' />
   <script defer src='./js/software-mobile.js?v=20260330_app12'></script>
 </head>
 
@@ -652,6 +646,9 @@
             <div class="task-empty-state"><i class="fas fa-rocket"></i><div class="title">明天先留白</div><div class="desc">提前规划 1-2 项关键任务，效率会更稳</div></div>
           </div>
         </section>
+      </div>
+      <div class="todo-fab-light-layer md:hidden" id="todo-fab-light-layer" aria-hidden="true">
+        <span class="todo-fab-light-layer__core"></span>
       </div>
       <button class="todo-liquid-fab md:hidden" id="add-task-fab" type="button" aria-label="新建任务" title="新建任务">
         <span class="todo-liquid-fab__glass" aria-hidden="true"></span>
@@ -1008,7 +1005,7 @@
   </footer>
 
   <!-- JavaScript 功能 -->
-<script src='./js/pages/待办页面.inline-02.js?v=20260401_liquid_motion_sys24'></script>
+<script src='./js/pages/待办页面.inline-02.js?v=20260403_todo_fab_liquid_light1'></script>
 </body>
 
 </html>

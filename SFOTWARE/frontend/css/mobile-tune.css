@@ -2042,3 +2042,806 @@ a,
     color: #ffffff !important;
   }
 }
+
+/* =========================================================
+   TODO Mobile Final Skin (iOS17+ Liquid Glass)
+   Scoped to todo page only: body.software-app.todo-page-liquid
+   ========================================================= */
+@media (max-width: 900px) {
+  body.software-app.todo-page-liquid {
+    --todo-lg-primary: #007aff;
+    --todo-lg-pink: #f2c4ce;
+    --todo-lg-green: #34c759;
+    --todo-lg-text: #1c1c1e;
+    --todo-lg-subtext: #636366;
+    --todo-lg-glass: rgba(255, 255, 255, 0.22);
+    --todo-lg-border: rgba(255, 255, 255, 0.35);
+    --todo-lg-shadow: 0 12px 40px rgba(0, 0, 0, 0.08), 0 2px 10px rgba(0, 0, 0, 0.04);
+    --todo-lg-inner-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    --todo-lg-motion-ease: cubic-bezier(0.25, 1, 0.36, 1);
+    --todo-lg-motion-fast: 180ms;
+    --todo-lg-motion-mid: 220ms;
+    --todo-lg-motion-slow: 320ms;
+    background:
+      radial-gradient(126% 118% at 4% 2%, rgba(255, 225, 242, 0.92), rgba(255, 225, 242, 0) 60%),
+      radial-gradient(122% 114% at 54% 40%, rgba(221, 236, 255, 0.9), rgba(221, 236, 255, 0) 66%),
+      radial-gradient(120% 118% at 98% 100%, rgba(223, 252, 239, 0.88), rgba(223, 252, 239, 0) 64%),
+      linear-gradient(135deg, #fde7f5 0%, #e3efff 52%, #e6fdf3 100%) !important;
+    color: var(--todo-lg-text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Helvetica, Arial, sans-serif !important;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body.software-app.todo-page-liquid #main-header,
+  body.software-app.todo-page-liquid #todo-toolbar,
+  body.software-app.todo-page-liquid #todo-main .task-group-card,
+  body.software-app.todo-page-liquid #todo-main .task-card,
+  body.software-app.todo-page-liquid #todo-main .task-empty-state,
+  body.software-app.todo-page-liquid #todo-main .dropdown-menu,
+  body.software-app.todo-page-liquid #todo-main .toolbar-dropdown-panel,
+  body.software-app.todo-page-liquid #todo-main .datetime-select-menu,
+  body.software-app.todo-page-liquid .modal-content,
+  body.software-app.todo-page-liquid #main-header .dropdown-menu,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab {
+    border: 1px solid var(--todo-lg-border) !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.18)), var(--todo-lg-glass) !important;
+    box-shadow: var(--todo-lg-shadow), var(--todo-lg-inner-shadow) !important;
+    backdrop-filter: blur(30px) saturate(160%) brightness(110%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(160%) brightness(110%) !important;
+  }
+
+  body.software-app.todo-page-liquid #main-header {
+    border-radius: 20px !important;
+  }
+
+  body.software-app.todo-page-liquid .unified-top-header-dock .unified-top-header-shell#main-header::before,
+  body.software-app.todo-page-liquid .unified-top-header-dock .unified-top-header-shell#main-header::after,
+  body.software-app.todo-page-liquid #main-header::before,
+  body.software-app.todo-page-liquid #main-header::after,
+  body.software-app.todo-page-liquid #main-header .container > .flex.items-center.space-x-4 > a::before,
+  body.software-app.todo-page-liquid #main-header .container > .flex.items-center.space-x-4 > a::after {
+    content: none !important;
+    display: none !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  body.software-app.todo-page-liquid #main-header .container > .flex.items-center.space-x-4 > a,
+  body.software-app.todo-page-liquid #main-header a[href*="登录页面"],
+  body.software-app.todo-page-liquid #main-header a[title*="返回"] {
+    width: 44px !important;
+    height: 44px !important;
+    padding: 0 !important;
+    border-radius: 999px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid var(--todo-lg-border) !important;
+    background: var(--todo-lg-glass) !important;
+    box-shadow: var(--todo-lg-shadow), var(--todo-lg-inner-shadow) !important;
+    backdrop-filter: blur(30px) saturate(160%) brightness(110%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(160%) brightness(110%) !important;
+  }
+
+  body.software-app.todo-page-liquid #main-header h1 {
+    color: var(--todo-lg-text) !important;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Helvetica, Arial, sans-serif !important;
+    font-size: 21px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.01em;
+  }
+
+  body.software-app.todo-page-liquid #main-header p,
+  body.software-app.todo-page-liquid #today-date-info,
+  body.software-app.todo-page-liquid #tomorrow-date-info,
+  body.software-app.todo-page-liquid #todo-main .text-gray-500,
+  body.software-app.todo-page-liquid #todo-main .text-gray-600 {
+    color: var(--todo-lg-subtext) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main {
+    padding: 14px !important;
+    padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main > .glass-max.rounded-2xl:first-child,
+  body.software-app.todo-page-liquid #todo-toolbar {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 2px 0 8px !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-toolbar {
+    overflow: visible !important;
+    position: relative !important;
+    z-index: 14 !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-toolbar,
+  body.software-app.todo-page-liquid #todo-toolbar.todo-toolbar,
+  body.software-app.todo-page-liquid #todo-toolbar.batch-mode-active {
+    border: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    animation: none !important;
+    transition: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main > #todo-toolbar.glass-max.rounded-2xl,
+  body.software-app.todo-page-liquid #todo-toolbar::before,
+  body.software-app.todo-page-liquid #todo-toolbar::after,
+  body.software-app.todo-page-liquid #todo-toolbar .todo-toolbar-main::before,
+  body.software-app.todo-page-liquid #todo-toolbar .todo-toolbar-main::after,
+  body.software-app.todo-page-liquid #todo-toolbar .quick-action-item::before,
+  body.software-app.todo-page-liquid #todo-toolbar .quick-action-item::after {
+    border: 0 !important;
+    border-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    content: none !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-toolbar .todo-toolbar-main {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex-wrap: nowrap !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main > .glass-max.rounded-2xl > .flex.flex-col.md\:flex-row.md\:items-center.justify-between.gap-4 {
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-toolbar .todo-toolbar-main > * {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-toolbar .quick-action-item {
+    flex: 0 0 auto !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-toolbar .sync-status-text {
+    margin-left: auto !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-toolbar.batch-mode-active .todo-toolbar-main > * {
+    opacity: 1 !important;
+    filter: none !important;
+    transition: none !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-toolbar.batch-mode-active .todo-toolbar-main > *:not(#select-mode-btn):not(.sync-status-text) {
+    opacity: 1 !important;
+    filter: none !important;
+    transition: none !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .task-group-card {
+    border-radius: 28px !important;
+    padding: 16px !important;
+    box-shadow: var(--todo-lg-shadow), var(--todo-lg-inner-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.54) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .task-group-card h2,
+  body.software-app.todo-page-liquid #todo-main .text-lg.font-semibold {
+    font-size: 19px !important;
+    font-weight: 600 !important;
+    color: var(--todo-lg-text) !important;
+    line-height: 1.15;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .task-empty-state {
+    min-height: 136px;
+    border-radius: 24px !important;
+    border-style: solid !important;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.2)) !important;
+    backdrop-filter: blur(28px) saturate(160%) brightness(112%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(160%) brightness(112%) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06), var(--todo-lg-inner-shadow) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .task-empty-state .title {
+    color: var(--todo-lg-text) !important;
+    font-size: 17px !important;
+    font-weight: 600 !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .task-empty-state .desc {
+    color: var(--todo-lg-subtext) !important;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+    max-width: 230px;
+    line-height: 1.45;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .task-empty-state i {
+    color: var(--todo-lg-primary) !important;
+    font-size: 24px !important;
+    text-shadow: 0 0 12px rgba(0, 122, 255, 0.32);
+    animation: todo-lg-breathe 5s ease-in-out infinite;
+  }
+
+  body.software-app.todo-page-liquid #sort-filter-btn,
+  body.software-app.todo-page-liquid #select-mode-btn,
+  body.software-app.todo-page-liquid #mobile-search-btn,
+  body.software-app.todo-page-liquid #batch-complete-btn,
+  body.software-app.todo-page-liquid #batch-delete-btn,
+  body.software-app.todo-page-liquid #batch-cancel-btn,
+  body.software-app.todo-page-liquid #sync-status-badge,
+  body.software-app.todo-page-liquid #notification-btn,
+  body.software-app.todo-page-liquid #user-menu-btn,
+  body.software-app.todo-page-liquid .btn-primary-glass,
+  body.software-app.todo-page-liquid .btn-secondary-glass,
+  body.software-app.todo-page-liquid .task-action-btn,
+  body.software-app.todo-page-liquid .priority-btn,
+  body.software-app.todo-page-liquid .datetime-select-trigger,
+  body.software-app.todo-page-liquid .datetime-quick-btn,
+  body.software-app.todo-page-liquid .datetime-calendar-nav,
+  body.software-app.todo-page-liquid .datetime-calendar-action,
+  body.software-app.todo-page-liquid .modal-tag-btn,
+  body.software-app.todo-page-liquid .modal-tag-color-btn,
+  body.software-app.todo-page-liquid .subtask-compose-btn {
+    min-height: 44px !important;
+    border-radius: 20px !important;
+    border: 1px solid var(--todo-lg-border) !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.18)), var(--todo-lg-glass) !important;
+    box-shadow: var(--todo-lg-shadow), var(--todo-lg-inner-shadow) !important;
+    backdrop-filter: blur(30px) saturate(160%) brightness(110%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(160%) brightness(110%) !important;
+    transition: transform 0.32s cubic-bezier(0.25, 1.15, 0.35, 1.05), box-shadow 0.32s cubic-bezier(0.25, 1.15, 0.35, 1.05), filter 0.24s ease !important;
+    will-change: transform;
+    position: relative;
+    overflow: hidden;
+  }
+
+  body.software-app.todo-page-liquid .modal-content .btn-primary-glass {
+    color: #ffffff !important;
+    background:
+      linear-gradient(138deg, rgba(34, 140, 255, 0.96), rgba(69, 110, 255, 0.92)) !important;
+    border-color: rgba(166, 213, 255, 0.5) !important;
+    box-shadow:
+      0 10px 20px rgba(34, 131, 255, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.34) !important;
+  }
+
+  body.software-app.todo-page-liquid .modal-content .btn-secondary-glass,
+  body.software-app.todo-page-liquid .modal-content .bg-white.border-gray-300 {
+    color: #2f3f56 !important;
+    border-color: rgba(188, 220, 255, 0.62) !important;
+    background:
+      linear-gradient(136deg, rgba(255, 255, 255, 0.72), rgba(240, 248, 255, 0.58)) !important;
+    box-shadow:
+      0 8px 16px rgba(74, 120, 180, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  }
+
+  body.software-app.todo-page-liquid .modal-content .priority-btn {
+    border-color: rgba(185, 206, 237, 0.7) !important;
+    color: #5a6a82 !important;
+    background: rgba(244, 250, 255, 0.58) !important;
+  }
+
+  body.software-app.todo-page-liquid .modal-content .priority-btn.active {
+    border-color: rgba(80, 154, 255, 0.72) !important;
+    color: #1d5dd3 !important;
+    background: linear-gradient(132deg, rgba(177, 221, 255, 0.36), rgba(166, 196, 255, 0.24)) !important;
+    box-shadow: 0 0 0 1px rgba(153, 208, 255, 0.58), 0 7px 14px rgba(106, 165, 255, 0.18) !important;
+  }
+
+  /* Remove outer stroke ring from top toolbar pills (as requested). */
+  body.software-app.todo-page-liquid #todo-toolbar #sort-filter-btn,
+  body.software-app.todo-page-liquid #todo-toolbar #select-mode-btn,
+  body.software-app.todo-page-liquid #todo-toolbar #mobile-search-btn,
+  body.software-app.todo-page-liquid #todo-toolbar #sync-status-badge {
+    border-width: 0 !important;
+    border-color: transparent !important;
+    box-shadow: 0 8px 24px rgba(31, 38, 135, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  body.software-app.todo-page-liquid #sort-filter-btn::before,
+  body.software-app.todo-page-liquid #select-mode-btn::before,
+  body.software-app.todo-page-liquid #mobile-search-btn::before,
+  body.software-app.todo-page-liquid #batch-complete-btn::before,
+  body.software-app.todo-page-liquid #batch-delete-btn::before,
+  body.software-app.todo-page-liquid #batch-cancel-btn::before,
+  body.software-app.todo-page-liquid #sync-status-badge::before,
+  body.software-app.todo-page-liquid #notification-btn::before,
+  body.software-app.todo-page-liquid #user-menu-btn::before,
+  body.software-app.todo-page-liquid .btn-primary-glass::before,
+  body.software-app.todo-page-liquid .btn-secondary-glass::before,
+  body.software-app.todo-page-liquid .task-action-btn::before,
+  body.software-app.todo-page-liquid .priority-btn::before,
+  body.software-app.todo-page-liquid .datetime-select-trigger::before,
+  body.software-app.todo-page-liquid .datetime-quick-btn::before,
+  body.software-app.todo-page-liquid .datetime-calendar-nav::before,
+  body.software-app.todo-page-liquid .datetime-calendar-action::before,
+  body.software-app.todo-page-liquid .modal-tag-btn::before,
+  body.software-app.todo-page-liquid .modal-tag-color-btn::before,
+  body.software-app.todo-page-liquid .subtask-compose-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+      radial-gradient(120% 140% at 18% 12%, rgba(255, 255, 255, 0.66), rgba(255, 255, 255, 0) 48%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.06) 56%, rgba(255, 255, 255, 0.24));
+    opacity: 0.9;
+    mix-blend-mode: screen;
+  }
+
+  body.software-app.todo-page-liquid #sort-filter-btn:hover,
+  body.software-app.todo-page-liquid #select-mode-btn:hover,
+  body.software-app.todo-page-liquid #mobile-search-btn:hover,
+  body.software-app.todo-page-liquid #batch-complete-btn:hover,
+  body.software-app.todo-page-liquid #batch-delete-btn:hover,
+  body.software-app.todo-page-liquid #batch-cancel-btn:hover,
+  body.software-app.todo-page-liquid #notification-btn:hover,
+  body.software-app.todo-page-liquid #user-menu-btn:hover,
+  body.software-app.todo-page-liquid .btn-primary-glass:hover,
+  body.software-app.todo-page-liquid .btn-secondary-glass:hover,
+  body.software-app.todo-page-liquid .task-action-btn:hover,
+  body.software-app.todo-page-liquid .priority-btn:hover,
+  body.software-app.todo-page-liquid .datetime-select-trigger:hover,
+  body.software-app.todo-page-liquid .datetime-quick-btn:hover,
+  body.software-app.todo-page-liquid .datetime-calendar-nav:hover,
+  body.software-app.todo-page-liquid .datetime-calendar-action:hover,
+  body.software-app.todo-page-liquid .modal-tag-btn:hover,
+  body.software-app.todo-page-liquid .modal-tag-color-btn:hover,
+  body.software-app.todo-page-liquid .subtask-compose-btn:hover {
+    box-shadow:
+      0 0 0 1px rgba(164, 212, 255, 0.46),
+      0 0 16px rgba(126, 187, 255, 0.38),
+      var(--todo-lg-shadow) !important;
+    filter: brightness(1.06);
+  }
+
+  body.software-app.todo-page-liquid #sync-status-badge {
+    color: #0a84ff !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+  }
+
+  body.software-app.todo-page-liquid #sync-status-badge i {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .input-glass,
+  body.software-app.todo-page-liquid .subtask-compose-input,
+  body.software-app.todo-page-liquid .datetime-time-field {
+    border: 1px solid var(--todo-lg-border) !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.18)), var(--todo-lg-glass) !important;
+    border-radius: 20px !important;
+    backdrop-filter: blur(30px) saturate(160%) brightness(110%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(160%) brightness(110%) !important;
+    box-shadow: var(--todo-lg-shadow), var(--todo-lg-inner-shadow) !important;
+    color: var(--todo-lg-text) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .dropdown-menu,
+  body.software-app.todo-page-liquid #todo-main .datetime-select-menu,
+  body.software-app.todo-page-liquid #main-header .dropdown-menu {
+    border-radius: 20px !important;
+    padding: 8px !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.19)), rgba(255, 255, 255, 0.22) !important;
+  }
+
+  /* 排序下拉：降低不透明度（更通透一点），只影响该菜单。 */
+  body.software-app.todo-page-liquid #todo-main #sort-filter-menu {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.26)), rgba(255, 255, 255, 0.28) !important;
+    border-color: rgba(255, 255, 255, 0.44) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .dropdown-menu a,
+  body.software-app.todo-page-liquid #todo-main .datetime-select-option {
+    border-radius: 12px !important;
+    color: var(--todo-lg-text) !important;
+  }
+
+  /* Hidden panels must not leave residual outline lines. */
+  body.software-app.todo-page-liquid #todo-main .toolbar-dropdown-panel {
+    border: 0 !important;
+    border-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transition: opacity 0.16s ease, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1) !important;
+    will-change: transform, opacity;
+    max-height: none !important;
+    opacity: 0;
+    transform: translate3d(0, -6px, 0) scale(0.985);
+  }
+
+  body.software-app.todo-page-liquid .modal-overlay {
+    background:
+      radial-gradient(120% 95% at 8% 10%, rgba(255, 235, 246, 0.24), rgba(255, 235, 246, 0) 58%),
+      radial-gradient(110% 90% at 92% 4%, rgba(210, 233, 255, 0.22), rgba(210, 233, 255, 0) 56%),
+      rgba(18, 24, 40, 0.12) !important;
+    backdrop-filter: blur(12px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(140%) !important;
+  }
+
+  body.software-app.todo-page-liquid .modal-content {
+    border-radius: 20px !important;
+    width: min(92vw, 392px) !important;
+    max-width: min(92vw, 392px) !important;
+    max-height: min(82vh, 680px) !important;
+    background:
+      radial-gradient(132% 116% at 10% 8%, rgba(255, 226, 241, 0.54), rgba(255, 226, 241, 0) 54%),
+      radial-gradient(124% 118% at 90% 6%, rgba(193, 223, 255, 0.52), rgba(193, 223, 255, 0) 54%),
+      radial-gradient(108% 108% at 48% 100%, rgba(210, 248, 231, 0.38), rgba(210, 248, 231, 0) 58%),
+      linear-gradient(152deg, rgba(255, 255, 255, 0.56), rgba(246, 252, 255, 0.4) 44%, rgba(240, 255, 247, 0.34)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08), 0 2px 10px rgba(0, 0, 0, 0.04), inset 0 0 0 1px rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(34px) saturate(172%) brightness(112%) !important;
+    -webkit-backdrop-filter: blur(34px) saturate(172%) brightness(112%) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab {
+    border-radius: 20px !important;
+    border: 1px solid rgba(255, 255, 255, 0.36) !important;
+    background:
+      linear-gradient(140deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.16)),
+      rgba(255, 255, 255, 0.22) !important;
+    box-shadow:
+      0 12px 28px rgba(10, 19, 36, 0.12),
+      0 0 0 1px rgba(199, 232, 255, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.62) !important;
+    backdrop-filter: blur(24px) saturate(168%) contrast(96%) brightness(112%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(168%) contrast(96%) brightness(112%) !important;
+    overflow: hidden !important;
+    isolation: isolate !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab::before,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    border-radius: inherit;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab::before {
+    inset: -20px -12px 32%;
+    background: radial-gradient(88% 76% at 50% 0%, rgba(255, 255, 255, 0.36), rgba(255, 255, 255, 0));
+    opacity: 0.7;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab::after {
+    inset: 0;
+    background:
+      conic-gradient(from 220deg at 50% 50%, rgba(110, 190, 255, 0.04), rgba(196, 152, 255, 0.03), rgba(115, 234, 210, 0.03), rgba(110, 190, 255, 0.04));
+    mix-blend-mode: screen;
+    opacity: 0.45;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item {
+    border-radius: 16px !important;
+    color: rgba(32, 42, 60, 0.68) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    transform: translateY(0) scale(1) !important;
+    position: relative;
+    z-index: 1;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.16);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    color: currentColor;
+    font-size: 13px !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item span {
+    color: currentColor !important;
+    opacity: 0.9;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item.active {
+    color: #0a7bff !important;
+    background:
+      linear-gradient(140deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.18)),
+      rgba(101, 179, 255, 0.12) !important;
+    box-shadow:
+      0 5px 12px rgba(20, 97, 216, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.58) !important;
+    border: 1px solid rgba(173, 219, 255, 0.42) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item.active {
+    color: #0a7bff !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item.active i {
+    background: rgba(255, 255, 255, 0.28) !important;
+    box-shadow:
+      0 0 8px rgba(122, 197, 255, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.64) !important;
+  }
+
+  body.software-app.todo-page-liquid .toolbar-dropdown-panel.hidden {
+    display: none !important;
+  }
+
+  body.software-app.todo-page-liquid .toolbar-dropdown-panel.show {
+    display: block !important;
+    opacity: 1 !important;
+    transform: translate3d(0, 0, 0) scale(1) !important;
+    pointer-events: auto !important;
+  }
+
+  body.software-app.todo-page-liquid .toolbar-dropdown-panel.dropdown-closing {
+    opacity: 0 !important;
+    transform: translate3d(0, -6px, 0) scale(0.985) !important;
+    pointer-events: none !important;
+  }
+
+  body.software-app.todo-page-liquid #batch-actions-row.toolbar-dropdown-panel.show {
+    display: flex !important;
+  }
+
+  body.software-app.todo-page-liquid #batch-actions-row.toolbar-dropdown-panel {
+    margin-top: 0 !important;
+    padding: 10px !important;
+    border-radius: 18px !important;
+    border: 0 !important;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.2) 56%, rgba(255, 255, 255, 0.26)),
+      radial-gradient(120% 130% at 22% 12%, rgba(255, 255, 255, 0.44), rgba(255, 255, 255, 0) 58%) !important;
+    box-shadow: 0 8px 24px rgba(31, 38, 135, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.48) !important;
+    z-index: 6 !important;
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: calc(100% + 6px + var(--todo-toolbar-stack-offset, 0px)) !important;
+    width: 100% !important;
+  }
+
+  body.software-app.todo-page-liquid #batch-selected-tip {
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  body.software-app.todo-page-liquid #mobile-toolbar-search-panel.toolbar-dropdown-panel {
+    margin-top: 0 !important;
+    padding: 8px 10px !important;
+    border-radius: 18px !important;
+    border: 1px solid rgba(255, 255, 255, 0.52) !important;
+    background: rgba(255, 255, 255, 0.28) !important;
+    box-shadow: 0 10px 22px rgba(31, 38, 135, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.62) !important;
+    backdrop-filter: blur(18px) saturate(165%) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(165%) !important;
+    overflow: visible !important;
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: calc(100% + 6px + var(--todo-toolbar-stack-offset, 0px)) !important;
+    z-index: 7 !important;
+    width: 100% !important;
+  }
+
+  body.software-app.todo-page-liquid #mobile-toolbar-search-panel .relative {
+    border-radius: 14px !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    padding: 0 !important;
+  }
+
+  body.software-app.todo-page-liquid #mobile-toolbar-search-panel #mobile-toolbar-search-input {
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    border-radius: 14px !important;
+    padding: 11px 38px 11px 34px !important;
+    min-height: 40px !important;
+  }
+
+  body.software-app.todo-page-liquid #mobile-toolbar-search-panel #mobile-toolbar-search-input:focus {
+    box-shadow: none !important;
+    border: 0 !important;
+  }
+
+  body.software-app.todo-page-liquid #mobile-toolbar-search-panel.toolbar-dropdown-panel.show {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+    pointer-events: auto !important;
+  }
+
+  body.software-app.todo-page-liquid #mobile-toolbar-search-panel.toolbar-dropdown-panel.hidden {
+    display: none !important;
+    opacity: 0 !important;
+  }
+
+  body.software-app.todo-page-liquid #mobile-toolbar-search-panel.toolbar-dropdown-panel {
+    transform-origin: 0% 0% !important;
+  }
+
+  body.software-app.todo-page-liquid #batch-actions-row.toolbar-dropdown-panel {
+    transform-origin: 0% 0% !important;
+  }
+
+  /* In-flow dropdown animation: smooth push-down / return without card overlap. */
+  body.software-app.todo-page-liquid #mobile-toolbar-search-panel.toolbar-dropdown-panel,
+  body.software-app.todo-page-liquid #batch-actions-row.toolbar-dropdown-panel {
+    max-height: none !important;
+    opacity: 0 !important;
+    transform: translate3d(0, -6px, 0) scale(0.985) !important;
+    overflow: hidden !important;
+    will-change: transform, opacity;
+    transition:
+      top var(--todo-lg-motion-mid) var(--todo-lg-motion-ease),
+      opacity var(--todo-lg-motion-fast) ease,
+      transform var(--todo-lg-motion-mid) var(--todo-lg-motion-ease) !important;
+  }
+
+  body.software-app.todo-page-liquid #mobile-toolbar-search-panel.toolbar-dropdown-panel.show,
+  body.software-app.todo-page-liquid #batch-actions-row.toolbar-dropdown-panel.show {
+    opacity: 1 !important;
+    transform: translate3d(0, 0, 0) scale(1) !important;
+  }
+
+  /* Smooth card push/pull by GPU transform instead of heavy reflow animation. */
+  body.software-app.todo-page-liquid #task-list-container {
+    --todo-toolbar-card-offset: 0px;
+    transform: translate3d(0, var(--todo-toolbar-card-offset), 0);
+    transition: transform var(--todo-lg-motion-mid) var(--todo-lg-motion-ease);
+    will-change: transform;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .task-group-card,
+  body.software-app.todo-page-liquid #todo-main .task-card,
+  body.software-app.todo-page-liquid #todo-toolbar .quick-action-btn,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item,
+  body.software-app.todo-page-liquid .btn-primary-glass,
+  body.software-app.todo-page-liquid .btn-secondary-glass {
+    transition-duration: var(--todo-lg-motion-mid) !important;
+    transition-timing-function: var(--todo-lg-motion-ease) !important;
+  }
+
+  body.software-app.todo-page-liquid .todo-lg-ripple {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.78), rgba(155, 214, 255, 0.35) 58%, rgba(155, 214, 255, 0));
+    transform: translate(-50%, -50%) scale(0);
+    pointer-events: none;
+    animation: todo-lg-ripple 0.52s ease-out forwards;
+    mix-blend-mode: screen;
+  }
+
+  body.software-app.todo-page-liquid .todo-lg-ripple--second {
+    width: 14px;
+    height: 14px;
+    opacity: 0.7;
+    animation-duration: 0.58s;
+  }
+
+  body.software-app.todo-page-liquid .todo-lg-press-glow {
+    box-shadow:
+      0 0 0 1px rgba(134, 191, 255, 0.6),
+      0 0 14px rgba(86, 170, 255, 0.46),
+      0 6px 18px rgba(31, 38, 135, 0.18) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .task-group-card:active,
+  body.software-app.todo-page-liquid #todo-main .task-card:active {
+    transform: scale(1.015);
+    filter: brightness(1.08);
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item {
+    transition:
+      transform 0.28s cubic-bezier(0.25, 1.15, 0.35, 1.05),
+      color 0.22s ease,
+      background 0.28s ease,
+      box-shadow 0.28s ease,
+      border-color 0.28s ease !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item.active {
+    transform: translateY(-1px) scale(1.04);
+  }
+
+  body.software-app.todo-page-liquid:not(.todo-lg-ready) .todo-lg-enter-header,
+  body.software-app.todo-page-liquid:not(.todo-lg-ready) .todo-lg-enter-toolbar,
+  body.software-app.todo-page-liquid:not(.todo-lg-ready) .todo-lg-enter-card,
+  body.software-app.todo-page-liquid:not(.todo-lg-ready) .todo-lg-enter-footer {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+
+  body.software-app.todo-page-liquid.todo-lg-ready .todo-lg-enter-header {
+    animation: todo-lg-enter-up 0.46s cubic-bezier(0.25, 1.15, 0.35, 1.05) 0.1s both;
+  }
+
+  body.software-app.todo-page-liquid.todo-lg-ready .todo-lg-enter-toolbar {
+    animation: todo-lg-enter-up 0.48s cubic-bezier(0.25, 1.15, 0.35, 1.05) 0.16s both;
+  }
+
+  body.software-app.todo-page-liquid.todo-lg-ready .todo-lg-enter-card {
+    animation: todo-lg-enter-up 0.54s cubic-bezier(0.25, 1.15, 0.35, 1.05) var(--todo-lg-delay, 0.24s) both;
+  }
+
+  body.software-app.todo-page-liquid.todo-lg-ready .todo-lg-enter-footer {
+    animation: todo-lg-enter-up 0.5s cubic-bezier(0.25, 1.15, 0.35, 1.05) 0.5s both;
+  }
+
+  body.software-app.todo-page-liquid.todo-lg-scrolling #main-header,
+  body.software-app.todo-page-liquid.todo-lg-scrolling #todo-main .task-group-card,
+  body.software-app.todo-page-liquid.todo-lg-scrolling #todo-main .task-card,
+  body.software-app.todo-page-liquid.todo-lg-scrolling #todo-app-shell + footer.glass-tab,
+  body.software-app.todo-page-liquid.todo-lg-scrolling #mobile-toolbar-search-panel.toolbar-dropdown-panel,
+  body.software-app.todo-page-liquid.todo-lg-scrolling .modal-content {
+    backdrop-filter: blur(35px) saturate(160%) brightness(110%) !important;
+    -webkit-backdrop-filter: blur(35px) saturate(160%) brightness(110%) !important;
+  }
+
+  @keyframes todo-lg-breathe {
+    0%, 100% { transform: translateY(0); opacity: 0.8; }
+    50% { transform: translateY(-4px); opacity: 1; }
+  }
+
+  @keyframes todo-lg-ripple {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 0.7; }
+    100% { transform: translate(-50%, -50%) scale(12); opacity: 0; }
+  }
+
+  @keyframes todo-lg-enter-up {
+    0% { opacity: 0; transform: translateY(20px) scale(0.98); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  @keyframes todo-lg-sync-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.software-app.todo-page-liquid * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

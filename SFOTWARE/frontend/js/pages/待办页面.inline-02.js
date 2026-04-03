@@ -1024,15 +1024,134 @@
       if (tomorrowInfo) tomorrowInfo.textContent = formatDateLabel(1);
     }
 
+    var todoToolbarPanelOpenSeq = 1;
+    var TODO_LIQUID_DROPDOWN_OPEN_DURATION = 220;
+    var TODO_LIQUID_DROPDOWN_CLOSE_DURATION = 180;
+    var todoToolbarOffsetRafId = 0;
+
+    function isToolbarDropdownShown(panel) {
+      if (!panel) return false;
+      if (panel.classList.contains('hidden')) return false;
+      if (!panel.classList.contains('show')) return false;
+      if (panel.style.display === 'none') return false;
+      return true;
+    }
+
+    function getToolbarStackPanels() {
+      var panelIds = ['mobile-toolbar-search-panel', 'batch-actions-row'];
+      var panels = panelIds.map(function (id) { return document.getElementById(id); }).filter(function (panel) {
+        return !!panel && isToolbarDropdownShown(panel);
+      });
+      panels.sort(function (a, b) {
+        var ao = parseInt(a.dataset.todoPanelOrder || '0', 10) || 0;
+        var bo = parseInt(b.dataset.todoPanelOrder || '0', 10) || 0;
+        if (ao === bo) return 0;
+        return ao - bo;
+      });
+      return panels;
+    }
+
+    function getToolbarPanelTargetHeight(panel) {
+      if (!panel) return 0;
+      var cachedHeight = parseFloat(panel.dataset.todoPanelHeight || '0') || 0;
+      var offsetHeight = Math.ceil(panel.offsetHeight || 0);
+      var rectH = Math.ceil((panel.getBoundingClientRect && panel.getBoundingClientRect().height) || 0);
+      var height = Math.max(offsetHeight, rectH, cachedHeight, 0);
+      if (height > 0) panel.dataset.todoPanelHeight = String(height);
+      return height;
+    }
+
+    function syncToolbarCardOffsetDeferred() {
+      if (todoToolbarOffsetRafId) return;
+      todoToolbarOffsetRafId = requestAnimationFrame(function () {
+        todoToolbarOffsetRafId = 0;
+        syncToolbarCardOffset();
+      });
+    }
+
+    function syncToolbarCardOffset(explicitHeight) {
+      var isMobile = !!(window.matchMedia && window.matchMedia('(max-width: 900px)').matches);
+      var body = document.body;
+      var isTodoLiquid = !!(body && body.classList && body.classList.contains('todo-page-liquid'));
+      var list = document.getElementById('task-list-container');
+      if (!isMobile || !isTodoLiquid || !list) return;
+
+      var offset = 0;
+      if (typeof explicitHeight === 'number' && explicitHeight >= 0) {
+        offset = explicitHeight;
+      } else {
+        var gap = 8;
+        var allPanels = [
+          document.getElementById('mobile-toolbar-search-panel'),
+          document.getElementById('batch-actions-row')
+        ];
+        var stackedPanels = getToolbarStackPanels();
+        var stackedHeight = 0;
+        stackedPanels.forEach(function (panel, idx) {
+          panel.style.setProperty('--todo-toolbar-stack-offset', stackedHeight + 'px');
+          panel.style.zIndex = String(12 + idx);
+          var h = Math.ceil(getToolbarPanelTargetHeight(panel));
+          if (h > 0) stackedHeight += h;
+          if (idx < stackedPanels.length - 1) stackedHeight += gap;
+        });
+        allPanels.forEach(function (panel) {
+          if (!panel || stackedPanels.indexOf(panel) > -1) return;
+          panel.style.setProperty('--todo-toolbar-stack-offset', '0px');
+        });
+        var stackedOffset = stackedHeight > 0 ? (stackedHeight + 20) : 0;
+        offset = stackedOffset;
+      }
+
+      list.style.setProperty('--todo-toolbar-card-offset', offset + 'px');
+      list.classList.toggle('todo-toolbar-offset-active', offset > 0);
+    }
+
     function toggleToolbarDropdownPanel(panel, shouldOpen) {
       if (!panel) return;
-      if (typeof window.toggleTodoDropdownPanel === 'function') {
-        window.toggleTodoDropdownPanel(panel, shouldOpen, { duration: 220 });
-        return;
-      }
+      var body = document.body;
+      var isTodoLiquid = !!(body && body.classList && body.classList.contains('todo-page-liquid'));
+      var fastDropdown = isTodoLiquid && (panel.id === 'mobile-toolbar-search-panel' || panel.id === 'batch-actions-row');
       if (panel._todoHideTimer) {
         clearTimeout(panel._todoHideTimer);
         panel._todoHideTimer = null;
+      }
+      if (fastDropdown) {
+        var isBatchRow = panel.id === 'batch-actions-row';
+        if (shouldOpen) {
+          if (!panel.classList.contains('hidden') && panel.classList.contains('show')) {
+            syncToolbarCardOffsetDeferred();
+            return;
+          }
+          panel.dataset.todoPanelOrder = String(++todoToolbarPanelOpenSeq);
+          panel.classList.remove('hidden');
+          panel.classList.remove('dropdown-closing');
+          panel.style.display = isBatchRow ? 'flex' : 'block';
+          panel.style.visibility = 'visible';
+          panel.style.pointerEvents = 'auto';
+          getToolbarPanelTargetHeight(panel);
+          requestAnimationFrame(function () {
+            panel.classList.add('show');
+            syncToolbarCardOffsetDeferred();
+          });
+          return;
+        }
+        panel.classList.remove('show');
+        panel.classList.add('dropdown-closing');
+        panel.style.pointerEvents = 'none';
+        syncToolbarCardOffsetDeferred();
+        panel._todoHideTimer = setTimeout(function () {
+          panel.classList.add('hidden');
+          panel.classList.remove('dropdown-closing');
+          panel.style.display = 'none';
+          panel.style.visibility = 'hidden';
+          panel._todoHideTimer = null;
+          syncToolbarCardOffsetDeferred();
+        }, TODO_LIQUID_DROPDOWN_CLOSE_DURATION);
+        return;
+      }
+      if (typeof window.toggleTodoDropdownPanel === 'function') {
+        window.toggleTodoDropdownPanel(panel, shouldOpen, { duration: TODO_LIQUID_DROPDOWN_OPEN_DURATION });
+        return;
       }
       if (shouldOpen) {
         if (!panel.classList.contains('hidden') && panel.classList.contains('show')) return;
@@ -1066,6 +1185,13 @@
       if (typeof mutator !== 'function') return;
       var list = document.getElementById('task-list-container');
       var reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+      var isMobile = !!(window.matchMedia && window.matchMedia('(max-width: 900px)').matches);
+      var body = document.body;
+      var isTodoLiquid = !!(body && body.classList && body.classList.contains('todo-page-liquid'));
+      if (isMobile && isTodoLiquid) {
+        mutator();
+        return;
+      }
       if (!list || reduceMotion) {
         mutator();
         return;
@@ -1102,6 +1228,14 @@
 
     function toggleToolbarDropdownPanelWithListAnimation(panel, shouldOpen) {
       if (!panel) return;
+      var isMobile = !!(window.matchMedia && window.matchMedia('(max-width: 900px)').matches);
+      var body = document.body;
+      var isTodoLiquid = !!(body && body.classList && body.classList.contains('todo-page-liquid'));
+      var shouldUseFastPath = isMobile && isTodoLiquid && (panel.id === 'mobile-toolbar-search-panel' || panel.id === 'batch-actions-row');
+      if (shouldUseFastPath) {
+        toggleToolbarDropdownPanel(panel, shouldOpen);
+        return;
+      }
       var isOpen = !panel.classList.contains('hidden') && panel.classList.contains('show');
       if (isOpen === !!shouldOpen) {
         toggleToolbarDropdownPanel(panel, shouldOpen);
@@ -1125,16 +1259,26 @@
 
       if (selectBtn) {
         if (isBatchMode) {
-          selectBtn.classList.add('select-mode-active');
-          selectBtn.innerHTML = '<i class="fas fa-list-check mr-2"></i>选择中';
+          if (!selectBtn.classList.contains('select-mode-active')) {
+            selectBtn.classList.add('select-mode-active');
+            selectBtn.innerHTML = '<i class="fas fa-list-check mr-2"></i>选择中';
+          }
         } else {
-          selectBtn.classList.remove('select-mode-active');
-          selectBtn.innerHTML = '<i class="fas fa-list-check mr-2"></i>选择模式';
+          if (selectBtn.classList.contains('select-mode-active')) {
+            selectBtn.classList.remove('select-mode-active');
+            selectBtn.innerHTML = '<i class="fas fa-list-check mr-2"></i>选择模式';
+          }
         }
       }
 
       if (batchRow) {
-        toggleToolbarDropdownPanelWithListAnimation(batchRow, !!isBatchMode);
+        var shouldShowBatchRow = !!isBatchMode;
+        var prevBatchRowState = batchRow.dataset.todoBatchRowState;
+        var nextBatchRowState = shouldShowBatchRow ? '1' : '0';
+        if (prevBatchRowState !== nextBatchRowState) {
+          toggleToolbarDropdownPanel(batchRow, shouldShowBatchRow);
+          batchRow.dataset.todoBatchRowState = nextBatchRowState;
+        }
       }
 
       if (toolbar) {
@@ -1143,24 +1287,13 @@
       }
 
       if (tip) tip.textContent = '已选择 ' + checkedCount + ' 项';
-
-      // Apply checkbox fade-in animation when entering batch mode
-      if (isBatchMode) {
-        setTimeout(function () {
-          document.querySelectorAll('.task-card .task-checkbox').forEach(function (cb) {
-            if (!cb.classList.contains('batch-appear')) {
-              cb.classList.add('batch-appear');
-            }
-          });
-        }, 50);
-      }
+      refreshBatchSelectionInPlace();
     }
 
     function setBatchMode(enabled) {
       isBatchMode = !!enabled;
       if (!isBatchMode) selectedBatchTasks = [];
       updateBatchModeUI();
-      renderTaskLists();
     }
 
     function setTodoChromeVisible(visible) {
@@ -1786,6 +1919,39 @@
       }
     }
 
+    function refreshBatchSelectionInPlace() {
+      var selectedMap = Object.create(null);
+      selectedBatchTasks.forEach(function (t) {
+        selectedMap[String(t.id) + '::' + (!!t.isToday)] = true;
+      });
+
+      document.querySelectorAll('.task-card').forEach(function (card) {
+        var taskId = String(card.dataset.taskId || '');
+        var isToday = card.dataset.isToday === 'true';
+        var selected = !!selectedMap[taskId + '::' + isToday];
+        var checkbox = card.querySelector('.task-checkbox');
+
+        card.classList.toggle('selected', !!(isBatchMode && selected));
+        if (!checkbox) return;
+
+        if (isBatchMode) {
+          var wasHidden = checkbox.classList.contains('checkbox-hidden');
+          checkbox.classList.remove('checkbox-hidden');
+          checkbox.checked = selected;
+          if (wasHidden) {
+            checkbox.classList.remove('batch-appear');
+            checkbox.offsetWidth;
+            checkbox.classList.add('batch-appear');
+          }
+          return;
+        }
+
+        checkbox.classList.remove('batch-appear');
+        checkbox.classList.add('checkbox-hidden');
+        checkbox.checked = card.classList.contains('completed');
+      });
+    }
+
     window.completeAllTasks = function () {
       var count = tasks.today.length + tasks.tomorrow.length;
       if (count === 0) {
@@ -1806,7 +1972,6 @@
       selectedBatchTasks = [];
       isBatchMode = false;
       updateBatchModeUI();
-      renderTaskLists();
       showToast('已清空选择');
     };
 
@@ -2014,6 +2179,12 @@
           var card = this.closest('.task-card');
           var taskId = card.dataset.taskId;
           var isToday = card.dataset.isToday === 'true';
+          if (isBatchMode) {
+            e.preventDefault();
+            toggleBatchSelection(taskId, isToday);
+            updateBatchModeUI();
+            return;
+          }
           var list = isToday ? tasks.today : tasks.tomorrow;
           var task = list.find(function (x) { return String(x.id) === String(taskId); });
           // Trigger exit animation when marking as complete
@@ -2060,7 +2231,6 @@
           if (isBatchMode || e.ctrlKey || e.metaKey || e.shiftKey) {
             toggleBatchSelection(taskId, isToday);
             updateBatchModeUI();
-            renderTaskLists();
             return;
           }
 
@@ -2236,6 +2406,50 @@
         dockRect: null,
         tabCenters: []
       };
+      var lightLayer = document.getElementById('todo-fab-light-layer');
+      var lightReactiveSelector = [
+        '#main-header',
+        '#main-header .glass-input',
+        '#main-header .input-glass',
+        '#main-header .sync-status-text',
+        '#sync-status-badge',
+        '#main-header .dropdown-menu',
+        '#main-header [class*="border"]',
+        '#todo-toolbar',
+        '#todo-toolbar .btn-primary-glass',
+        '#todo-toolbar .btn-secondary-glass',
+        '#todo-toolbar .quick-action-btn',
+        '#todo-toolbar .quick-action-chip',
+        '#todo-toolbar .toolbar-dropdown-panel',
+        '#todo-toolbar .dropdown-menu',
+        '#todo-main .task-group-card',
+        '#todo-main .task-card',
+        '#todo-main .btn-primary-glass',
+        '#todo-main .btn-secondary-glass',
+        '#todo-main .task-action-btn',
+        '#todo-main .priority-btn',
+        '#todo-main .datetime-select-trigger',
+        '#todo-main .datetime-select-menu',
+        '#todo-main .input-glass',
+        '#todo-main [class*="border"]',
+        '.modal-content',
+        '.modal-content .input-glass',
+        '.modal-content .btn-primary-glass',
+        '.modal-content .btn-secondary-glass',
+        '.modal-content .task-action-btn',
+        '.modal-content .priority-btn',
+        '.modal-content .datetime-select-trigger',
+        '.modal-content [class*="border"]',
+        '.unified-bottom-tab-dock .unified-tab-row',
+        '#main-header a.rounded-xl',
+        '#todo-app-shell + footer.glass-tab',
+        '#todo-app-shell + footer.glass-tab .tab-item'
+      ].join(',');
+      var lightTargets = [];
+      var lightRectCacheTs = 0;
+      var lightBindTs = 0;
+      var lightValueCache = new WeakMap();
+      var lightSeenSet = new Set();
 
       function clamp(value, min, max) {
         return Math.max(min, Math.min(max, value));
@@ -2249,6 +2463,247 @@
         var dx = bx - ax;
         var dy = by - ay;
         return Math.sqrt(dx * dx + dy * dy);
+      }
+
+      function clearReactiveLightNode(el) {
+        if (!el) return;
+        el.classList.remove('todo-light-hit');
+        el.style.setProperty('--todo-light-active', '0');
+        el.style.setProperty('--todo-light-brightness', '1');
+        el.style.setProperty('--todo-light-glow', '0');
+        el.style.setProperty('--todo-light-border-alpha', '0');
+        el.style.setProperty('--todo-light-edge-x', '50%');
+        el.style.setProperty('--todo-light-edge-y', '50%');
+        el.style.setProperty('--todo-light-edge-spread', '34%');
+        el.style.setProperty('--todo-light-border-size', '1px');
+        el.style.setProperty('--todo-light-sweep', '-140%');
+        lightValueCache.set(el, { active: false, value: 0, sweep: -140, edgeX: 50, edgeY: 50, spread: 34 });
+      }
+
+      function refreshReactiveLightTargets(ts, forceQuery) {
+        if (!lightLayer) return;
+        var nowTs = typeof ts === 'number' ? ts : performance.now();
+        if (forceQuery || !lightTargets.length || (nowTs - lightBindTs) > 980) {
+          var staleEmptyNodes = document.querySelectorAll('#todo-main .task-empty-state.todo-light-reactive');
+          for (var staleIdx = 0; staleIdx < staleEmptyNodes.length; staleIdx++) {
+            clearReactiveLightNode(staleEmptyNodes[staleIdx]);
+          }
+          lightTargets = [];
+          lightSeenSet.clear();
+          var nodes = document.querySelectorAll(lightReactiveSelector);
+          for (var i = 0; i < nodes.length; i++) {
+            var el = nodes[i];
+            if (!el || el === fab || !el.isConnected) continue;
+            if (lightSeenSet.has(el)) continue;
+            lightSeenSet.add(el);
+            var cs = null;
+            try {
+              cs = window.getComputedStyle ? window.getComputedStyle(el) : null;
+            } catch (err) {
+              cs = null;
+            }
+            if (cs) {
+              var borderW = (parseFloat(cs.borderTopWidth) || 0) + (parseFloat(cs.borderRightWidth) || 0) + (parseFloat(cs.borderBottomWidth) || 0) + (parseFloat(cs.borderLeftWidth) || 0);
+              var hasBorder = borderW > 0.28 && String(cs.borderStyle || '').toLowerCase() !== 'none';
+              var hasKnownClass = /\b(task-card|task-group-card|glass-tab|tab-item|unified-tab-row|glass-input|btn-primary-glass|btn-secondary-glass|task-action-btn|priority-btn|quick-action-btn|quick-action-chip|sync-status-text|modal-content|input-glass|datetime-select-trigger|datetime-select-menu|dropdown-menu|toolbar-dropdown-panel)\b/.test(el.className || '');
+              var isHeaderBackBtn = !!(el && el.tagName === 'A' && /\brounded-xl\b/.test(el.className || '') && el.closest && el.closest('#main-header') && el.querySelector && el.querySelector('.fa-arrow-left'));
+              if (!hasBorder && !hasKnownClass && !isHeaderBackBtn) continue;
+            }
+            if (!el.classList.contains('todo-light-reactive')) {
+              el.classList.add('todo-light-reactive');
+            }
+            var borderSize = 1;
+            if (cs) {
+              var bt = parseFloat(cs.borderTopWidth) || 0;
+              var br = parseFloat(cs.borderRightWidth) || 0;
+              var bb = parseFloat(cs.borderBottomWidth) || 0;
+              var bl = parseFloat(cs.borderLeftWidth) || 0;
+              borderSize = Math.max(1, Math.min(3.2, (bt + br + bb + bl) / 4));
+            }
+            lightTargets.push({ el: el, cx: 0, cy: 0, radius: 0, visible: false, left: 0, top: 0, right: 0, bottom: 0, width: 0, height: 0, borderSize: borderSize });
+          }
+          lightBindTs = nowTs;
+          lightRectCacheTs = 0;
+        }
+
+        if (lightRectCacheTs && (nowTs - lightRectCacheTs) < (state.isDragging ? 120 : 220)) return;
+        var viewportH = window.innerHeight || 0;
+        for (var j = 0; j < lightTargets.length; j++) {
+          var target = lightTargets[j];
+          var rect = target.el.getBoundingClientRect();
+          var visible = !!(rect && rect.width > 1 && rect.height > 1 && rect.bottom >= -100 && rect.top <= viewportH + 100);
+          target.visible = visible;
+          if (!visible) continue;
+          target.left = rect.left;
+          target.top = rect.top;
+          target.right = rect.right;
+          target.bottom = rect.bottom;
+          target.width = rect.width;
+          target.height = rect.height;
+          target.cx = rect.left + rect.width * 0.5;
+          target.cy = rect.top + rect.height * 0.5;
+          target.radius = Math.max(rect.width, rect.height) * 0.52;
+        }
+        lightRectCacheTs = nowTs;
+      }
+
+      function applyReactiveLightNode(target, strength, sweep, edgeX, edgeY, edgeSpread) {
+        if (!target || !target.el) return;
+        var el = target.el;
+        if (!(strength > 0.009)) {
+          var old = lightValueCache.get(el);
+          if (!old || old.active) clearReactiveLightNode(el);
+          return;
+        }
+
+        var brightness = 1 + strength * 0.2;
+        var glow = 0.3 + strength * 1.02;
+        var borderBoost = target && target.borderBoost ? target.borderBoost : 1;
+        var borderAlpha = clamp((0.32 + strength * 1.22) * borderBoost, 0, 1);
+        var borderSize = target.borderSize || 1;
+        var px = clamp(typeof edgeX === 'number' ? edgeX : 50, 0, 100);
+        var py = clamp(typeof edgeY === 'number' ? edgeY : 50, 0, 100);
+        var spreadBias = target && typeof target.spreadBias === 'number' ? target.spreadBias : 0;
+        var spread = clamp((typeof edgeSpread === 'number' ? edgeSpread : 24) + spreadBias, 8, 42);
+        var oldCache = lightValueCache.get(el);
+        if (oldCache && oldCache.active) {
+          var dv = Math.abs((oldCache.value || 0) - strength);
+          var ds = Math.abs((oldCache.sweep || 0) - sweep);
+          var dpx = Math.abs((oldCache.edgeX || 50) - px);
+          var dpy = Math.abs((oldCache.edgeY || 50) - py);
+          var dsp = Math.abs((oldCache.spread || 34) - spread);
+          if (dv < 0.012 && ds < 4.2 && dpx < 0.95 && dpy < 0.95 && dsp < 1.1) return;
+        }
+        if (!oldCache || !oldCache.active) el.classList.add('todo-light-hit');
+        el.style.setProperty('--todo-light-active', strength.toFixed(4));
+        el.style.setProperty('--todo-light-brightness', brightness.toFixed(4));
+        el.style.setProperty('--todo-light-glow', glow.toFixed(4));
+        el.style.setProperty('--todo-light-border-alpha', borderAlpha.toFixed(4));
+        el.style.setProperty('--todo-light-edge-x', px.toFixed(2) + '%');
+        el.style.setProperty('--todo-light-edge-y', py.toFixed(2) + '%');
+        el.style.setProperty('--todo-light-edge-spread', spread.toFixed(2) + '%');
+        el.style.setProperty('--todo-light-border-size', borderSize.toFixed(2) + 'px');
+        el.style.setProperty('--todo-light-sweep', sweep.toFixed(2) + '%');
+        lightValueCache.set(el, { active: true, value: strength, sweep: sweep, edgeX: px, edgeY: py, spread: spread });
+      }
+
+      function resetFabLighting() {
+        if (lightLayer) {
+          lightLayer.classList.remove('is-active');
+          lightLayer.style.opacity = '0';
+          lightLayer.style.transform = 'translate3d(-9999px, -9999px, 0) scale(1)';
+          lightLayer.style.setProperty('--todo-light-energy', '0');
+        }
+        for (var i = 0; i < lightTargets.length; i++) {
+          clearReactiveLightNode(lightTargets[i].el);
+        }
+      }
+
+      function updateFabLighting(ts, frame, size) {
+        if (!lightLayer) return;
+        var motionVX = state.isDragging ? state.dragVX : state.vx;
+        var motionVY = state.isDragging ? state.dragVY : state.vy;
+        var speed = Math.sqrt(motionVX * motionVX + motionVY * motionVY);
+        var targetEnergy = state.isDragging
+          ? clamp(0.66 + speed / 26, 0, 1)
+          : clamp(speed / 38, 0, 0.28);
+        state.lightEnergy = lerp(state.lightEnergy, targetEnergy, clamp(0.2 * frame, 0.09, 0.32));
+        if (!state.isDragging) state.lightEnergy *= Math.pow(0.92, frame);
+
+        var energy = clamp(state.lightEnergy, 0, 1);
+        if (energy < 0.01 && !state.isDragging) {
+          lightLayer.classList.remove('is-active');
+          lightLayer.style.opacity = '0';
+          for (var clearIdx = 0; clearIdx < lightTargets.length; clearIdx++) {
+            applyReactiveLightNode(lightTargets[clearIdx], 0, -140);
+          }
+          return;
+        }
+
+        var centerX = state.x + size * 0.5;
+        var centerY = state.y + size * 0.5;
+        var haloSize = size * (3 + energy * 2);
+        var breath = 1 + Math.sin(ts / 260) * (0.022 + energy * 0.036);
+        var maskX = 50 + Math.sin(ts / 210 + centerX * 0.012) * (5 + energy * 6);
+        var maskY = 50 + Math.cos(ts / 240 + centerY * 0.012) * (4 + energy * 5);
+        var flowX = Math.sin(ts / 170 + centerY * 0.01) * (3 + energy * 9);
+        var flowY = Math.cos(ts / 210 + centerX * 0.01) * (2.6 + energy * 7.2);
+
+        lightLayer.style.setProperty('--todo-light-size', haloSize.toFixed(2) + 'px');
+        lightLayer.style.setProperty('--todo-light-energy', energy.toFixed(4));
+        lightLayer.style.setProperty('--todo-light-mask-x', maskX.toFixed(2) + '%');
+        lightLayer.style.setProperty('--todo-light-mask-y', maskY.toFixed(2) + '%');
+        lightLayer.style.setProperty('--todo-light-flow-x', flowX.toFixed(2) + 'px');
+        lightLayer.style.setProperty('--todo-light-flow-y', flowY.toFixed(2) + 'px');
+        lightLayer.style.opacity = (0.06 + energy * 0.94).toFixed(3);
+        lightLayer.style.transform = 'translate3d(' + (centerX - haloSize * 0.5).toFixed(2) + 'px,' + (centerY - haloSize * 0.5).toFixed(2) + 'px,0) scale(' + breath.toFixed(3) + ')';
+        if (energy > 0.03) lightLayer.classList.add('is-active');
+        else lightLayer.classList.remove('is-active');
+
+        var highSpeedDrag = state.isDragging && speed > 12;
+        if (highSpeedDrag) {
+          state._lightReactiveSkip = !state._lightReactiveSkip;
+        } else {
+          state._lightReactiveSkip = false;
+        }
+        if (state._lightReactiveSkip) return;
+
+        refreshReactiveLightTargets(ts, state.isDragging && (ts - lightBindTs > 220));
+        var reach = haloSize * 0.62;
+        var maxRange = reach + 66;
+        var maxRangeSq = maxRange * maxRange;
+        var sweepBase = (ts * 0.075) % 220;
+        for (var idx = 0; idx < lightTargets.length; idx++) {
+          var node = lightTargets[idx];
+          if (!node.visible) {
+            applyReactiveLightNode(node, 0, -140);
+            continue;
+          }
+          var dx = centerX - node.cx;
+          var dy = centerY - node.cy;
+          if (Math.abs(dx) > maxRange || Math.abs(dy) > maxRange) {
+            applyReactiveLightNode(node, 0, -140);
+            continue;
+          }
+          var dSq = dx * dx + dy * dy;
+          if (dSq > maxRangeSq) {
+            applyReactiveLightNode(node, 0, -140);
+            continue;
+          }
+          var nearestX = clamp(centerX, node.left, node.right);
+          var nearestY = clamp(centerY, node.top, node.bottom);
+          if (centerX > node.left && centerX < node.right && centerY > node.top && centerY < node.bottom) {
+            var toLeft = centerX - node.left;
+            var toRight = node.right - centerX;
+            var toTop = centerY - node.top;
+            var toBottom = node.bottom - centerY;
+            var nearestSide = Math.min(toLeft, toRight, toTop, toBottom);
+            if (nearestSide === toLeft) {
+              nearestX = node.left;
+              nearestY = centerY;
+            } else if (nearestSide === toRight) {
+              nearestX = node.right;
+              nearestY = centerY;
+            } else if (nearestSide === toTop) {
+              nearestX = centerX;
+              nearestY = node.top;
+            } else {
+              nearestX = centerX;
+              nearestY = node.bottom;
+            }
+          }
+          var edgeDX = centerX - nearestX;
+          var edgeDY = centerY - nearestY;
+          var edgeDistance = Math.sqrt(edgeDX * edgeDX + edgeDY * edgeDY);
+          var atten = clamp(1 - edgeDistance / Math.max(56, reach), 0, 1);
+          atten = Math.pow(atten, 0.92) * (0.98 + energy * 0.62);
+          atten = clamp(atten, 0, 1);
+          var sweep = sweepBase + node.cx * 0.09 - 58;
+          var edgeXPct = ((nearestX - node.left) / Math.max(1, node.width)) * 100;
+          var edgeYPct = ((nearestY - node.top) / Math.max(1, node.height)) * 100;
+          var edgeSpread = 12 + atten * 22;
+          applyReactiveLightNode(node, atten, sweep, edgeXPct, edgeYPct, edgeSpread);
+        }
       }
 
       function refreshLayoutCache(ts, force) {
@@ -2410,7 +2865,8 @@
         merge: 0,
         release: 0,
         lastMerge: 0,
-        edgeImpactSquash: 0
+        edgeImpactSquash: 0,
+        lightEnergy: 0
       };
 
       function isMobileView() {
@@ -2845,6 +3301,16 @@
         if (!state.isDragging && speed < 0.18) angle = 0;
 
         glass.style.transform = 'translate3d(' + edgeShiftX.toFixed(2) + 'px,0,0) rotate(' + angle.toFixed(2) + 'deg) scale(' + scaleX.toFixed(3) + ',' + scaleY.toFixed(3) + ')';
+        // Force liquid-glass blur via inline style to avoid stale CSS cache taking precedence.
+        if (state.isDragging) {
+          glass.style.opacity = '0.82';
+          glass.style.backdropFilter = 'blur(56px) saturate(250%) contrast(24%) brightness(150%)';
+          glass.style.webkitBackdropFilter = 'blur(56px) saturate(250%) contrast(24%) brightness(150%)';
+        } else {
+          glass.style.opacity = '0.88';
+          glass.style.backdropFilter = 'blur(44px) saturate(220%) contrast(34%) brightness(138%)';
+          glass.style.webkitBackdropFilter = 'blur(44px) saturate(220%) contrast(34%) brightness(138%)';
+        }
 
         if (icon) {
           var iconScale = clamp(1 - stretch * 0.18 + idlePulse * 0.2, 0.92, 1.06);
@@ -2862,6 +3328,7 @@
 
       function step(ts) {
         if (!isMobileView()) {
+          resetFabLighting();
           state.rafId = 0;
           return;
         }
@@ -2879,6 +3346,7 @@
         if (window.__todoPauseFabPhysics) {
           if (!state.pauseVisualApplied) {
             clearBridge();
+            resetFabLighting();
             updateFusionDockVisual(null);
             if (tabDock) {
               setDockVar('--liquid-impact', '0');
@@ -3038,6 +3506,7 @@
         dockNode = getDockNode(ballPreview.x);
         updateFusionDockVisual(dockNode);
         renderBridge(ballPreview, dockNode);
+        updateFabLighting(ts, frame, size);
         state.prevX = state.x;
         state.prevY = state.y;
         state.rafId = window.requestAnimationFrame(step);
@@ -3245,6 +3714,7 @@
           }
         }
         ensureTabSystem();
+        refreshReactiveLightTargets(performance.now(), true);
         refreshActiveTabBubble(true);
       }, { passive: true });
 
@@ -3253,9 +3723,11 @@
           if (isMobileView()) {
             resizeBridgeCanvas();
             refreshLayoutCache(performance.now(), true);
+            refreshReactiveLightTargets(performance.now(), true);
             ensureAnimation();
           } else {
             clearBridge();
+            resetFabLighting();
           }
         });
       }
@@ -3264,9 +3736,11 @@
         if (document.visibilityState !== 'visible') {
           saveFabPosition();
           clearBridge();
+          resetFabLighting();
         } else {
           resizeBridgeCanvas();
           refreshLayoutCache(performance.now(), true);
+          refreshReactiveLightTargets(performance.now(), true);
           ensureTabSystem();
           refreshActiveTabBubble(true);
           ensureAnimation();
@@ -3277,6 +3751,8 @@
       resizeBridgeCanvas();
       ensureTabSystem();
       applyInitialPosition();
+      refreshReactiveLightTargets(performance.now(), true);
+      resetFabLighting();
       refreshActiveTabBubble(true);
       ensureAnimation();
     }
@@ -4157,6 +4633,9 @@
       var mainHeaderEl = getActiveMainHeader();
       if (mobileSearchBtn) {
         (function () {
+          // Mobile uses the dedicated liquid-glass search toggle below to avoid double-binding conflicts.
+          var shouldSkipLegacyMobileBinding = !!(window.matchMedia && window.matchMedia('(max-width: 900px)').matches);
+          if (shouldSkipLegacyMobileBinding) return;
           var lastSearchTouchTs = 0;
           function toggleMobileSearch(e) {
             try {
@@ -4180,7 +4659,12 @@
             var mobilePanel = document.getElementById('mobile-toolbar-search-panel');
             if (isMobile && mobilePanel) {
               var shouldOpenMobilePanel = mobilePanel.classList.contains('hidden') || !mobilePanel.classList.contains('show');
-              toggleToolbarDropdownPanelWithListAnimation(mobilePanel, shouldOpenMobilePanel);
+              if (typeof toggleToolbarDropdownPanelWithListAnimation === 'function') {
+                toggleToolbarDropdownPanelWithListAnimation(mobilePanel, shouldOpenMobilePanel);
+              } else {
+                mobilePanel.classList.toggle('hidden', !shouldOpenMobilePanel);
+                mobilePanel.classList.toggle('show', shouldOpenMobilePanel);
+              }
               if (shouldOpenMobilePanel) {
                 try { searchInput.focus(); } catch (err) {}
               }
@@ -4213,7 +4697,9 @@
           }
 
           // Avoid binding if an inline handler is present (prevents duplicate toggle)
-          if (!mobileSearchBtn.getAttribute('onclick')) {
+          if (!mobileSearchBtn.dataset.searchBound) {
+            mobileSearchBtn.dataset.searchBound = '1';
+            try { mobileSearchBtn.removeAttribute('onclick'); } catch (err) {}
             mobileSearchBtn.addEventListener('click', toggleMobileSearch);
             mobileSearchBtn.addEventListener('touchend', toggleMobileSearch, { passive: false });
           }
@@ -4226,7 +4712,12 @@
             var mobilePanel = document.getElementById('mobile-toolbar-search-panel');
             if (isMobile && mobilePanel && !mobilePanel.classList.contains('hidden')) {
               if (ev.target === mobileSearchBtn || mobileSearchBtn.contains(ev.target) || mobilePanel.contains(ev.target)) return;
-              toggleToolbarDropdownPanelWithListAnimation(mobilePanel, false);
+              if (typeof toggleToolbarDropdownPanelWithListAnimation === 'function') {
+                toggleToolbarDropdownPanelWithListAnimation(mobilePanel, false);
+              } else {
+                mobilePanel.classList.add('hidden');
+                mobilePanel.classList.remove('show');
+              }
               return;
             }
             var parent = searchInput.parentElement;
@@ -4251,4 +4742,211 @@
           } catch (err) {}
         })();
       }
+
+      // iOS Liquid Glass motion layer (mobile todo only, non-invasive).
+      (function initTodoLiquidGlassMotionLayer() {
+        var isMobile = window.matchMedia && window.matchMedia('(max-width: 900px)').matches;
+        var main = document.getElementById('todo-main');
+        if (!isMobile || !main) return;
+
+        var prefersReduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var body = document.body;
+        var scrollBlurTimer = null;
+        body.classList.add('todo-page-liquid');
+        // Mobile liquid todo uses overlay dropdown panels; keep main content layout static for smoother FPS.
+        try { main.style.removeProperty('padding-top'); } catch (err) {}
+        if (typeof window.applyTodoMobileSearchOffset === 'function' && !window.__todoLgOffsetPatched) {
+          var _applyOffsetRaw = window.applyTodoMobileSearchOffset;
+          window.applyTodoMobileSearchOffset = function (isOpen) {
+            var mobileNow = !!(window.matchMedia && window.matchMedia('(max-width: 900px)').matches);
+            if (mobileNow && document.body && document.body.classList && document.body.classList.contains('todo-page-liquid')) return;
+            return _applyOffsetRaw(isOpen);
+          };
+          window.__todoLgOffsetPatched = '1';
+        }
+        var header = document.querySelector('.unified-top-header-dock .unified-top-header-shell#main-header') || document.getElementById('main-header');
+        var toolbar = document.getElementById('todo-toolbar');
+        var cards = Array.from(document.querySelectorAll('#task-list-container .task-group-card'));
+        var fab = document.getElementById('add-task-fab');
+        var footer = document.querySelector('#todo-app-shell + footer.glass-tab');
+
+        if (header) header.classList.add('todo-lg-enter-header');
+        if (toolbar) toolbar.classList.add('todo-lg-enter-toolbar');
+        cards.forEach(function (card, idx) {
+          card.classList.add('todo-lg-enter-card');
+          card.style.setProperty('--todo-lg-delay', (0.12 + idx * 0.08).toFixed(2) + 's');
+        });
+        if (fab) fab.classList.remove('todo-lg-enter-fab');
+        if (footer) footer.classList.add('todo-lg-enter-footer');
+
+        if (!prefersReduce) {
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              body.classList.add('todo-lg-ready');
+            });
+          });
+        } else {
+          body.classList.add('todo-lg-ready');
+        }
+
+        // Date labels: iOS style text, e.g. 4月3日·周五
+        var weekdayMap = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+        function formatDayLabel(d) {
+          return (d.getMonth() + 1) + '月' + d.getDate() + '日·' + weekdayMap[d.getDay()];
+        }
+        var todayInfo = document.getElementById('today-date-info');
+        var tomorrowInfo = document.getElementById('tomorrow-date-info');
+        var now = new Date();
+        var tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+        if (todayInfo) todayInfo.textContent = formatDayLabel(now);
+        if (tomorrowInfo) tomorrowInfo.textContent = formatDayLabel(tomorrow);
+
+        // Keep sync badge visual aligned with required pill style.
+        var syncBadge = document.getElementById('sync-status-badge');
+        if (syncBadge) {
+          var txt = (syncBadge.textContent || '').trim();
+          if (!syncBadge.querySelector('i')) {
+            syncBadge.innerHTML = '<i class="fas fa-cloud-arrow-up mr-1"></i>' + (txt || '待同步(3)');
+          }
+        }
+
+        function triggerHaptic() {
+          if (prefersReduce) return;
+          if (!navigator || typeof navigator.vibrate !== 'function') return;
+          try { navigator.vibrate(8); } catch (err) {}
+        }
+
+        // Water ripple effect for buttons/cards/tabs (originates at click point).
+        function bindRipple(selector) {
+          var nodes = document.querySelectorAll(selector);
+          nodes.forEach(function (el) {
+            if (!el || el.dataset.todoLgRippleBound) return;
+            el.dataset.todoLgRippleBound = '1';
+            el.addEventListener('pointerdown', function (ev) {
+              if (prefersReduce) return;
+              triggerHaptic();
+              var rect = el.getBoundingClientRect();
+              var localX = ev.clientX - rect.left;
+              var localY = ev.clientY - rect.top;
+              var dot = document.createElement('span');
+              dot.className = 'todo-lg-ripple';
+              dot.style.left = localX + 'px';
+              dot.style.top = localY + 'px';
+              el.appendChild(dot);
+              var dot2 = document.createElement('span');
+              dot2.className = 'todo-lg-ripple todo-lg-ripple--second';
+              dot2.style.left = localX + 'px';
+              dot2.style.top = localY + 'px';
+              window.setTimeout(function () {
+                if (el && el.appendChild) el.appendChild(dot2);
+              }, 70);
+              el.classList.add('todo-lg-press-glow');
+              window.setTimeout(function () {
+                if (dot && dot.parentNode) dot.parentNode.removeChild(dot);
+                if (dot2 && dot2.parentNode) dot2.parentNode.removeChild(dot2);
+                el.classList.remove('todo-lg-press-glow');
+              }, 560);
+            }, { passive: true });
+          });
+        }
+
+        bindRipple(
+          '#sort-filter-btn, #select-mode-btn, #mobile-search-btn, #batch-complete-btn, #batch-delete-btn, #batch-cancel-btn, ' +
+          '#notification-btn, #user-menu-btn, .btn-primary-glass, .btn-secondary-glass, .task-action-btn, .priority-btn, ' +
+          '.datetime-select-trigger, .datetime-quick-btn, .datetime-calendar-nav, .datetime-calendar-action, .modal-tag-btn, .subtask-compose-btn, ' +
+          '.tab-item, .task-group-card, .task-card'
+        );
+
+        // Search panel fallback: force open/close reliably on mobile.
+        (function bindStrongMobileSearchToggle() {
+          var searchBtn = document.getElementById('mobile-search-btn');
+          var searchPanel = document.getElementById('mobile-toolbar-search-panel');
+          var searchInput = document.getElementById('mobile-toolbar-search-input');
+          if (!searchBtn || !searchPanel || searchBtn.dataset.todoLgSearchBound) return;
+          searchBtn.dataset.todoLgSearchBound = '1';
+          var lastTouchTs = 0;
+          try {
+            searchBtn.removeAttribute('onclick');
+            searchBtn.onclick = null;
+          } catch (err) {}
+          window.toggleMobileSearchInline = function (e) {
+            try { e && e.preventDefault && e.preventDefault(); } catch (err) {}
+            try { e && e.stopPropagation && e.stopPropagation(); } catch (err) {}
+            return false;
+          };
+
+          function setOpen(open) {
+            searchPanel.classList.remove('todo-lg-force-open');
+            toggleToolbarDropdownPanel(searchPanel, !!open);
+            if (open) {
+              window.setTimeout(function () {
+                try { searchInput && searchInput.focus(); } catch (err) {}
+              }, 110);
+            }
+          }
+
+          function onTap(ev) {
+            if (ev && ev.type === 'touchend') {
+              lastTouchTs = Date.now();
+            } else if (ev && ev.type === 'click' && Date.now() - lastTouchTs < 420) {
+              ev && ev.preventDefault && ev.preventDefault();
+              return;
+            }
+            ev && ev.preventDefault && ev.preventDefault();
+            ev && ev.stopImmediatePropagation && ev.stopImmediatePropagation();
+            ev && ev.stopPropagation && ev.stopPropagation();
+            var opened = searchPanel.classList.contains('show') && !searchPanel.classList.contains('hidden');
+            setOpen(!opened);
+          }
+
+          searchBtn.addEventListener('click', onTap, true);
+          searchBtn.addEventListener('touchend', onTap, { passive: false, capture: true });
+        })();
+
+        // Tab pop feedback.
+        var tabs = document.querySelectorAll('#todo-app-shell + footer.glass-tab .tab-item');
+        tabs.forEach(function (tab) {
+          if (!tab || tab.dataset.todoLgTabBound) return;
+          tab.dataset.todoLgTabBound = '1';
+          tab.addEventListener('click', function () {
+            if (prefersReduce) return;
+            triggerHaptic();
+            tab.classList.remove('todo-lg-tab-pop');
+            void tab.offsetWidth;
+            tab.classList.add('todo-lg-tab-pop');
+            window.setTimeout(function () { tab.classList.remove('todo-lg-tab-pop'); }, 360);
+          });
+        });
+
+        // Lightweight parallax while scrolling (cards + background orbs).
+        if (!prefersReduce) {
+          var ticking = false;
+          var orbs = Array.from(document.querySelectorAll('.bg-orb'));
+          var parallax = function () {
+            ticking = false;
+            var y = window.scrollY || document.documentElement.scrollTop || 0;
+            cards.forEach(function (card, idx) {
+              card.style.backgroundPosition = '50% ' + (50 + (y * 0.02 * (idx % 2 ? 1 : -1))).toFixed(2) + '%';
+            });
+            orbs.forEach(function (orb, idx) {
+              var amount = (idx % 2 ? -1 : 1) * (0.02 + idx * 0.004);
+              orb.style.transform = 'translate3d(0,' + (y * amount).toFixed(2) + 'px,0)';
+            });
+          };
+          window.addEventListener('scroll', function () {
+            body.classList.add('todo-lg-scrolling');
+            if (scrollBlurTimer) {
+              clearTimeout(scrollBlurTimer);
+              scrollBlurTimer = null;
+            }
+            scrollBlurTimer = setTimeout(function () {
+              body.classList.remove('todo-lg-scrolling');
+              scrollBlurTimer = null;
+            }, 170);
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(parallax);
+          }, { passive: true });
+        }
+      })();
     });
