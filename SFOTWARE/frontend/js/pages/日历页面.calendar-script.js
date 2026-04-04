@@ -927,7 +927,7 @@
           if (addTaskBtnTop) {
             addTaskBtnTop.setAttribute('href', '待办页面.html?prefillDate=' + encodeURIComponent(toDateValueYMD(selected)));
           }
-          if (titleEl) titleEl.textContent = formatDayTitle(selected) + ' · 任务';
+          if (titleEl) titleEl.textContent = formatDayTitle(selected);
 
           var tasks = getSelectedDateTasks();
           selectedDayBatchIds = selectedDayBatchIds.filter(function (id) {

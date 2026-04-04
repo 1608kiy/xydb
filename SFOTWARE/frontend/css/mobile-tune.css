@@ -2850,3 +2850,570 @@ a,
     scroll-behavior: auto !important;
   }
 }
+
+/* Mobile todo page: ultra-transparent liquid-glass skin (style only, no behavior changes). */
+@media (max-width: 900px) {
+  body.software-app.todo-page-liquid {
+    --todo-ios26-glass-fill: rgba(255, 255, 255, 0.055);
+    --todo-ios26-glass-border: rgba(255, 255, 255, 0.18);
+    --todo-ios26-glass-shadow:
+      0 6px 24px rgba(26, 41, 71, 0.12),
+      0 2px 10px rgba(26, 41, 71, 0.07),
+      inset 0 1px 0 rgba(255, 255, 255, 0.58),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.58),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    --todo-ios26-glass-backdrop: blur(30px) saturate(132%) brightness(106%);
+  }
+
+  body.software-app.todo-page-liquid #todo-main .task-group-card,
+  body.software-app.todo-page-liquid #todo-main .task-card,
+  body.software-app.todo-page-liquid #todo-main .task-empty-state,
+  body.software-app.todo-page-liquid #todo-toolbar,
+  body.software-app.todo-page-liquid #batch-actions-row.toolbar-dropdown-panel,
+  body.software-app.todo-page-liquid #mobile-toolbar-search-panel.toolbar-dropdown-panel,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab,
+  body.software-app.todo-page-liquid #main-header .container > .flex.items-center.space-x-4 > a,
+  body.software-app.todo-page-liquid #main-header #notification-btn,
+  body.software-app.todo-page-liquid #main-header #user-menu-btn,
+  body.software-app.todo-page-liquid #sort-filter-btn,
+  body.software-app.todo-page-liquid #select-mode-btn,
+  body.software-app.todo-page-liquid #mobile-search-btn,
+  body.software-app.todo-page-liquid #batch-complete-btn,
+  body.software-app.todo-page-liquid #batch-delete-btn,
+  body.software-app.todo-page-liquid #batch-cancel-btn,
+  body.software-app.todo-page-liquid .btn-primary-glass,
+  body.software-app.todo-page-liquid .btn-secondary-glass,
+  body.software-app.todo-page-liquid .task-action-btn {
+    border-color: var(--todo-ios26-glass-border) !important;
+    background:
+      linear-gradient(135deg,
+        rgba(255, 255, 255, 0.14) 0%,
+        rgba(255, 255, 255, 0.03) 48%,
+        rgba(170, 225, 255, 0.1) 100%),
+      var(--todo-ios26-glass-fill) !important;
+    box-shadow: var(--todo-ios26-glass-shadow) !important;
+    backdrop-filter: var(--todo-ios26-glass-backdrop) !important;
+    -webkit-backdrop-filter: var(--todo-ios26-glass-backdrop) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .task-empty-state {
+    background:
+      linear-gradient(138deg,
+        rgba(255, 255, 255, 0.2) 0%,
+        rgba(255, 255, 255, 0.07) 44%,
+        rgba(176, 232, 255, 0.12) 100%),
+      rgba(255, 255, 255, 0.06) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab {
+    background:
+      linear-gradient(138deg,
+        rgba(255, 255, 255, 0.2) 0%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(173, 226, 255, 0.13) 100%),
+      rgba(255, 255, 255, 0.065) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item i {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: 0 !important;
+  }
+
+  body.software-app.todo-page-liquid .todo-liquid-fab__glass {
+    border: 1px solid rgba(255, 255, 255, 0.32) !important;
+    background:
+      linear-gradient(180deg,
+        rgba(255, 255, 255, 0.28) 0%,
+        rgba(255, 255, 255, 0.1) 54%,
+        rgba(188, 236, 255, 0.2) 100%),
+      radial-gradient(120% 148% at var(--sheen-x, 42%) var(--sheen-y, 32%),
+        rgba(255, 255, 255, 0.34),
+        rgba(255, 255, 255, 0.08) 46%,
+        rgba(255, 255, 255, 0.03)) !important;
+    box-shadow:
+      0 8px 24px rgba(26, 41, 71, 0.12),
+      0 2px 10px rgba(26, 41, 71, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.62),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.62),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.14) !important;
+    backdrop-filter: blur(34px) saturate(142%) brightness(108%) !important;
+    -webkit-backdrop-filter: blur(34px) saturate(142%) brightness(108%) !important;
+  }
+
+  body.software-app.todo-page-liquid .todo-liquid-fab.dragging .todo-liquid-fab__glass {
+    backdrop-filter: blur(34px) saturate(142%) brightness(108%) !important;
+    -webkit-backdrop-filter: blur(34px) saturate(142%) brightness(108%) !important;
+  }
+}
+
+/* Calendar mobile content-only liquid glass skin (does NOT touch top header / bottom tab). */
+@media (max-width: 900px) {
+  body.software-app.calendar-page-liquid {
+    background: url('https://picsum.photos/1920/1080?random=1') center/cover fixed !important;
+  }
+
+  body.software-app.calendar-page-liquid .bg-orb {
+    display: none !important;
+  }
+
+  body.software-app.calendar-page-liquid {
+    --calendar-glass-bg: rgba(255, 255, 255, 0.05);
+    --calendar-glass-border: rgba(255, 255, 255, 0.1);
+    --calendar-glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --calendar-glass-backdrop: blur(30px);
+    --calendar-text-main: rgba(255, 255, 255, 0.98);
+    --calendar-text-sub: rgba(255, 255, 255, 0.82);
+    --calendar-warm: #f1d09a;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .glass-card,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-task-stream,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-secondary-shell,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-empty,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-task-item,
+  body.software-app.calendar-page-liquid #calendar-main .scheduled-task-item,
+  body.software-app.calendar-page-liquid #calendar-main .task-item,
+  body.software-app.calendar-page-liquid #calendar-main .event-item,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-cell,
+  body.software-app.calendar-page-liquid #calendar-main .day-cell,
+  body.software-app.calendar-page-liquid #calendar-main #month-grid > div,
+  body.software-app.calendar-page-liquid #calendar-main #week-grid > div,
+  body.software-app.calendar-page-liquid #calendar-main #day-grid > div,
+  body.software-app.calendar-page-liquid #calendar-main .dropdown-menu,
+  body.software-app.calendar-page-liquid #calendar-main .datetime-select-menu,
+  body.software-app.calendar-page-liquid #calendar-main .detail-datetime-panel,
+  body.software-app.calendar-page-liquid #calendar-main .detail-datetime-shell {
+    background: var(--calendar-glass-bg) !important;
+    backdrop-filter: var(--calendar-glass-backdrop) !important;
+    -webkit-backdrop-filter: var(--calendar-glass-backdrop) !important;
+    border: 1px solid var(--calendar-glass-border) !important;
+    box-shadow: var(--calendar-glass-shadow) !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .btn-glass,
+  body.software-app.calendar-page-liquid #calendar-main .btn-primary,
+  body.software-app.calendar-page-liquid #calendar-main .view-btn,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-nav-btn,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-empty-cta,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-secondary-header,
+  body.software-app.calendar-page-liquid #calendar-main .category-chip,
+  body.software-app.calendar-page-liquid #calendar-main .datetime-select-trigger,
+  body.software-app.calendar-page-liquid #calendar-main .datetime-quick-btn,
+  body.software-app.calendar-page-liquid #calendar-main .datetime-calendar-nav,
+  body.software-app.calendar-page-liquid #calendar-main .datetime-calendar-action,
+  body.software-app.calendar-page-liquid #calendar-main #selected-day-sort {
+    background: var(--calendar-glass-bg) !important;
+    backdrop-filter: var(--calendar-glass-backdrop) !important;
+    -webkit-backdrop-filter: var(--calendar-glass-backdrop) !important;
+    border: 1px solid var(--calendar-glass-border) !important;
+    box-shadow: var(--calendar-glass-shadow) !important;
+    color: var(--calendar-text-main) !important;
+  }
+
+  /* Cover mobile date/view strip in main area (the block with 4月4日星期六 + 月周日). */
+  body.software-app.calendar-page-liquid #calendar-mobile-toolbar .calendar-mobile-toolbar-inner > div,
+  body.software-app.calendar-page-liquid #calendar-mobile-toolbar .calendar-mobile-meta-row .glass-card,
+  body.software-app.calendar-page-liquid #calendar-mobile-toolbar .calendar-mobile-view-row > .view-btn,
+  body.software-app.calendar-page-liquid #calendar-mobile-toolbar .calendar-mobile-view-row > [data-view],
+  body.software-app.calendar-page-liquid #calendar-main #today-quick-btn {
+    background: var(--calendar-glass-bg) !important;
+    backdrop-filter: var(--calendar-glass-backdrop) !important;
+    -webkit-backdrop-filter: var(--calendar-glass-backdrop) !important;
+    border: 1px solid var(--calendar-glass-border) !important;
+    box-shadow: var(--calendar-glass-shadow) !important;
+    color: var(--calendar-text-main) !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .glass-card,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-task-stream,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-secondary-shell,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-task-item,
+  body.software-app.calendar-page-liquid #calendar-main .btn-glass,
+  body.software-app.calendar-page-liquid #calendar-main .btn-primary,
+  body.software-app.calendar-page-liquid #calendar-main .view-btn,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-nav-btn,
+  body.software-app.calendar-page-liquid #calendar-main .category-chip,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-secondary-header {
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Remove unwanted top/bottom white hairlines from pseudo highlight layers. */
+  body.software-app.calendar-page-liquid #calendar-main .glass-card::before,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-task-stream::before,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-secondary-shell::before,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-task-item::before,
+  body.software-app.calendar-page-liquid #calendar-main .btn-glass::before,
+  body.software-app.calendar-page-liquid #calendar-main .btn-primary::before,
+  body.software-app.calendar-page-liquid #calendar-main .view-btn::before,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-nav-btn::before,
+  body.software-app.calendar-page-liquid #calendar-main .category-chip::before,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-secondary-header::before,
+  body.software-app.calendar-page-liquid #calendar-main .glass-card::after,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-task-stream::after,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-secondary-shell::after,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-task-item::after,
+  body.software-app.calendar-page-liquid #calendar-main .btn-glass::after,
+  body.software-app.calendar-page-liquid #calendar-main .btn-primary::after,
+  body.software-app.calendar-page-liquid #calendar-main .view-btn::after,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-nav-btn::after,
+  body.software-app.calendar-page-liquid #calendar-main .category-chip::after,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-secondary-header::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .text-gray-800,
+  body.software-app.calendar-page-liquid #calendar-main #month-title,
+  body.software-app.calendar-page-liquid #calendar-main #selected-day-title,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-secondary-shell .text-sm.font-semibold {
+    color: var(--calendar-text-main) !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .text-gray-500,
+  body.software-app.calendar-page-liquid #calendar-main .text-gray-600,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-empty,
+  body.software-app.calendar-page-liquid #calendar-main #selected-day-batch-tip,
+  body.software-app.calendar-page-liquid #calendar-main #ai-schedule-status {
+    color: var(--calendar-text-sub) !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .category-chip.active {
+    border-color: rgba(255, 255, 255, 0.66) !important;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22), var(--calendar-glass-shadow) !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .view-btn.active,
+  body.software-app.calendar-page-liquid #calendar-main .btn-primary {
+    color: #fff6e9 !important;
+    border-color: rgba(255, 230, 184, 0.7) !important;
+    background: linear-gradient(145deg, rgba(245, 198, 132, 0.22), rgba(255, 255, 255, 0.06)) !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main #month-grid > div,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-cell {
+    color: rgba(255, 255, 255, 0.92) !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main #month-grid > div.selected-date-cell,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-cell.selected-date-cell,
+  body.software-app.calendar-page-liquid #calendar-main .day-cell.selected-date-cell {
+    border-color: rgba(255, 236, 205, 0.96) !important;
+    box-shadow: 0 0 0 1px rgba(255, 236, 205, 0.52), var(--calendar-glass-shadow) !important;
+    background: linear-gradient(145deg, rgba(255, 197, 106, 0.2), rgba(255, 255, 255, 0.08)) !important;
+    color: #fff1d6 !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main #month-grid > div.other-month,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-cell.other-month {
+    color: rgba(255, 255, 255, 0.62) !important;
+  }
+
+  /* Day view: keep outer/inner empty-state corners consistent. */
+  body.software-app.calendar-page-liquid #calendar-main #day-grid > .col-span-10 {
+    width: calc(100% - 8px) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    transform: translateX(4px);
+    border-radius: 12px !important;
+    overflow: hidden !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main #day-grid > .col-span-10 > .rounded-2xl.border-dashed {
+    width: calc(100% - 10px) !important;
+    margin: 0 auto !important;
+    border-radius: 10px !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .text-primary {
+    color: var(--calendar-warm) !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .dropdown-menu,
+  body.software-app.calendar-page-liquid #calendar-main .datetime-select-menu {
+    opacity: 0;
+    transform: translate3d(0, -6px, 0) scale(0.985);
+    transition: opacity 0.2s ease-out, transform 0.3s ease !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .dropdown-menu.show,
+  body.software-app.calendar-page-liquid #calendar-main .datetime-select-menu.show {
+    opacity: 1 !important;
+    transform: translate3d(0, 0, 0) scale(1) !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .dropdown-menu a,
+  body.software-app.calendar-page-liquid #calendar-main .datetime-select-option {
+    color: var(--calendar-text-main) !important;
+    border-radius: 12px !important;
+    transition: 0.3s ease;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .dropdown-menu a:hover,
+  body.software-app.calendar-page-liquid #calendar-main .datetime-select-option:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12) !important;
+  }
+
+  /* Make sure scheduled card and calendar block are visually separated (not one shared shell). */
+  body.software-app.calendar-page-liquid #calendar-main .calendar-container {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Category chips: keep all 5 tags visible in one row without clipping. */
+  body.software-app.calendar-page-liquid #calendar-main #calendar-top-filter-row {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+    overflow: visible !important;
+    padding-bottom: 0 !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main #calendar-top-filter-row .category-chip {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 40px !important;
+    padding: 0 7px !important;
+    justify-content: center !important;
+    gap: 6px !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main #calendar-top-filter-row .category-chip-label {
+    font-size: 12.5px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main #calendar-top-filter-row .category-chip-dot {
+    width: 10px !important;
+    height: 10px !important;
+  }
+
+  /* Remove dark focus ring on controls. */
+  body.software-app.calendar-page-liquid #calendar-main .btn-glass:focus,
+  body.software-app.calendar-page-liquid #calendar-main .btn-primary:focus,
+  body.software-app.calendar-page-liquid #calendar-main .btn-glass:focus-visible,
+  body.software-app.calendar-page-liquid #calendar-main .btn-primary:focus-visible,
+  body.software-app.calendar-page-liquid #calendar-main .view-btn:focus,
+  body.software-app.calendar-page-liquid #calendar-main .view-btn:focus-visible,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-nav-btn:focus,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-nav-btn:focus-visible,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-secondary-header:focus,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-secondary-header:focus-visible,
+  body.software-app.calendar-page-liquid #calendar-main .datetime-select-trigger:focus,
+  body.software-app.calendar-page-liquid #calendar-main .datetime-select-trigger:focus-visible,
+  body.software-app.calendar-page-liquid #calendar-main #selected-day-sort:focus,
+  body.software-app.calendar-page-liquid #calendar-main #selected-day-sort:focus-visible,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-trigger:focus,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-trigger:focus-visible {
+    outline: none !important;
+    box-shadow: var(--calendar-glass-shadow) !important;
+  }
+
+  /* Liquid custom dropdown for selected-day-sort. */
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-shell {
+    position: relative;
+    flex: 0 0 auto;
+    min-width: 106px;
+    z-index: 48;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-native-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    left: 0 !important;
+    top: 0 !important;
+    border: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-trigger {
+    width: 100%;
+    min-height: 40px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0 12px;
+    white-space: nowrap;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: transparent;
+    outline: none !important;
+    border-color: var(--calendar-glass-border) !important;
+    background: var(--calendar-glass-bg) !important;
+    color: var(--calendar-text-main) !important;
+    writing-mode: horizontal-tb !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-trigger:active {
+    outline: none !important;
+    border-color: var(--calendar-glass-border) !important;
+    box-shadow: var(--calendar-glass-shadow) !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-trigger i {
+    transition: transform 220ms cubic-bezier(0.25, 1, 0.36, 1);
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-shell.open .calendar-liquid-sort-trigger i {
+    transform: rotate(180deg);
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-menu {
+    position: absolute;
+    left: 0;
+    right: auto;
+    top: calc(100% + 6px);
+    width: 182px;
+    max-width: calc(100vw - 40px);
+    border-radius: 14px !important;
+    padding: 6px !important;
+    background:
+      linear-gradient(165deg, rgba(255, 255, 255, 0.115), rgba(255, 255, 255, 0.02)) !important;
+    backdrop-filter: blur(34px) saturate(138%) brightness(108%) !important;
+    -webkit-backdrop-filter: blur(34px) saturate(138%) brightness(108%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow:
+      0 10px 28px rgba(22, 30, 60, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.42) !important;
+    opacity: 0;
+    transform: translate3d(0, -6px, 0) scale(0.985);
+    transform-origin: top left;
+    pointer-events: none;
+    z-index: 60;
+    overflow: hidden;
+    transition:
+      opacity 0.2s ease-out,
+      transform 0.24s cubic-bezier(0.25, 1, 0.36, 1) !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-menu.show {
+    opacity: 1 !important;
+    transform: translate3d(0, 0, 0) scale(1) !important;
+    pointer-events: auto;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-option {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: var(--calendar-text-main);
+    text-align: left;
+    padding: 11px 10px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.1;
+    cursor: pointer;
+    transition: 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    white-space: nowrap;
+    writing-mode: horizontal-tb !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-option.active {
+    background: rgba(124, 168, 255, 0.2);
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-option:hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-menu.dropdown-closing {
+    opacity: 0 !important;
+    transform: translate3d(0, -6px, 0) scale(0.985) !important;
+    pointer-events: none !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-option i {
+    width: 14px;
+    text-align: center;
+    color: rgba(164, 197, 255, 0.94);
+    flex: 0 0 14px;
+  }
+
+  /* Keep selected-day header title + controls on one row in mobile. */
+  body.software-app.calendar-page-liquid #calendar-main #selected-day-task-section {
+    overflow: visible !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main #selected-day-task-section > .flex.items-center.justify-between.gap-3.mb-3 {
+    flex-wrap: nowrap !important;
+    align-items: flex-start !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main #selected-day-title {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: clip !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main #selected-day-task-section > .flex.items-center.justify-between.gap-3.mb-3 > .flex.items-center.gap-2 {
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main #selected-day-multi-toggle {
+    min-width: 52px !important;
+    white-space: nowrap !important;
+    writing-mode: horizontal-tb !important;
+    text-align: center !important;
+    line-height: 1 !important;
+  }
+
+  /* Keep date + month/week/day controls visually aligned in one row area. */
+  body.software-app.calendar-page-liquid #calendar-mobile-toolbar .calendar-mobile-toolbar-inner > div {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-mobile-toolbar .calendar-mobile-meta-row {
+    width: auto !important;
+    flex: 0 0 auto !important;
+    min-height: 38px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-mobile-toolbar .calendar-mobile-view-row {
+    width: auto !important;
+    flex: 1 1 auto !important;
+    min-height: 38px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-mobile-toolbar .calendar-mobile-view-row > .view-btn,
+  body.software-app.calendar-page-liquid #calendar-mobile-toolbar .calendar-mobile-view-row > [data-view] {
+    height: 38px !important;
+    min-height: 38px !important;
+    line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+  }
+}
