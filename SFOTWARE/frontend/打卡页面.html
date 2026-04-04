@@ -132,11 +132,12 @@
           <div class="space-y-4" id="checkin-main-column">
             <!-- 今日打卡卡片 -->
             <section
-              class="card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 md:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 fade-in"
+              id="today-checkin-card"
+              class="checkin-hero-card depth-card interactive-glow reveal-card card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 md:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 fade-in scroll-mt-24"
             >
               <div class="flex items-start space-x-3">
                 <div
-                  class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary text-2xl float"
+                  class="checkin-icon-badge w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary text-2xl float"
                 >
 ✨
                 </div>
@@ -150,63 +151,111 @@
                   <p class="text-xs text-gray-500 mt-1">
                     选择一个打卡类型，写下你今天的小小进步。
                   </p>
-                  <div class="mt-3 flex flex-wrap gap-2 text-xs">
-                    <button
-                      class="type-btn study selected"
-                      data-type="学习"
-                    >
+                  <div class="mt-3 space-y-2">
+                    <div class="flex flex-wrap gap-2 text-xs" id="checkin-type-selector">
+                      <button
+                        class="type-btn study selected"
+                        data-type="学习"
+                        type="button"
+                      >
                       <i class="fas fa-book-open"></i>
                       <span>学习</span>
-                    </button>
-                    <button
-                      class="type-btn sport"
-                      data-type="运动"
-                    >
+                      </button>
+                      <button
+                        class="type-btn sport"
+                        data-type="运动"
+                        type="button"
+                      >
                       <i class="fas fa-running"></i>
                       <span>运动</span>
-                    </button>
-                    <button
-                      class="type-btn wake"
-                      data-type="早起"
-                    >
+                      </button>
+                      <button
+                        class="type-btn wake"
+                        data-type="早起"
+                        type="button"
+                      >
                       <i class="fas fa-sun"></i>
                       <span>早起</span>
-                    </button>
-                    <button
-                      class="type-btn read"
-                      data-type="阅读"
-                    >
+                      </button>
+                      <button
+                        class="type-btn read"
+                        data-type="阅读"
+                        type="button"
+                      >
                       <i class="fas fa-book"></i>
                       <span>阅读</span>
-                    </button>
+                      </button>
+                    </div>
+                    <p class="text-[11px] text-gray-400">
+                      每次只能选择一种打卡类型
+                    </p>
                   </div>
                 </div>
               </div>
-              <div class="w-full md:w-64 space-y-2">
-                <textarea
-                  id="checkin-note"
-                  rows="2"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary glass-input resize-none"
-                  placeholder="写下今天做了什么，例如：完成 2 轮番茄学习、跑步 3 公里、6 点起床等"
-                ></textarea>
-                <button
-                  id="checkin-btn"
-                  class="checkin-btn w-full"
-                >
-                  <i class="fas fa-check mr-2"></i>
-                  今日打卡
-                </button>
-                <p
-                  id="checkin-status"
-                  class="text-[11px] text-gray-500 text-center"
-                >
-                  今日尚未打卡
-                </p>
+              <div class="w-full md:w-72">
+                <div id="checkin-form-panel" class="space-y-2">
+                  <textarea
+                    id="checkin-note"
+                    rows="2"
+                    class="checkin-note-field w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary glass-input resize-none"
+                    placeholder="写下今天做了什么…"
+                  ></textarea>
+                  <button
+                    id="checkin-btn"
+                    class="checkin-btn energy-btn w-full"
+                  >
+                    <i class="fas fa-check mr-2"></i>
+                    今日打卡
+                  </button>
+                </div>
+                <div id="checkin-success-panel" class="checkin-success hidden interactive-glow" aria-live="polite">
+                  <div class="success-burst" aria-hidden="true">
+                    <span class="success-burst-dot dot-1"></span>
+                    <span class="success-burst-dot dot-2"></span>
+                    <span class="success-burst-dot dot-3"></span>
+                    <span class="success-burst-dot dot-4"></span>
+                  </div>
+                  <div class="checkin-success-icon">
+                    <i class="fas fa-check"></i>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <p id="checkin-success-title" class="text-sm font-semibold text-emerald-700">
+                      今日学习打卡完成 ✓
+                    </p>
+                    <p id="checkin-success-summary" class="checkin-success-summary mt-1 text-xs text-emerald-700/80">
+                      继续保持今天的节奏，让每一次坚持都留下痕迹。
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section
+              id="checkin-summary-grid"
+              class="summary-grid-shell depth-card interactive-glow reveal-card card-shadow bg-white/60 backdrop-blur-sm rounded-2xl p-3 fade-in"
+            >
+              <div class="grid grid-cols-2 gap-2">
+                <div class="summary-stat interactive-glow">
+                  <div class="summary-stat-label">本月打卡天数</div>
+                  <div id="month-days" class="summary-stat-value text-gray-800">12</div>
+                </div>
+                <div class="summary-stat interactive-glow">
+                  <div class="summary-stat-label">最长连续打卡</div>
+                  <div id="max-streak" class="summary-stat-value text-gray-800">21</div>
+                </div>
+                <div class="summary-stat interactive-glow">
+                  <div class="summary-stat-label">当前连续打卡</div>
+                  <div id="current-streak" class="summary-stat-value text-primary">15</div>
+                </div>
+                <div class="summary-stat interactive-glow">
+                  <div class="summary-stat-label">本周打卡次数</div>
+                  <div id="week-count" class="summary-stat-value text-gray-800">5</div>
+                </div>
               </div>
             </section>
 
             <!-- 打卡日历 -->
-            <section class="card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 fade-in">
+            <section class="checkin-calendar-card depth-card interactive-glow reveal-card card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 fade-in">
               <div class="flex items-center justify-between mb-3">
                 <div class="flex items-center space-x-2">
                   <button id="prev-month" class="calendar-nav-btn text-gray-500">
@@ -219,17 +268,13 @@
                     <i class="fas fa-chevron-right text-sm"></i>
                   </button>
                 </div>
-                <div class="flex items-center space-x-2 text-xs text-gray-500">
-                  <span
-                    class="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 text-blue-600"
-                  >
-                    <span class="w-2 h-2 rounded-full bg-blue-400 mr-1 animate-pulse"></span>
+                <div class="flex items-center gap-3 text-xs text-gray-500">
+                  <span class="calendar-legend-item">
+                    <span class="calendar-legend-dot solid"></span>
                     已打卡
                   </span>
-                  <span
-                    class="inline-flex items-center px-2 py-0.5 rounded-full bg-teal-50 text-teal-600"
-                  >
-                    <span class="w-2 h-2 rounded-full bg-teal-500 mr-1 animate-pulse"></span>
+                  <span class="calendar-legend-item">
+                    <span class="calendar-legend-dot outline"></span>
                     连续打卡
                   </span>
                 </div>
@@ -238,7 +283,7 @@
             </section>
 
             <!-- 历史打卡记录 -->
-            <section class="card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 fade-in">
+            <section class="checkin-history-card depth-card interactive-glow reveal-card card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 fade-in">
               <div class="flex items-center justify-between mb-3">
                 <h2 class="text-sm font-semibold text-gray-800">
                   最近打卡记录
@@ -254,58 +299,25 @@
                 id="checkin-list"
                 class="space-y-2 text-xs text-gray-700 max-h-56 overflow-y-auto scrollbar-hide"
               ></ul>
+              <div id="checkin-empty-state" class="hidden flex flex-col items-center justify-center py-8 text-center">
+                <div class="text-3xl leading-none text-gray-300" aria-hidden="true">📋</div>
+                <p class="mt-3 text-sm text-gray-500">还没有打卡记录</p>
+                <button
+                  id="empty-checkin-cta"
+                  type="button"
+                  class="empty-checkin-link mt-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                >
+                  立即打卡 →
+                </button>
+              </div>
             </section>
           </div>
 
           <!-- 右侧：打卡统计与建议 -->
           <div class="space-y-4" id="checkin-side-column">
-            <!-- 统计概览 -->
-            <section
-              class="card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-4 md:p-5 fade-in"
-            >
-              <h2 class="text-sm font-semibold text-gray-800 mb-3">
-                打卡统计概要
-              </h2>
-              <div class="grid grid-cols-2 gap-3 text-center text-xs">
-                <div class="stat-card">
-                  <div class="text-gray-500 mb-1">选中月份打卡天数</div>
-                  <div
-                    id="month-days"
-                    class="text-xl font-bold text-gray-800"
-                  >
-                    12
-                  </div>
-                </div>
-                <div class="stat-card">
-                  <div class="text-gray-500 mb-1">最长连续打卡</div>
-                  <div
-                    id="max-streak"
-                    class="text-xl font-bold text-gray-800"
-                  >
-                    21
-                  </div>
-                </div>
-                <div class="stat-card">
-                  <div class="text-gray-500 mb-1">当前连续打卡</div>
-                  <div
-                    id="current-streak"
-                    class="text-xl font-bold text-primary"
-                  >
-                    15
-                  </div>
-                </div>
-                <div class="stat-card">
-                  <div class="text-gray-500 mb-1">本周打卡次数</div>
-                  <div id="week-count" class="text-xl font-bold text-gray-800">
-                    5
-                  </div>
-                </div>
-              </div>
-            </section>
-
             <!-- 打卡类型分布 -->
             <section
-              class="card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-4 md:p-5 fade-in"
+              class="distribution-card depth-card interactive-glow reveal-card card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-4 md:p-5 fade-in"
             >
               <h2 class="text-sm font-semibold text-gray-800 mb-3">
                 打卡类型分布（<span id="distribution-period">本月</span>）
@@ -380,30 +392,104 @@
 
             <!-- 智能建议 -->
             <section
-              class="card-shadow card-hover glass-strong rounded-2xl p-5 fade-in"
+              class="ai-insight-panel depth-card interactive-glow reveal-card card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 fade-in"
             >
-              <h2 class="text-sm font-semibold text-gray-800 mb-3 flex items-center">
-                <i class="fas fa-lightbulb text-yellow-500 mr-2 float"></i>
-                智能建议
-              </h2>
-              <div class="space-y-2">
-                <div class="suggestion-card flex items-start">
-                  <i class="fas fa-lightbulb text-yellow-500 mt-0.5 mr-2 flex-shrink-0"></i>
-                  <p class="text-gray-700 text-xs leading-relaxed">
-                    建议<span class="font-semibold">打卡时间固定在每天同一时段</span>，更容易形成习惯。
-                  </p>
+              <div class="ai-panel-topline">
+                <div class="ai-panel-heading">
+                  <div class="ai-panel-icon-wrap">
+                    <svg
+                      class="h-4 w-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M9 18h6"></path>
+                      <path d="M10 22h4"></path>
+                      <path d="M12 2a7 7 0 0 0-4 12.75c.62.46 1 1.18 1 1.95V18h6v-1.3c0-.77.38-1.49 1-1.95A7 7 0 0 0 12 2Z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="ai-panel-label">AI 习惯洞察</p>
+                    <h2 class="ai-panel-title">把打卡记录变成下一步行动</h2>
+                    <p class="ai-panel-subtitle">当前先用本地智能分析，后续可直接接入 AI API 做个性化建议。</p>
+                  </div>
                 </div>
-                <div class="suggestion-card flex items-start">
-                  <i class="fas fa-lightbulb text-yellow-500 mt-0.5 mr-2 flex-shrink-0"></i>
-                  <p class="text-gray-700 text-xs leading-relaxed">
-                    你近一周在<span class="font-semibold">学习类打卡</span>表现突出，可以尝试提升每日学习时长目标。
-                  </p>
+                <button
+                  id="refresh-ai-suggestions"
+                  type="button"
+                  class="ai-refresh-btn"
+                >
+                  <i class="fas fa-sparkles text-[11px]"></i>
+                  刷新洞察
+                </button>
+              </div>
+
+              <div class="ai-panel-meta">
+                <span id="ai-source-badge" class="ai-source-badge local">
+                  <span class="ai-source-dot"></span>
+                  本地智能
+                </span>
+                <span id="ai-scope-text" class="ai-scope-text">基于最近 7 天与本月打卡统计</span>
+              </div>
+
+              <div id="ai-loading-state" class="ai-loading-state hidden" aria-hidden="true">
+                <div class="ai-skeleton ai-skeleton-hero"></div>
+                <div class="ai-skeleton-list">
+                  <div class="ai-skeleton ai-skeleton-line"></div>
+                  <div class="ai-skeleton ai-skeleton-line short"></div>
+                  <div class="ai-skeleton ai-skeleton-line"></div>
                 </div>
-                <div class="suggestion-card flex items-start">
-                  <i class="fas fa-lightbulb text-yellow-500 mt-0.5 mr-2 flex-shrink-0"></i>
-                  <p class="text-gray-700 text-xs leading-relaxed">
-                    建议把打卡内容<span class="font-semibold">尽量量化</span>（如"阅读 20 分钟、跑步 3 公里"），更便于长期对比。
+              </div>
+
+              <div id="ai-insight-content" class="space-y-4">
+                <div class="ai-hero-insight">
+                  <div class="ai-hero-head">
+                    <span id="ai-priority-chip" class="ai-priority-chip">优先优化</span>
+                    <span id="ai-last-updated" class="ai-last-updated">刚刚更新</span>
+                  </div>
+                  <h3 id="ai-summary-title" class="ai-summary-title">先把打卡节奏稳定在固定时段</h3>
+                  <p id="ai-summary-text" class="ai-summary-text">
+                    你的打卡频次已经有起色，下一步更值得优化的是触发时机，让习惯形成更稳定的闭环。
                   </p>
+                  <div class="ai-mini-metrics">
+                    <div class="ai-mini-stat">
+                      <span id="ai-current-streak" class="ai-mini-value">0天</span>
+                      <span class="ai-mini-label">当前连续</span>
+                    </div>
+                    <div class="ai-mini-stat">
+                      <span id="ai-weekly-volume" class="ai-mini-value">0次</span>
+                      <span class="ai-mini-label">近7天频率</span>
+                    </div>
+                    <div class="ai-mini-stat">
+                      <span id="ai-focus-type" class="ai-mini-value">学习</span>
+                      <span class="ai-mini-label">当前重心</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="ai-suggestion-list" class="space-y-3">
+                  <div class="ai-suggestion-card">
+                    <div class="ai-suggestion-index">01</div>
+                    <div class="ai-suggestion-body">
+                      <div class="ai-suggestion-title-row">
+                        <h4 class="ai-suggestion-title">建立稳定触发点</h4>
+                        <span class="ai-suggestion-tag">习惯节奏</span>
+                      </div>
+                      <p class="ai-suggestion-text">建议把打卡安排到每天同一时间段，减少“想起来再做”的波动。</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="ai-api-ready-bar">
+                  <div>
+                    <p class="ai-api-ready-title">AI API 接入预留位</p>
+                    <p class="ai-api-ready-text">后续接入后，这里将升级为基于最近记录内容的个性化建议与行动计划。</p>
+                  </div>
+                  <span id="ai-connection-status" class="ai-connection-status">READY FOR API</span>
                 </div>
               </div>
             </section>
