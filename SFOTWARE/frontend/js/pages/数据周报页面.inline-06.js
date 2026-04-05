@@ -215,7 +215,7 @@
       function updateCompareAndRating(currentOverview, range) {
         var compareEl = document.getElementById('report-overview-compare-text');
         var ratingEl = document.getElementById('effectiveness-rating');
-        if (!compareEl || !ratingEl) return;
+        if (!compareEl) return;
 
         var hasCurrentData = (currentOverview.completedTasks || 0) > 0 || (currentOverview.totalFocusMinutes || 0) > 0 || (currentOverview.totalPomodoros || 0) > 0 || (currentOverview.maxContinuousPomodoros || 0) > 0;
         if (!hasCurrentData) {
@@ -224,7 +224,7 @@
           compareEl.classList.add('text-gray-500');
           var scoreValueEl = document.getElementById('effectiveness-score');
           if (scoreValueEl) scoreValueEl.textContent = '暂无评分';
-          ratingEl.textContent = '暂无评级';
+          if (ratingEl) ratingEl.textContent = '暂无评级';
           return;
         }
 
@@ -253,7 +253,7 @@
         else if (score >= 80) level = 'A 级';
         else if (score >= 70) level = 'B 级';
         else if (score >= 60) level = 'C 级';
-        ratingEl.textContent = level;
+        if (ratingEl) ratingEl.textContent = level;
       }
 
       function updateOverviewCards(stats) {

@@ -73,47 +73,87 @@
           pieHealth: '#10B981'
         };
 
+        var isMobile = window.matchMedia && window.matchMedia('(max-width: 900px)').matches;
+
         // 任务完成趋势图
         var taskTrendChart = echarts.init(taskTrendChartEl);
         window.taskTrendChart = taskTrendChart;
         taskTrendChart.setOption({
+          grid: {
+            left: isMobile ? 34 : 44,
+            right: isMobile ? 12 : 18,
+            top: isMobile ? 14 : 20,
+            bottom: isMobile ? 24 : 30,
+            show: true,
+            borderWidth: 0,
+            containLabel: false,
+            backgroundColor: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: 'rgba(255, 168, 168, 0.34)' },
+              { offset: 1, color: 'rgba(255, 238, 238, 0.24)' }
+            ])
+          },
+          tooltip: {
+            trigger: 'axis',
+            backgroundColor: chartTheme.tooltipBg,
+            borderColor: chartTheme.tooltipBorder,
+            textStyle: { color: chartTheme.tooltipText },
+            axisPointer: {
+              type: 'line',
+              lineStyle: { color: 'rgba(245, 120, 82, 0.45)', width: 1 }
+            }
+          },
           xAxis: {
             type: 'category',
             data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-            axisLine: { lineStyle: { color: chartTheme.axisLine } },
-            axisTick: { lineStyle: { color: chartTheme.axisTick } },
+            boundaryGap: false,
+            axisLine: { show: false },
+            axisTick: { show: false },
             axisLabel: { 
-              color: chartTheme.axisText,
+              color: 'rgba(107, 114, 128, 0.92)',
               fontWeight: 500,
-              fontSize: 12
+              fontSize: isMobile ? 9 : 11,
+              margin: isMobile ? 8 : 10
             }
           },
           yAxis: {
             type: 'value',
+            min: 0,
+            splitNumber: 4,
             axisLine: { show: false },
-            splitLine: { lineStyle: { color: chartTheme.splitLine } },
+            axisTick: { show: false },
+            splitLine: { lineStyle: { color: 'rgba(245, 132, 101, 0.18)' } },
             axisLabel: {
-              color: chartTheme.axisText,
-              fontWeight: 500
+              color: 'rgba(107, 114, 128, 0.92)',
+              fontWeight: 500,
+              fontSize: isMobile ? 9 : 11
+            },
+            max: function (value) {
+              var max = Number(value && value.max) || 0;
+              var stepMax = Math.ceil(max / 5) * 5;
+              return Math.max(20, stepMax || 20);
             }
           },
           series: [{
             data: [3, 6, 4, 5, 7, 2, 1],
             type: 'line',
-            smooth: true,
+            smooth: 0.55,
+            symbol: 'circle',
+            showSymbol: false,
             lineStyle: {
-              color: chartTheme.seriesMain,
-              width: 3
+              color: '#F36A3D',
+              width: isMobile ? 2.6 : 3,
+              shadowColor: 'rgba(243, 106, 61, 0.24)',
+              shadowBlur: 8
             },
             itemStyle: {
-              color: chartTheme.seriesMain,
-              borderColor: chartTheme.pieBorder,
-              borderWidth: 2
+              color: '#F36A3D',
+              borderColor: '#FFF5EF',
+              borderWidth: 1.5
             },
             areaStyle: {
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: chartTheme.seriesMainAreaTop },
-                { offset: 1, color: chartTheme.seriesMainAreaBottom }
+                { offset: 0, color: 'rgba(248, 124, 84, 0.56)' },
+                { offset: 1, color: 'rgba(248, 124, 84, 0.06)' }
               ])
             }
           }]

@@ -4961,13 +4961,16 @@
               var rect = el.getBoundingClientRect();
               var localX = ev.clientX - rect.left;
               var localY = ev.clientY - rect.top;
+              var isLongRipple = !!(el.matches && el.matches('#mobile-toolbar-search-panel .relative'));
               var dot = document.createElement('span');
               dot.className = 'todo-lg-ripple';
+              if (isLongRipple) dot.classList.add('todo-lg-ripple--long');
               dot.style.left = localX + 'px';
               dot.style.top = localY + 'px';
               el.appendChild(dot);
               var dot2 = document.createElement('span');
               dot2.className = 'todo-lg-ripple todo-lg-ripple--second';
+              if (isLongRipple) dot2.classList.add('todo-lg-ripple--long');
               dot2.style.left = localX + 'px';
               dot2.style.top = localY + 'px';
               window.setTimeout(function () {
@@ -4987,7 +4990,7 @@
           '#sort-filter-btn, #select-mode-btn, #mobile-search-btn, #batch-complete-btn, #batch-delete-btn, #batch-cancel-btn, ' +
           '#notification-btn, #user-menu-btn, .btn-primary-glass, .btn-secondary-glass, .task-action-btn, .priority-btn, ' +
           '.datetime-select-trigger, .datetime-quick-btn, .datetime-calendar-nav, .datetime-calendar-action, .modal-tag-btn, .subtask-compose-btn, ' +
-          '.tab-item, .task-group-card, .task-card'
+          '.tab-item, .task-group-card, .task-card, #mobile-toolbar-search-panel .relative'
         );
 
         // Search panel fallback: force open/close reliably on mobile.

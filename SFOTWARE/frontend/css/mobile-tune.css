@@ -1442,58 +1442,182 @@ a,
     border-radius: 10px !important;
   }
 
-  /* 数据周报：手机端单列信息流 */
-  #report-main {
+  /* 数据周报：移动端液态玻璃（精简，避免重复覆盖） */
+  body.software-app.report-page-liquid {
+    --rp-glass-bg: rgba(255, 255, 255, 0.032);
+    --rp-glass-border: rgba(255, 255, 255, 0.14);
+    --rp-glass-shadow: 0 3px 14px rgba(0, 0, 0, 0.06);
+    --rp-glass-blur: blur(34px);
+    --rp-text-main: rgba(255, 255, 255, 0.96);
+    --rp-text-soft: rgba(255, 255, 255, 0.82);
+    background: url('https://picsum.photos/1920/1080?random=1') center/cover fixed !important;
+  }
+
+  body.software-app.report-page-liquid .bg-orb {
+    display: none !important;
+  }
+
+  body.software-app.report-page-liquid #report-main {
     padding: 12px !important;
+    padding-bottom: calc(148px + var(--app-bottom-safe)) !important;
   }
 
-  #report-stats-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 10px !important;
+  body.software-app.report-page-liquid #report-range-tabs button,
+  body.software-app.report-page-liquid #report-main .stat-card,
+  body.software-app.report-page-liquid #report-main .chart-container,
+  body.software-app.report-page-liquid #report-main .card-shadow.rounded-2xl,
+  body.software-app.report-page-liquid #report-main #time-slots-container .time-slot-card,
+  body.software-app.report-page-liquid #report-main #ai-suggestions-refresh,
+  body.software-app.report-page-liquid #report-main .suggestion-card {
+    background: var(--rp-glass-bg) !important;
+    background-image: none !important;
+    border: 1px solid var(--rp-glass-border) !important;
+    box-shadow: var(--rp-glass-shadow) !important;
+    backdrop-filter: var(--rp-glass-blur) !important;
+    -webkit-backdrop-filter: var(--rp-glass-blur) !important;
   }
 
-  #report-charts-grid {
+  body.software-app.report-page-liquid #report-range-tabs button {
+    min-height: 34px;
+    border-radius: 999px !important;
+    color: var(--rp-text-soft) !important;
+  }
+
+  body.software-app.report-page-liquid #report-range-tabs button.bg-primary {
+    color: #fff !important;
+    background: rgba(76, 107, 255, 0.62) !important;
+    border-color: rgba(180, 200, 255, 0.95) !important;
+  }
+
+  body.software-app.report-page-liquid #report-stats-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  body.software-app.report-page-liquid #report-main #report-stats-grid .stat-card {
+    border-radius: 16px !important;
+    min-height: 132px;
+    padding: 10px 8px !important;
+  }
+
+  body.software-app.report-page-liquid #report-main #report-stats-grid .stat-card h3 {
+    font-size: 11px !important;
+    line-height: 1.3 !important;
+    font-weight: 600 !important;
+    color: var(--rp-text-soft) !important;
+  }
+
+  body.software-app.report-page-liquid #report-main #report-stats-grid .stat-card .icon-wrapper {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 10px !important;
+    margin-right: 8px !important;
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.18) !important;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  }
+
+  body.software-app.report-page-liquid #report-main #report-stats-grid .stat-card .icon-wrapper i {
+    font-size: 18px !important;
+  }
+
+  body.software-app.report-page-liquid #report-main #report-stats-grid .stat-card .stat-value {
+    width: 100% !important;
+    display: block !important;
+    text-align: center !important;
+    font-size: 1.05rem !important;
+    line-height: 1.2 !important;
+    font-weight: 800 !important;
+  }
+
+  body.software-app.report-page-liquid #report-main #report-stats-grid .stat-card .trend-indicator {
+    margin-top: 6px !important;
+    font-size: 10px !important;
+    color: var(--rp-text-soft) !important;
+  }
+
+  body.software-app.report-page-liquid #report-charts-grid {
     grid-template-columns: 1fr !important;
     gap: 12px !important;
   }
 
-  #report-main .stat-card,
-  #report-main .chart-container,
-  #report-main .card-shadow.rounded-2xl {
-    border-radius: 14px !important;
+  body.software-app.report-page-liquid #report-main .chart-container,
+  body.software-app.report-page-liquid #report-main .card-shadow.rounded-2xl {
+    border-radius: 20px !important;
     padding: 12px !important;
   }
 
-  #report-main .w-full.h-64 {
+  body.software-app.report-page-liquid #report-main .w-full.h-64 {
     height: 220px !important;
   }
 
-  #report-main .time-slot-card {
-    min-height: 88px;
+  body.software-app.report-page-liquid #report-main #time-slots-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 14px !important;
   }
 
-  #report-main .grid.grid-cols-1.md\:grid-cols-3.gap-4 {
-    grid-template-columns: 1fr !important;
-    gap: 10px !important;
+  body.software-app.report-page-liquid #report-main #time-slots-container .time-slot-card {
+    border-radius: 20px !important;
+    min-height: 172px;
+    padding: 16px !important;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
   }
 
-  #report-main h2.text-lg,
-  #report-main .text-lg.font-semibold {
+  body.software-app.report-page-liquid #report-main #time-slots-container .time-slot-card > .flex.items-center.mb-3 {
+    width: 100%;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px;
+    margin-bottom: 14px !important;
+  }
+
+  body.software-app.report-page-liquid #report-main #time-slots-container .time-slot-card .slot-icon {
+    margin-right: 0 !important;
+    font-size: 32px !important;
+    line-height: 1;
+  }
+
+  body.software-app.report-page-liquid #report-main #time-slots-container .time-slot-card .text-sm.font-medium.text-gray-700 {
+    font-size: 16px !important;
+    line-height: 1.35 !important;
+    color: var(--rp-text-main) !important;
+  }
+
+  body.software-app.report-page-liquid #report-main #time-slots-container .time-slot-card .slot-count {
+    margin-top: auto;
+    font-size: 28px !important;
+    line-height: 1 !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #2a85ff, #1f6cec) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+  }
+
+  body.software-app.report-page-liquid #report-main #time-slots-container .slot-best-indicator {
+    display: none !important;
+  }
+
+  body.software-app.report-page-liquid #report-main #time-slots-container .fa-sunrise::before {
+    content: "\f185";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+  }
+
+  body.software-app.report-page-liquid #report-main h2.text-lg,
+  body.software-app.report-page-liquid #report-main .text-lg.font-semibold {
     font-size: 15px !important;
     line-height: 1.3;
+    color: var(--rp-text-main) !important;
   }
 
-  #report-main .stat-value {
-    font-size: 1.35rem !important;
-    line-height: 1.2;
-  }
-
-  #report-main .chart-header {
-    margin-bottom: 8px;
-  }
-
-  #report-main .time-slot-card {
-    padding: 10px !important;
+  body.software-app.report-page-liquid #report-main > :last-child {
+    margin-bottom: calc(16px + var(--app-bottom-safe)) !important;
   }
 
   /* 待办页局部控件仅做内容收口，不改头栏几何 */
@@ -1600,9 +1724,7 @@ a,
 
   #checkin-main-column > section,
   #checkin-side-column > section,
-  #calendar-main .glass-card.rounded-2xl,
-  #report-main .stat-card,
-  #report-main .chart-container {
+  #calendar-main .glass-card.rounded-2xl {
     border-radius: 12px !important;
     padding: 10px !important;
   }
@@ -1636,16 +1758,12 @@ a,
     gap: 4px !important;
   }
 
-  #report-main {
-    padding: 10px !important;
-  }
-
-  #report-stats-grid {
-    gap: 8px !important;
-  }
-
-  #report-main .w-full.h-64 {
+  body.software-app.report-page-liquid #report-main .w-full.h-64 {
     height: 200px !important;
+  }
+
+  body.software-app.report-page-liquid #report-main {
+    padding-bottom: calc(158px + var(--app-bottom-safe)) !important;
   }
 }
 

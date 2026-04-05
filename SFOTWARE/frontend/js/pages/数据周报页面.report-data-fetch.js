@@ -56,7 +56,10 @@
         document.getElementById('focus-hours').textContent = Math.round((stats.totalFocusMinutes || 0) / 60) + ' 小时';
         document.getElementById('pomodoro-count').textContent = (stats.totalPomodoros || 0) + ' 个';
         document.getElementById('max-continuous-pomodoros').textContent = (stats.maxContinuousPomodoros || 0) + ' 个番茄';
-        document.getElementById('effectiveness-score').textContent = (stats.effectivenessScore || 0) + ' 分';
+        var effectivenessScoreEl = document.getElementById('effectiveness-score');
+        if (effectivenessScoreEl) {
+          effectivenessScoreEl.textContent = (stats.effectivenessScore || 0) + ' 分';
+        }
 
         // taskTrendChart: 每日完成任务数（周一..周日）
         if (window.taskTrendChart) {

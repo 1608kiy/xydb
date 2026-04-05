@@ -18,7 +18,7 @@
     <script src='./js/tailwind-style-loader.js?v=20260327_csssplit'></script>
   <script src='./js/pages/数据周报页面.inline-03.js?v=20260327_jssplit'></script>
 </head>
-  <body class="software-app font-inter bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden fade-in scroll-smooth">
+  <body class="software-app report-page-liquid font-inter bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden fade-in scroll-smooth">
     <!-- ✅ 背景装饰光斑 -->
     <div class="bg-orb w-[500px] h-[500px] bg-primary top-0 left-0"></div>
     <div class="bg-orb w-[400px] h-[400px] bg-secondary bottom-0 right-0" style="animation-delay: -5s;"></div>
@@ -129,7 +129,7 @@
           </div>
         </div>
         <!-- 概览卡片 -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6" id="report-stats-grid">
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 mb-6" id="report-stats-grid">
           <div class="stat-card group">
             <div class="flex items-start justify-between mb-3">
               <h3 class="text-sm font-medium text-gray-500 flex items-center">
@@ -177,18 +177,6 @@
               </h3>
             </div>
             <div class="stat-value bg-gradient-to-r from-warning to-orange-500 bg-clip-text text-transparent" id="max-continuous-pomodoros">4 个番茄</div>
-          </div>
-          <div class="stat-card group">
-            <div class="flex items-start justify-between mb-3">
-              <h3 class="text-sm font-medium text-gray-500 flex items-center">
-                <div class="icon-wrapper mr-3">
-                  <i class="fas fa-star text-secondary text-xl"></i>
-                </div>
-                综合效率评分
-              </h3>
-            </div>
-            <div class="stat-value bg-gradient-to-r from-secondary to-purple-500 bg-clip-text text-transparent" id="effectiveness-score">85 分</div>
-            <div class="text-xs text-gray-500 mt-2 font-medium" id="effectiveness-rating">A 级</div>
           </div>
         </div>
         
@@ -383,6 +371,21 @@
     <!-- [JSMOD] n8o_日期显示功能 -->
     <script id="date-script" src='./js/pages/数据周报页面.date-script.js?v=20260327_jssplit'></script>
     <!-- [/JSMOD] n8o_日期显示功能 -->
+
+    <script>
+      (function applyReportMobileRandomBg() {
+        try {
+          if (!window.matchMedia || !window.matchMedia('(max-width: 900px)').matches) return;
+          var body = document.body;
+          if (!body || !body.classList || !body.classList.contains('report-page-liquid')) return;
+          var seed = Math.floor(Math.random() * 1000000);
+          body.style.backgroundImage = "url('https://picsum.photos/1080/1920?random=" + seed + "')";
+          body.style.backgroundSize = 'cover';
+          body.style.backgroundPosition = 'center';
+          body.style.backgroundAttachment = 'fixed';
+        } catch (err) {}
+      })();
+    </script>
     
     <!-- [JSMOD] p9q_ECharts 图表初始化 -->
     <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
