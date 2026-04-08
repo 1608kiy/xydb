@@ -568,6 +568,9 @@
         var aiFocusTypeMetric = document.getElementById('ai-focus-type');
         var aiSuggestionList = document.getElementById('ai-suggestion-list');
         var aiConnectionStatus = document.getElementById('ai-connection-status');
+        var mobileTabButtons = Array.prototype.slice.call(document.querySelectorAll('[data-mobile-checkin-tab]'));
+        var mobilePanels = Array.prototype.slice.call(document.querySelectorAll('[data-mobile-checkin-panel]'));
+        var activeMobilePanel = 'calendar';
         var aiRequestToken = 0;
 
         function spawnButtonRipple(button, event) {
@@ -908,6 +911,43 @@
           btn.classList.toggle('cursor-not-allowed', !!isSubmitting);
         }
 
+        function isCompactCheckinView() {
+          return !!(window.matchMedia && window.matchMedia('(max-width: 1023px)').matches);
+        }
+
+        function setActiveMobilePanel(panelName) {
+          if (!mobilePanels.length) return;
+
+          activeMobilePanel = panelName || activeMobilePanel || 'calendar';
+
+          mobileTabButtons.forEach(function(button) {
+            var isActive = (button.getAttribute('data-mobile-checkin-tab') || '') === activeMobilePanel;
+            button.classList.toggle('is-active', isActive);
+            button.setAttribute('aria-selected', isActive ? 'true' : 'false');
+          });
+
+          mobilePanels.forEach(function(panel) {
+            var panelNameAttr = panel.getAttribute('data-mobile-checkin-panel') || '';
+            var shouldShow = panelNameAttr === activeMobilePanel;
+            panel.classList.toggle('is-mobile-active', shouldShow);
+            panel.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+          });
+        }
+
+        function syncMobilePanelLayout() {
+          if (!mobilePanels.length) return;
+
+          if (!isCompactCheckinView()) {
+            mobilePanels.forEach(function(panel) {
+              panel.classList.remove('is-mobile-active');
+              panel.removeAttribute('aria-hidden');
+            });
+            return;
+          }
+
+          setActiveMobilePanel(activeMobilePanel);
+        }
+
         function updateTodayDateLabel() {
           var todayText = document.getElementById('today-date-text');
           if (todayText) {
@@ -1176,6 +1216,7 @@
 
         setSelectedType(selectedType);
         bindEnergyButtonEffects(btn);
+        syncMobilePanelLayout();
 
         typeButtons.forEach(function(button) {
           button.addEventListener('click', function () {
@@ -1184,6 +1225,21 @@
             setSelectedType(button.getAttribute('data-type') || '学习');
           });
         });
+
+        mobileTabButtons.forEach(function(button) {
+          button.addEventListener('click', function () {
+            setActiveMobilePanel(button.getAttribute('data-mobile-checkin-tab') || 'calendar');
+          });
+        });
+
+        if (window.matchMedia) {
+          var compactViewMedia = window.matchMedia('(max-width: 1023px)');
+          if (typeof compactViewMedia.addEventListener === 'function') {
+            compactViewMedia.addEventListener('change', syncMobilePanelLayout);
+          } else if (typeof compactViewMedia.addListener === 'function') {
+            compactViewMedia.addListener(syncMobilePanelLayout);
+          }
+        }
 
         btn.addEventListener('click', function (event) {
           if (btn.disabled) return;

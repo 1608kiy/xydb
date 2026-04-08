@@ -422,6 +422,79 @@
             100% { transform: scale(1); filter: brightness(1); }
           }
 
+          .summary-stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.5rem;
+          }
+          .mobile-checkin-hub {
+            display: none;
+          }
+          .mobile-checkin-hub-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-bottom: 0.85rem;
+          }
+          .mobile-hub-eyebrow {
+            font-size: 11px;
+            line-height: 1;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 0.35rem;
+          }
+          .mobile-hub-title {
+            font-size: 15px;
+            line-height: 1.35;
+            font-weight: 700;
+            color: #1f2937;
+          }
+          .mobile-hub-tip {
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            padding: 0.34rem 0.7rem;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #3552a3;
+            background: rgba(255, 255, 255, 0.78);
+            border: 1px solid rgba(191, 219, 254, 0.88);
+          }
+          .mobile-checkin-tabs {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.55rem;
+          }
+          .mobile-checkin-tab {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 2.75rem;
+            padding: 0.75rem 0.65rem;
+            border-radius: 1rem;
+            font-size: 13px;
+            font-weight: 700;
+            color: #64748b;
+            background: rgba(255, 255, 255, 0.72);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, color 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+          }
+          .mobile-checkin-tab.is-active {
+            color: rgba(248, 250, 252, 0.98);
+            border-color: rgba(99, 102, 241, 0.34);
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.92), rgba(59, 130, 246, 0.88));
+            box-shadow: 0 12px 24px rgba(79, 70, 229, 0.2);
+          }
+          .mobile-checkin-tab:not(.is-active):hover {
+            color: #334155;
+            border-color: rgba(191, 219, 254, 0.92);
+            transform: translateY(-1px);
+          }
+
           .distribution-card,
           .checkin-calendar-card,
           .checkin-history-card,
@@ -1042,6 +1115,142 @@
             transform: scaleX(1);
           }
 
+          @media (max-width: 1023px) {
+            main.flex-1 {
+              padding: 0.85rem !important;
+            }
+            #checkin-app-grid {
+              max-width: 36rem;
+              gap: 0.85rem;
+            }
+            #checkin-main-column,
+            #checkin-side-column {
+              display: contents;
+            }
+            #today-checkin-card,
+            #checkin-summary-grid,
+            #checkin-mobile-hub,
+            #checkin-calendar-section,
+            #checkin-history-section,
+            #checkin-distribution-section,
+            #checkin-ai-section {
+              order: 1;
+            }
+            #today-checkin-card {
+              padding: 1rem;
+              gap: 0.9rem;
+            }
+            #today-checkin-card .checkin-icon-badge {
+              width: 2.75rem;
+              height: 2.75rem;
+              font-size: 1.3rem;
+            }
+            #today-checkin-card h2 {
+              font-size: 1rem;
+              line-height: 1.35;
+            }
+            #today-checkin-card .text-xs.text-gray-500.mt-1 {
+              display: none;
+            }
+            .checkin-action-panel {
+              width: 100%;
+            }
+            #checkin-summary-grid {
+              padding: 0.75rem;
+            }
+            .summary-stat-grid {
+              grid-template-columns: none;
+              grid-auto-flow: column;
+              grid-auto-columns: minmax(96px, 1fr);
+              overflow-x: auto;
+              padding-bottom: 0.1rem;
+              scrollbar-width: none;
+            }
+            .summary-stat-grid::-webkit-scrollbar {
+              display: none;
+            }
+            .summary-stat {
+              min-width: 96px;
+              padding: 0.75rem 0.7rem;
+            }
+            .summary-stat-label {
+              font-size: 11px;
+            }
+            .summary-stat-value {
+              font-size: 18px;
+            }
+            .mobile-checkin-hub {
+              display: block;
+            }
+            .checkin-panel-section {
+              display: none;
+            }
+            .checkin-panel-section.is-mobile-active {
+              display: block;
+            }
+            #checkin-calendar-section,
+            #checkin-history-section,
+            #checkin-distribution-section,
+            #checkin-ai-section {
+              padding: 0.95rem;
+            }
+            #checkin-calendar-section .calendar-day {
+              height: 2.35rem;
+            }
+            #checkin-calendar-section .calendar-legend-item {
+              font-size: 10px;
+            }
+            #checkin-calendar-section .calendar-legend-dot {
+              width: 0.45rem;
+              height: 0.45rem;
+            }
+            #checkin-list {
+              max-height: 12.5rem;
+            }
+            #checkin-distribution-section .space-y-3 {
+              gap: 0.55rem;
+            }
+            #checkin-ai-section .ai-panel-topline {
+              margin-bottom: 0.85rem;
+            }
+            #checkin-ai-section .ai-panel-subtitle {
+              display: none;
+            }
+            #checkin-ai-section .ai-hero-insight {
+              padding: 0.85rem;
+            }
+            #checkin-ai-section .ai-summary-title {
+              font-size: 16px;
+            }
+            #checkin-ai-section .ai-summary-text {
+              font-size: 12px;
+              line-height: 1.6;
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              -webkit-line-clamp: 2;
+              overflow: hidden;
+            }
+            #checkin-ai-section .ai-mini-metrics {
+              grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+            #checkin-ai-section .ai-suggestion-card {
+              padding: 0.8rem;
+              gap: 0.65rem;
+            }
+            #checkin-ai-section #ai-insight-content {
+              max-height: 18rem;
+              overflow-y: auto;
+              padding-right: 0.1rem;
+            }
+            #checkin-ai-section #ai-insight-content::-webkit-scrollbar {
+              width: 4px;
+            }
+            #checkin-ai-section #ai-insight-content::-webkit-scrollbar-thumb {
+              background: rgba(79, 70, 229, 0.22);
+              border-radius: 999px;
+            }
+          }
+
           @media (min-width: 768px) {
             .ai-panel-topline {
               flex-direction: row;
@@ -1054,7 +1263,7 @@
           }
           @media (max-width: 640px) {
             .ai-mini-metrics {
-              grid-template-columns: 1fr;
+              grid-template-columns: repeat(3, minmax(0, 1fr));
             }
             .ai-api-ready-bar {
               flex-direction: column;

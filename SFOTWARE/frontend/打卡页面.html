@@ -192,7 +192,7 @@
                   </div>
                 </div>
               </div>
-              <div class="w-full md:w-72">
+              <div class="checkin-action-panel w-full md:w-72">
                 <div id="checkin-form-panel" class="space-y-2">
                   <textarea
                     id="checkin-note"
@@ -234,7 +234,7 @@
               id="checkin-summary-grid"
               class="summary-grid-shell depth-card interactive-glow reveal-card card-shadow bg-white/60 backdrop-blur-sm rounded-2xl p-3 fade-in"
             >
-              <div class="grid grid-cols-2 gap-2">
+              <div class="summary-stat-grid">
                 <div class="summary-stat interactive-glow">
                   <div class="summary-stat-label">本月打卡天数</div>
                   <div id="month-days" class="summary-stat-value text-gray-800">12</div>
@@ -255,7 +255,51 @@
             </section>
 
             <!-- 打卡日历 -->
-            <section class="checkin-calendar-card depth-card interactive-glow reveal-card card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 fade-in">
+            <section
+              id="checkin-mobile-hub"
+              class="mobile-checkin-hub depth-card interactive-glow reveal-card card-shadow bg-white/60 backdrop-blur-sm rounded-2xl p-3 fade-in lg:hidden"
+              aria-label="打卡功能切换"
+            >
+              <div class="mobile-checkin-hub-header">
+                <div>
+                  <p class="mobile-hub-eyebrow">移动工作台</p>
+                  <h2 class="mobile-hub-title">把核心信息收进一屏</h2>
+                </div>
+                <span class="mobile-hub-tip">轻点切换</span>
+              </div>
+              <div class="mobile-checkin-tabs" role="tablist" aria-label="打卡功能切换">
+                <button
+                  type="button"
+                  class="mobile-checkin-tab is-active"
+                  data-mobile-checkin-tab="calendar"
+                  aria-selected="true"
+                >
+                  日历
+                </button>
+                <button
+                  type="button"
+                  class="mobile-checkin-tab"
+                  data-mobile-checkin-tab="history"
+                  aria-selected="false"
+                >
+                  记录
+                </button>
+                <button
+                  type="button"
+                  class="mobile-checkin-tab"
+                  data-mobile-checkin-tab="insight"
+                  aria-selected="false"
+                >
+                  洞察
+                </button>
+              </div>
+            </section>
+
+            <section
+              id="checkin-calendar-section"
+              data-mobile-checkin-panel="calendar"
+              class="checkin-panel-section is-mobile-active checkin-calendar-card depth-card interactive-glow reveal-card card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 fade-in"
+            >
               <div class="flex items-center justify-between mb-3">
                 <div class="flex items-center space-x-2">
                   <button id="prev-month" class="calendar-nav-btn text-gray-500">
@@ -283,7 +327,11 @@
             </section>
 
             <!-- 历史打卡记录 -->
-            <section class="checkin-history-card depth-card interactive-glow reveal-card card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 fade-in">
+            <section
+              id="checkin-history-section"
+              data-mobile-checkin-panel="history"
+              class="checkin-panel-section checkin-history-card depth-card interactive-glow reveal-card card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 fade-in"
+            >
               <div class="flex items-center justify-between mb-3">
                 <h2 class="text-sm font-semibold text-gray-800">
                   最近打卡记录
@@ -317,7 +365,9 @@
           <div class="space-y-4" id="checkin-side-column">
             <!-- 打卡类型分布 -->
             <section
-              class="distribution-card depth-card interactive-glow reveal-card card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-4 md:p-5 fade-in"
+              id="checkin-distribution-section"
+              data-mobile-checkin-panel="insight"
+              class="checkin-panel-section distribution-card depth-card interactive-glow reveal-card card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-4 md:p-5 fade-in"
             >
               <h2 class="text-sm font-semibold text-gray-800 mb-3">
                 打卡类型分布（<span id="distribution-period">本月</span>）
@@ -392,7 +442,9 @@
 
             <!-- 智能建议 -->
             <section
-              class="ai-insight-panel depth-card interactive-glow reveal-card card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 fade-in"
+              id="checkin-ai-section"
+              data-mobile-checkin-panel="insight"
+              class="checkin-panel-section ai-insight-panel depth-card interactive-glow reveal-card card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 fade-in"
             >
               <div class="ai-panel-topline">
                 <div class="ai-panel-heading">
