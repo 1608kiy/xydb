@@ -1,6 +1,51 @@
 var hasAnimatedExpBar = false;
 var activeTabName = 'overview';
 
+function applyProfileMobileRandomBackground() {
+  try {
+    var body = document.body;
+    if (!body || !body.classList || !body.classList.contains('profile-page')) return;
+
+    var mobileLike = false;
+    if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches) {
+      mobileLike = true;
+    } else {
+      var width = Number(window.innerWidth || 0);
+      mobileLike = width > 0 && width <= 1024;
+    }
+    if (!mobileLike) return;
+
+    if (body.getAttribute('data-profile-random-bg-ready') === '1') return;
+    if (body.getAttribute('data-profile-random-bg-loading') === '1') return;
+
+    body.setAttribute('data-profile-random-bg-loading', '1');
+    body.style.setProperty('background', 'linear-gradient(165deg, rgba(197, 218, 236, 0.78), rgba(170, 198, 220, 0.72))', 'important');
+    body.style.setProperty('background-image', 'none', 'important');
+    body.style.setProperty('background-size', 'cover', 'important');
+    body.style.setProperty('background-position', 'center', 'important');
+    body.style.setProperty('background-attachment', 'fixed', 'important');
+
+    var seed = String(Date.now()) + '-' + String(Math.floor(Math.random() * 1000000));
+    var imageUrl = 'https://picsum.photos/seed/ringnote-profile-' + encodeURIComponent(seed) + '/900/1600';
+
+    var probe = new Image();
+    probe.decoding = 'async';
+    probe.onload = function () {
+      body.style.setProperty('background', "url('" + imageUrl + "') center/cover fixed", 'important');
+      body.style.setProperty('background-image', "url('" + imageUrl + "')", 'important');
+      body.style.setProperty('background-size', 'cover', 'important');
+      body.style.setProperty('background-position', 'center', 'important');
+      body.style.setProperty('background-attachment', 'fixed', 'important');
+      body.setAttribute('data-profile-random-bg-seed', seed);
+      body.setAttribute('data-profile-random-bg-ready', '1');
+      body.removeAttribute('data-profile-random-bg-loading');
+    };
+    probe.onerror = function () {
+      body.removeAttribute('data-profile-random-bg-loading');
+    };
+    probe.src = imageUrl;
+  } catch (err) {}
+}
 function showToast(message, type) {
   if (window.__unifiedShowToast) {
     window.__unifiedShowToast(message, type || 'success');
@@ -562,6 +607,7 @@ function bindDangerSheet() {
 }
 
 function bootstrapProfilePage() {
+  applyProfileMobileRandomBackground();
   var authSyncPromise = Promise.resolve();
   if (typeof checkAuthOnLoad === 'function') {
     authSyncPromise = checkAuthOnLoad().catch(function () {});
@@ -609,6 +655,7 @@ function bootstrapProfilePage() {
 
   document.addEventListener('visibilitychange', function () {
     if (!document.hidden) {
+      applyProfileMobileRandomBackground();
       AppState.init();
       syncProfileIdentityUi();
       syncSecurityUi();
