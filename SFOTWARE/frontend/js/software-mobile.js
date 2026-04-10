@@ -232,11 +232,118 @@
     }
   }
 
+  function applyAutoTextContrast() {
+    var isMobile = window.matchMedia('(max-width: 900px)').matches;
+    var body = document.body;
+    if (!body || !isMobile) return;
+
+    var lastUrl = '';
+    var lastColor = '';
+    var rafToken = 0;
+
+    function parseFirstUrl(bgImage) {
+      if (!bgImage || bgImage === 'none') return '';
+      var match = /url\\((?:\"|\\')?(.*?)(?:\"|\\')?\\)/.exec(bgImage);
+      return match ? match[1] : '';
+    }
+
+    function parseRgb(color) {
+      var m = /rgba?\\((\\d+),\\s*(\\d+),\\s*(\\d+)/i.exec(color || '');
+      if (!m) return null;
+      return { r: parseInt(m[1], 10), g: parseInt(m[2], 10), b: parseInt(m[3], 10) };
+    }
+
+    function computeLuma(r, g, b) {
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    }
+
+    function setContrastClass(isDarkText) {
+      body.classList.toggle('auto-contrast-dark', !!isDarkText);
+      body.classList.toggle('auto-contrast-light', !isDarkText);
+    }
+
+    function sampleImageLuma(url, done) {
+      var img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.decoding = 'async';
+      img.onload = function () {
+        try {
+          var canvas = document.createElement('canvas');
+          var size = 16;
+          canvas.width = size;
+          canvas.height = size;
+          var ctx = canvas.getContext('2d', { willReadFrequently: true });
+          ctx.drawImage(img, 0, 0, size, size);
+          var data = ctx.getImageData(0, 0, size, size).data;
+          var total = 0;
+          var count = 0;
+          for (var i = 0; i < data.length; i += 4) {
+            total += computeLuma(data[i], data[i + 1], data[i + 2]);
+            count++;
+          }
+          done(count ? total / count : null);
+        } catch (err) {
+          done(null);
+        }
+      };
+      img.onerror = function () { done(null); };
+      img.src = url;
+    }
+
+    function refresh() {
+      if (rafToken) cancelAnimationFrame(rafToken);
+      rafToken = requestAnimationFrame(function () {
+        rafToken = 0;
+        var computed = window.getComputedStyle(body);
+        var bgImage = computed.backgroundImage || 'none';
+        var bgColor = computed.backgroundColor || '';
+        var url = parseFirstUrl(bgImage);
+
+        if (url && url !== lastUrl) {
+          lastUrl = url;
+          sampleImageLuma(url, function (luma) {
+            if (typeof luma !== 'number') {
+              var rgb = parseRgb(bgColor);
+              if (rgb) {
+                setContrastClass(computeLuma(rgb.r, rgb.g, rgb.b) > 160);
+              } else {
+                // Fallback: assume bright background and use light text for readability.
+                setContrastClass(false);
+              }
+              return;
+            }
+            setContrastClass(luma > 160);
+          });
+          return;
+        }
+
+        if (!url && bgColor && bgColor !== lastColor) {
+          lastColor = bgColor;
+          var rgb2 = parseRgb(bgColor);
+          if (rgb2) {
+            setContrastClass(computeLuma(rgb2.r, rgb2.g, rgb2.b) > 160);
+          } else {
+            setContrastClass(false);
+          }
+        }
+      });
+    }
+
+    refresh();
+
+    var observer = new MutationObserver(function () { refresh(); });
+    observer.observe(body, { attributes: true, attributeFilter: ['class', 'style'] });
+    window.addEventListener('pageshow', refresh);
+    window.addEventListener('resize', refresh);
+    window.addEventListener('orientationchange', refresh);
+  }
+
   function initSoftwareMobile() {
     setAppVh();
     bindTouchMenus();
     syncTopDockOffsetFallback();
     detachCalendarViewControls();
+    applyAutoTextContrast();
   }
 
   window.addEventListener('resize', setAppVh);

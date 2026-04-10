@@ -6,6 +6,219 @@
   --app-top-safe: env(safe-area-inset-top, 0px);
 }
 
+/* Mobile auto-contrast: adapt text/icon colors to random backgrounds. */
+@media (max-width: 900px) {
+  body.software-app.auto-contrast-dark {
+    --auto-text-main: rgba(8, 15, 28, 0.96);
+    --auto-text-sub: rgba(30, 42, 62, 0.76);
+    --auto-icon: rgba(12, 20, 36, 0.92);
+    color: var(--auto-text-main) !important;
+  }
+
+  body.software-app.auto-contrast-light {
+    --auto-text-main: rgba(248, 250, 255, 0.98);
+    --auto-text-sub: rgba(226, 232, 245, 0.85);
+    --auto-icon: rgba(242, 246, 255, 0.95);
+    color: var(--auto-text-main) !important;
+  }
+
+  body.software-app.auto-contrast-dark .text-gray-900,
+  body.software-app.auto-contrast-dark .text-gray-800,
+  body.software-app.auto-contrast-dark .text-gray-700,
+  body.software-app.auto-contrast-dark .text-gray-600,
+  body.software-app.auto-contrast-dark .text-gray-500,
+  body.software-app.auto-contrast-dark .text-black,
+  body.software-app.auto-contrast-dark .text-white,
+  body.software-app.auto-contrast-dark .text-primary,
+  body.software-app.auto-contrast-dark .text-secondary,
+  body.software-app.auto-contrast-dark .text-slate-900,
+  body.software-app.auto-contrast-dark .text-slate-800,
+  body.software-app.auto-contrast-dark .text-slate-700,
+  body.software-app.auto-contrast-dark .text-slate-600,
+  body.software-app.auto-contrast-dark .text-neutral-900,
+  body.software-app.auto-contrast-dark .text-neutral-800,
+  body.software-app.auto-contrast-dark .text-neutral-700,
+  body.software-app.auto-contrast-dark .text-zinc-900,
+  body.software-app.auto-contrast-dark .text-zinc-800,
+  body.software-app.auto-contrast-dark .text-zinc-700,
+  body.software-app.auto-contrast-dark .text-stone-900,
+  body.software-app.auto-contrast-dark .text-stone-800,
+  body.software-app.auto-contrast-dark .text-stone-700,
+  body.software-app.auto-contrast-dark .text-blue-900,
+  body.software-app.auto-contrast-dark .text-blue-800,
+  body.software-app.auto-contrast-dark .text-blue-700,
+  body.software-app.auto-contrast-dark .text-indigo-900,
+  body.software-app.auto-contrast-dark .text-indigo-800,
+  body.software-app.auto-contrast-dark .text-indigo-700,
+  body.software-app.auto-contrast-dark .text-sky-900,
+  body.software-app.auto-contrast-dark .text-sky-800,
+  body.software-app.auto-contrast-dark .text-sky-700,
+  body.software-app.auto-contrast-dark .text-cyan-900,
+  body.software-app.auto-contrast-dark .text-cyan-800,
+  body.software-app.auto-contrast-dark .text-cyan-700,
+  body.software-app.auto-contrast-dark .text-emerald-900,
+  body.software-app.auto-contrast-dark .text-emerald-800,
+  body.software-app.auto-contrast-dark .text-emerald-700,
+  body.software-app.auto-contrast-dark .text-green-900,
+  body.software-app.auto-contrast-dark .text-green-800,
+  body.software-app.auto-contrast-dark .text-green-700,
+  body.software-app.auto-contrast-dark .text-teal-900,
+  body.software-app.auto-contrast-dark .text-teal-800,
+  body.software-app.auto-contrast-dark .text-teal-700,
+  body.software-app.auto-contrast-dark .text-amber-900,
+  body.software-app.auto-contrast-dark .text-amber-800,
+  body.software-app.auto-contrast-dark .text-amber-700,
+  body.software-app.auto-contrast-dark .text-orange-900,
+  body.software-app.auto-contrast-dark .text-orange-800,
+  body.software-app.auto-contrast-dark .text-orange-700,
+  body.software-app.auto-contrast-dark .text-red-900,
+  body.software-app.auto-contrast-dark .text-red-800,
+  body.software-app.auto-contrast-dark .text-red-700,
+  body.software-app.auto-contrast-dark .text-rose-900,
+  body.software-app.auto-contrast-dark .text-rose-800,
+  body.software-app.auto-contrast-dark .text-rose-700,
+  body.software-app.auto-contrast-dark .text-purple-900,
+  body.software-app.auto-contrast-dark .text-purple-800,
+  body.software-app.auto-contrast-dark .text-purple-700,
+  body.software-app.auto-contrast-dark .text-violet-900,
+  body.software-app.auto-contrast-dark .text-violet-800,
+  body.software-app.auto-contrast-dark .text-violet-700,
+  body.software-app.auto-contrast-dark .text-fuchsia-900,
+  body.software-app.auto-contrast-dark .text-fuchsia-800,
+  body.software-app.auto-contrast-dark .text-fuchsia-700,
+  body.software-app.auto-contrast-light .text-gray-900,
+  body.software-app.auto-contrast-light .text-gray-800,
+  body.software-app.auto-contrast-light .text-gray-700,
+  body.software-app.auto-contrast-light .text-gray-600,
+  body.software-app.auto-contrast-light .text-gray-500,
+  body.software-app.auto-contrast-light .text-black,
+  body.software-app.auto-contrast-light .text-white,
+  body.software-app.auto-contrast-light .text-primary,
+  body.software-app.auto-contrast-light .text-secondary,
+  body.software-app.auto-contrast-light .text-slate-900,
+  body.software-app.auto-contrast-light .text-slate-800,
+  body.software-app.auto-contrast-light .text-slate-700,
+  body.software-app.auto-contrast-light .text-slate-600,
+  body.software-app.auto-contrast-light .text-neutral-900,
+  body.software-app.auto-contrast-light .text-neutral-800,
+  body.software-app.auto-contrast-light .text-neutral-700,
+  body.software-app.auto-contrast-light .text-zinc-900,
+  body.software-app.auto-contrast-light .text-zinc-800,
+  body.software-app.auto-contrast-light .text-zinc-700,
+  body.software-app.auto-contrast-light .text-stone-900,
+  body.software-app.auto-contrast-light .text-stone-800,
+  body.software-app.auto-contrast-light .text-stone-700,
+  body.software-app.auto-contrast-light .text-blue-900,
+  body.software-app.auto-contrast-light .text-blue-800,
+  body.software-app.auto-contrast-light .text-blue-700,
+  body.software-app.auto-contrast-light .text-indigo-900,
+  body.software-app.auto-contrast-light .text-indigo-800,
+  body.software-app.auto-contrast-light .text-indigo-700,
+  body.software-app.auto-contrast-light .text-sky-900,
+  body.software-app.auto-contrast-light .text-sky-800,
+  body.software-app.auto-contrast-light .text-sky-700,
+  body.software-app.auto-contrast-light .text-cyan-900,
+  body.software-app.auto-contrast-light .text-cyan-800,
+  body.software-app.auto-contrast-light .text-cyan-700,
+  body.software-app.auto-contrast-light .text-emerald-900,
+  body.software-app.auto-contrast-light .text-emerald-800,
+  body.software-app.auto-contrast-light .text-emerald-700,
+  body.software-app.auto-contrast-light .text-green-900,
+  body.software-app.auto-contrast-light .text-green-800,
+  body.software-app.auto-contrast-light .text-green-700,
+  body.software-app.auto-contrast-light .text-teal-900,
+  body.software-app.auto-contrast-light .text-teal-800,
+  body.software-app.auto-contrast-light .text-teal-700,
+  body.software-app.auto-contrast-light .text-amber-900,
+  body.software-app.auto-contrast-light .text-amber-800,
+  body.software-app.auto-contrast-light .text-amber-700,
+  body.software-app.auto-contrast-light .text-orange-900,
+  body.software-app.auto-contrast-light .text-orange-800,
+  body.software-app.auto-contrast-light .text-orange-700,
+  body.software-app.auto-contrast-light .text-red-900,
+  body.software-app.auto-contrast-light .text-red-800,
+  body.software-app.auto-contrast-light .text-red-700,
+  body.software-app.auto-contrast-light .text-rose-900,
+  body.software-app.auto-contrast-light .text-rose-800,
+  body.software-app.auto-contrast-light .text-rose-700,
+  body.software-app.auto-contrast-light .text-purple-900,
+  body.software-app.auto-contrast-light .text-purple-800,
+  body.software-app.auto-contrast-light .text-purple-700,
+  body.software-app.auto-contrast-light .text-violet-900,
+  body.software-app.auto-contrast-light .text-violet-800,
+  body.software-app.auto-contrast-light .text-violet-700,
+  body.software-app.auto-contrast-light .text-fuchsia-900,
+  body.software-app.auto-contrast-light .text-fuchsia-800,
+  body.software-app.auto-contrast-light .text-fuchsia-700 {
+    color: var(--auto-text-main) !important;
+  }
+
+  body.software-app.auto-contrast-dark .text-gray-400,
+  body.software-app.auto-contrast-dark .text-gray-300,
+  body.software-app.auto-contrast-dark .text-xs,
+  body.software-app.auto-contrast-dark .text-sm,
+  body.software-app.auto-contrast-light .text-gray-400,
+  body.software-app.auto-contrast-light .text-gray-300,
+  body.software-app.auto-contrast-light .text-xs,
+  body.software-app.auto-contrast-light .text-sm {
+    color: var(--auto-text-sub) !important;
+  }
+
+  body.software-app.auto-contrast-dark i,
+  body.software-app.auto-contrast-dark .fa,
+  body.software-app.auto-contrast-dark .fas,
+  body.software-app.auto-contrast-dark .far,
+  body.software-app.auto-contrast-dark .fab,
+  body.software-app.auto-contrast-dark .fa-solid,
+  body.software-app.auto-contrast-dark .fa-regular,
+  body.software-app.auto-contrast-dark .fa-brands,
+  body.software-app.auto-contrast-dark .material-icons,
+  body.software-app.auto-contrast-dark .material-symbols-outlined,
+  body.software-app.auto-contrast-dark .material-symbols-rounded,
+  body.software-app.auto-contrast-dark .material-symbols-sharp,
+  body.software-app.auto-contrast-dark .iconfont,
+  body.software-app.auto-contrast-dark .svg-icon,
+  body.software-app.auto-contrast-dark .tab-item i,
+  body.software-app.auto-contrast-light i,
+  body.software-app.auto-contrast-light .fa,
+  body.software-app.auto-contrast-light .fas,
+  body.software-app.auto-contrast-light .far,
+  body.software-app.auto-contrast-light .fab,
+  body.software-app.auto-contrast-light .fa-solid,
+  body.software-app.auto-contrast-light .fa-regular,
+  body.software-app.auto-contrast-light .fa-brands,
+  body.software-app.auto-contrast-light .material-icons,
+  body.software-app.auto-contrast-light .material-symbols-outlined,
+  body.software-app.auto-contrast-light .material-symbols-rounded,
+  body.software-app.auto-contrast-light .material-symbols-sharp,
+  body.software-app.auto-contrast-light .iconfont,
+  body.software-app.auto-contrast-light .svg-icon,
+  body.software-app.auto-contrast-light .tab-item i {
+    color: var(--auto-icon) !important;
+  }
+
+  body.software-app.auto-contrast-dark svg,
+  body.software-app.auto-contrast-light svg {
+    color: var(--auto-icon);
+  }
+
+  body.software-app.auto-contrast-dark svg path,
+  body.software-app.auto-contrast-dark svg circle,
+  body.software-app.auto-contrast-dark svg rect,
+  body.software-app.auto-contrast-dark svg line,
+  body.software-app.auto-contrast-dark svg polyline,
+  body.software-app.auto-contrast-dark svg polygon,
+  body.software-app.auto-contrast-light svg path,
+  body.software-app.auto-contrast-light svg circle,
+  body.software-app.auto-contrast-light svg rect,
+  body.software-app.auto-contrast-light svg line,
+  body.software-app.auto-contrast-light svg polyline,
+  body.software-app.auto-contrast-light svg polygon {
+    stroke: currentColor;
+    fill: currentColor;
+  }
+}
+
 /* Pomodoro mobile liquid glass skin aligned with todo/calendar random background style. */
 @media (max-width: 900px) {
   body.software-app.pomodoro-page-liquid {
@@ -250,11 +463,6 @@ a,
 
   /* 头栏尺寸与宽度统一走全局规则，避免页面间节奏不一致 */
 
-  .unified-top-header-dock .unified-top-header-shell .container > :nth-child(1),
-  .unified-top-header-dock .unified-top-header-shell > div:first-child > :nth-child(1) {
-    flex: 1 1 auto !important;
-    min-width: 0;
-  }
 
   .unified-top-header-dock .unified-top-header-shell .container > :nth-child(2):not(:has([data-view])),
   .unified-top-header-dock .unified-top-header-shell > div:first-child > :nth-child(2):not(:has([data-view])) {
@@ -956,6 +1164,10 @@ a,
     box-shadow: inset 0 0 0 1px rgba(79, 70, 229, 0.16);
   }
 
+  html, body {
+    min-height: 100%;
+  }
+
   /* 打卡页：改为手机应用流布局 */
   #checkin-app-grid {
     display: flex !important;
@@ -1013,6 +1225,197 @@ a,
 
   #checkin-side-column .suggestion-card {
     padding: 12px !important;
+  }
+
+  body.software-app.checkin-page-liquid {
+    background: url('https://picsum.photos/1920/1080?random=1') center/cover fixed !important;
+  }
+
+  body.software-app.checkin-page-liquid .bg-orb {
+    display: none !important;
+  }
+
+  body.software-app.checkin-page-liquid #checkin-app-grid::before,
+  body.software-app.checkin-page-liquid #checkin-app-grid::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  /* Mobile check-in glass skin (content only, keep header/tab unchanged). */
+  #checkin-app-grid {
+    position: relative;
+    isolation: isolate;
+  }
+
+  body.software-app #checkin-app-grid::before {
+    content: "";
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 100vh;
+    background: url('https://picsum.photos/1920/1080?random=1') center/cover no-repeat;
+    z-index: -2;
+    pointer-events: none;
+  }
+
+  body.software-app #checkin-app-grid::after {
+    content: "";
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 100vh;
+    background: rgba(8, 12, 22, 0.12);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  #checkin-app-grid {
+    --ci-glass-bg: rgba(255, 255, 255, 0.06);
+    --ci-glass-bg-strong: rgba(255, 255, 255, 0.1);
+    --ci-glass-border: rgba(255, 255, 255, 0.14);
+    --ci-glass-shadow: 0 8px 28px rgba(15, 23, 42, 0.16);
+    --ci-glass-backdrop: blur(30px) saturate(132%);
+  }
+
+  #checkin-main-column > section,
+  #checkin-side-column > section,
+  #checkin-summary-grid,
+  #checkin-mobile-hub,
+  #checkin-calendar-section,
+  #checkin-history-section,
+  #checkin-distribution-section,
+  #checkin-ai-section {
+    background: var(--ci-glass-bg) !important;
+    border: 1px solid var(--ci-glass-border) !important;
+    box-shadow: var(--ci-glass-shadow) !important;
+    backdrop-filter: var(--ci-glass-backdrop) !important;
+    -webkit-backdrop-filter: var(--ci-glass-backdrop) !important;
+  }
+
+  #checkin-main-column #checkin-note,
+  #checkin-main-column .checkin-note-field {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border: 1px solid var(--ci-glass-border) !important;
+    box-shadow: var(--ci-glass-shadow) !important;
+    backdrop-filter: blur(24px) saturate(130%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(130%) !important;
+  }
+
+  #checkin-main-column .type-btn,
+  #checkin-main-column #checkin-btn,
+  #checkin-main-column .checkin-btn,
+  #checkin-main-column .mobile-checkin-tab {
+    background: var(--ci-glass-bg-strong) !important;
+    border: 1px solid var(--ci-glass-border) !important;
+    box-shadow: var(--ci-glass-shadow) !important;
+    backdrop-filter: blur(20px) saturate(120%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(120%) !important;
+  }
+
+  #checkin-main-column .mobile-checkin-tab.is-active {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35), var(--ci-glass-shadow) !important;
+  }
+
+  body.software-app.checkin-page-liquid #checkin-summary-grid {
+    padding: 8px !important;
+  }
+
+  body.software-app.checkin-page-liquid #checkin-summary-grid .summary-stat-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+    align-items: stretch;
+  }
+
+  body.software-app.checkin-page-liquid #checkin-summary-grid .summary-stat {
+    border-radius: 14px !important;
+    padding: 6px 4px !important;
+    min-height: 62px;
+    text-align: center;
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.08)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.28) !important;
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.14) !important;
+    backdrop-filter: blur(26px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(26px) saturate(140%) !important;
+  }
+
+  body.software-app.checkin-page-liquid #checkin-summary-grid .summary-stat-label {
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+  }
+
+  body.software-app.checkin-page-liquid #checkin-summary-grid .summary-stat-value {
+    font-size: 15px !important;
+    line-height: 1.15 !important;
+    margin-top: 2px;
+  }
+
+  /* Check-in calendar should match calendar page liquid glass style (size unchanged). */
+  body.software-app.checkin-page-liquid #checkin-calendar-section .calendar-nav-btn {
+    color: rgba(255, 255, 255, 0.92) !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.28) !important;
+    border-radius: 12px;
+    padding: 4px 6px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+    backdrop-filter: blur(20px) saturate(130%);
+    -webkit-backdrop-filter: blur(20px) saturate(130%);
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar-section #calendar-title,
+  body.software-app.checkin-page-liquid #checkin-calendar-section .text-gray-500,
+  body.software-app.checkin-page-liquid #checkin-calendar-section .text-gray-600 {
+    color: rgba(255, 255, 255, 0.88) !important;
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar {
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar .calendar-day {
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.1);
+    backdrop-filter: blur(26px) saturate(140%);
+    -webkit-backdrop-filter: blur(26px) saturate(140%);
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar .calendar-day.empty {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.42);
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar .calendar-day.checked {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.32);
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar .calendar-day.checked-streak {
+    border-color: rgba(255, 236, 205, 0.8);
+    box-shadow: 0 0 0 1px rgba(255, 236, 205, 0.32), 0 8px 20px rgba(15, 23, 42, 0.12);
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar .calendar-day.today {
+    background: linear-gradient(150deg, rgba(255, 197, 106, 0.22), rgba(255, 255, 255, 0.08));
+    border-color: rgba(255, 236, 205, 0.95);
+    box-shadow: 0 0 0 1px rgba(255, 236, 205, 0.48), 0 10px 24px rgba(15, 23, 42, 0.16);
+    color: #fff3de;
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar .calendar-day-indicator {
+    background: rgba(255, 236, 205, 0.95);
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar .calendar-day-indicator.outline {
+    background: transparent;
+    border-color: rgba(255, 236, 205, 0.9);
   }
 
   /* 个人中心：手机端改为应用设置流 */
