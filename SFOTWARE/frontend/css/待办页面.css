@@ -787,27 +787,27 @@
     }
 
     .todo-liquid-fab__glass {
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      border: 1px solid rgba(255, 255, 255, 0.42);
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.12) 54%, rgba(255, 255, 255, 0.2)),
-        radial-gradient(122% 150% at var(--sheen-x) var(--sheen-y), rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.1) 46%, rgba(255, 255, 255, 0.05));
-      box-shadow:
-        0 9px 22px rgba(15, 23, 42, 0.12),
-        0 0 0 1px var(--fab-border-highlight),
-        inset 0 1px 1px rgba(255, 255, 255, 0.62),
-        inset 0 -1px 1px rgba(255, 255, 255, 0.62),
-        inset 0 -8px 12px rgba(148, 163, 184, 0.1),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.22);
-      backdrop-filter: blur(42px) saturate(210%) contrast(40%) brightness(132%);
-      -webkit-backdrop-filter: blur(42px) saturate(210%) contrast(40%) brightness(132%);
-      transform: translate3d(0, 0, 0);
-      transform-origin: 50% 50%;
-      will-change: transform;
-      animation: liquidFabBreath 3.8s ease-in-out infinite;
-      overflow: hidden;
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        border: 1px double rgba(51, 51, 51, 0.08);
+        background: rgba(255, 255, 255, 0.04);
+        box-shadow:
+          inset 2px -2px 1px -1px rgba(255, 255, 255, 0.9),
+          inset -2px 2px 1px -1px rgba(255, 255, 255, 0.9),
+          inset 6px -6px 1px -6px rgba(255, 255, 255, 0.55),
+          inset -6px 6px 1px -6px rgba(255, 255, 255, 0.55),
+          inset 0 0 2px rgba(0, 0, 0, 0.8),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+          0 4px 8px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+        filter: brightness(0.9);
+        transform: translate3d(0, 0, 0);
+        transform-origin: 50% 50%;
+        will-change: transform;
+        animation: liquidFabBreath 3.8s ease-in-out infinite;
+        overflow: hidden;
       isolation: isolate;
       pointer-events: none;
       opacity: var(--fab-glass-opacity);
@@ -823,21 +823,30 @@
     }
 
     .todo-liquid-fab__glass::before {
-      background:
-        radial-gradient(86% 72% at 28% 20%, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.18) 50%, rgba(255, 255, 255, 0));
-      opacity: 0.62;
-      animation: liquidFabSheen 5.2s ease-in-out infinite;
-      mix-blend-mode: screen;
+        inset: auto;
+        top: 35%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - 16px);
+        height: calc(100% - 16px);
+        border: 1px solid rgba(0, 0, 0, 0.9);
+        filter: blur(8px);
+        background: transparent;
+        opacity: 1;
+        animation: none;
+        mix-blend-mode: normal;
     }
 
     .todo-liquid-fab__glass::after {
-      inset: -12px;
-      background:
-        radial-gradient(92% 88% at 52% 52%, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.06) 58%, rgba(255, 255, 255, 0.02));
-      backdrop-filter: blur(64px) saturate(230%) contrast(24%) brightness(146%);
-      -webkit-backdrop-filter: blur(64px) saturate(230%) contrast(24%) brightness(146%);
-      opacity: 0.9;
-      mix-blend-mode: normal;
+        inset: 0;
+        background: linear-gradient(45deg,
+            rgba(255, 255, 255, 0.8) 0%,
+            transparent 25%,
+            transparent 75%,
+            rgba(255, 255, 255, 0.8) 100%);
+        filter: blur(3px);
+        opacity: 1;
+        mix-blend-mode: normal;
     }
 
     .todo-liquid-fab__icon {
@@ -1017,20 +1026,19 @@
 
     html.unified-dark-mode body.software-app .todo-liquid-fab__glass,
     body.software-app.theme-night .todo-liquid-fab__glass {
-      border-color: rgba(255, 255, 255, 0.24);
-      background:
-        conic-gradient(from 220deg at 58% 44%, rgba(106, 162, 255, 0.16), rgba(168, 124, 255, 0.12), rgba(88, 212, 187, 0.12), rgba(106, 162, 255, 0.16)),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05) 56%, rgba(255, 255, 255, 0.12)),
-        radial-gradient(118% 142% at var(--sheen-x) var(--sheen-y), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.04) 48%, rgba(255, 255, 255, 0.06));
-      box-shadow:
-        0 10px 22px rgba(2, 6, 23, 0.34),
-        0 0 0 0.5px rgba(133, 180, 255, 0.42),
-        inset 0 1px 1px rgba(255, 255, 255, 0.24),
-        inset 0 -10px 14px rgba(15, 23, 42, 0.2),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(20px) saturate(240%) contrast(52%) brightness(124%);
-      -webkit-backdrop-filter: blur(20px) saturate(240%) contrast(52%) brightness(124%);
-      opacity: 0.64;
+        border-color: rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.05);
+        box-shadow:
+          inset 2px -2px 1px -1px rgba(255, 255, 255, 0.7),
+          inset -2px 2px 1px -1px rgba(255, 255, 255, 0.7),
+          inset 6px -6px 1px -6px rgba(255, 255, 255, 0.45),
+          inset -6px 6px 1px -6px rgba(255, 255, 255, 0.45),
+          inset 0 0 2px rgba(0, 0, 0, 0.8),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+          0 4px 8px rgba(0, 0, 0, 0.35);
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+        opacity: var(--fab-glass-opacity);
     }
 
     html.unified-dark-mode body.software-app .todo-liquid-fab__icon,

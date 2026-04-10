@@ -1,9 +1,34 @@
-/* Mobile tuning for SFOTWARE frontend:
+﻿/* Mobile tuning for SFOTWARE frontend:
    Keep WEB theme, but switch to app-like phone layout and touch interaction. */
 
 :root {
   --app-bottom-safe: env(safe-area-inset-bottom, 0px);
   --app-top-safe: env(safe-area-inset-top, 0px);
+}
+
+
+@property --pomodoro-progress-deg {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 300deg;
+}
+
+@property --pomodoro-progress-mid-deg {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 174deg;
+}
+
+@property --pomodoro-progress-soft-deg {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 72deg;
+}
+
+@property --pomodoro-progress-warm-deg {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 252deg;
 }
 
 /* Mobile auto-contrast: adapt text/icon colors to random backgrounds. */
@@ -217,6 +242,168 @@
     stroke: currentColor;
     fill: currentColor;
   }
+
+    body.software-app.auto-contrast-dark.todo-page-liquid,
+    body.software-app.auto-contrast-light.todo-page-liquid {
+      --todo-lg-text: var(--auto-content-ink, var(--auto-text-main));
+      --todo-lg-subtext: var(--auto-content-soft, var(--auto-text-sub));
+      --todo-lg-primary: var(--auto-icon);
+    }
+
+    body.software-app.auto-contrast-dark.pomodoro-page-liquid,
+    body.software-app.auto-contrast-light.pomodoro-page-liquid {
+      --pm-text-main: var(--auto-content-ink, var(--auto-text-main));
+      --pm-text-sub: var(--auto-content-soft, var(--auto-text-sub));
+      --pm-accent: var(--auto-icon);
+    }
+
+    body.software-app.auto-contrast-dark.calendar-page-liquid,
+    body.software-app.auto-contrast-light.calendar-page-liquid {
+      --calendar-text-main: var(--auto-content-ink, var(--auto-text-main));
+      --calendar-text-sub: var(--auto-content-soft, var(--auto-text-sub));
+      --calendar-warm: var(--auto-icon);
+    }
+
+    body.software-app.auto-contrast-dark.report-page-liquid,
+    body.software-app.auto-contrast-light.report-page-liquid {
+      --rp-text-main: var(--auto-content-ink, var(--auto-text-main));
+      --rp-text-soft: var(--auto-content-soft, var(--auto-text-sub));
+    }
+
+    body.software-app.auto-contrast-dark.checkin-page-liquid,
+    body.software-app.auto-contrast-light.checkin-page-liquid {
+      --checkin-text-main: var(--auto-content-ink, var(--auto-text-main));
+      --checkin-text-sub: var(--auto-content-soft, var(--auto-text-sub));
+    }
+
+  body.software-app.auto-contrast-dark .unified-top-header-dock .unified-top-header-shell h1,
+  body.software-app.auto-contrast-dark .unified-top-header-dock .unified-top-header-shell p,
+  body.software-app.auto-contrast-dark .unified-top-header-dock .unified-top-header-shell span,
+  body.software-app.auto-contrast-dark .unified-top-header-dock .unified-top-header-shell a,
+  body.software-app.auto-contrast-light .unified-top-header-dock .unified-top-header-shell h1,
+  body.software-app.auto-contrast-light .unified-top-header-dock .unified-top-header-shell p,
+  body.software-app.auto-contrast-light .unified-top-header-dock .unified-top-header-shell span,
+  body.software-app.auto-contrast-light .unified-top-header-dock .unified-top-header-shell a {
+    color: var(--auto-text-main) !important;
+  }
+
+  body.software-app.auto-contrast-dark .unified-top-header-dock .unified-top-header-shell a i,
+  body.software-app.auto-contrast-dark .unified-top-header-dock .unified-top-header-shell button i,
+  body.software-app.auto-contrast-light .unified-top-header-dock .unified-top-header-shell a i,
+  body.software-app.auto-contrast-light .unified-top-header-dock .unified-top-header-shell button i {
+    color: var(--auto-icon) !important;
+  }
+
+  body.software-app.auto-contrast-dark #sort-filter-btn,
+  body.software-app.auto-contrast-dark #select-mode-btn,
+  body.software-app.auto-contrast-dark #mobile-search-btn,
+  body.software-app.auto-contrast-dark #sync-status-badge,
+  body.software-app.auto-contrast-dark #notification-btn,
+  body.software-app.auto-contrast-dark #user-menu-btn,
+  body.software-app.auto-contrast-dark .btn-primary-glass,
+  body.software-app.auto-contrast-dark .btn-secondary-glass,
+  body.software-app.auto-contrast-dark .quick-action-btn,
+  body.software-app.auto-contrast-dark .task-action-btn,
+  body.software-app.auto-contrast-dark .priority-btn,
+  body.software-app.auto-contrast-dark .view-btn,
+  body.software-app.auto-contrast-dark .calendar-nav-btn,
+  body.software-app.auto-contrast-dark .category-chip,
+  body.software-app.auto-contrast-dark .mode-btn,
+  body.software-app.auto-contrast-dark .type-btn,
+  body.software-app.auto-contrast-dark .checkin-btn,
+  body.software-app.auto-contrast-light #sort-filter-btn,
+  body.software-app.auto-contrast-light #select-mode-btn,
+  body.software-app.auto-contrast-light #mobile-search-btn,
+  body.software-app.auto-contrast-light #sync-status-badge,
+  body.software-app.auto-contrast-light #notification-btn,
+  body.software-app.auto-contrast-light #user-menu-btn,
+  body.software-app.auto-contrast-light .btn-primary-glass,
+  body.software-app.auto-contrast-light .btn-secondary-glass,
+  body.software-app.auto-contrast-light .quick-action-btn,
+  body.software-app.auto-contrast-light .task-action-btn,
+  body.software-app.auto-contrast-light .priority-btn,
+  body.software-app.auto-contrast-light .view-btn,
+  body.software-app.auto-contrast-light .calendar-nav-btn,
+  body.software-app.auto-contrast-light .category-chip,
+  body.software-app.auto-contrast-light .mode-btn,
+  body.software-app.auto-contrast-light .type-btn,
+  body.software-app.auto-contrast-light .checkin-btn {
+    color: var(--auto-text-main) !important;
+  }
+
+  body.software-app.auto-contrast-dark #sort-filter-btn i,
+  body.software-app.auto-contrast-dark #select-mode-btn i,
+  body.software-app.auto-contrast-dark #mobile-search-btn i,
+  body.software-app.auto-contrast-dark #sync-status-badge i,
+  body.software-app.auto-contrast-dark #notification-btn i,
+  body.software-app.auto-contrast-dark #user-menu-btn i,
+  body.software-app.auto-contrast-dark .btn-primary-glass i,
+  body.software-app.auto-contrast-dark .btn-secondary-glass i,
+  body.software-app.auto-contrast-dark .quick-action-btn i,
+  body.software-app.auto-contrast-dark .task-action-btn i,
+  body.software-app.auto-contrast-dark .priority-btn i,
+  body.software-app.auto-contrast-dark .view-btn i,
+  body.software-app.auto-contrast-dark .calendar-nav-btn i,
+  body.software-app.auto-contrast-dark .category-chip i,
+  body.software-app.auto-contrast-dark .mode-btn i,
+  body.software-app.auto-contrast-dark .type-btn i,
+  body.software-app.auto-contrast-dark .checkin-btn i,
+  body.software-app.auto-contrast-light #sort-filter-btn i,
+  body.software-app.auto-contrast-light #select-mode-btn i,
+  body.software-app.auto-contrast-light #mobile-search-btn i,
+  body.software-app.auto-contrast-light #sync-status-badge i,
+  body.software-app.auto-contrast-light #notification-btn i,
+  body.software-app.auto-contrast-light #user-menu-btn i,
+  body.software-app.auto-contrast-light .btn-primary-glass i,
+  body.software-app.auto-contrast-light .btn-secondary-glass i,
+  body.software-app.auto-contrast-light .quick-action-btn i,
+  body.software-app.auto-contrast-light .task-action-btn i,
+  body.software-app.auto-contrast-light .priority-btn i,
+  body.software-app.auto-contrast-light .view-btn i,
+  body.software-app.auto-contrast-light .calendar-nav-btn i,
+  body.software-app.auto-contrast-light .category-chip i,
+  body.software-app.auto-contrast-light .mode-btn i,
+  body.software-app.auto-contrast-light .type-btn i,
+  body.software-app.auto-contrast-light .checkin-btn i {
+    color: var(--auto-icon) !important;
+  }
+
+  body.software-app.auto-contrast-dark #sort-filter-btn span,
+  body.software-app.auto-contrast-dark #select-mode-btn span,
+  body.software-app.auto-contrast-dark #mobile-search-btn span,
+  body.software-app.auto-contrast-dark #sync-status-badge span,
+  body.software-app.auto-contrast-dark .btn-primary-glass span,
+  body.software-app.auto-contrast-dark .btn-secondary-glass span,
+  body.software-app.auto-contrast-dark .quick-action-btn span,
+  body.software-app.auto-contrast-dark .task-action-btn span,
+  body.software-app.auto-contrast-dark .view-btn span,
+  body.software-app.auto-contrast-dark .category-chip span,
+  body.software-app.auto-contrast-light #sort-filter-btn span,
+  body.software-app.auto-contrast-light #select-mode-btn span,
+  body.software-app.auto-contrast-light #mobile-search-btn span,
+  body.software-app.auto-contrast-light #sync-status-badge span,
+  body.software-app.auto-contrast-light .btn-primary-glass span,
+  body.software-app.auto-contrast-light .btn-secondary-glass span,
+  body.software-app.auto-contrast-light .quick-action-btn span,
+  body.software-app.auto-contrast-light .task-action-btn span,
+  body.software-app.auto-contrast-light .view-btn span,
+  body.software-app.auto-contrast-light .category-chip span {
+    color: inherit !important;
+  }
+
+  body.software-app.auto-contrast-dark #sync-status-badge,
+  body.software-app.auto-contrast-light #sync-status-badge {
+    color: var(--auto-text-main) !important;
+  }
+
+  body.software-app.auto-contrast-dark #todo-main .text-gray-500,
+  body.software-app.auto-contrast-dark #todo-main .text-gray-600,
+  body.software-app.auto-contrast-dark #todo-main .sync-status-text,
+  body.software-app.auto-contrast-light #todo-main .text-gray-500,
+  body.software-app.auto-contrast-light #todo-main .text-gray-600,
+  body.software-app.auto-contrast-light #todo-main .sync-status-text {
+    color: var(--auto-text-sub) !important;
+  }
 }
 
 /* Pomodoro mobile liquid glass skin aligned with todo/calendar random background style. */
@@ -329,14 +516,87 @@
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
   }
 
+  body.software-app.pomodoro-page-liquid .mode-switch-wrap h2,
+  body.software-app.pomodoro-page-liquid .mode-switch-wrap .mode-btn,
+  body.software-app.pomodoro-page-liquid .mode-switch-wrap + p,
+  body.software-app.pomodoro-page-liquid .task-select-arrow,
+  body.software-app.pomodoro-page-liquid .control-btn.secondary,
+  body.software-app.pomodoro-page-liquid .control-btn.secondary i {
+    color: var(--pm-text-sub) !important;
+  }
+
+  body.software-app.pomodoro-page-liquid .mode-btn.active,
+  body.software-app.pomodoro-page-liquid .control-btn.primary,
+  body.software-app.pomodoro-page-liquid .control-btn.primary i,
+  body.software-app.pomodoro-page-liquid #current-task-label,
+  body.software-app.pomodoro-page-liquid #message-text,
+  body.software-app.pomodoro-page-liquid #mobile-task-modal .font-semibold {
+    color: var(--pm-text-main) !important;
+  }
+
   body.software-app.pomodoro-page-liquid #timer-shell > div:first-child {
-    border-color: rgba(255, 255, 255, 0.72) !important;
+    position: absolute !important;
+    inset: 0 !important;
+    border-color: rgba(255, 255, 255, 0.62) !important;
+    background: transparent !important;
   }
 
   body.software-app.pomodoro-page-liquid #progress-circle {
-    border-color: rgba(255, 255, 255, 0.8) !important;
-    border-top-color: transparent !important;
-    border-left-color: transparent !important;
+    inset: 0 !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    transform: rotate(-90deg) !important;
+    background:
+      conic-gradient(
+        from 0deg,
+        #8378e0 0deg,
+        #a776d2 var(--pomodoro-progress-soft-deg, 72deg),
+        #cc75b1 var(--pomodoro-progress-mid-deg, 174deg),
+        #ed747d var(--pomodoro-progress-warm-deg, 252deg),
+        #ff7043 var(--pomodoro-progress-deg, 300deg),
+        rgba(255, 112, 67, 0) var(--pomodoro-progress-deg, 300deg),
+        rgba(255, 112, 67, 0) 360deg
+      ) !important;
+    box-shadow:
+      0 0 12px rgba(131, 120, 224, 0.22),
+      0 0 22px rgba(204, 117, 177, 0.16),
+      0 0 30px rgba(255, 112, 67, 0.1) !important;
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 11px), #000 calc(100% - 10px));
+    mask: radial-gradient(farthest-side, transparent calc(100% - 11px), #000 calc(100% - 10px));
+    transition:
+      --pomodoro-progress-deg 560ms cubic-bezier(0.22, 1, 0.36, 1),
+      --pomodoro-progress-mid-deg 560ms cubic-bezier(0.22, 1, 0.36, 1),
+      --pomodoro-progress-soft-deg 560ms cubic-bezier(0.22, 1, 0.36, 1),
+      --pomodoro-progress-warm-deg 560ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 420ms ease,
+      opacity 420ms ease,
+      transform 560ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+  }
+
+  body.software-app.pomodoro-page-liquid #progress-circle::before {
+    display: none !important;
+  }
+
+  body.software-app.pomodoro-page-liquid #progress-circle.mode-changing {
+    animation: pomodoroRingModeShift 620ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @keyframes pomodoroRingModeShift {
+    0% {
+      opacity: 0.78;
+      filter: saturate(0.86) brightness(0.96);
+      transform: rotate(-90deg) scale(0.975);
+    }
+    45% {
+      opacity: 1;
+      filter: saturate(1.1) brightness(1.04);
+      transform: rotate(-90deg) scale(1.01);
+    }
+    100% {
+      opacity: 1;
+      filter: saturate(1) brightness(1);
+      transform: rotate(-90deg) scale(1);
+    }
   }
 
   body.software-app.pomodoro-page-liquid #timer-core {
@@ -396,13 +656,19 @@ a,
 }
 
 @media (max-width: 900px) {
-  /* 统一顶部 Dock 补偿：避免固定头部遮挡首屏内容 */
+  /* 缁熶竴椤堕儴 Dock 琛ュ伩锛氶伩鍏嶅浐瀹氬ご閮ㄩ伄鎸￠灞忓唴瀹?*/
   body.has-unified-top-header .unified-top-content-offset,
   body.has-unified-top-header .unified-top-content-offset-shift,
   body.has-unified-top-header .unified-top-pane-offset,
   body.has-unified-top-header .unified-top-content-offset.unified-top-content-offset-extra {
-    padding-top: calc(var(--unified-top-header-space, 56px) + 18px + env(safe-area-inset-top, 0px)) !important;
-    scroll-padding-top: calc(var(--unified-top-header-space, 56px) + 18px + env(safe-area-inset-top, 0px)) !important;
+    padding-top: calc(var(--unified-top-header-space, 56px) + 8px + env(safe-area-inset-top, 0px)) !important;
+    scroll-padding-top: calc(var(--unified-top-header-space, 56px) + 8px + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  body.has-unified-top-header #todo-main,
+  body.has-unified-top-header #calendar-main {
+    padding-top: calc(var(--unified-top-header-space, 56px) + 8px + env(safe-area-inset-top, 0px)) !important;
+    scroll-padding-top: calc(var(--unified-top-header-space, 56px) + 16px + env(safe-area-inset-top, 0px)) !important;
   }
 
   .unified-top-header-dock .unified-top-header-shell {
@@ -417,7 +683,7 @@ a,
     overflow: hidden;
   }
 
-  /* 页面主题统一：同一头栏模板，不同页面保留自身主题色调 */
+  /* 椤甸潰涓婚缁熶竴锛氬悓涓€澶存爮妯℃澘锛屼笉鍚岄〉闈繚鐣欒嚜韬富棰樿壊璋?*/
   .unified-top-header-dock .unified-top-header-shell#main-header,
   .unified-top-header-dock .unified-top-header-shell#report-header,
   .unified-top-header-dock .unified-top-header-shell#profile-header {
@@ -430,7 +696,7 @@ a,
     border-color: #ecdba1 !important;
   }
 
-  /* 待办/日历：强制保留头栏底部圆角（覆盖 common.js 的 border-radius:0） */
+  /* 寰呭姙/鏃ュ巻锛氬己鍒朵繚鐣欏ご鏍忓簳閮ㄥ渾瑙掞紙瑕嗙洊 common.js 鐨?border-radius:0锛?*/
   .unified-top-header-dock .unified-top-header-shell#main-header,
   .unified-top-header-dock .unified-top-header-shell#calendar-header {
     border-radius: 0 0 16px 16px !important;
@@ -447,7 +713,7 @@ a,
     border-color: #bdd6ef !important;
   }
 
-  /* 统一头栏尺寸：简洁的一行主信息，减少视觉噪音 */
+  /* 缁熶竴澶存爮灏哄锛氱畝娲佺殑涓€琛屼富淇℃伅锛屽噺灏戣瑙夊櫔闊?*/
   .unified-top-header-dock .unified-top-header-shell {
     min-height: 58px;
   }
@@ -461,7 +727,7 @@ a,
     align-items: center !important;
   }
 
-  /* 头栏尺寸与宽度统一走全局规则，避免页面间节奏不一致 */
+  /* 澶存爮灏哄涓庡搴︾粺涓€璧板叏灞€瑙勫垯锛岄伩鍏嶉〉闈㈤棿鑺傚涓嶄竴鑷?*/
 
 
   .unified-top-header-dock .unified-top-header-shell .container > :nth-child(2):not(:has([data-view])),
@@ -514,7 +780,7 @@ a,
     display: none !important;
   }
 
-  /* 去掉头栏头像右侧下拉箭头，减少视觉噪音 */
+  /* 鍘绘帀澶存爮澶村儚鍙充晶涓嬫媺绠ご锛屽噺灏戣瑙夊櫔闊?*/
   .unified-top-header-dock .unified-top-header-shell .fa-chevron-down,
   .unified-top-header-dock .unified-top-header-shell #user-menu-arrow,
   .unified-top-header-dock .unified-top-header-shell #checkin-user-menu-btn .fa-chevron-down,
@@ -524,9 +790,9 @@ a,
     display: none !important;
   }
 
-  /* 待办页不再走特殊头栏分支，统一使用全局模板 */
+  /* 寰呭姙椤典笉鍐嶈蛋鐗规畩澶存爮鍒嗘敮锛岀粺涓€浣跨敤鍏ㄥ眬妯℃澘 */
 
-  /* 全局删除头栏头像入口（用户菜单按钮组） */
+  /* 鍏ㄥ眬鍒犻櫎澶存爮澶村儚鍏ュ彛锛堢敤鎴疯彍鍗曟寜閽粍锛?*/
   .unified-top-header-dock .unified-top-header-shell #user-menu-container,
   .unified-top-header-dock .unified-top-header-shell #checkin-user-menu-container,
   .unified-top-header-dock .unified-top-header-shell #report-user-menu-container,
@@ -536,7 +802,7 @@ a,
     display: none !important;
   }
 
-  /* 统一头栏模板：箭头/标题对齐、间距、字号与后面页面一致 */
+  /* 缁熶竴澶存爮妯℃澘锛氱澶?鏍囬瀵归綈銆侀棿璺濄€佸瓧鍙蜂笌鍚庨潰椤甸潰涓€鑷?*/
   .unified-top-header-dock .unified-top-header-shell .container,
   .unified-top-header-dock .unified-top-header-shell > div:first-child {
     flex-wrap: nowrap !important;
@@ -610,6 +876,24 @@ a,
     font-size: 18px !important;
   }
 
+  body.software-app.calendar-page-liquid #main-header > div > .flex.items-center.space-x-4 > a:first-child,
+  body.software-app #main-header .profile-header-back-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 42px !important;
+    height: 42px !important;
+    padding: 0 !important;
+    border-radius: 999px !important;
+    background: rgba(255, 255, 255, 0.72) !important;
+    border: 1px solid rgba(255, 255, 255, 0.42) !important;
+    box-shadow:
+      0 6px 16px rgba(15, 23, 42, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(12px) saturate(130%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(130%) !important;
+  }
+
   .unified-top-header-dock .unified-top-header-shell .container > :nth-child(1) p,
   .unified-top-header-dock .unified-top-header-shell > div:first-child > :nth-child(1) p {
     display: none !important;
@@ -623,7 +907,7 @@ a,
     margin: 0 !important;
   }
 
-  /* 日历工具条（保留样式，默认不启用） */
+  /* 鏃ュ巻宸ュ叿鏉★紙淇濈暀鏍峰紡锛岄粯璁や笉鍚敤锛?*/
   #calendar-mobile-toolbar {
     margin-top: 0;
     margin-bottom: 10px;
@@ -669,7 +953,7 @@ a,
     scrollbar-width: none;
   }
 
-  /* 限制日期卡的最大宽度，避免在窄屏下撑出一片空白区域 */
+  /* 闄愬埗鏃ユ湡鍗＄殑鏈€澶у搴︼紝閬垮厤鍦ㄧ獎灞忎笅鎾戝嚭涓€鐗囩┖鐧藉尯鍩?*/
   #calendar-mobile-toolbar .calendar-mobile-meta-row .glass-card {
     flex: 0 1 auto;
     min-width: 0;
@@ -828,7 +1112,7 @@ a,
     flex: 0 0 auto;
   }
 
-  /* 回退保障：若日历控件仍在头栏，保持可见，不被通用隐藏规则误伤 */
+  /* 鍥為€€淇濋殰锛氳嫢鏃ュ巻鎺т欢浠嶅湪澶存爮锛屼繚鎸佸彲瑙侊紝涓嶈閫氱敤闅愯棌瑙勫垯璇激 */
   .unified-top-header-dock .unified-top-header-shell:has([data-view]) #today-btn,
   .unified-top-header-dock .unified-top-header-shell:has([data-view]) .view-btn,
   .unified-top-header-dock .unified-top-header-shell:has([data-view]) .btn-primary,
@@ -925,7 +1209,7 @@ a,
     min-height: 0;
   }
 
-  /* 待办页移动端改为整页单滚动，避免 main 内层滚动造成“分层感” */
+  /* 寰呭姙椤电Щ鍔ㄧ鏀逛负鏁撮〉鍗曟粴鍔紝閬垮厤 main 鍐呭眰婊氬姩閫犳垚鈥滃垎灞傛劅鈥?*/
   .software-app #todo-main {
     overflow-y: visible !important;
     overflow-x: visible !important;
@@ -1029,7 +1313,7 @@ a,
     font-size: 13px;
   }
 
-  /* 全局统一节奏：卡片层级和圆角一致，减少桌面感 */
+  /* 鍏ㄥ眬缁熶竴鑺傚锛氬崱鐗囧眰绾у拰鍦嗚涓€鑷达紝鍑忓皯妗岄潰鎰?*/
   .software-app .card-shadow,
   .software-app .glass-card,
   .software-app .glass-max,
@@ -1072,7 +1356,7 @@ a,
     gap: 12px !important;
   }
 
-  /* 顶部栏统一：软件端手机手感 */
+  /* 椤堕儴鏍忕粺涓€锛氳蒋浠剁鎵嬫満鎵嬫劅 */
   .software-app .glass-header .container {
     padding-top: 10px !important;
     padding-bottom: 10px !important;
@@ -1111,7 +1395,7 @@ a,
     font-size: 11px !important;
   }
 
-  /* 头栏日期卡裁剪：在窄屏或长文本时截断显示，防止溢出到外层圆角以外 */
+  /* 澶存爮鏃ユ湡鍗¤鍓細鍦ㄧ獎灞忔垨闀挎枃鏈椂鎴柇鏄剧ず锛岄槻姝㈡孩鍑哄埌澶栧眰鍦嗚浠ュ */
   .software-app .glass-header .glass-card:has(#current-date) {
     min-width: 0;
     max-width: calc(100% - 140px);
@@ -1131,7 +1415,7 @@ a,
     max-width: 100%;
   }
 
-  /* 底部 Tab 统一：6 等分 + 固定触控区 */
+  /* 搴曢儴 Tab 缁熶竴锛? 绛夊垎 + 鍥哄畾瑙︽帶鍖?*/
   .software-app .glass-tab {
     padding-top: 6px !important;
     padding-left: 6px !important;
@@ -1168,7 +1452,7 @@ a,
     min-height: 100%;
   }
 
-  /* 打卡页：改为手机应用流布局 */
+  /* 鎵撳崱椤碉細鏀逛负鎵嬫満搴旂敤娴佸竷灞€ */
   #checkin-app-grid {
     display: flex !important;
     flex-direction: column !important;
@@ -1321,40 +1605,61 @@ a,
   }
 
   body.software-app.checkin-page-liquid #checkin-summary-grid {
-    padding: 8px !important;
+    padding: 4px !important;
   }
 
   body.software-app.checkin-page-liquid #checkin-summary-grid .summary-stat-grid {
     display: grid !important;
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    gap: 6px !important;
+    gap: 8px !important;
     align-items: stretch;
   }
 
   body.software-app.checkin-page-liquid #checkin-summary-grid .summary-stat {
-    border-radius: 14px !important;
-    padding: 6px 4px !important;
-    min-height: 62px;
+    border-radius: 12px !important;
+    padding: 4px 2px !important;
+    min-height: 52px;
+    min-width: 0 !important;
+    width: 100%;
     text-align: center;
-    background: linear-gradient(150deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.08)) !important;
-    border: 1px solid rgba(255, 255, 255, 0.28) !important;
-    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.14) !important;
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.12)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.32) !important;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12) !important;
     backdrop-filter: blur(26px) saturate(140%) !important;
     -webkit-backdrop-filter: blur(26px) saturate(140%) !important;
   }
 
   body.software-app.checkin-page-liquid #checkin-summary-grid .summary-stat-label {
-    font-size: 10px !important;
-    line-height: 1.2 !important;
+    font-size: 9px !important;
+    line-height: 1.15 !important;
   }
 
   body.software-app.checkin-page-liquid #checkin-summary-grid .summary-stat-value {
-    font-size: 15px !important;
-    line-height: 1.15 !important;
+    font-size: 14px !important;
+    line-height: 1.1 !important;
     margin-top: 2px;
   }
 
   /* Check-in calendar should match calendar page liquid glass style (size unchanged). */
+  body.software-app.checkin-page-liquid #checkin-calendar-section > .flex.items-center.justify-between.mb-3 {
+    display: grid !important;
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar-section > .flex.items-center.justify-between.mb-3 > .flex.items-center.space-x-2 {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    margin: 0 auto;
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar-section #calendar-title {
+    text-align: center !important;
+    min-width: max-content;
+  }
+
   body.software-app.checkin-page-liquid #checkin-calendar-section .calendar-nav-btn {
     color: rgba(255, 255, 255, 0.92) !important;
     background: rgba(255, 255, 255, 0.12) !important;
@@ -1418,7 +1723,7 @@ a,
     border-color: rgba(255, 236, 205, 0.9);
   }
 
-  /* 个人中心：手机端改为应用设置流 */
+  /* 涓汉涓績锛氭墜鏈虹鏀逛负搴旂敤璁剧疆娴?*/
   #profile-app-grid {
     display: flex !important;
     flex-direction: column !important;
@@ -1498,7 +1803,7 @@ a,
     line-height: 1.2;
   }
 
-  /* 待办：手机应用化工具区与任务区 */
+  /* 寰呭姙锛氭墜鏈哄簲鐢ㄥ寲宸ュ叿鍖轰笌浠诲姟鍖?*/
   #todo-app-shell {
     display: block;
   }
@@ -1545,7 +1850,7 @@ a,
     width: auto;
   }
 
-  /* 待办快捷操作区：手机端保持一排，横向滑动，避免折行 */
+  /* 寰呭姙蹇嵎鎿嶄綔鍖猴細鎵嬫満绔繚鎸佷竴鎺掞紝妯悜婊戝姩锛岄伩鍏嶆姌琛?*/
   #todo-main > .glass-max.rounded-2xl {
     overflow: visible !important;
     position: relative;
@@ -1573,7 +1878,7 @@ a,
     height: 0;
   }
 
-  /* 第一列可缩放，右侧操作保持内容宽度并靠右对齐 */
+  /* 绗竴鍒楀彲缂╂斁锛屽彸渚ф搷浣滀繚鎸佸唴瀹瑰搴﹀苟闈犲彸瀵归綈 */
   #todo-main > .glass-max.rounded-2xl > .flex.flex-col.md\:flex-row.md\:items-center.justify-between.gap-4 > :first-child {
     min-width: 0;
     width: auto;
@@ -1668,7 +1973,7 @@ a,
     color: #4f46e5;
   }
 
-  /* 当下拉打开时，旋转排序箭头并给出平滑过渡（兼容不同父容器结构） */
+  /* 褰撲笅鎷夋墦寮€鏃讹紝鏃嬭浆鎺掑簭绠ご骞剁粰鍑哄钩婊戣繃娓★紙鍏煎涓嶅悓鐖跺鍣ㄧ粨鏋勶級 */
   #todo-main .relative.software-menu-open > #sort-filter-btn .fa-chevron-down,
   #todo-main .relative.software-menu-open > #sort-filter-btn #sort-icon,
   #todo-main .relative.software-menu-open > #sort-filter-btn .fa-chevron-up,
@@ -1737,7 +2042,7 @@ a,
     line-height: 1.25;
   }
 
-  /* 日历：手机端应用化布局 */
+  /* 鏃ュ巻锛氭墜鏈虹搴旂敤鍖栧竷灞€ */
   #calendar-main {
     padding: 12px !important;
   }
@@ -1845,7 +2150,7 @@ a,
     border-radius: 10px !important;
   }
 
-  /* 数据周报：移动端液态玻璃（精简，避免重复覆盖） */
+  /* 鏁版嵁鍛ㄦ姤锛氱Щ鍔ㄧ娑叉€佺幓鐠冿紙绮剧畝锛岄伩鍏嶉噸澶嶈鐩栵級 */
   body.software-app.report-page-liquid {
     --rp-glass-bg: rgba(255, 255, 255, 0.032);
     --rp-glass-border: rgba(255, 255, 255, 0.14);
@@ -2023,7 +2328,7 @@ a,
     margin-bottom: calc(16px + var(--app-bottom-safe)) !important;
   }
 
-  /* 待办页局部控件仅做内容收口，不改头栏几何 */
+  /* 寰呭姙椤靛眬閮ㄦ帶浠朵粎鍋氬唴瀹规敹鍙ｏ紝涓嶆敼澶存爮鍑犱綍 */
   #main-header .flex.items-center.space-x-4 {
     gap: 6px !important;
   }
@@ -2054,8 +2359,8 @@ a,
   body.has-unified-top-header .unified-top-content-offset-shift,
   body.has-unified-top-header .unified-top-pane-offset,
   body.has-unified-top-header .unified-top-content-offset.unified-top-content-offset-extra {
-    padding-top: calc(var(--unified-top-header-space, 52px) + 14px + env(safe-area-inset-top, 0px)) !important;
-    scroll-padding-top: calc(var(--unified-top-header-space, 52px) + 14px + env(safe-area-inset-top, 0px)) !important;
+    padding-top: calc(var(--unified-top-header-space, 52px) + 6px + env(safe-area-inset-top, 0px)) !important;
+    scroll-padding-top: calc(var(--unified-top-header-space, 52px) + 6px + env(safe-area-inset-top, 0px)) !important;
   }
 
   .software-app main {
@@ -2798,8 +3103,8 @@ a,
   }
 
   body.software-app.todo-page-liquid #main-header .container > .flex.items-center.space-x-4 > a,
-  body.software-app.todo-page-liquid #main-header a[href*="登录页面"],
-  body.software-app.todo-page-liquid #main-header a[title*="返回"] {
+  body.software-app.todo-page-liquid #main-header a[href*="鐧诲綍椤甸潰"],
+  body.software-app.todo-page-liquid #main-header a[title*="杩斿洖"] {
     width: 44px !important;
     height: 44px !important;
     padding: 0 !important;
@@ -3141,7 +3446,7 @@ a,
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.19)), rgba(255, 255, 255, 0.22) !important;
   }
 
-  /* 排序下拉：降低不透明度（更通透一点），只影响该菜单。 */
+  /* 鎺掑簭涓嬫媺锛氶檷浣庝笉閫忔槑搴︼紙鏇撮€氶€忎竴鐐癸級锛屽彧褰卞搷璇ヨ彍鍗曘€?*/
   body.software-app.todo-page-liquid #todo-main #sort-filter-menu {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.26)), rgba(255, 255, 255, 0.28) !important;
     border-color: rgba(255, 255, 255, 0.44) !important;
@@ -3572,9 +3877,9 @@ a,
     border-color: var(--todo-ios26-glass-border) !important;
     background:
       linear-gradient(135deg,
-        rgba(255, 255, 255, 0.14) 0%,
-        rgba(255, 255, 255, 0.03) 48%,
-        rgba(170, 225, 255, 0.1) 100%),
+        rgba(255, 255, 255, 0.16) 0%,
+        rgba(255, 255, 255, 0.08) 42%,
+        rgba(255, 255, 255, 0.03) 100%),
       var(--todo-ios26-glass-fill) !important;
     box-shadow: var(--todo-ios26-glass-shadow) !important;
     backdrop-filter: var(--todo-ios26-glass-backdrop) !important;
@@ -3585,8 +3890,8 @@ a,
     background:
       linear-gradient(138deg,
         rgba(255, 255, 255, 0.2) 0%,
-        rgba(255, 255, 255, 0.07) 44%,
-        rgba(176, 232, 255, 0.12) 100%),
+        rgba(255, 255, 255, 0.09) 44%,
+        rgba(255, 255, 255, 0.04) 100%),
       rgba(255, 255, 255, 0.06) !important;
   }
 
@@ -3606,31 +3911,6 @@ a,
     border: 0 !important;
   }
 
-  body.software-app.todo-page-liquid .todo-liquid-fab__glass {
-    border: 1px solid rgba(255, 255, 255, 0.32) !important;
-    background:
-      linear-gradient(180deg,
-        rgba(255, 255, 255, 0.28) 0%,
-        rgba(255, 255, 255, 0.1) 54%,
-        rgba(188, 236, 255, 0.2) 100%),
-      radial-gradient(120% 148% at var(--sheen-x, 42%) var(--sheen-y, 32%),
-        rgba(255, 255, 255, 0.34),
-        rgba(255, 255, 255, 0.08) 46%,
-        rgba(255, 255, 255, 0.03)) !important;
-    box-shadow:
-      0 8px 24px rgba(26, 41, 71, 0.12),
-      0 2px 10px rgba(26, 41, 71, 0.08),
-      inset 0 1px 0 rgba(255, 255, 255, 0.62),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.62),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.14) !important;
-    backdrop-filter: blur(34px) saturate(142%) brightness(108%) !important;
-    -webkit-backdrop-filter: blur(34px) saturate(142%) brightness(108%) !important;
-  }
-
-  body.software-app.todo-page-liquid .todo-liquid-fab.dragging .todo-liquid-fab__glass {
-    backdrop-filter: blur(34px) saturate(142%) brightness(108%) !important;
-    -webkit-backdrop-filter: blur(34px) saturate(142%) brightness(108%) !important;
-  }
 }
 
 /* Calendar mobile content-only liquid glass skin (does NOT touch top header / bottom tab). */
@@ -3697,7 +3977,7 @@ a,
     color: var(--calendar-text-main) !important;
   }
 
-  /* Cover mobile date/view strip in main area (the block with 4月4日星期六 + 月周日). */
+  /* Cover mobile date/view strip in main area (the block with 4鏈?鏃ユ槦鏈熷叚 + 鏈堝懆鏃?. */
   body.software-app.calendar-page-liquid #calendar-mobile-toolbar .calendar-mobile-toolbar-inner > div,
   body.software-app.calendar-page-liquid #calendar-mobile-toolbar .calendar-mobile-meta-row .glass-card,
   body.software-app.calendar-page-liquid #calendar-mobile-toolbar .calendar-mobile-view-row > .view-btn,
@@ -4101,4 +4381,224 @@ a,
     justify-content: center !important;
     white-space: nowrap !important;
   }
+
+  /* Final mobile top-dock offset override for pages whose own padding rules come later. */
+  body.has-unified-top-header.software-app.todo-page-liquid #todo-main,
+  body.has-unified-top-header.software-app #todo-main {
+    padding-top: calc(var(--unified-top-header-space, 56px) + 8px + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  /* Align all non-todo mobile pages closer to the unified top header.
+     Todo already looks balanced, so keep its slightly roomier offset. */
+  body.has-unified-top-header.software-app > .flex.flex-1.overflow-hidden > main,
+  body.has-unified-top-header.software-app > main {
+    padding-top: calc(var(--unified-top-header-space, 56px) + 4px + env(safe-area-inset-top, 0px)) !important;
+    scroll-padding-top: calc(var(--unified-top-header-space, 56px) + 10px + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  body.has-unified-top-header.software-app.todo-page-liquid #todo-main {
+    padding-top: calc(var(--unified-top-header-space, 56px) + 8px + env(safe-area-inset-top, 0px)) !important;
+    scroll-padding-top: calc(var(--unified-top-header-space, 56px) + 16px + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  body.has-unified-top-header.software-app.calendar-page-liquid #calendar-main,
+  body.has-unified-top-header.software-app #calendar-main {
+    padding-top: calc(var(--unified-top-header-space, 56px) + 4px + env(safe-area-inset-top, 0px)) !important;
+    scroll-padding-top: calc(var(--unified-top-header-space, 56px) + 10px + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  body.has-unified-top-header.software-app.calendar-page-liquid #calendar-main > :first-child,
+  body.has-unified-top-header.software-app.calendar-page-liquid #calendar-mobile-toolbar,
+  body.has-unified-top-header.software-app #calendar-mobile-toolbar {
+    margin-top: -8px !important;
+  }
+
+  body.has-unified-top-header.software-app #calendar-main > :first-child {
+    margin-top: 0 !important;
+  }
 }
+
+/* Final mobile unification: shared random background and region-based text/icon contrast. */
+@media (max-width: 900px) {
+  body.software-app {
+    --mobile-random-bg-image: url("https://picsum.photos/seed/xydb-mobile-default/1920/1080");
+    --auto-header-ink: rgba(248, 250, 255, 0.98);
+    --auto-header-soft: rgba(228, 234, 245, 0.84);
+    --auto-header-active: rgba(255, 255, 255, 0.99);
+    --auto-header-active-bg: rgba(255, 255, 255, 0.16);
+    --auto-header-shell-bg: linear-gradient(180deg, rgba(34, 45, 62, 0.34) 0%, rgba(22, 31, 48, 0.24) 58%, rgba(18, 26, 42, 0.18) 100%);
+    --auto-header-shell-border: rgba(255, 255, 255, 0.2);
+    --auto-footer-ink: rgba(248, 250, 255, 0.98);
+    --auto-footer-soft: rgba(228, 234, 245, 0.84);
+    --auto-footer-active: rgba(255, 255, 255, 0.99);
+    --auto-footer-active-bg: rgba(255, 255, 255, 0.16);
+    --auto-footer-shell-bg: linear-gradient(180deg, rgba(34, 45, 62, 0.34) 0%, rgba(22, 31, 48, 0.24) 58%, rgba(18, 26, 42, 0.18) 100%);
+    --auto-footer-shell-border: rgba(255, 255, 255, 0.2);
+    background-image:
+      linear-gradient(180deg, rgba(9, 15, 28, 0.12) 0%, rgba(9, 15, 28, 0.06) 22%, rgba(9, 15, 28, 0.14) 100%),
+      var(--mobile-random-bg-image) !important;
+    background-position: center center !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
+  }
+
+  body.software-app.profile-page,
+  body.software-app.todo-page-liquid,
+  body.software-app.pomodoro-page-liquid,
+  body.software-app.calendar-page-liquid,
+  body.software-app.report-page-liquid,
+  body.software-app.checkin-page-liquid {
+    background-image:
+      linear-gradient(180deg, rgba(9, 15, 28, 0.12) 0%, rgba(9, 15, 28, 0.06) 22%, rgba(9, 15, 28, 0.14) 100%),
+      var(--mobile-random-bg-image) !important;
+  }
+
+  body.software-app .unified-top-header-dock .unified-top-header-shell,
+  body.software-app .unified-top-header-dock .unified-top-header-shell *,
+  body.software-app header.glass-header,
+  body.software-app header.glass-header * {
+    color: inherit;
+  }
+
+  body.software-app .unified-top-header-dock .unified-top-header-shell h1,
+  body.software-app .unified-top-header-dock .unified-top-header-shell p,
+  body.software-app .unified-top-header-dock .unified-top-header-shell span,
+  body.software-app .unified-top-header-dock .unified-top-header-shell a,
+  body.software-app .unified-top-header-dock .unified-top-header-shell button,
+  body.software-app header.glass-header h1,
+  body.software-app header.glass-header p,
+  body.software-app header.glass-header span,
+  body.software-app header.glass-header a,
+  body.software-app header.glass-header button {
+    color: var(--auto-header-ink) !important;
+  }
+
+  body.software-app .unified-top-header-dock .unified-top-header-shell .text-xs,
+  body.software-app .unified-top-header-dock .unified-top-header-shell .text-sm,
+  body.software-app header.glass-header .text-xs,
+  body.software-app header.glass-header .text-sm {
+    color: var(--auto-header-soft) !important;
+  }
+
+  body.software-app .unified-top-header-dock .unified-top-header-shell i,
+  body.software-app .unified-top-header-dock .unified-top-header-shell svg,
+  body.software-app header.glass-header i,
+  body.software-app header.glass-header svg {
+    color: var(--auto-header-ink) !important;
+  }
+
+  body.software-app .unified-top-header-dock .unified-top-header-shell #today-btn,
+  body.software-app .unified-top-header-dock .unified-top-header-shell .view-btn,
+  body.software-app .unified-top-header-dock .unified-top-header-shell .btn-primary,
+  body.software-app .unified-top-header-dock .unified-top-header-shell .btn-glass,
+  body.software-app .unified-top-header-dock .unified-top-header-shell [data-view],
+  body.software-app .unified-top-header-dock .unified-top-header-shell #mobile-search-btn,
+  body.software-app header.glass-header #today-btn,
+  body.software-app header.glass-header .view-btn,
+  body.software-app header.glass-header .btn-primary,
+  body.software-app header.glass-header .btn-glass,
+  body.software-app header.glass-header [data-view],
+  body.software-app header.glass-header #mobile-search-btn,
+  body.software-app .unified-top-header-dock .unified-top-header-shell #today-btn *,
+  body.software-app .unified-top-header-dock .unified-top-header-shell .view-btn *,
+  body.software-app .unified-top-header-dock .unified-top-header-shell .btn-primary *,
+  body.software-app .unified-top-header-dock .unified-top-header-shell .btn-glass *,
+  body.software-app .unified-top-header-dock .unified-top-header-shell [data-view] *,
+  body.software-app .unified-top-header-dock .unified-top-header-shell #mobile-search-btn *,
+  body.software-app header.glass-header #today-btn *,
+  body.software-app header.glass-header .view-btn *,
+  body.software-app header.glass-header .btn-primary *,
+  body.software-app header.glass-header .btn-glass *,
+  body.software-app header.glass-header [data-view] *,
+  body.software-app header.glass-header #mobile-search-btn * {
+    color: var(--auto-header-ink) !important;
+  }
+
+  body.software-app footer.glass-tab .tab-item,
+  body.software-app footer.glass-tab .tab-item i,
+  body.software-app footer.glass-tab .tab-item span,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item i,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item span,
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item,
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item i,
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item span,
+  body.software-app .unified-bottom-tab-dock .unified-tab-item,
+  body.software-app .unified-bottom-tab-dock .unified-tab-icon,
+  body.software-app .unified-bottom-tab-dock .unified-tab-label,
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item,
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-icon,
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-label,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-icon,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-label {
+    color: var(--auto-footer-soft) !important;
+  }
+
+  body.software-app footer.glass-tab .tab-item.active,
+  body.software-app footer.glass-tab .tab-item.active i,
+  body.software-app footer.glass-tab .tab-item.active span,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item.active,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item.active i,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item.active span,
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item.active,
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item.active i,
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item.active span,
+  body.software-app .unified-bottom-tab-dock .unified-tab-item.active,
+  body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon,
+  body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-label,
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item.active,
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon,
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-label,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item.active,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-label {
+    color: var(--auto-footer-active) !important;
+    opacity: 1 !important;
+  }
+
+  body.software-app footer.glass-tab .tab-item:not(.active),
+  body.software-app footer.glass-tab .tab-item:not(.active) i,
+  body.software-app footer.glass-tab .tab-item:not(.active) span,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item:not(.active),
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item:not(.active) i,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item:not(.active) span,
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item:not(.active),
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item:not(.active) i,
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item:not(.active) span,
+  body.software-app .unified-bottom-tab-dock .unified-tab-item:not(.active),
+  body.software-app .unified-bottom-tab-dock .unified-tab-item:not(.active) .unified-tab-icon,
+  body.software-app .unified-bottom-tab-dock .unified-tab-item:not(.active) .unified-tab-label,
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item:not(.active),
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item:not(.active) .unified-tab-icon,
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item:not(.active) .unified-tab-label,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item:not(.active),
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item:not(.active) .unified-tab-icon,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item:not(.active) .unified-tab-label {
+    color: var(--auto-footer-soft) !important;
+    opacity: 0.88 !important;
+  }
+
+  body.software-app footer.glass-tab .tab-item.active,
+  body.software-app footer.glass-tab .tab-item.active i,
+  body.software-app footer.glass-tab .tab-item.active span,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item.active,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item.active i,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item.active span,
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item.active,
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item.active i,
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item.active span,
+  body.software-app .unified-bottom-tab-dock .unified-tab-item.active,
+  body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon,
+  body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-label,
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item.active,
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon,
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-label,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item.active,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-label {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.18);
+  }
+}
+

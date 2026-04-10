@@ -385,8 +385,18 @@
             this.dom.timerDisplay.textContent = this.formatTime(this.state.timeLeft);
             const total = this.config.modes[this.state.currentMode].seconds;
             const remaining = this.state.timeLeft / total;
-            const degrees = remaining * 360;
-            this.dom.progressCircle.style.transform = `rotate(${degrees - 90}deg)`;
+            const modeDurations = Object.keys(this.config.modes).map((key) => this.config.modes[key].seconds);
+            const maxModeSeconds = Math.max.apply(null, modeDurations);
+            const minModeSeconds = Math.min.apply(null, modeDurations);
+            const modeRatio = maxModeSeconds === minModeSeconds
+              ? 1
+              : (total - minModeSeconds) / (maxModeSeconds - minModeSeconds);
+            const arcMax = 88 + modeRatio * 212;
+            const degrees = remaining * arcMax;
+            this.dom.progressCircle.style.setProperty('--pomodoro-progress-deg', `${Math.max(0, degrees)}deg`);
+            this.dom.progressCircle.style.setProperty('--pomodoro-progress-mid-deg', `${Math.max(0, degrees * 0.58)}deg`);
+            this.dom.progressCircle.style.setProperty('--pomodoro-progress-soft-deg', `${Math.max(0, degrees * 0.24)}deg`);
+            this.dom.progressCircle.style.setProperty('--pomodoro-progress-warm-deg', `${Math.max(0, degrees * 0.84)}deg`);
 
             if (this.state.isRunning && this.state.timeLeft >= 0 && this.state.lastBeatSecond !== this.state.timeLeft) {
               this.state.lastBeatSecond = this.state.timeLeft;
