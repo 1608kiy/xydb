@@ -1,0 +1,683 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>FlowTask · 轻灵待办</title>
+  <!-- 清新字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- GSAP 全家桶 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      background: linear-gradient(145deg, #f4f9ff 0%, #e3f0fa 100%);
+      color: #1a2e4b;
+      overflow-x: hidden;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* 自定义滚动条 —— 清新细条 */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #d9e6f2; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #8bb3d1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #5f9bc0; }
+
+    /* 动态渐变背景层 (canvas) —— 柔和光晕流动 */
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .content {
+      position: relative;
+      z-index: 5;
+    }
+
+    /* 清新玻璃卡片 */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-radius: 48px;
+      box-shadow: 0 20px 40px -12px rgba(0, 40, 80, 0.12), 0 4px 18px rgba(0, 0, 0, 0.02);
+      transition: box-shadow 0.3s ease, transform 0.2s ease;
+    }
+
+    /* 章节容器 —— 全屏滚动感 */
+    .chapter {
+      min-height: 100vh;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      padding: 4rem 7%;
+      position: relative;
+      border-bottom: 1px solid rgba(120, 170, 210, 0.1);
+    }
+
+    /* 导航 —— 轻盈 */
+    .float-nav {
+      position: fixed;
+      top: 2.5rem;
+      left: 0;
+      width: 100%;
+      padding: 0 7%;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+    }
+    .float-nav * { pointer-events: auto; }
+    .logo {
+      font-weight: 800;
+      font-size: 2rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #1f5f8e, #4a9bc2);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .nav-cta {
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.9);
+      border-radius: 60px;
+      padding: 0.8rem 2rem;
+      font-weight: 600;
+      color: #1e4f72;
+      transition: all 0.25s;
+      cursor: pointer;
+      font-size: 1rem;
+      box-shadow: 0 6px 14px rgba(46, 110, 158, 0.08);
+    }
+    .nav-cta:hover {
+      background: white;
+      border-color: #6bb1e0;
+      color: #0a334b;
+      box-shadow: 0 12px 22px rgba(49, 130, 206, 0.15);
+      transform: scale(1.02);
+    }
+
+    /* 排版 */
+    h1 {
+      font-size: clamp(4rem, 9vw, 6.5rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.04em;
+      margin-bottom: 1.5rem;
+      color: #0a2637;
+    }
+    .gradient-text {
+      background: linear-gradient(145deg, #2a7faa, #5fa3d1, #7fbce6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .chapter-sub {
+      font-size: 1.3rem;
+      color: #2e577a;
+      max-width: 550px;
+      margin-bottom: 2.5rem;
+      font-weight: 400;
+    }
+
+    /* 待办卡片展示 */
+    .todo-showcase {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .todo-item {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      padding: 1rem 1.6rem;
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(8px);
+      border-radius: 60px;
+      border: 1px solid rgba(255,255,255,0.7);
+      transition: all 0.3s;
+      box-shadow: 0 6px 12px -6px rgba(28, 80, 120, 0.08);
+    }
+    .todo-check {
+      width: 26px;
+      height: 26px;
+      border-radius: 30px;
+      border: 2px solid #3e92c9;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+    .todo-item.done .todo-check {
+      background: #3e92c9;
+      border-color: #3e92c9;
+      box-shadow: 0 4px 10px #3e92c950;
+    }
+    .todo-item.done .todo-text {
+      text-decoration: line-through;
+      color: #6b8da8;
+    }
+    .todo-text {
+      font-size: 1.25rem;
+      font-weight: 500;
+      flex: 1;
+      color: #1c415b;
+    }
+    .todo-tag {
+      font-size: 0.8rem;
+      padding: 0.25rem 1rem;
+      background: #d9ebf9;
+      border-radius: 40px;
+      color: #1f638b;
+      font-weight: 500;
+    }
+
+    /* 特性网格 */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      width: 100%;
+      margin-top: 2rem;
+    }
+    .feature-card {
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(16px);
+      border-radius: 40px;
+      padding: 2.5rem 2rem;
+      border: 1px solid rgba(255,255,255,0.6);
+      transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      box-shadow: 0 20px 30px -10px rgba(42, 100, 140, 0.08);
+    }
+    .feature-icon {
+      font-size: 2.6rem;
+      margin-bottom: 1.8rem;
+      color: #3487bb;
+    }
+    .feature-card h3 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+      color: #143850;
+    }
+    .feature-card p {
+      color: #2e5f7a;
+    }
+
+    /* 数据卡片 */
+    .stats-wrapper {
+      display: flex;
+      gap: 4rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .stat-number {
+      font-size: 5.5rem;
+      font-weight: 800;
+      background: linear-gradient(145deg, #1a6285, #4299c1);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      line-height: 1;
+    }
+
+    .btn-glow {
+      background: white;
+      border: 1.5px solid #7bb9e0;
+      padding: 1.2rem 3.8rem;
+      border-radius: 80px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #175072;
+      box-shadow: 0 16px 30px -8px rgba(36, 118, 180, 0.2), 0 4px 0 0 #c2dff5 inset;
+      cursor: pointer;
+      transition: 0.25s;
+      backdrop-filter: blur(10px);
+      display: inline-block;
+      margin-top: 2rem;
+    }
+    .btn-glow:hover {
+      background: #e5f2ff;
+      box-shadow: 0 22px 35px -10px #2f8bcb, 0 4px 0 0 #9dc9f0 inset;
+      transform: translateY(-3px);
+    }
+
+    .flex-row {
+      display: flex;
+      align-items: center;
+      gap: 4rem;
+      width: 100%;
+    }
+    .col { flex: 1; }
+
+    .footer {
+      padding: 2.5rem 7%;
+      display: flex;
+      justify-content: space-between;
+      color: #3f7799;
+      border-top: 1px solid #b9d4e9;
+      backdrop-filter: blur(8px);
+      position: relative;
+      z-index: 5;
+    }
+
+    @media (max-width: 900px) {
+      .chapter { padding: 3rem 5%; }
+      .flex-row { flex-direction: column; }
+      .feature-grid { grid-template-columns: 1fr; }
+    }
+
+    /* 鼠标跟随卡片倾斜效果 (由JS处理) */
+    .tilt-card {
+      transition: transform 0.1s ease-out;
+      transform-style: preserve-3d;
+      perspective: 1200px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 清新动态背景 (流动光晕) -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- 导航 -->
+  <div class="float-nav">
+    <div class="logo">☁️ FlowTask</div>
+    <div class="nav-cta">抢先体验 <i class="fas fa-arrow-right" style="margin-left: 8px;"></i></div>
+  </div>
+
+  <div class="content">
+    <!-- 第一章 · Hero -->
+    <section class="chapter" id="chapter1">
+      <div class="flex-row">
+        <div class="col">
+          <h1 id="hero-title" class="animate-target">
+            轻触<span class="gradient-text"> 灵感</span><br>
+            有序<span class="gradient-text"> 生长</span>
+          </h1>
+          <p class="chapter-sub animate-target" id="hero-sub">
+            一镜到底 · 丝滑待办。任务管理从未如此轻盈。<br>滑动即互动，每个像素都跟随你的指尖。
+          </p>
+          <div class="animate-target" id="hero-cta">
+            <span class="btn-glow" style="padding: 0.9rem 2.8rem; font-size: 1.2rem;">开始心流 <i class="fas fa-chevron-right"></i></span>
+          </div>
+        </div>
+        <div class="col animate-target tilt-card" id="hero-todo-card">
+          <div class="glass-card" style="padding: 2.5rem 2.2rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1.8rem; color: #2e688b; font-weight: 500;">
+              <span><i class="far fa-calendar-alt"></i> 今日 · 轻盈4项</span>
+              <span><i class="far fa-clock"></i> 专注中</span>
+            </div>
+            <div class="todo-showcase">
+              <div class="todo-item done" id="hero-task1">
+                <div class="todo-check"><i class="fas fa-check"></i></div>
+                <span class="todo-text">清晨冥想 · 规划</span>
+                <span class="todo-tag">习惯</span>
+              </div>
+              <div class="todo-item" id="hero-task2">
+                <div class="todo-check"></div>
+                <span class="todo-text">官网动效设计迭代</span>
+                <span class="todo-tag">设计</span>
+              </div>
+              <div class="todo-item" id="hero-task3">
+                <div class="todo-check"></div>
+                <span class="todo-text">团队灵感同步会</span>
+                <span class="todo-tag">会议</span>
+              </div>
+              <div class="todo-item" id="hero-task4">
+                <div class="todo-check"></div>
+                <span class="todo-text">撰写周报 & 阅读</span>
+                <span class="todo-tag">个人</span>
+              </div>
+            </div>
+            <div style="margin-top: 2rem; color: #4382a8; display: flex; gap: 24px;">
+              <span><i class="far fa-plus-square"></i> 快速添加</span>
+              <span><i class="far fa-star"></i> 智能排序</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-indicator animate-target" style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: #6196b5;">
+        <i class="fas fa-chevron-down" style="font-size: 1.5rem; opacity: 0.7;"></i>
+      </div>
+    </section>
+
+    <!-- 第二章 · 特性 + 交互动画强化 -->
+    <section class="chapter" id="chapter2">
+      <div style="width: 100%;">
+        <div style="margin-bottom: 3rem;" class="animate-target" id="feature-header">
+          <h2 style="font-size: 3.8rem; font-weight: 750; letter-spacing: -0.03em;">滑动之间，<br><span class="gradient-text"> 处处是呼应</span></h2>
+        </div>
+        <div class="feature-grid">
+          <div class="feature-card tilt-card animate-target" data-feature="1">
+            <div class="feature-icon"><i class="fas fa-fan"></i></div>
+            <h3>动态流</h3>
+            <p>滚动驱动每一项任务，勾选动画随滑动触发，丝滑无界。</p>
+          </div>
+          <div class="feature-card tilt-card animate-target" data-feature="2" style="margin-top: 2.5rem;">
+            <div class="feature-icon"><i class="fas fa-magic"></i></div>
+            <h3>智能聚焦</h3>
+            <p>鼠标悬停产生微光，卡片跟随视角倾斜，灵动反馈。</p>
+          </div>
+          <div class="feature-card tilt-card animate-target" data-feature="3" style="margin-top: -0.5rem;">
+            <div class="feature-icon"><i class="fas fa-cloud-sun"></i></div>
+            <h3>呼吸感</h3>
+            <p>背景光晕流动，每个章节都有自己的入场姿态。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 第三章 · 数据与任务勾选交互 (滑动时自动勾选) -->
+    <section class="chapter" id="chapter3">
+      <div class="stats-wrapper">
+        <div class="col animate-target" id="stat-left">
+          <div class="glass-card" style="padding: 2.5rem;">
+            <div class="stat-item">
+              <div class="stat-number"><span class="counter" data-target="98.6">0</span>%</div>
+              <div style="font-size: 1.4rem; font-weight: 500; color: #1e5777;">专注完成率</div>
+              <div style="margin-top: 1rem; height: 8px; width: 100%; background: #c9ddec; border-radius: 20px;">
+                <div id="progress-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #4797c9, #7bb9e0); border-radius: 20px; box-shadow: 0 0 10px #7bb9e0;"></div>
+              </div>
+            </div>
+            <div class="stat-item" style="margin-top: 3rem;">
+              <div class="stat-number"><span class="counter" data-target="15.8">0</span>k</div>
+              <div style="font-size: 1.4rem; font-weight: 500; color: #1e5777;">专注分钟</div>
+            </div>
+          </div>
+        </div>
+        <div class="col animate-target tilt-card" id="stat-right">
+          <div class="glass-card" style="padding: 2.2rem 2.5rem;">
+            <h3 style="font-size: 2rem; margin-bottom: 1.8rem; font-weight: 700; color: #16445f;"><i class="fas fa-sparkles" style="color: #3c98d6;"></i> 滚动即勾选</h3>
+            <div class="todo-showcase" id="focus-tasks">
+              <div class="todo-item" id="focus1">
+                <div class="todo-check"></div><span class="todo-text">设计评审准备</span><span class="todo-tag">进行中</span>
+              </div>
+              <div class="todo-item" id="focus2">
+                <div class="todo-check"></div><span class="todo-text">开发动效组件</span><span class="todo-tag">开发</span>
+              </div>
+              <div class="todo-item done" id="focus3">
+                <div class="todo-check"><i class="fas fa-check"></i></div><span class="todo-text">用户访谈整理</span><span class="todo-tag">已完成</span>
+              </div>
+            </div>
+            <p style="margin-top: 2rem; color: #32749e;"><i class="far fa-clock"></i> 深度工作 · 42min</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 第四章 · CTA + 更多滑动互动 -->
+    <section class="chapter" id="chapter4" style="justify-content: center; text-align: center;">
+      <div class="cta-box animate-target tilt-card" id="final-cta">
+        <h2 style="font-size: 4.5rem; font-weight: 800; margin-bottom: 1.2rem; color: #103a50;">准备好<span class="gradient-text"> 轻量起飞</span>？</h2>
+        <p style="font-size: 1.4rem; color: #2f6e91; margin-bottom: 2rem;">FlowTask · 一镜到底的清新交互，今日内测。</p>
+        <div class="btn-glow">立即加入 Flow  <i class="fas fa-arrow-right"></i></div>
+        <div style="margin-top: 3rem; display: flex; gap: 24px; justify-content: center; color: #377aa3;">
+          <span><i class="fab fa-apple"></i> iOS </span>
+          <span><i class="fab fa-android"></i> Android </span>
+          <span><i class="fas fa-desktop"></i> Web </span>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      <span>© 2026 FlowTask · 轻盈如云</span>
+      <span><i class="far fa-heart" style="color: #5fa3d1;"></i> 一镜到底 · 滑动即互动</span>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      "use strict";
+
+      // ---------- 清新动态背景 (流动光晕) ----------
+      const canvas = document.getElementById('bg-canvas');
+      const ctx = canvas.getContext('2d');
+      let width, height;
+      let time = 0;
+      
+      function resizeCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+      }
+      function drawGradientFlow() {
+        if (!ctx) return;
+        time += 0.005;
+        ctx.clearRect(0, 0, width, height);
+        
+        // 多个柔和光晕，随时间漂移
+        const grad1 = ctx.createRadialGradient(
+          width*0.3 + Math.sin(time)*40, height*0.2 + Math.cos(time*0.7)*30, 50,
+          width*0.5, height*0.5, width*0.7
+        );
+        grad1.addColorStop(0, '#d4eafc');
+        grad1.addColorStop(0.5, '#e7f3fe');
+        grad1.addColorStop(1, '#f4faff');
+        
+        ctx.fillStyle = grad1;
+        ctx.fillRect(0, 0, width, height);
+        
+        const grad2 = ctx.createRadialGradient(
+          width*0.8 + Math.cos(time*0.5)*60, height*0.7 + Math.sin(time*0.9)*50, 30,
+          width*0.6, height*0.4, width*0.5
+        );
+        grad2.addColorStop(0, '#b8dbf5');
+        grad2.addColorStop(0.7, '#d9ecfc');
+        grad2.addColorStop(1, '#ecf5fd');
+        ctx.globalCompositeOperation = 'overlay';
+        ctx.fillStyle = grad2;
+        ctx.fillRect(0, 0, width, height);
+        ctx.globalCompositeOperation = 'source-over';
+        
+        // 添加一些流动的线条 (极淡)
+        ctx.beginPath();
+        for (let i=0;i<3;i++) {
+          let offset = i*100 + time*20;
+          ctx.moveTo(-100, height*0.3 + Math.sin(time+i)*50);
+          ctx.bezierCurveTo(width*0.3, height*0.2+offset, width*0.7, height*0.6-offset, width+100, height*0.5);
+          ctx.strokeStyle = '#b2d6f050';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        }
+        requestAnimationFrame(drawGradientFlow);
+      }
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+      drawGradientFlow();
+
+      // ---------- GSAP & ScrollTrigger 超级丝滑一镜到底 + 丰富交互动画 ----------
+      gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+      
+      // 初始隐藏 (更干净)
+      gsap.set(".animate-target", { opacity: 0, y: 40 });
+      gsap.set("#hero-title", { opacity: 0, y: 60 });
+      gsap.set("#hero-sub", { opacity: 0, y: 30 });
+      gsap.set("#hero-cta", { opacity: 0, scale: 0.9 });
+      gsap.set("#hero-todo-card", { opacity: 0, x: 80, rotateY: 8 });
+      gsap.set(".scroll-indicator", { opacity: 0 });
+
+      // 主时间线 scrubbed (一镜到底核心)
+      let tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: "body",
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 1.5,
+        }
+      });
+
+      // 第一章动画 (丰富)
+      tl.to("#hero-title", { opacity: 1, y: 0, duration: 1.2, ease: "power3.out" }, 0)
+        .to("#hero-sub", { opacity: 1, y: 0, duration: 1 }, 0.2)
+        .to("#hero-cta", { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.2)" }, 0.4)
+        .to("#hero-todo-card", { opacity: 1, x: 0, rotateY: 0, duration: 1.2, ease: "power2.out" }, 0.5)
+        .to(".scroll-indicator", { opacity: 0.9, y: 12, repeat: -1, yoyo: true, duration: 0.8 }, 0.9)
+        // 卡片内任务逐条滑入
+        .from(".todo-item", { opacity: 0, x: -35, stagger: 0.1, duration: 0.7, ease: "back.out(1)" }, 0.6)
+        // 第一个任务默认已done, 但为了动画, 不做额外处理
+      
+      // 第二章：特性卡片错落出现 + 滑动互动
+      tl.to("#feature-header", { opacity: 1, y: 0, duration: 0.9 }, 1.5)
+        .to("[data-feature='1']", { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, 1.8)
+        .to("[data-feature='2']", { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, 2.0)
+        .to("[data-feature='3']", { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, 2.2)
+        // 第二章卡片在滚动时产生缩放微动 (额外用单独的scrolltrigger增强)
+      
+      // 第三章：数据出现 + 任务勾选 (滑动到第三章时自动勾选focus1,focus2)
+      tl.to("#stat-left", { opacity: 1, x: 0, duration: 0.9 }, 2.8)
+        .to("#stat-right", { opacity: 1, x: 0, duration: 0.9 }, 2.9)
+        .call(() => {
+          // 计数器动画
+          const counters = document.querySelectorAll('.counter');
+          counters.forEach(c => {
+            let target = parseFloat(c.getAttribute('data-target'));
+            gsap.to(c, {
+              innerText: target,
+              duration: 2.5,
+              snap: { innerText: 0.1 },
+              ease: "power2.out",
+              onUpdate: function() {
+                if (String(target).includes('.')) {
+                  c.innerText = parseFloat(c.innerText).toFixed(1);
+                } else {
+                  c.innerText = Math.round(c.innerText);
+                }
+              }
+            });
+          });
+          // 进度条动画
+          gsap.to("#progress-bar", { width: "98.6%", duration: 2.5, ease: "power2.out" });
+        }, null, 3.0)
+        .call(() => {
+          // 滚动到第三章时，自动勾选前两个任务 (如果尚未勾选)
+          const focus1 = document.getElementById('focus1');
+          const focus2 = document.getElementById('focus2');
+          if (focus1 && !focus1.classList.contains('done')) {
+            focus1.classList.add('done');
+            focus1.querySelector('.todo-check').innerHTML = '<i class="fas fa-check"></i>';
+            gsap.fromTo(focus1, { scale: 1 }, { scale: 1.02, duration: 0.3, yoyo: true, repeat: 1 });
+          }
+          if (focus2 && !focus2.classList.contains('done')) {
+            focus2.classList.add('done');
+            focus2.querySelector('.todo-check').innerHTML = '<i class="fas fa-check"></i>';
+            gsap.fromTo(focus2, { scale: 1 }, { scale: 1.02, duration: 0.3, yoyo: true, repeat: 1 });
+          }
+        }, null, 3.3)
+        // 同时让hero区域的第二个任务也勾选上 (互动感)
+        .call(() => {
+          const heroTask2 = document.getElementById('hero-task2');
+          if(heroTask2 && !heroTask2.classList.contains('done')) {
+            heroTask2.classList.add('done');
+            heroTask2.querySelector('.todo-check').innerHTML = '<i class="fas fa-check"></i>';
+          }
+        }, null, 3.4)
+        .call(() => {
+          const heroTask3 = document.getElementById('hero-task3');
+          if(heroTask3 && !heroTask3.classList.contains('done')) {
+            heroTask3.classList.add('done');
+            heroTask3.querySelector('.todo-check').innerHTML = '<i class="fas fa-check"></i>';
+          }
+        }, null, 3.7);
+
+      // 第四章 CTA
+      tl.to("#final-cta", { opacity: 1, y: 0, scale: 1, duration: 1, ease: "elastic.out(1, 0.4)" }, 4.2)
+        .to(".footer", { opacity: 1, duration: 0.7 }, 4.5);
+
+      // ---------- 额外的滑动互动：视差 + 背景微动 (增加丰富度) ----------
+      gsap.to("#hero-todo-card", {
+        scrollTrigger: { trigger: "#chapter1", start: "top top", end: "bottom top", scrub: 1.8 },
+        y: -45, rotate: 1.5, scale: 0.97, ease: "power1.out"
+      });
+      gsap.to(".feature-card", {
+        scrollTrigger: { trigger: "#chapter2", start: "top bottom", end: "bottom top", scrub: 1.2 },
+        y: -20, stagger: 0.1, ease: "power1.inOut"
+      });
+      gsap.to("#stat-left", {
+        scrollTrigger: { trigger: "#chapter3", start: "top bottom", end: "bottom top", scrub: 1.5 },
+        x: -15, rotate: -1
+      });
+      gsap.to("#stat-right", {
+        scrollTrigger: { trigger: "#chapter3", start: "top bottom", end: "bottom top", scrub: 1.5 },
+        x: 15, rotate: 1
+      });
+
+      // ---------- 鼠标跟随卡片倾斜 (tilt effect) 增加交互动感 ----------
+      const tiltCards = document.querySelectorAll('.tilt-card');
+      tiltCards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          const rotateX = (y - centerY) / 12;
+          const rotateY = (centerX - x) / 12;
+          gsap.to(card, { rotateX: rotateX, rotateY: rotateY, duration: 0.4, ease: "power2.out" });
+        });
+        card.addEventListener('mouseleave', () => {
+          gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.6, ease: "elastic.out(1,0.3)" });
+        });
+      });
+
+      // 导航点击平滑滚动
+      document.querySelector('.nav-cta')?.addEventListener('click', ()=> {
+        gsap.to(window, {duration: 1.5, scrollTo: "#chapter4", ease: "power3.inOut"});
+      });
+      document.querySelector('.logo')?.addEventListener('click', ()=> {
+        gsap.to(window, {duration: 1.2, scrollTo: 0, ease: "power2.inOut"});
+      });
+      
+      // 额外细节: 悬停发光
+      const items = document.querySelectorAll('.todo-item');
+      items.forEach(item => {
+        item.addEventListener('mouseenter', () => {
+          gsap.to(item, { backgroundColor: 'rgba(255,255,255,0.9)', boxShadow: '0 12px 18px -8px #2f8bcb30', duration: 0.2 });
+        });
+        item.addEventListener('mouseleave', () => {
+          gsap.to(item, { backgroundColor: 'rgba(255, 255, 255, 0.65)', boxShadow: '0 6px 12px -6px rgba(28,80,120,0.08)', duration: 0.2 });
+        });
+      });
+
+      // 计数器初始归零
+      document.querySelectorAll('.counter').forEach(c => c.innerText = '0');
+      gsap.set("#progress-bar", { width: "0%" });
+
+      ScrollTrigger.refresh();
+      
+      // 确保所有动画触发时scrollTrigger重新计算
+      window.addEventListener('load', () => {
+        ScrollTrigger.refresh();
+        gsap.to("body", { opacity: 1, duration: 0.2 });
+      });
+
+    })();
+  </script>
+</body>
+</html>
