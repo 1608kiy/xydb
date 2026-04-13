@@ -1,186 +1,1882 @@
+<!doctype html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>铃记 - 注册</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <script src='./js/pages/注册页面.inline-01.js?v=20260327_jssplit'></script>
-    <script src='./js/tailwind-style-loader.js?v=20260327_csssplit'></script>
-  <script src='./js/pages/注册页面.inline-02.js?v=20260327_jssplit'></script>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>铃记 - 注册</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script>
+    (function () {
+      try {
+        if (window.location.protocol === "file:") {
+          window.__API_BASE__ = localStorage.getItem("apiBase") || "http://localhost:8080";
+        }
+      } catch (e) {
+        window.__API_BASE__ = "http://localhost:8080";
+      }
+    })();
+  </script>
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family:
+        "Inter",
+        -apple-system,
+        BlinkMacSystemFont,
+        sans-serif;
+      background: #1a1a2e;
+      overflow: hidden;
+      height: 100vh;
+      opacity: 1;
+      transition: opacity 0.32s ease, transform 0.32s ease, filter 0.32s ease;
+    }
+
+    body.page-leaving {
+      opacity: 0;
+      transform: translateY(6px) scale(0.995);
+      filter: blur(1px);
+    }
+
+    /* ============ LOGIN PAGE ============ */
+    #login-page {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      height: 100vh;
+    }
+
+    /* Left Panel */
+    .left-panel {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: linear-gradient(135deg,
+          #d4d0dc 0%,
+          #c8c4d0 50%,
+          #bbb7c5 100%);
+      padding: 40px 48px;
+      overflow: hidden;
+    }
+
+    .left-panel .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      z-index: 10;
+      position: relative;
+    }
+
+    .left-panel .logo svg {
+      width: 28px;
+      height: 28px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      padding: 4px;
+      border-radius: 6px;
+    }
+
+    .characters-wrapper {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      height: 420px;
+    }
+
+    .left-panel .footer-links {
+      display: flex;
+      gap: 28px;
+      font-size: 13px;
+      color: rgba(80, 70, 90, 0.7);
+      z-index: 10;
+      position: relative;
+    }
+
+    .left-panel .footer-links a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .left-panel .footer-links a:hover {
+      color: #333;
+    }
+
+    /* Decorative blurs */
+    .left-panel::after {
+      content: "";
+      position: absolute;
+      top: 20%;
+      right: 15%;
+      width: 260px;
+      height: 260px;
+      background: rgba(180, 170, 200, 0.25);
+      border-radius: 50%;
+      filter: blur(80px);
+    }
+
+    .left-panel::before {
+      content: "";
+      position: absolute;
+      bottom: 15%;
+      left: 10%;
+      width: 350px;
+      height: 350px;
+      background: rgba(200, 195, 210, 0.2);
+      border-radius: 50%;
+      filter: blur(100px);
+    }
+
+    /* Right Panel */
+    .right-panel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      padding: 40px;
+    }
+
+    .form-container {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    /* Sparkle icon */
+    .sparkle-icon {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .sparkle-icon svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .form-header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1a1a2e;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+
+    .form-header p {
+      font-size: 14px;
+      color: #888;
+    }
+
+    /* Form fields */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .form-group .input-wrapper {
+      position: relative;
+    }
+
+    .form-group input {
+      width: 100%;
+      height: 48px;
+      border: none;
+      border-bottom: 1.5px solid #e0e0e0;
+      padding: 0 40px 0 0;
+      font-size: 15px;
+      font-family: inherit;
+      color: #1a1a2e;
+      background: transparent;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus {
+      border-bottom-color: #5b21b6;
+    }
+
+    .form-group input::placeholder {
+      color: #ccc;
+    }
+
+    .form-group input[type="password"]:not(:placeholder-shown) {
+      font-family: inherit;
+      letter-spacing: 2px;
+    }
+
+    /* Hide browser-provided password reveal/clear buttons (e.g. Edge) */
+    .form-group input[type="password"]::-ms-reveal,
+    .form-group input[type="password"]::-ms-clear {
+      display: none;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #666;
+      padding: 6px;
+      transition: color 0.2s;
+    }
+
+    .toggle-password:hover {
+      color: #333;
+    }
+
+    /* Remember & Forgot */
+    .form-options {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #555;
+      cursor: pointer;
+    }
+
+    .remember-me input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #5b21b6;
+      cursor: pointer;
+    }
+
+    .forgot-link {
+      font-size: 13px;
+      color: #5b21b6;
+      text-decoration: none;
+      font-weight: 500;
+      transition: opacity 0.2s;
+    }
+
+    .forgot-link:hover {
+      opacity: 0.8;
+    }
+
+    /* Buttons */
+    .btn-login {
+      position: relative;
+      width: 100%;
+      height: 50px;
+      border-radius: 25px;
+      border: 1.5px solid #1a1a2e;
+      background: #1a1a2e;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      overflow: hidden;
+      margin-bottom: 14px;
+      transition: all 0.3s;
+    }
+
+    .btn-login .btn-text {
+      display: inline-block;
+      transition: all 0.3s;
+    }
+
+    .btn-login .btn-hover-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #5b21b6;
+      color: #fff;
+      opacity: 0;
+      transition: all 0.3s;
+      border-radius: 25px;
+    }
+
+    .btn-login:hover .btn-text {
+      transform: translateX(40px);
+      opacity: 0;
+    }
+
+    .btn-login:hover .btn-hover-content {
+      opacity: 1;
+    }
+
+    .btn-quick-experience {
+      position: relative;
+      width: 100%;
+      height: 50px;
+      border-radius: 25px;
+      border: 1.5px solid #4338ca;
+      background: #eef2ff;
+      color: #3730a3;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      overflow: hidden;
+      margin-bottom: 14px;
+      transition: all 0.3s;
+    }
+
+    .btn-quick-experience .btn-text {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+
+    .btn-quick-experience .btn-hover-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #5b21b6;
+      color: #fff;
+      opacity: 0;
+      transition: all 0.3s;
+      border-radius: 25px;
+    }
+
+    .btn-quick-experience:hover .btn-text {
+      transform: translateX(40px);
+      opacity: 0;
+    }
+
+    .btn-quick-experience:hover .btn-hover-content {
+      opacity: 1;
+    }
+
+    .quick-divider {
+      margin: 18px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #9a9fb2;
+      font-size: 12px;
+    }
+
+    .quick-divider::before,
+    .quick-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #ececf3;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .quick-btn {
+      min-height: 82px;
+      border-radius: 24px;
+      border: 1px solid #e7e8f0;
+      background: #f4f5fb;
+      color: #444a63;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .quick-btn i {
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .quick-btn:hover {
+      transform: translateY(-2px);
+      border-color: #d7d9e8;
+      box-shadow: 0 12px 22px rgba(25, 30, 60, 0.1);
+    }
+    /* Sign up link */
+    .signup-link {
+      text-align: center;
+      font-size: 13px;
+      color: #888;
+      margin-top: 32px;
+    }
+
+    .signup-link a {
+      color: #1a1a2e;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .signup-link a:hover {
+      text-decoration: underline;
+    }
+
+    /* ============ ANIMATED CHARACTERS ============ */
+    .characters-scene {
+      position: relative;
+      width: 480px;
+      height: 360px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    /* Character base styles */
+    .character {
+      position: absolute;
+      bottom: 0;
+      transition: transform 0.42s cubic-bezier(0.22, 0.61, 0.36, 1), height 0.42s cubic-bezier(0.22, 0.61, 0.36, 1);
+      transform-origin: bottom center;
+      will-change: transform;
+    }
+
+    /* Purple rectangle */
+    .char-purple {
+      left: 60px;
+      width: 170px;
+      height: 370px;
+      background: #6c3ff5;
+      border-radius: 10px 10px 0 0;
+      z-index: 1;
+    }
+
+    /* Black rectangle */
+    .char-black {
+      left: 220px;
+      width: 115px;
+      height: 290px;
+      background: #2d2d2d;
+      border-radius: 8px 8px 0 0;
+      z-index: 2;
+    }
+
+    /* Orange semi-circle */
+    .char-orange {
+      left: 0;
+      width: 230px;
+      height: 190px;
+      background: #ff9b6b;
+      border-radius: 115px 115px 0 0;
+      z-index: 3;
+    }
+
+    /* Yellow rounded */
+    .char-yellow {
+      left: 290px;
+      width: 135px;
+      height: 215px;
+      background: #e8d754;
+      border-radius: 68px 68px 0 0;
+      z-index: 4;
+    }
+
+    /* Eyes container */
+    .eyes {
+      position: absolute;
+      display: flex;
+      transition: left 0.42s cubic-bezier(0.22, 0.61, 0.36, 1), top 0.42s cubic-bezier(0.22, 0.61, 0.36, 1);
+      will-change: left, top;
+    }
+
+    /* Eyeball (white with pupil) */
+    .eyeball {
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: height 0.15s ease;
+      overflow: hidden;
+    }
+
+    /* Pupil */
+    .pupil {
+      border-radius: 50%;
+      background: #2d2d2d;
+      transition: transform 0.1s ease-out;
+    }
+
+    /* Bare pupil (no white eyeball) */
+    .bare-pupil {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #2d2d2d;
+      transition: transform 0.7s ease-in-out;
+    }
+
+    /* Yellow mouth */
+    .yellow-mouth {
+      position: absolute;
+      width: 50px;
+      height: 4px;
+      background: #2d2d2d;
+      border-radius: 2px;
+      transition: left 0.42s cubic-bezier(0.22, 0.61, 0.36, 1), top 0.42s cubic-bezier(0.22, 0.61, 0.36, 1), transform 0.42s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+
+    /* Shake-head: smooth left-right oscillation on face parts */
+    @keyframes shakeHead {
+
+      0%,
+      100% {
+        translate: 0 0;
+      }
+
+      10% {
+        translate: -9px 0;
+      }
+
+      20% {
+        translate: 7px 0;
+      }
+
+      30% {
+        translate: -6px 0;
+      }
+
+      40% {
+        translate: 5px 0;
+      }
+
+      50% {
+        translate: -4px 0;
+      }
+
+      60% {
+        translate: 3px 0;
+      }
+
+      70% {
+        translate: -2px 0;
+      }
+
+      80% {
+        translate: 1px 0;
+      }
+
+      90% {
+        translate: -0.5px 0;
+      }
+    }
+
+    .eyes.shake-head,
+    .yellow-mouth.shake-head,
+    .orange-mouth.shake-head {
+      animation: shakeHead 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+
+    /* Sad mouth (curved down) for orange character on error */
+    .orange-mouth {
+      position: absolute;
+      width: 28px;
+      height: 14px;
+      border: 3px solid #2d2d2d;
+      border-top: none;
+      border-radius: 0 0 14px 14px;
+      opacity: 0;
+      transition: opacity 0.28s ease;
+    }
+
+    
+    @keyframes sceneNudge {
+      0% { transform: translateY(0); }
+      25% { transform: translateY(-6px); }
+      55% { transform: translateY(3px); }
+      100% { transform: translateY(0); }
+    }
+
+    .characters-scene.scene-nudge .character {
+      animation: sceneNudge 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .characters-scene.is-engaged .character {
+      filter: saturate(1.04);
+    }
+
+    /* Error styles */
+    .error-msg {
+      display: none;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #dc2626;
+      background: rgba(220, 38, 38, 0.08);
+      border: 1px solid rgba(220, 38, 38, 0.2);
+      border-radius: 10px;
+      margin-bottom: 16px;
+    }
+
+    .form-group input.error {
+      border-bottom-color: #dc2626;
+    }
+
+    .form-group label.error-label {
+      color: #dc2626;
+    }
+
+    .forgot-modal[hidden] {
+      display: none;
+    }
+
+    .forgot-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .forgot-modal.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .forgot-modal__backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.3);
+      backdrop-filter: blur(10px) saturate(130%);
+      -webkit-backdrop-filter: blur(10px) saturate(130%);
+    }
+
+    .forgot-modal__panel {
+      position: relative;
+      width: min(460px, 100%);
+      border-radius: 22px;
+      padding: 22px 20px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.36);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.42));
+      box-shadow: 0 24px 48px rgba(15, 23, 42, 0.18);
+      transform: translateY(8px) scale(0.98);
+      transition: transform 0.2s ease;
+    }
+
+    .forgot-modal.is-open .forgot-modal__panel {
+      transform: translateY(0) scale(1);
+    }
+
+    .forgot-modal__close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.6);
+      color: #334155;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .forgot-modal__close:hover {
+      background: rgba(255, 255, 255, 0.9);
+      transform: rotate(90deg);
+    }
+
+    .forgot-modal__title {
+      font-size: 20px;
+      line-height: 1.3;
+      color: #1e293b;
+      margin-bottom: 6px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+    }
+
+    .forgot-modal__subtitle {
+      font-size: 13px;
+      color: #475569;
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .forgot-modal .form-group {
+      margin-bottom: 14px;
+    }
+
+    .forgot-modal .form-group label {
+      font-size: 12px;
+      color: #334155;
+      margin-bottom: 6px;
+      display: block;
+      font-weight: 600;
+    }
+
+    .forgot-modal .form-group input {
+      width: 100%;
+      height: 44px;
+      padding: 0 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(100, 116, 139, 0.25);
+      background: rgba(255, 255, 255, 0.66);
+      color: #0f172a;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .forgot-modal .form-group input:focus {
+      border-color: rgba(79, 70, 229, 0.55);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.14);
+    }
+
+    .forgot-modal__error {
+      display: none;
+      padding: 9px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #b91c1c;
+      border: 1px solid rgba(220, 38, 38, 0.26);
+      background: rgba(254, 226, 226, 0.75);
+      margin-bottom: 12px;
+    }
+
+    .forgot-modal__error.is-visible {
+      display: block;
+    }
+
+    .forgot-modal__actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .forgot-modal__btn {
+      min-width: 90px;
+      height: 38px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .forgot-modal__btn:active {
+      transform: scale(0.98);
+    }
+
+    .forgot-modal__btn--cancel {
+      border-color: rgba(100, 116, 139, 0.3);
+      background: rgba(255, 255, 255, 0.6);
+      color: #334155;
+    }
+
+    .forgot-modal__btn--submit {
+      border-color: rgba(79, 70, 229, 0.55);
+      background: linear-gradient(135deg, #4338ca, #6366f1);
+      color: #fff;
+    }
+
+    .forgot-modal__btn[disabled] {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      #login-page {
+        grid-template-columns: 1fr;
+      }
+
+      .left-panel {
+        display: none;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .quick-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
 </head>
-  <body class="font-inter min-h-screen flex flex-col overflow-hidden relative">
-    <!-- 全屏渐变背景 -->
-    <div class="bg-gradient-full"></div>
-    
-    <!-- ===== 装饰性光斑 - 柔和色调 ===== -->
-    <div class="fixed top-20 left-10 w-72 h-72 bg-white/5 rounded-full blur-3xl pointer-events-none orb-float"></div>
-    <div class="fixed bottom-20 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none orb-float" style="animation-delay: -2s;"></div>
-    <div class="fixed top-1/2 left-1/2 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none pulse-glow"></div>
-    <div class="fixed top-40 right-20 w-48 h-48 bg-secondary/10 rounded-full blur-3xl pointer-events-none orb-float" style="animation-delay: -4s;"></div>
-    <div class="fixed bottom-40 left-20 w-56 h-56 bg-secondary/10 rounded-full blur-3xl pointer-events-none orb-float" style="animation-delay: -6s;"></div>
-    <div class="fixed top-1/3 left-1/4 w-40 h-40 bg-white/8 rounded-full blur-2xl pointer-events-none orb-float" style="animation-delay: -8s;"></div>
-    <div class="fixed bottom-1/3 right-1/4 w-32 h-32 bg-primary/15 rounded-full blur-2xl pointer-events-none pulse-glow" style="animation-delay: -1s;"></div>
-    <!-- 新增背景光斑 -->
-    <div class="fixed top-0 left-1/2 w-80 h-80 bg-primary/5 rounded-full blur-3xl pointer-events-none orb-float" style="animation-delay: -3s;"></div>
-    <div class="fixed bottom-0 left-1/3 w-60 h-60 bg-secondary/8 rounded-full blur-3xl pointer-events-none pulse-glow" style="animation-delay: -5s;"></div>
-    
-    <!-- ===== 网格背景纹理 ===== -->
-    <div class="fixed inset-0 pointer-events-none opacity-5" style="background-image: radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px); background-size: 30px 30px;"></div>
-    
-    <!-- ===== 粒子漂浮效果 ===== -->
-    <div class="fixed inset-0 pointer-events-none overflow-hidden">
-        <div class="absolute w-1 h-1 bg-white/40 rounded-full particle-float" style="left: 10%; animation-delay: 0s;"></div>
-        <div class="absolute w-1 h-1 bg-white/40 rounded-full particle-float" style="left: 20%; animation-delay: 2s;"></div>
-        <div class="absolute w-1 h-1 bg-white/40 rounded-full particle-float" style="left: 30%; animation-delay: 4s;"></div>
-        <div class="absolute w-1 h-1 bg-white/40 rounded-full particle-float" style="left: 40%; animation-delay: 6s;"></div>
-        <div class="absolute w-1 h-1 bg-white/40 rounded-full particle-float" style="left: 50%; animation-delay: 8s;"></div>
-        <div class="absolute w-1 h-1 bg-white/40 rounded-full particle-float" style="left: 60%; animation-delay: 10s;"></div>
-        <div class="absolute w-1 h-1 bg-white/40 rounded-full particle-float" style="left: 70%; animation-delay: 12s;"></div>
-        <div class="absolute w-1 h-1 bg-white/40 rounded-full particle-float" style="left: 80%; animation-delay: 14s;"></div>
-    </div>
-    
-    <div class="flex-1 flex flex-col md:flex-row relative z-10">
-      <!-- 左侧欢迎区域 -->
-      <div class="hidden md:flex md:w-1/2 lg:w-5/12 p-8 lg:p-12 pt-14 lg:pt-18 flex-col justify-start items-center text-white">
-        <!-- 光晕背景 -->
-        <div class="absolute inset-0 glass-strong rounded-3xl -z-10"></div>
-        
-        <!-- 太阳图标 - 保留弹跳动画 -->
-        <div class="text-6xl mb-6 icon-bounce">☀️</div>
-        
-        <!-- 标题 - 取消渐变动画，使用纯色 -->
-        <h1 class="text-[clamp(2rem,4vw,3.5rem)] font-bold mb-4 tracking-tight text-white">铃记</h1>
-        <p class="text-lg lg:text-xl text-center mb-8 max-w-md text-white/90">专注每一天，高效每一刻</p>
-        
-        <!-- 应用界面展示 - 轻微倾斜浮动动画 -->
-        <div class="relative w-full max-w-md mb-8 group">
-          <div class="absolute inset-0 bg-white/10 rounded-2xl blur-xl transform rotate-3 scale-105 group-hover:blur-2xl transition-all duration-500"></div>
-          <div class="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <img id="auth-hero-preview" src="assets/ringnote-auth-light.svg" alt="铃记应用界面" class="w-full rounded-2xl shadow-2xl transform hover:scale-[1.02] transition-transform duration-500 relative z-10 image-tilt-float glow-border" />
-        </div>
-        
-        <!-- 用户统计 -->
-        <div class="text-center">
-          <p class="mb-4 text-sm lg:text-base text-white/80">已有超过 100 万人使用铃记提升效率</p>
-          <div class="flex justify-center">
-            <div class="flex -space-x-3">
-              <img src="https://design.gemcoder.com/staticResource/echoAiSystemImages/5789ae6a9dfaeb368ba279d92fd58c77.png" alt="用户头像" class="w-10 h-10 rounded-full border-2 border-white/50 avatar-float" style="animation-delay: 0s;" />
-              <img src="https://design.gemcoder.com/staticResource/echoAiSystemImages/d27cfa0599490bdc19cd197ce549a2cd.png" alt="用户头像" class="w-10 h-10 rounded-full border-2 border-white/50 avatar-float" style="animation-delay: 0.2s;" />
-              <img src="https://design.gemcoder.com/staticResource/echoAiSystemImages/ab41ca8361c02f52ff523a0ebeff3591.png" alt="用户头像" class="w-10 h-10 rounded-full border-2 border-white/50 avatar-float" style="animation-delay: 0.4s;" />
-              <div class="w-10 h-10 rounded-full border-2 border-white/50 bg-white/20 flex items-center justify-center text-xs font-medium backdrop-blur-sm pulse-glow">+10k</div>
+
+<body>
+  <!-- Login Page -->
+  <div id="login-page">
+    <!-- Left Panel -->
+    <div class="left-panel">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+          <path d="M12 2L15 9H9L12 2Z" />
+          <path d="M12 22L9 15H15L12 22Z" />
+          <path d="M2 12L9 9V15L2 12Z" />
+          <path d="M22 12L15 15V9L22 12Z" />
+        </svg>
+        <span>铃记</span>
+      </div>
+      <div class="characters-wrapper">
+        <div class="characters-scene" id="characters-scene">
+          <!-- Purple character -->
+          <div class="character char-purple" id="char-purple">
+            <div class="eyes" id="purple-eyes" style="left: 45px; top: 40px; gap: 28px">
+              <div class="eyeball" id="purple-eye-l" style="width: 18px; height: 18px">
+                <div class="pupil" id="purple-pupil-l" style="width: 7px; height: 7px"></div>
+              </div>
+              <div class="eyeball" id="purple-eye-r" style="width: 18px; height: 18px">
+                <div class="pupil" id="purple-pupil-r" style="width: 7px; height: 7px"></div>
+              </div>
             </div>
+          </div>
+          <!-- Black character -->
+          <div class="character char-black" id="char-black">
+            <div class="eyes" id="black-eyes" style="left: 26px; top: 32px; gap: 20px">
+              <div class="eyeball" id="black-eye-l" style="width: 16px; height: 16px">
+                <div class="pupil" id="black-pupil-l" style="width: 6px; height: 6px"></div>
+              </div>
+              <div class="eyeball" id="black-eye-r" style="width: 16px; height: 16px">
+                <div class="pupil" id="black-pupil-r" style="width: 6px; height: 6px"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Orange character -->
+          <div class="character char-orange" id="char-orange">
+            <div class="eyes" id="orange-eyes" style="left: 82px; top: 90px; gap: 28px">
+              <div class="bare-pupil" id="orange-pupil-l"></div>
+              <div class="bare-pupil" id="orange-pupil-r"></div>
+            </div>
+            <div class="orange-mouth" id="orange-mouth" style="left: 90px; top: 120px"></div>
+          </div>
+          <!-- Yellow character -->
+          <div class="character char-yellow" id="char-yellow">
+            <div class="eyes" id="yellow-eyes" style="left: 52px; top: 40px; gap: 20px">
+              <div class="bare-pupil" id="yellow-pupil-l"></div>
+              <div class="bare-pupil" id="yellow-pupil-r"></div>
+            </div>
+            <div class="yellow-mouth" id="yellow-mouth" style="left: 40px; top: 88px"></div>
           </div>
         </div>
       </div>
-      
-      <!-- 右侧注册表单区域 -->
-      <div class="w-full md:w-1/2 lg:w-7/12 flex items-start justify-center p-6 lg:p-8">
-        <div class="w-full max-w-md">
-          <!-- 卡片 - 优化透明度，移除 card-glow 动画 -->
-          <div class="glass-card rounded-3xl shadow-2xl card-hover px-8 lg:px-10 pb-4 lg:pb-6 pt-8 form-enter">
-            <div class="md:hidden text-center mb-6">
-              <div class="text-4xl mb-3 icon-bounce">☀️</div>
-              <h2 class="text-2xl font-bold text-dark mb-1">铃记</h2>
-              <p class="text-gray-500 text-sm">专注每一天，高效每一刻</p>
+            <div class="footer-links">
+        <a href="javascript:void(0);">隐私政策</a>
+        <a href="javascript:void(0);">用户协议</a>
+        <a href="javascript:void(0);">联系我们</a>
+      </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="right-panel">
+      <div class="form-container">
+        <div class="sparkle-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L13.5 9H10.5L12 2Z" fill="#1a1a2e" />
+            <path d="M12 22L10.5 15H13.5L12 22Z" fill="#1a1a2e" />
+            <path d="M2 12L9 10.5V13.5L2 12Z" fill="#1a1a2e" />
+            <path d="M22 12L15 13.5V10.5L22 12Z" fill="#1a1a2e" />
+          </svg>
+        </div>
+        <div class="form-header">
+          <h1>创建账号</h1>
+          <p>填写账号和密码，立即开始使用铃记</p>
+        </div>
+
+        <form id="register-form" onsubmit="return false;">
+          <div class="form-group">
+            <label id="email-label" for="email">账号</label>
+            <div class="input-wrapper">
+              <input type="text" id="email" placeholder="请输入邮箱或手机号" autocomplete="off" />
             </div>
-            <div class="mb-8 hidden md:block">
-              <h2 class="text-3xl font-bold text-gray-800 mb-2">欢迎注册 👋</h2>
-              <p class="text-gray-500 text-sm">填写信息，加入铃记</p>
-            </div>
-            <form id="register-form" class="space-y-5" action="待办页面.html" method="GET">
-              <div>
-                <label for="register-account" class="block text-sm font-medium text-gray-700 mb-2">手机号/邮箱</label>
-                <div class="relative group">
-                  <span class="absolute inset-y-0 left-0 flex items-center pl-4 input-icon">
-                    <i class="fas fa-user"> </i>
-                  </span>
-                  <input type="text" id="register-account" class="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl input-focus glass-input hover:border-gray-300" placeholder="请输入手机号或邮箱" required />
-                </div>
-              </div>
-              <div>
-                <label for="register-password" class="block text-sm font-medium text-gray-700 mb-2">设置密码</label>
-                <div class="relative group">
-                  <span class="absolute inset-y-0 left-0 flex items-center pl-4 input-icon">
-                    <i class="fas fa-lock"> </i>
-                  </span>
-                  <input type="password" id="register-password" class="w-full pl-12 pr-12 py-3.5 border-2 border-gray-200 rounded-xl input-focus glass-input hover:border-gray-300" placeholder="请输入密码" required />
-                  <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-primary transition-colors duration-300" id="toggle-register-password">
-                    <i class="fas fa-eye-slash"> </i>
-                  </button>
-                </div>
-                <div class="mt-2 hidden" id="password-strength-wrap" aria-live="polite">
-                  <div class="flex items-center justify-between mb-1">
-                    <span class="text-[11px] text-gray-500">密码强度</span>
-                    <span class="text-[11px] font-medium text-gray-500" id="password-strength-label">待检测</span>
-                  </div>
-                  <div class="h-1.5 rounded-full bg-gray-200 overflow-hidden">
-                    <div id="password-strength-bar" class="h-full w-0 rounded-full transition-all duration-300 bg-red-400"></div>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <label for="register-confirm" class="block text-sm font-medium text-gray-700 mb-2">确认密码</label>
-                <div class="relative group">
-                  <span class="absolute inset-y-0 left-0 flex items-center pl-4 input-icon">
-                    <i class="fas fa-check"> </i>
-                  </span>
-                  <input type="password" id="register-confirm" class="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl input-focus glass-input hover:border-gray-300" placeholder="请再次输入密码" required />
-                </div>
-              </div>
-              <button type="submit" class="w-full btn-primary text-base shadow-lg shadow-primary/30 btn-glow">注 册</button>
-              
-              <!-- 其他注册方式 -->
-              <div class="relative my-6">
-                <div class="absolute inset-0 flex items-center">
-                  <div class="w-full border-t border-gray-200"></div>
-                </div>
-                <div class="relative flex justify-center">
-                  <span class="auth-alt-divider px-4 bg-white/95 backdrop-blur-sm text-gray-600 text-sm font-medium rounded-full border border-gray-200/80">其他注册方式</span>
-                </div>
-              </div>
-              
-              <!-- 社交注册按钮 - 图标 + 文字 -->
-              <div class="grid grid-cols-3 gap-3">
-                <button type="button" class="btn-social group glass-strong hover:border-green-400/50" title="微信注册">
-                  <i class="fab fa-weixin text-green-500 social-icon"> </i>
-                  <span class="social-text">微信</span>
-                </button>
-                <button type="button" class="btn-social group glass-strong hover:border-gray-400/50" title="苹果注册">
-                  <i class="fab fa-apple text-gray-800 social-icon"> </i>
-                  <span class="social-text">苹果</span>
-                </button>
-                <button type="button" class="btn-social group glass-strong hover:border-red-400/50" title="谷歌注册">
-                  <i class="fab fa-google text-red-500 social-icon"> </i>
-                  <span class="social-text">谷歌</span>
-                </button>
-              </div>
-              
-              <div class="text-center mt-6 pt-6 border-t border-gray-100">
-                <p class="auth-switch-note text-sm text-gray-700">
-                  已有账号？
-                  <a href="登录页面.html" class="text-primary font-semibold hover:text-primary/70 transition-colors duration-300 inline-block hover:scale-105 transform">立即登录</a>
-                </p>
-              </div>
-            </form>
           </div>
-          
-          <!-- 底部协议提示 - 提高对比度 -->
-          <p class="text-center text-xs text-white/90 mt-6 px-4 leading-relaxed">
-            注册即代表您同意我们的
-            <a href="javascript:void(0);" class="underline hover:text-white font-medium transition-colors duration-300">用户协议</a>
-            和
-            <a href="javascript:void(0);" class="underline hover:text-white font-medium transition-colors duration-300">隐私政策</a>
-          </p>
+
+          <div class="form-group">
+            <label id="password-label" for="password">密码</label>
+            <div class="input-wrapper">
+              <input type="password" id="password" placeholder="请输入密码" />
+              <button type="button" class="toggle-password" id="toggle-password">
+                <svg id="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg id="eye-off-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none">
+                  <path
+                    d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                  </path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label id="confirm-label" for="confirm-password">确认密码</label>
+            <div class="input-wrapper">
+              <input type="password" id="confirm-password" placeholder="请再次输入密码" />
+            </div>
+          </div>
+
+          <div class="form-options">
+            <label class="remember-me">
+              <input type="checkbox" id="agree-protocol" checked /> 我已阅读并同意用户协议
+            </label>
+            <a href="javascript:void(0);" class="forgot-link" id="forgot-link" style="visibility:hidden;pointer-events:none;">占位</a>
+          </div>
+
+          <div class="error-msg" id="error-msg"></div>
+
+          <button type="submit" class="btn-login" id="btn-register">
+            <span class="btn-text">注册</span>
+            <div class="btn-hover-content">
+              <span>注册</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </div>
+          </button>
+
+          <div class="quick-divider"><span>快捷方式注册</span></div>
+
+          <div class="quick-grid">
+            <button type="button" class="quick-btn" data-quick-login="wechat" aria-label="微信扫码注册">
+              <i class="fab fa-weixin" style="color:#16a34a;"></i>
+              <span>微信扫码</span>
+            </button>
+            <button type="button" class="quick-btn" data-quick-login="qq" aria-label="QQ 注册">
+              <i class="fab fa-qq" style="color:#2563eb;"></i>
+              <span>QQ扫码</span>
+            </button>
+            <button type="button" class="quick-btn" data-quick-login="quick" aria-label="快速注册">
+              <i class="fas fa-mobile-screen-button" style="color:#0ea5e9;"></i>
+              <span>快速注册</span>
+            </button>
+          </div>
+        </form>
+
+        <div class="signup-link">
+          已有账号？<a href="登录2.html">立即登录</a>
         </div>
       </div>
     </div>
-    <script src="data.js"></script>
-    <script src="common.js?v=20260401_liquid_modal1"></script>
-    <script src="components.js"></script>
-    <script src='./js/pages/注册页面.inline-03.js?v=20260327_jssplit'></script>
-  </body>
+  </div>
+
+  <div class="forgot-modal" id="forgot-modal" hidden>
+    <div class="forgot-modal__backdrop" data-forgot-close></div>
+    <div class="forgot-modal__panel" role="dialog" aria-modal="true" aria-labelledby="forgot-modal-title">
+      <button type="button" class="forgot-modal__close" id="forgot-close" aria-label="关闭">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <h2 class="forgot-modal__title" id="forgot-modal-title">重置密码</h2>
+      <p class="forgot-modal__subtitle">请输入账号并设置新密码，提交后将直接覆盖原密码。</p>
+
+      <form id="forgot-form" novalidate>
+        <div class="form-group">
+          <label for="forgot-account">账号（邮箱/手机号/admin）</label>
+          <input type="text" id="forgot-account" placeholder="请输入账号" autocomplete="username" />
+        </div>
+        <div class="form-group">
+          <label for="forgot-new-password">新密码</label>
+          <input type="password" id="forgot-new-password" placeholder="至少 6 位" autocomplete="new-password" />
+        </div>
+        <div class="form-group">
+          <label for="forgot-confirm-password">确认新密码</label>
+          <input type="password" id="forgot-confirm-password" placeholder="请再次输入新密码" autocomplete="new-password" />
+        </div>
+        <div class="forgot-modal__error" id="forgot-error"></div>
+        <div class="forgot-modal__actions">
+          <button type="button" class="forgot-modal__btn forgot-modal__btn--cancel" id="forgot-cancel">取消</button>
+          <button type="submit" class="forgot-modal__btn forgot-modal__btn--submit" id="forgot-submit">确认重置</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="common.js"></script>
+  <script src="components.js"></script>
+  <script>
+    // ============ PASSWORD TOGGLE ============
+    const passwordInput = document.getElementById("password");
+    const emailInput = document.getElementById("email");
+    const confirmInput = document.getElementById("confirm-password");
+    const toggleBtn = document.getElementById("toggle-password");
+    const eyeIcon = document.getElementById("eye-icon");
+    const eyeOffIcon = document.getElementById("eye-off-icon");
+    const forgotModal = document.getElementById("forgot-modal");
+    const forgotForm = document.getElementById("forgot-form");
+    const forgotLink = document.getElementById("forgot-link");
+    const forgotClose = document.getElementById("forgot-close");
+    const forgotCancel = document.getElementById("forgot-cancel");
+    const forgotSubmit = document.getElementById("forgot-submit");
+    const forgotAccountInput = document.getElementById("forgot-account");
+    const forgotNewPasswordInput = document.getElementById("forgot-new-password");
+    const forgotConfirmPasswordInput = document.getElementById("forgot-confirm-password");
+    const forgotError = document.getElementById("forgot-error");
+    let showPassword = false;
+    let isLoginError = false;
+
+    toggleBtn.addEventListener("click", () => {
+      showPassword = !showPassword;
+      passwordInput.type = showPassword ? "text" : "password";
+      eyeIcon.style.display = showPassword ? "none" : "block";
+      eyeOffIcon.style.display = showPassword ? "block" : "none";
+      updateCharacters();
+    });
+
+            // ============ MOUSE TRACKING & CHARACTER ANIMATION ============
+    let targetMouseX = window.innerWidth / 2,
+      targetMouseY = window.innerHeight / 2;
+    let mouseX = targetMouseX,
+      mouseY = targetMouseY;
+    let idleTick = Math.random() * Math.PI * 2;
+    let scenePush = 0;
+    let sceneSpark = 0;
+    let hoveredCharacter = "";
+    let scenePartyUntil = 0;
+    let isTyping = false;
+    let isLookingAtEachOther = false;
+    let isPurpleBlinking = false;
+    let isBlackBlinking = false;
+    let isPurplePeeking = false;
+    let typingTimer = null;
+
+    const sceneEl = document.getElementById("characters-scene");
+    const characterMap = {
+      purple: document.getElementById("char-purple"),
+      black: document.getElementById("char-black"),
+      orange: document.getElementById("char-orange"),
+      yellow: document.getElementById("char-yellow")
+    };
+
+    function nudgeScene(power, partyMs) {
+      scenePush = Math.max(scenePush, power || 8);
+      sceneSpark = Math.max(sceneSpark, 10);
+      if (partyMs && partyMs > 0) {
+        scenePartyUntil = Date.now() + partyMs;
+        if (sceneEl) sceneEl.classList.add("is-party");
+      }
+      if (sceneEl) {
+        sceneEl.classList.remove("scene-nudge");
+        void sceneEl.offsetWidth;
+        sceneEl.classList.add("scene-nudge");
+        setTimeout(() => sceneEl.classList.remove("scene-nudge"), 450);
+      }
+    }
+
+    Object.entries(characterMap).forEach(([key, el]) => {
+      if (!el) return;
+      el.addEventListener("mouseenter", () => {
+        hoveredCharacter = key;
+        sceneSpark = Math.max(sceneSpark, 4);
+      });
+      el.addEventListener("mouseleave", () => {
+        if (hoveredCharacter === key) hoveredCharacter = "";
+      });
+      el.addEventListener("click", () => {
+        nudgeScene(10, 900);
+      });
+    });
+
+    if (sceneEl) {
+      sceneEl.addEventListener("mouseenter", () => sceneEl.classList.add("is-engaged"));
+      sceneEl.addEventListener("mouseleave", () => {
+        sceneEl.classList.remove("is-engaged");
+        hoveredCharacter = "";
+      });
+      sceneEl.addEventListener("click", () => nudgeScene(8, 0));
+      sceneEl.addEventListener("dblclick", () => nudgeScene(14, 1800));
+    }
+
+    document.addEventListener("mousemove", (e) => {
+      targetMouseX = e.clientX;
+      targetMouseY = e.clientY;
+    });
+
+    function enrichTransform(baseTransform, id) {
+      const lift = hoveredCharacter === id ? -12 : 0;
+      const party = Date.now() < scenePartyUntil;
+      const phase = id === "purple" ? 0 : id === "black" ? 1.5 : id === "orange" ? 2.6 : 3.4;
+      const wiggle = party ? Math.sin(Date.now() / 120 + phase) * 4 : 0;
+      return `${baseTransform} translateY(${lift}px) rotate(${wiggle}deg)`;
+    }
+
+    function animateSceneMotion() {
+      mouseX += (targetMouseX - mouseX) * 0.18;
+      mouseY += (targetMouseY - mouseY) * 0.18;
+      idleTick += 0.02;
+      scenePush *= 0.88;
+      sceneSpark *= 0.9;
+
+      const party = Date.now() < scenePartyUntil;
+      if (!party && sceneEl) sceneEl.classList.remove("is-party");
+      const partyWave = party ? Math.sin(Date.now() / 90) * 2.8 : 0;
+      const idleX = Math.sin(idleTick) * 2.5 + scenePush + partyWave;
+      const idleY = Math.cos(idleTick * 0.8) * 1.8 - sceneSpark * 0.15;
+
+      if (!isTyping && !isLoginError) {
+        const baseX = mouseX;
+        const baseY = mouseY;
+        mouseX = baseX + idleX;
+        mouseY = baseY + idleY;
+        updateCharacters();
+        mouseX = baseX;
+        mouseY = baseY;
+      }
+      window.requestAnimationFrame(animateSceneMotion);
+    }
+    window.requestAnimationFrame(animateSceneMotion);
+
+    let isPasswordFocused = false;
+
+    // Typing detection
+    emailInput.addEventListener("focus", () => {
+      setTyping(true);
+    });
+    emailInput.addEventListener("blur", () => {
+      setTyping(false);
+    });
+    emailInput.addEventListener("input", () => {
+      updateCharacters();
+    });
+    passwordInput.addEventListener("focus", () => {
+      isPasswordFocused = true;
+      updateCharacters();
+    });
+    passwordInput.addEventListener("blur", () => {
+      isPasswordFocused = false;
+      updateCharacters();
+    });
+    passwordInput.addEventListener("input", () => {
+      updateCharacters();
+    });
+
+    function setTyping(typing) {
+      isTyping = typing;
+      if (typing) {
+        isLookingAtEachOther = true;
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(() => {
+          isLookingAtEachOther = false;
+          updateCharacters();
+        }, 800);
+      } else {
+        isLookingAtEachOther = false;
+      }
+      updateCharacters();
+    }
+
+    // Blinking
+    function scheduleBlinkPurple() {
+      setTimeout(
+        () => {
+          isPurpleBlinking = true;
+          updateCharacters();
+          setTimeout(() => {
+            isPurpleBlinking = false;
+            updateCharacters();
+            scheduleBlinkPurple();
+          }, 150);
+        },
+        Math.random() * 4000 + 3000,
+      );
+    }
+
+    function scheduleBlinkBlack() {
+      setTimeout(
+        () => {
+          isBlackBlinking = true;
+          updateCharacters();
+          setTimeout(() => {
+            isBlackBlinking = false;
+            updateCharacters();
+            scheduleBlinkBlack();
+          }, 150);
+        },
+        Math.random() * 4000 + 3000,
+      );
+    }
+
+    scheduleBlinkPurple();
+    scheduleBlinkBlack();
+
+    // Purple peeking when password is visible
+    function schedulePeek() {
+      if (passwordInput.value.length > 0 && showPassword) {
+        setTimeout(
+          () => {
+            if (passwordInput.value.length > 0 && showPassword) {
+              isPurplePeeking = true;
+              updateCharacters();
+              setTimeout(() => {
+                isPurplePeeking = false;
+                updateCharacters();
+                schedulePeek();
+              }, 800);
+            }
+          },
+          Math.random() * 3000 + 2000,
+        );
+      }
+    }
+
+    // Watch for password visibility changes to trigger peeking
+    toggleBtn.addEventListener("click", () => {
+      if (showPassword) schedulePeek();
+    });
+
+    // Calculate character position based on mouse
+    function calcPosition(el) {
+      const rect = el.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 3;
+      const dx = mouseX - cx;
+      const dy = mouseY - cy;
+      const faceX = Math.max(-15, Math.min(15, dx / 20));
+      const faceY = Math.max(-10, Math.min(10, dy / 30));
+      const bodySkew = Math.max(-6, Math.min(6, -dx / 120));
+      return { faceX, faceY, bodySkew };
+    }
+
+    function calcPupilOffset(el, maxDist) {
+      const rect = el.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = mouseX - cx;
+      const dy = mouseY - cy;
+      const dist = Math.min(Math.sqrt(dx * dx + dy * dy), maxDist);
+      const angle = Math.atan2(dy, dx);
+      return { x: Math.cos(angle) * dist, y: Math.sin(angle) * dist };
+    }
+
+    function updateCharacters() {
+      const purple = document.getElementById("char-purple");
+      const black = document.getElementById("char-black");
+      const orange = document.getElementById("char-orange");
+      const yellow = document.getElementById("char-yellow");
+
+      const purplePos = calcPosition(purple);
+      const blackPos = calcPosition(black);
+      const orangePos = calcPosition(orange);
+      const yellowPos = calcPosition(yellow);
+
+      const pwdLen = passwordInput.value.length;
+      const isShowingPwd = pwdLen > 0 && showPassword;
+      // Characters look away when password field is focused (hiding password)
+      const isLookingAway = isPasswordFocused && !showPassword;
+
+      // ---- Purple body ----
+      if (isShowingPwd) {
+        purple.style.transform = enrichTransform("skewX(0deg)", "purple");
+        purple.style.height = "370px";
+      } else if (isLookingAway) {
+        // Tilt away from the form (lean left)
+        purple.style.transform = enrichTransform("skewX(-14deg) translateX(-20px)", "purple");
+        purple.style.height = "410px";
+      } else if (isTyping) {
+        purple.style.transform = enrichTransform(`skewX(${(purplePos.bodySkew || 0) - 12}deg) translateX(40px)`, "purple");
+        purple.style.height = "410px";
+      } else {
+        purple.style.transform = enrichTransform(`skewX(${purplePos.bodySkew}deg)`, "purple");
+        purple.style.height = "370px";
+      }
+
+      // Purple eyes
+      const purpleEyes = document.getElementById("purple-eyes");
+      const purpleEyeL = document.getElementById("purple-eye-l");
+      const purpleEyeR = document.getElementById("purple-eye-r");
+      const purplePupilL = document.getElementById("purple-pupil-l");
+      const purplePupilR = document.getElementById("purple-pupil-r");
+
+      purpleEyeL.style.height = isPurpleBlinking ? "2px" : "18px";
+      purpleEyeR.style.height = isPurpleBlinking ? "2px" : "18px";
+
+      if (isLoginError) {
+        // Sad look down-left
+        purpleEyes.style.left = "30px";
+        purpleEyes.style.top = "55px";
+        purplePupilL.style.transform = "translate(-3px, 4px)";
+        purplePupilR.style.transform = "translate(-3px, 4px)";
+      } else if (isLookingAway) {
+        // Eyes look up-left (away from form)
+        purpleEyes.style.left = "20px";
+        purpleEyes.style.top = "25px";
+        purplePupilL.style.transform = "translate(-5px, -5px)";
+        purplePupilR.style.transform = "translate(-5px, -5px)";
+      } else if (isShowingPwd) {
+        purpleEyes.style.left = "20px";
+        purpleEyes.style.top = "35px";
+        const px = isPurplePeeking ? 4 : -4;
+        const py = isPurplePeeking ? 5 : -4;
+        purplePupilL.style.transform = `translate(${px}px, ${py}px)`;
+        purplePupilR.style.transform = `translate(${px}px, ${py}px)`;
+      } else if (isLookingAtEachOther) {
+        purpleEyes.style.left = "55px";
+        purpleEyes.style.top = "65px";
+        purplePupilL.style.transform = "translate(3px, 4px)";
+        purplePupilR.style.transform = "translate(3px, 4px)";
+      } else {
+        purpleEyes.style.left = 45 + purplePos.faceX + "px";
+        purpleEyes.style.top = 40 + purplePos.faceY + "px";
+        const po = calcPupilOffset(purpleEyeL, 5);
+        purplePupilL.style.transform = `translate(${po.x}px, ${po.y}px)`;
+        purplePupilR.style.transform = `translate(${po.x}px, ${po.y}px)`;
+      }
+
+      // ---- Black body ----
+      if (isShowingPwd) {
+        black.style.transform = enrichTransform("skewX(0deg)", "black");
+      } else if (isLookingAway) {
+        black.style.transform = enrichTransform("skewX(12deg) translateX(-10px)", "black");
+      } else if (isLookingAtEachOther) {
+        black.style.transform = enrichTransform(`skewX(${(blackPos.bodySkew || 0) * 1.5 + 10}deg) translateX(20px)`, "black");
+      } else if (isTyping) {
+        black.style.transform = enrichTransform(`skewX(${(blackPos.bodySkew || 0) * 1.5}deg)`, "black");
+      } else {
+        black.style.transform = enrichTransform(`skewX(${blackPos.bodySkew}deg)`, "black");
+      }
+
+      // Black eyes
+      const blackEyes = document.getElementById("black-eyes");
+      const blackEyeL = document.getElementById("black-eye-l");
+      const blackEyeR = document.getElementById("black-eye-r");
+      const blackPupilL = document.getElementById("black-pupil-l");
+      const blackPupilR = document.getElementById("black-pupil-r");
+
+      blackEyeL.style.height = isBlackBlinking ? "2px" : "16px";
+      blackEyeR.style.height = isBlackBlinking ? "2px" : "16px";
+
+      if (isLoginError) {
+        blackEyes.style.left = "15px";
+        blackEyes.style.top = "40px";
+        blackPupilL.style.transform = "translate(-3px, 4px)";
+        blackPupilR.style.transform = "translate(-3px, 4px)";
+      } else if (isLookingAway) {
+        blackEyes.style.left = "10px";
+        blackEyes.style.top = "20px";
+        blackPupilL.style.transform = "translate(-4px, -5px)";
+        blackPupilR.style.transform = "translate(-4px, -5px)";
+      } else if (isShowingPwd) {
+        blackEyes.style.left = "10px";
+        blackEyes.style.top = "28px";
+        blackPupilL.style.transform = "translate(-4px, -4px)";
+        blackPupilR.style.transform = "translate(-4px, -4px)";
+      } else if (isLookingAtEachOther) {
+        blackEyes.style.left = "32px";
+        blackEyes.style.top = "12px";
+        blackPupilL.style.transform = "translate(0px, -4px)";
+        blackPupilR.style.transform = "translate(0px, -4px)";
+      } else {
+        blackEyes.style.left = 26 + blackPos.faceX + "px";
+        blackEyes.style.top = 32 + blackPos.faceY + "px";
+        const bo = calcPupilOffset(blackEyeL, 4);
+        blackPupilL.style.transform = `translate(${bo.x}px, ${bo.y}px)`;
+        blackPupilR.style.transform = `translate(${bo.x}px, ${bo.y}px)`;
+      }
+
+      // ---- Orange body ----
+      const orangeMouth = document.getElementById("orange-mouth");
+      if (isLoginError) {
+        orangeMouth.style.left = 80 + orangePos.faceX + "px";
+        orangeMouth.style.top = "130px";
+      }
+      if (isShowingPwd) {
+        orange.style.transform = enrichTransform("skewX(0deg)", "orange");
+      } else {
+        orange.style.transform = enrichTransform(`skewX(${orangePos.bodySkew}deg)`, "orange");
+      }
+
+      // Orange eyes
+      const orangeEyes = document.getElementById("orange-eyes");
+      const orangePupilL = document.getElementById("orange-pupil-l");
+      const orangePupilR = document.getElementById("orange-pupil-r");
+
+      if (isLoginError) {
+        orangeEyes.style.left = "60px";
+        orangeEyes.style.top = "95px";
+        orangePupilL.style.transform = "translate(-3px, 4px)";
+        orangePupilR.style.transform = "translate(-3px, 4px)";
+      } else if (isLookingAway) {
+        orangeEyes.style.left = "50px";
+        orangeEyes.style.top = "75px";
+        orangePupilL.style.transform = "translate(-5px, -5px)";
+        orangePupilR.style.transform = "translate(-5px, -5px)";
+      } else if (isShowingPwd) {
+        orangeEyes.style.left = "50px";
+        orangeEyes.style.top = "85px";
+        orangePupilL.style.transform = "translate(-5px, -4px)";
+        orangePupilR.style.transform = "translate(-5px, -4px)";
+      } else {
+        orangeEyes.style.left = 82 + orangePos.faceX + "px";
+        orangeEyes.style.top = 90 + orangePos.faceY + "px";
+        const oo = calcPupilOffset(orangePupilL, 5);
+        orangePupilL.style.transform = `translate(${oo.x}px, ${oo.y}px)`;
+        orangePupilR.style.transform = `translate(${oo.x}px, ${oo.y}px)`;
+      }
+
+      // ---- Yellow body ----
+      if (isShowingPwd) {
+        yellow.style.transform = enrichTransform("skewX(0deg)", "yellow");
+      } else {
+        yellow.style.transform = enrichTransform(`skewX(${yellowPos.bodySkew}deg)`, "yellow");
+      }
+
+      // Yellow eyes & mouth
+      const yellowEyes = document.getElementById("yellow-eyes");
+      const yellowPupilL = document.getElementById("yellow-pupil-l");
+      const yellowPupilR = document.getElementById("yellow-pupil-r");
+      const yellowMouth = document.getElementById("yellow-mouth");
+
+      if (isLoginError) {
+        yellowEyes.style.left = "35px";
+        yellowEyes.style.top = "45px";
+        yellowPupilL.style.transform = "translate(-3px, 4px)";
+        yellowPupilR.style.transform = "translate(-3px, 4px)";
+        yellowMouth.style.left = "30px";
+        yellowMouth.style.top = "92px";
+        yellowMouth.style.transform = "rotate(-8deg)";
+      } else if (isLookingAway) {
+        yellowEyes.style.left = "20px";
+        yellowEyes.style.top = "30px";
+        yellowPupilL.style.transform = "translate(-5px, -5px)";
+        yellowPupilR.style.transform = "translate(-5px, -5px)";
+        yellowMouth.style.left = "15px";
+        yellowMouth.style.top = "78px";
+        yellowMouth.style.transform = "rotate(0deg)";
+      } else if (isShowingPwd) {
+        yellowEyes.style.left = "20px";
+        yellowEyes.style.top = "35px";
+        yellowPupilL.style.transform = "translate(-5px, -4px)";
+        yellowPupilR.style.transform = "translate(-5px, -4px)";
+        yellowMouth.style.left = "10px";
+        yellowMouth.style.top = "88px";
+        yellowMouth.style.transform = "rotate(0deg)";
+      } else {
+        yellowEyes.style.left = 52 + yellowPos.faceX + "px";
+        yellowEyes.style.top = 40 + yellowPos.faceY + "px";
+        const yo = calcPupilOffset(yellowPupilL, 5);
+        yellowPupilL.style.transform = `translate(${yo.x}px, ${yo.y}px)`;
+        yellowPupilR.style.transform = `translate(${yo.x}px, ${yo.y}px)`;
+        yellowMouth.style.left = 40 + yellowPos.faceX + "px";
+        yellowMouth.style.top = 88 + yellowPos.faceY + "px";
+        yellowMouth.style.transform = "rotate(0deg)";
+      }
+    }
+
+    // ============ LOGIN ERROR ANIMATION ============
+    let errorRecoverTimer = null;
+    const shakeIds = [
+      "purple-eyes",
+      "black-eyes",
+      "orange-eyes",
+      "yellow-eyes",
+      "yellow-mouth",
+      "orange-mouth",
+    ];
+
+    function triggerLoginError() {
+      // Clear any previous error recovery timer so repeated clicks work
+      if (errorRecoverTimer) {
+        clearTimeout(errorRecoverTimer);
+        errorRecoverTimer = null;
+      }
+
+      // Reset shake animation (remove class, force reflow, re-add)
+      const shakeEls = shakeIds.map((id) => document.getElementById(id));
+      shakeEls.forEach((el) => el.classList.remove("shake-head"));
+      // Force reflow to restart animation even on repeated clicks
+      void document.body.offsetHeight;
+
+      isLoginError = true;
+      isPasswordFocused = false;
+      updateCharacters();
+
+      // Show sad mouth on orange
+      document.getElementById("orange-mouth").classList.add("visible");
+
+      // Start shake after sad pose settles (the 0.7s body transition)
+      setTimeout(() => {
+        shakeEls.forEach((el) => el.classList.add("shake-head"));
+      }, 350);
+
+      // Recover after 2.5 seconds
+      errorRecoverTimer = setTimeout(() => {
+        isLoginError = false;
+        errorRecoverTimer = null;
+        document.getElementById("orange-mouth").classList.remove("visible");
+        shakeEls.forEach((el) => el.classList.remove("shake-head"));
+        updateCharacters();
+      }, 2500);
+    }
+
+    // ============ BACKEND AUTH HELPERS ============
+    function isMobileNumber(value) {
+      return /^1\d{10}$/.test(String(value || "").trim());
+    }
+
+    function isAdminAccount(value) {
+      return String(value || "").trim().toLowerCase() === "admin";
+    }
+
+    function normalizeLoginIdentifier(value) {
+      const raw = String(value || "").trim();
+      if (isAdminAccount(raw)) return "admin@ringnote.local";
+      if (isMobileNumber(raw)) return raw + "@mobile.local";
+      return raw;
+    }
+
+    function randomMobile() {
+      const prefixes = ["130", "131", "132", "133", "135", "136", "137", "138", "139", "150", "151", "152", "155", "156", "157", "158", "159", "166", "171", "172", "173", "175", "176", "177", "178", "180", "181", "182", "183", "184", "185", "186", "187", "188", "189", "198", "199"];
+      const prefix = prefixes[Math.floor(Math.random() * prefixes.length)] || "138";
+      const suffix = String(Math.floor(Math.random() * 100000000)).padStart(8, "0");
+      return prefix + suffix;
+    }
+
+    function randomPassword() {
+      return "Ring_" + Date.now().toString(36) + "_A1!";
+    }
+
+    function authErrorMessage(resp, fallback) {
+      const status = Number(resp && resp.status || 0);
+      const msg = String(resp && resp.body && resp.body.message || "").trim();
+      if (status === 504 || /timeout/i.test(msg)) return "\u670d\u52a1\u54cd\u5e94\u8d85\u65f6\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5";
+      if (status >= 500) return "\u670d\u52a1\u6682\u65f6\u4e0d\u53ef\u7528\uff0c\u8bf7\u7a0d\u540e\u518d\u8bd5";
+      return msg || fallback;
+    }
+
+    function persistUserProfile(profile) {
+      try {
+        if (window.AppState) {
+          if (typeof window.AppState.switchUser === "function") {
+            window.AppState.switchUser(profile);
+          } else {
+            window.AppState.user = Object.assign({}, window.AppState.user || {}, profile);
+            if (typeof window.AppState.save === "function") window.AppState.save();
+          }
+        }
+      } catch (e) {}
+    }
+
+    function syncProfileAndGo(token, fallbackAccount, isAdminInput) {
+      localStorage.setItem("token", token);
+      try { localStorage.removeItem("devSkipAuth"); } catch (e) {}
+      return apiRequest("/api/me", { method: "GET", timeoutMs: 8000 }).then((meResp) => {
+        const me = meResp && meResp.status === 200 && meResp.body && meResp.body.code === 200 ? (meResp.body.data || {}) : {};
+        persistUserProfile({
+          id: me.id,
+          name: me.nickname || me.email || fallbackAccount,
+          email: me.email || fallbackAccount,
+          phone: me.phone || "",
+          avatar: me.avatarUrl || "",
+          level: typeof me.level === "number" ? me.level : 1,
+          exp: typeof me.exp === "number" ? me.exp : 0
+        });
+        const meEmail = String(me.email || fallbackAccount || "").toLowerCase();
+        const goAdmin = !!me.admin || meEmail === "admin@ringnote.local" || !!isAdminInput;
+        showToast("\u767b\u5f55\u6210\u529f\uff0c\u6b63\u5728\u8df3\u8f6c...", "success");
+        setTimeout(() => {
+          safeNavigate(goAdmin ? "后台管理页面.html" : "待办页面.html");
+        }, 320);
+      }).catch(() => {
+        persistUserProfile({ name: fallbackAccount, email: fallbackAccount });
+        showToast("\u767b\u5f55\u6210\u529f\uff0c\u6b63\u5728\u8df3\u8f6c...", "success");
+        setTimeout(() => {
+          safeNavigate(isAdminInput ? "后台管理页面.html" : "待办页面.html");
+        }, 320);
+      });
+    }
+
+        function runQuickLogin(source) {
+      const phone = randomMobile();
+      const email = phone + "@mobile.local";
+      const password = randomPassword();
+      const nickname = "\u7528\u6237" + phone.slice(-4);
+      const sourceLabel = source === "wechat"
+        ? "微信快捷注册中..."
+        : source === "qq"
+          ? "QQ快捷注册中..."
+          : source === "quick-experience"
+            ? "正在创建快速注册账号..."
+            : "快速注册中...";
+
+      showToast(sourceLabel);
+      apiRequest("/api/auth/register", {
+        method: "POST",
+        timeoutMs: 8000,
+        body: JSON.stringify({ nickname, email, phone, password })
+      }).then((resp) => {
+        if (resp && resp.status === 200 && resp.body && resp.body.code === 200 && resp.body.data && resp.body.data.token) {
+          try { localStorage.removeItem("token"); } catch (e) {}
+          showToast("注册成功，正在前往登录页...", "success");
+          setTimeout(() => {
+            smoothNavigateToLogin();
+          }, 180);
+          return;
+        }
+        return apiRequest("/api/auth/login", {
+          method: "POST",
+          timeoutMs: 8000,
+          body: JSON.stringify({ email, password })
+        }).then((loginResp) => {
+          if (loginResp && loginResp.status === 200 && loginResp.body && loginResp.body.code === 200 && loginResp.body.data && loginResp.body.data.token) {
+            return syncProfileAndGo(loginResp.body.data.token, email, false);
+          }
+          throw new Error(authErrorMessage(loginResp, "\u5feb\u6377\u6ce8\u518c\u5931\u8d25"));
+        });
+      }).catch((error) => {
+        document.getElementById("error-msg").textContent = error.message || "\u5feb\u6377\u6ce8\u518c\u5931\u8d25";
+        document.getElementById("error-msg").style.display = "block";
+        triggerLoginError();
+      });
+    }
+
+    document.querySelectorAll("[data-quick-login]").forEach((button) => {
+      button.addEventListener("click", () => {
+        runQuickLogin(button.getAttribute("data-quick-login") || "quick");
+      });
+    });
+
+    function showForgotError(message) {
+      forgotError.textContent = message || "";
+      forgotError.classList.toggle("is-visible", !!message);
+    }
+
+    function openForgotModal() {
+      forgotAccountInput.value = emailInput.value.trim();
+      forgotNewPasswordInput.value = "";
+      forgotConfirmPasswordInput.value = "";
+      showForgotError("");
+      forgotSubmit.disabled = false;
+      forgotSubmit.textContent = "确认重置";
+      forgotModal.hidden = false;
+      requestAnimationFrame(() => {
+        forgotModal.classList.add("is-open");
+      });
+      setTimeout(() => {
+        forgotAccountInput.focus();
+      }, 80);
+    }
+
+    function closeForgotModal() {
+      forgotModal.classList.remove("is-open");
+      setTimeout(() => {
+        forgotModal.hidden = true;
+      }, 200);
+    }
+
+    function smoothNavigateToLogin() {
+      document.body.classList.add("page-leaving");
+      setTimeout(() => {
+        safeNavigate("登录页面.html");
+      }, 260);
+    }
+
+    forgotLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      openForgotModal();
+    });
+
+    forgotClose.addEventListener("click", closeForgotModal);
+    forgotCancel.addEventListener("click", closeForgotModal);
+    forgotModal.querySelector("[data-forgot-close]").addEventListener("click", closeForgotModal);
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !forgotModal.hidden) {
+        closeForgotModal();
+      }
+    });
+
+    forgotForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      showForgotError("");
+
+      const accountRaw = forgotAccountInput.value.trim();
+      const newPassword = forgotNewPasswordInput.value;
+      const confirmPassword = forgotConfirmPasswordInput.value;
+
+      if (!accountRaw || !(isAdminAccount(accountRaw) || isMobileNumber(accountRaw) || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(accountRaw))) {
+        showForgotError("请输入有效的邮箱、手机号或 admin 账号。");
+        forgotAccountInput.focus();
+        triggerLoginError();
+        return;
+      }
+
+      if (!newPassword || newPassword.length < 6) {
+        showForgotError("新密码至少需要 6 位。");
+        forgotNewPasswordInput.focus();
+        triggerLoginError();
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        showForgotError("两次输入的新密码不一致。");
+        forgotConfirmPasswordInput.focus();
+        triggerLoginError();
+        return;
+      }
+
+      forgotSubmit.disabled = true;
+      forgotSubmit.textContent = "重置中...";
+      const normalizedAccount = normalizeLoginIdentifier(accountRaw);
+      try {
+        const resp = await apiRequest("/api/auth/forgot-password", {
+          method: "POST",
+          timeoutMs: 8000,
+          body: JSON.stringify({ email: normalizedAccount, newPassword })
+        });
+
+        if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+          showToast("密码已重置，请使用新密码登录", "success");
+          emailInput.value = accountRaw;
+          passwordInput.value = newPassword;
+          closeForgotModal();
+          forgotSubmit.disabled = false;
+          forgotSubmit.textContent = "确认重置";
+          return;
+        }
+
+        showForgotError(authErrorMessage(resp, "重置密码失败"));
+        triggerLoginError();
+      } catch (error) {
+        showForgotError("网络异常，请确认后端服务已启动");
+        triggerLoginError();
+      } finally {
+        forgotSubmit.disabled = false;
+        forgotSubmit.textContent = "确认重置";
+      }
+    });
+
+    // ============ FORM VALIDATION ============
+    document.getElementById("register-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const account = emailInput.value.trim();
+      const pwd = passwordInput.value;
+      const confirmPwd = confirmInput ? confirmInput.value : "";
+      const agree = document.getElementById("agree-protocol");
+      const errEl = document.getElementById("error-msg");
+      const emailLabel = document.getElementById("email-label");
+      const pwdLabel = document.getElementById("password-label");
+      const confirmLabel = document.getElementById("confirm-label");
+
+      errEl.style.display = "none";
+      emailInput.classList.remove("error");
+      passwordInput.classList.remove("error");
+      if (confirmInput) confirmInput.classList.remove("error");
+      emailLabel.classList.remove("error-label");
+      pwdLabel.classList.remove("error-label");
+      if (confirmLabel) confirmLabel.classList.remove("error-label");
+
+      if (!account || !(isMobileNumber(account) || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(account))) {
+        emailInput.classList.add("error");
+        emailLabel.classList.add("error-label");
+        errEl.textContent = "\u8bf7\u8f93\u5165\u6709\u6548\u7684\u90ae\u7bb1\u6216\u624b\u673a\u53f7\u3002";
+        errEl.style.display = "block";
+        triggerLoginError();
+        return;
+      }
+
+      if (!pwd || pwd.length < 6) {
+        passwordInput.classList.add("error");
+        pwdLabel.classList.add("error-label");
+        errEl.textContent = "\u5bc6\u7801\u81f3\u5c11\u9700\u8981 6 \u4f4d\u3002";
+        errEl.style.display = "block";
+        triggerLoginError();
+        return;
+      }
+
+      if (pwd !== confirmPwd) {
+        if (confirmInput) confirmInput.classList.add("error");
+        if (confirmLabel) confirmLabel.classList.add("error-label");
+        errEl.textContent = "\u4e24\u6b21\u8f93\u5165\u7684\u5bc6\u7801\u4e0d\u4e00\u81f4\u3002";
+        errEl.style.display = "block";
+        triggerLoginError();
+        return;
+      }
+
+      if (agree && !agree.checked) {
+        errEl.textContent = "\u8bf7\u5148\u540c\u610f\u7528\u6237\u534f\u8bae\u3002";
+        errEl.style.display = "block";
+        triggerLoginError();
+        return;
+      }
+
+      const btn = document.getElementById("btn-register");
+      btn.querySelector(".btn-text").textContent = "\u6ce8\u518c\u4e2d...";
+      btn.disabled = true;
+
+      const isMobile = isMobileNumber(account);
+      const email = isMobile ? (account + "@mobile.local") : account.toLowerCase();
+      const phone = isMobile ? account : randomMobile();
+      const nickname = isMobile ? ("\u7528\u6237" + account.slice(-4)) : ("\u7528\u6237" + Date.now().toString().slice(-4));
+
+      apiRequest("/api/auth/register", {
+        method: "POST",
+        timeoutMs: 8000,
+        body: JSON.stringify({ nickname, email, phone, password: pwd })
+      }).then((resp) => {
+        if (resp && resp.status === 200 && resp.body && resp.body.code === 200 && resp.body.data && resp.body.data.token) {
+          try { localStorage.removeItem("token"); } catch (e) {}
+          showToast("注册成功，正在前往登录页...", "success");
+          setTimeout(() => {
+            smoothNavigateToLogin();
+          }, 180);
+          return;
+        }
+        errEl.textContent = authErrorMessage(resp, "\u6ce8\u518c\u5931\u8d25\uff0c\u8bf7\u91cd\u8bd5\u3002");
+        errEl.style.display = "block";
+        emailInput.classList.add("error");
+        emailLabel.classList.add("error-label");
+        triggerLoginError();
+      }).catch(() => {
+        errEl.textContent = "\u7f51\u7edc\u9519\u8bef\uff0c\u8bf7\u786e\u8ba4\u540e\u7aef\u5df2\u542f\u52a8\u3002";
+        errEl.style.display = "block";
+        triggerLoginError();
+      }).finally(() => {
+        btn.querySelector(".btn-text").textContent = "\u6ce8\u518c";
+        btn.disabled = false;
+      });
+    });
+
+    // Initial render
+    updateCharacters();
+  </script>
+</body>
+
 </html>
-
-
-
