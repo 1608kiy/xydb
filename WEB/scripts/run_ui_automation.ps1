@@ -12,13 +12,22 @@ $localNode = Join-Path $root 'tools\node\node.exe'
 $localNpm = Join-Path $root 'tools\node\npm.cmd'
 $localNpx = Join-Path $root 'tools\node\npx.cmd'
 
-$node = if (Test-Path $localNode) { $localNode } else { (Get-Command node -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -First 1) }
-$npm = if (Test-Path $localNpm) { $localNpm } else { (Get-Command npm -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -First 1) }
-$npx = if (Test-Path $localNpx) { $localNpx } else { (Get-Command npx -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -First 1) }
+function Resolve-CommandPath {
+  param([string]$Name)
+  $cmd = Get-Command $Name -ErrorAction SilentlyContinue | Select-Object -First 1
+  if ($cmd -and $cmd.Source) {
+    return [string]$cmd.Source
+  }
+  return ''
+}
+
+$node = if (Test-Path $localNode) { $localNode } else { (Resolve-CommandPath -Name 'node') }
+$npm = if (Test-Path $localNpm) { $localNpm } else { (Resolve-CommandPath -Name 'npm') }
+$npx = if (Test-Path $localNpx) { $localNpx } else { (Resolve-CommandPath -Name 'npx') }
 $e2eDir = Join-Path $root 'scripts\e2e'
 $scriptPath = Join-Path $e2eDir 'ui_automation_smoke.cjs'
 
-if (-not (Test-Path $node)) { throw "找不到 node.exe: $node" }
+if ([string]::IsNullOrWhiteSpace($node) -or -not (Test-Path $node)) { throw "找不到 node.exe: $node" }
 if (-not $npm) { throw '找不到 npm，请先安装 Node.js 或补齐 tools/node' }
 if (-not $npx) { throw '找不到 npx，请先安装 Node.js 或补齐 tools/node' }
 if (-not (Test-Path $scriptPath)) { throw "找不到脚本: $scriptPath" }
