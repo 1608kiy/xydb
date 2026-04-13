@@ -1643,12 +1643,7 @@
         body: JSON.stringify({ nickname, email, phone, password })
       }).then((resp) => {
         if (resp && resp.status === 200 && resp.body && resp.body.code === 200 && resp.body.data && resp.body.data.token) {
-          try { localStorage.removeItem("token"); } catch (e) {}
-          showToast("注册成功，正在前往登录页...", "success");
-          setTimeout(() => {
-            smoothNavigateToLogin();
-          }, 180);
-          return;
+          return syncProfileAndGo(resp.body.data.token, email, false);
         }
         return apiRequest("/api/auth/login", {
           method: "POST",
@@ -1699,13 +1694,6 @@
       setTimeout(() => {
         forgotModal.hidden = true;
       }, 200);
-    }
-
-    function smoothNavigateToLogin() {
-      document.body.classList.add("page-leaving");
-      setTimeout(() => {
-        safeNavigate("登录页面.html");
-      }, 260);
     }
 
     forgotLink.addEventListener("click", (e) => {
@@ -1852,12 +1840,7 @@
         body: JSON.stringify({ nickname, email, phone, password: pwd })
       }).then((resp) => {
         if (resp && resp.status === 200 && resp.body && resp.body.code === 200 && resp.body.data && resp.body.data.token) {
-          try { localStorage.removeItem("token"); } catch (e) {}
-          showToast("注册成功，正在前往登录页...", "success");
-          setTimeout(() => {
-            smoothNavigateToLogin();
-          }, 180);
-          return;
+          return syncProfileAndGo(resp.body.data.token, email, false);
         }
         errEl.textContent = authErrorMessage(resp, "\u6ce8\u518c\u5931\u8d25\uff0c\u8bf7\u91cd\u8bd5\u3002");
         errEl.style.display = "block";

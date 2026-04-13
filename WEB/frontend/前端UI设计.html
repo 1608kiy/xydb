@@ -1,0 +1,51 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>白天到黑夜交互渐变</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #000; user-select: none; }
+    #scene { display: block; width: 100%; height: 100%; cursor: ew-resize; }
+    .tip {
+      position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
+      padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,.16);
+      color: rgba(255,255,255,.95); backdrop-filter: blur(8px); font-size: 12px; pointer-events:none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="scene"></canvas>
+  <div class="tip">左右滑动鼠标：白天 → 黑夜</div>
+  <script>
+    (function(){
+      const c=document.getElementById('scene'); const x=c.getContext('2d',{alpha:false,desynchronized:true});
+      let w=0,h=0,dpr=1,t=0,target=0,stars=[],clouds=[];
+      const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)); const lerp=(a,b,p)=>a+(b-a)*p;
+      const rgb=(d,n,p)=>`rgb(${Math.round(lerp(d[0],n[0],p))},${Math.round(lerp(d[1],n[1],p))},${Math.round(lerp(d[2],n[2],p))})`;
+      function resize(){
+        dpr=Math.min(devicePixelRatio||1,2); w=innerWidth; h=innerHeight;
+        c.width=Math.floor(w*dpr); c.height=Math.floor(h*dpr); c.style.width=w+'px'; c.style.height=h+'px'; x.setTransform(dpr,0,0,dpr,0,0);
+        stars=[]; clouds=[];
+        for(let i=0;i<Math.round((w*h)/12000);i++) stars.push({x:Math.random()*w,y:Math.random()*h*0.68,r:Math.random()*1.7+.3,p:Math.random()*6.28,s:Math.random()*.012+.004});
+        for(let i=0;i<7;i++) clouds.push({x:Math.random()*w,y:h*(.12+Math.random()*.35),s:.55+Math.random()*1.2,v:.05+Math.random()*.18});
+      }
+      function sky(p){ const g=x.createLinearGradient(0,0,0,h); g.addColorStop(0,rgb([117,201,255],[9,12,34],p)); g.addColorStop(.5,rgb([181,229,255],[27,33,73],p)); g.addColorStop(1,rgb([255,222,163],[52,57,99],p)); x.fillStyle=g; x.fillRect(0,0,w,h); }
+      function sunMoon(p){
+        const arc=Math.sin(p*Math.PI),cx=lerp(w*.18,w*.82,p),cy=h*(.72-arc*.5),r=Math.max(24,Math.min(52,w*.035));
+        const sa=clamp(1-p*1.25,0,1); if(sa>.001){ const g=x.createRadialGradient(cx,cy,r*.2,cx,cy,r*2.8); g.addColorStop(0,`rgba(255,235,168,${.95*sa})`); g.addColorStop(1,'rgba(255,235,168,0)'); x.fillStyle=g; x.beginPath(); x.arc(cx,cy,r*2.8,0,Math.PI*2); x.fill(); x.fillStyle=`rgba(255,235,168,${sa})`; x.beginPath(); x.arc(cx,cy,r,0,Math.PI*2); x.fill(); }
+        const ma=clamp((p-.25)*1.35,0,1); if(ma>.001){ x.save(); x.fillStyle=`rgba(244,248,255,${ma})`; x.beginPath(); x.arc(cx,cy,r*.92,0,Math.PI*2); x.fill(); x.globalCompositeOperation='destination-out'; x.beginPath(); x.arc(cx+r*.34,cy-r*.1,r*.88,0,Math.PI*2); x.fill(); x.restore(); }
+      }
+      function drawStars(p,ts){ const a=Math.pow(clamp((p-.28)*1.35,0,1),1.25); if(a<.001) return; for(const s of stars){ const tw=.62+.38*Math.sin(ts*s.s+s.p); x.fillStyle=`rgba(255,255,255,${a*tw})`; x.beginPath(); x.arc(s.x,s.y,s.r,0,Math.PI*2); x.fill(); } }
+      function drawClouds(p){ const a=clamp(1-p*1.45,0,1); if(a<=.001) return; x.fillStyle=`rgba(255,255,255,${a*.63})`; for(const c of clouds){ c.x+=c.v; if(c.x-90*c.s>w) c.x=-120*c.s; x.beginPath(); x.ellipse(c.x,c.y,54*c.s,22*c.s,0,0,Math.PI*2); x.ellipse(c.x-34*c.s,c.y+2*c.s,38*c.s,17*c.s,0,0,Math.PI*2); x.ellipse(c.x+30*c.s,c.y+3*c.s,34*c.s,14*c.s,0,0,Math.PI*2); x.fill(); } }
+      function hills(p){ const hz=h*.72; x.fillStyle=rgb([76,164,130],[24,58,72],p); x.fillRect(0,hz+15,w,h-hz); x.fillStyle=rgb([56,130,102],[20,44,56],p); x.fillRect(0,hz+70,w,h-hz); }
+      function vignette(p){ const g=x.createRadialGradient(w*.5,h*.45,w*.2,w*.5,h*.45,w*.75); g.addColorStop(0,'rgba(0,0,0,0)'); g.addColorStop(1,`rgba(0,0,0,${.14+p*.22})`); x.fillStyle=g; x.fillRect(0,0,w,h); }
+      function frame(ts){ t += (target-t)*.08; sky(t); drawStars(t,ts); sunMoon(t); drawClouds(t); hills(t); vignette(t); requestAnimationFrame(frame); }
+      function setX(px){ target=clamp(px/w,0,1); }
+      addEventListener('resize',resize); addEventListener('mousemove',e=>setX(e.clientX)); addEventListener('touchmove',e=>{if(e.touches[0]) setX(e.touches[0].clientX);},{passive:true});
+      resize(); requestAnimationFrame(frame);
+    })();
+  </script>
+</body>
+</html>
