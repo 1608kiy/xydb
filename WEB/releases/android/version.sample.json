@@ -1,0 +1,19 @@
+{
+  "appName": "RingNote",
+  "packageName": "com.ringnote.app",
+  "channel": "stable",
+  "versionName": "1.0.0",
+  "versionCode": 100,
+  "minSupportedCode": 1,
+  "apk": {
+    "fileName": "ringnote-v1.0.0-100.apk",
+    "url": "https://ringnote.isleepring.cn/download/android/ringnote-v1.0.0-100.apk",
+    "sha256": "replace_with_real_sha256",
+    "size": 12345678
+  },
+  "releaseNotes": [
+    "Fixes and performance improvements"
+  ],
+  "publishedAt": "2026-04-14T00:00:00Z",
+  "forceUpdate": false
+}
