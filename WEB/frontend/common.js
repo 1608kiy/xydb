@@ -1450,9 +1450,9 @@ function resolveApiBase() {
   var protocol = locationInfo.protocol || 'http:';
   var origin = locationInfo.origin || '';
 
-  // Local dev defaults to backend 8080 unless explicitly overridden.
+  // Local dev defaults to backend 8082 unless explicitly overridden.
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    return protocol + '//' + hostname + ':8080';
+    return protocol + '//' + hostname + ':8082';
   }
 
   if (origin && origin !== 'null' && !/^file:/i.test(origin)) {
@@ -1465,14 +1465,14 @@ function resolveApiBase() {
     return '';
   }
 
-  return 'http://localhost:8080';
+  return 'http://localhost:8082';
 }
 
 // 全局 API 请求封装：自动携带 Authorization header（从 localStorage 读取 token）
 function apiRequest(path, options) {
   options = options || {};
   var timeoutMs = typeof options.timeoutMs === 'number' ? options.timeoutMs : 10000;
-  // 优先级：window.__API_BASE__ > localStorage.apiBase > 同源；同源失败时自动回退 localhost:8080
+  // 优先级：window.__API_BASE__ > localStorage.apiBase > 同源；同源失败时自动回退 localhost:8082
   var explicitBase = normalizeApiBaseCandidate(window.__API_BASE__);
   var storedBase = '';
   var runtimeBase = '';
@@ -1501,8 +1501,8 @@ function apiRequest(path, options) {
       : window.location.origin + ':7833';
     if (candidateBases.indexOf(backupOrigin) === -1) candidateBases.push(backupOrigin);
   }
-  if (isLocalRuntime && candidateBases.indexOf('http://localhost:8080') === -1) {
-    candidateBases.push('http://localhost:8080');
+  if (isLocalRuntime && candidateBases.indexOf('http://localhost:8082') === -1) {
+    candidateBases.push('http://localhost:8082');
   }
 
   function sanitizeBase(base) {

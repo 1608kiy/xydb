@@ -1,5 +1,5 @@
 param(
-  [int]$BackendPort = 8080,
+  [int]$BackendPort = 8082,
   [int]$StartupTimeoutSeconds = 120,
   [switch]$NoWait
 )

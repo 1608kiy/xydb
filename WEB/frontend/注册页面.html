@@ -11,10 +11,10 @@
     (function () {
       try {
         if (window.location.protocol === "file:") {
-          window.__API_BASE__ = localStorage.getItem("apiBase") || "http://localhost:8080";
+          window.__API_BASE__ = localStorage.getItem("apiBase") || "http://localhost:8082";
         }
       } catch (e) {
-        window.__API_BASE__ = "http://localhost:8080";
+        window.__API_BASE__ = "http://localhost:8082";
       }
     })();
   </script>

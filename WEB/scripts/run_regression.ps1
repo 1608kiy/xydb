@@ -7,7 +7,7 @@
 
 用法示例：
   powershell -ExecutionPolicy Bypass -File .\scripts\run_regression.ps1
-  powershell -ExecutionPolicy Bypass -File .\scripts\run_regression.ps1 -ApiBase 'http://localhost:8080' -SkipTests
+  powershell -ExecutionPolicy Bypass -File .\scripts\run_regression.ps1 -ApiBase 'http://localhost:8082' -SkipTests
 #>
 
 [CmdletBinding()]

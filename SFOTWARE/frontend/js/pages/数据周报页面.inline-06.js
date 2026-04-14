@@ -110,6 +110,20 @@
         return String(status || '').trim().toLowerCase();
       }
 
+      function getReportSourceTasks() {
+        if (window.__reportServerState && Array.isArray(window.__reportServerState.tasks)) {
+          return window.__reportServerState.tasks;
+        }
+        return AppState.tasks || [];
+      }
+
+      function getReportSourcePomodoros() {
+        if (window.__reportServerState && Array.isArray(window.__reportServerState.pomodoroSessions)) {
+          return window.__reportServerState.pomodoroSessions;
+        }
+        return AppState.pomodoroSessions || [];
+      }
+
       function getDateRangeByLabel(label) {
         var now = new Date();
         var end = new Date(now);
@@ -126,7 +140,7 @@
           start = new Date(now.getFullYear(), now.getMonth(), 1);
           end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
           end.setHours(23, 59, 59, 999);
-        } else if (label === '自定义') {
+        } else if (label === '自定义' || label === '近30天') {
           start = new Date(now);
           start.setDate(now.getDate() - 29);
           start.setHours(0, 0, 0, 0);
@@ -141,7 +155,7 @@
       }
 
       function getCompletedTasksInRange(start, end) {
-        return (AppState.tasks || []).filter(function (task) {
+        return getReportSourceTasks().filter(function (task) {
           if (normalizeStatus(task.status) !== 'completed') return false;
           var date = resolveDate(task.completedAt || task.updatedAt || task.dueAt || task.createdAt);
           if (!date) return false;
@@ -150,7 +164,7 @@
       }
 
       function getFocusSessionsInRange(start, end) {
-        return (AppState.pomodoroSessions || []).filter(function (session) {
+        return getReportSourcePomodoros().filter(function (session) {
           var sessionDate = resolveDate(session.startedAt || session.startTime || session.createdAt);
           if (!sessionDate || !isDateInRange(sessionDate, start, end)) return false;
           var mode = String(session.mode || 'focus').toLowerCase();
@@ -688,6 +702,9 @@
           var completedTasks = getCompletedTasksInRange(range.start, range.end);
           var focusSessions = getFocusSessionsInRange(range.start, range.end);
           var overview = calculateOverview(completedTasks, focusSessions);
+          if (window.__reportServerState && window.__reportServerState.overview) {
+            overview = Object.assign({}, overview, window.__reportServerState.overview);
+          }
 
           updateOverviewCards(overview);
           updateCompareAndRating(overview, range);
