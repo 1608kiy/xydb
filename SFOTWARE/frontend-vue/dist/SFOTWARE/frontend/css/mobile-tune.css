@@ -1,0 +1,4604 @@
+﻿/* Mobile tuning for SFOTWARE frontend:
+   Keep WEB theme, but switch to app-like phone layout and touch interaction. */
+
+:root {
+  --app-bottom-safe: env(safe-area-inset-bottom, 0px);
+  --app-top-safe: env(safe-area-inset-top, 0px);
+}
+
+
+@property --pomodoro-progress-deg {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 300deg;
+}
+
+@property --pomodoro-progress-mid-deg {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 174deg;
+}
+
+@property --pomodoro-progress-soft-deg {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 72deg;
+}
+
+@property --pomodoro-progress-warm-deg {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 252deg;
+}
+
+/* Mobile auto-contrast: adapt text/icon colors to random backgrounds. */
+@media (max-width: 900px) {
+  body.software-app.auto-contrast-dark {
+    --auto-text-main: rgba(8, 15, 28, 0.96);
+    --auto-text-sub: rgba(30, 42, 62, 0.76);
+    --auto-icon: rgba(12, 20, 36, 0.92);
+    color: var(--auto-text-main) !important;
+  }
+
+  body.software-app.auto-contrast-light {
+    --auto-text-main: rgba(248, 250, 255, 0.98);
+    --auto-text-sub: rgba(226, 232, 245, 0.85);
+    --auto-icon: rgba(242, 246, 255, 0.95);
+    color: var(--auto-text-main) !important;
+  }
+
+  body.software-app.auto-contrast-dark .text-gray-900,
+  body.software-app.auto-contrast-dark .text-gray-800,
+  body.software-app.auto-contrast-dark .text-gray-700,
+  body.software-app.auto-contrast-dark .text-gray-600,
+  body.software-app.auto-contrast-dark .text-gray-500,
+  body.software-app.auto-contrast-dark .text-black,
+  body.software-app.auto-contrast-dark .text-white,
+  body.software-app.auto-contrast-dark .text-primary,
+  body.software-app.auto-contrast-dark .text-secondary,
+  body.software-app.auto-contrast-dark .text-slate-900,
+  body.software-app.auto-contrast-dark .text-slate-800,
+  body.software-app.auto-contrast-dark .text-slate-700,
+  body.software-app.auto-contrast-dark .text-slate-600,
+  body.software-app.auto-contrast-dark .text-neutral-900,
+  body.software-app.auto-contrast-dark .text-neutral-800,
+  body.software-app.auto-contrast-dark .text-neutral-700,
+  body.software-app.auto-contrast-dark .text-zinc-900,
+  body.software-app.auto-contrast-dark .text-zinc-800,
+  body.software-app.auto-contrast-dark .text-zinc-700,
+  body.software-app.auto-contrast-dark .text-stone-900,
+  body.software-app.auto-contrast-dark .text-stone-800,
+  body.software-app.auto-contrast-dark .text-stone-700,
+  body.software-app.auto-contrast-dark .text-blue-900,
+  body.software-app.auto-contrast-dark .text-blue-800,
+  body.software-app.auto-contrast-dark .text-blue-700,
+  body.software-app.auto-contrast-dark .text-indigo-900,
+  body.software-app.auto-contrast-dark .text-indigo-800,
+  body.software-app.auto-contrast-dark .text-indigo-700,
+  body.software-app.auto-contrast-dark .text-sky-900,
+  body.software-app.auto-contrast-dark .text-sky-800,
+  body.software-app.auto-contrast-dark .text-sky-700,
+  body.software-app.auto-contrast-dark .text-cyan-900,
+  body.software-app.auto-contrast-dark .text-cyan-800,
+  body.software-app.auto-contrast-dark .text-cyan-700,
+  body.software-app.auto-contrast-dark .text-emerald-900,
+  body.software-app.auto-contrast-dark .text-emerald-800,
+  body.software-app.auto-contrast-dark .text-emerald-700,
+  body.software-app.auto-contrast-dark .text-green-900,
+  body.software-app.auto-contrast-dark .text-green-800,
+  body.software-app.auto-contrast-dark .text-green-700,
+  body.software-app.auto-contrast-dark .text-teal-900,
+  body.software-app.auto-contrast-dark .text-teal-800,
+  body.software-app.auto-contrast-dark .text-teal-700,
+  body.software-app.auto-contrast-dark .text-amber-900,
+  body.software-app.auto-contrast-dark .text-amber-800,
+  body.software-app.auto-contrast-dark .text-amber-700,
+  body.software-app.auto-contrast-dark .text-orange-900,
+  body.software-app.auto-contrast-dark .text-orange-800,
+  body.software-app.auto-contrast-dark .text-orange-700,
+  body.software-app.auto-contrast-dark .text-red-900,
+  body.software-app.auto-contrast-dark .text-red-800,
+  body.software-app.auto-contrast-dark .text-red-700,
+  body.software-app.auto-contrast-dark .text-rose-900,
+  body.software-app.auto-contrast-dark .text-rose-800,
+  body.software-app.auto-contrast-dark .text-rose-700,
+  body.software-app.auto-contrast-dark .text-purple-900,
+  body.software-app.auto-contrast-dark .text-purple-800,
+  body.software-app.auto-contrast-dark .text-purple-700,
+  body.software-app.auto-contrast-dark .text-violet-900,
+  body.software-app.auto-contrast-dark .text-violet-800,
+  body.software-app.auto-contrast-dark .text-violet-700,
+  body.software-app.auto-contrast-dark .text-fuchsia-900,
+  body.software-app.auto-contrast-dark .text-fuchsia-800,
+  body.software-app.auto-contrast-dark .text-fuchsia-700,
+  body.software-app.auto-contrast-light .text-gray-900,
+  body.software-app.auto-contrast-light .text-gray-800,
+  body.software-app.auto-contrast-light .text-gray-700,
+  body.software-app.auto-contrast-light .text-gray-600,
+  body.software-app.auto-contrast-light .text-gray-500,
+  body.software-app.auto-contrast-light .text-black,
+  body.software-app.auto-contrast-light .text-white,
+  body.software-app.auto-contrast-light .text-primary,
+  body.software-app.auto-contrast-light .text-secondary,
+  body.software-app.auto-contrast-light .text-slate-900,
+  body.software-app.auto-contrast-light .text-slate-800,
+  body.software-app.auto-contrast-light .text-slate-700,
+  body.software-app.auto-contrast-light .text-slate-600,
+  body.software-app.auto-contrast-light .text-neutral-900,
+  body.software-app.auto-contrast-light .text-neutral-800,
+  body.software-app.auto-contrast-light .text-neutral-700,
+  body.software-app.auto-contrast-light .text-zinc-900,
+  body.software-app.auto-contrast-light .text-zinc-800,
+  body.software-app.auto-contrast-light .text-zinc-700,
+  body.software-app.auto-contrast-light .text-stone-900,
+  body.software-app.auto-contrast-light .text-stone-800,
+  body.software-app.auto-contrast-light .text-stone-700,
+  body.software-app.auto-contrast-light .text-blue-900,
+  body.software-app.auto-contrast-light .text-blue-800,
+  body.software-app.auto-contrast-light .text-blue-700,
+  body.software-app.auto-contrast-light .text-indigo-900,
+  body.software-app.auto-contrast-light .text-indigo-800,
+  body.software-app.auto-contrast-light .text-indigo-700,
+  body.software-app.auto-contrast-light .text-sky-900,
+  body.software-app.auto-contrast-light .text-sky-800,
+  body.software-app.auto-contrast-light .text-sky-700,
+  body.software-app.auto-contrast-light .text-cyan-900,
+  body.software-app.auto-contrast-light .text-cyan-800,
+  body.software-app.auto-contrast-light .text-cyan-700,
+  body.software-app.auto-contrast-light .text-emerald-900,
+  body.software-app.auto-contrast-light .text-emerald-800,
+  body.software-app.auto-contrast-light .text-emerald-700,
+  body.software-app.auto-contrast-light .text-green-900,
+  body.software-app.auto-contrast-light .text-green-800,
+  body.software-app.auto-contrast-light .text-green-700,
+  body.software-app.auto-contrast-light .text-teal-900,
+  body.software-app.auto-contrast-light .text-teal-800,
+  body.software-app.auto-contrast-light .text-teal-700,
+  body.software-app.auto-contrast-light .text-amber-900,
+  body.software-app.auto-contrast-light .text-amber-800,
+  body.software-app.auto-contrast-light .text-amber-700,
+  body.software-app.auto-contrast-light .text-orange-900,
+  body.software-app.auto-contrast-light .text-orange-800,
+  body.software-app.auto-contrast-light .text-orange-700,
+  body.software-app.auto-contrast-light .text-red-900,
+  body.software-app.auto-contrast-light .text-red-800,
+  body.software-app.auto-contrast-light .text-red-700,
+  body.software-app.auto-contrast-light .text-rose-900,
+  body.software-app.auto-contrast-light .text-rose-800,
+  body.software-app.auto-contrast-light .text-rose-700,
+  body.software-app.auto-contrast-light .text-purple-900,
+  body.software-app.auto-contrast-light .text-purple-800,
+  body.software-app.auto-contrast-light .text-purple-700,
+  body.software-app.auto-contrast-light .text-violet-900,
+  body.software-app.auto-contrast-light .text-violet-800,
+  body.software-app.auto-contrast-light .text-violet-700,
+  body.software-app.auto-contrast-light .text-fuchsia-900,
+  body.software-app.auto-contrast-light .text-fuchsia-800,
+  body.software-app.auto-contrast-light .text-fuchsia-700 {
+    color: var(--auto-text-main) !important;
+  }
+
+  body.software-app.auto-contrast-dark .text-gray-400,
+  body.software-app.auto-contrast-dark .text-gray-300,
+  body.software-app.auto-contrast-dark .text-xs,
+  body.software-app.auto-contrast-dark .text-sm,
+  body.software-app.auto-contrast-light .text-gray-400,
+  body.software-app.auto-contrast-light .text-gray-300,
+  body.software-app.auto-contrast-light .text-xs,
+  body.software-app.auto-contrast-light .text-sm {
+    color: var(--auto-text-sub) !important;
+  }
+
+  body.software-app.auto-contrast-dark i,
+  body.software-app.auto-contrast-dark .fa,
+  body.software-app.auto-contrast-dark .fas,
+  body.software-app.auto-contrast-dark .far,
+  body.software-app.auto-contrast-dark .fab,
+  body.software-app.auto-contrast-dark .fa-solid,
+  body.software-app.auto-contrast-dark .fa-regular,
+  body.software-app.auto-contrast-dark .fa-brands,
+  body.software-app.auto-contrast-dark .material-icons,
+  body.software-app.auto-contrast-dark .material-symbols-outlined,
+  body.software-app.auto-contrast-dark .material-symbols-rounded,
+  body.software-app.auto-contrast-dark .material-symbols-sharp,
+  body.software-app.auto-contrast-dark .iconfont,
+  body.software-app.auto-contrast-dark .svg-icon,
+  body.software-app.auto-contrast-dark .tab-item i,
+  body.software-app.auto-contrast-light i,
+  body.software-app.auto-contrast-light .fa,
+  body.software-app.auto-contrast-light .fas,
+  body.software-app.auto-contrast-light .far,
+  body.software-app.auto-contrast-light .fab,
+  body.software-app.auto-contrast-light .fa-solid,
+  body.software-app.auto-contrast-light .fa-regular,
+  body.software-app.auto-contrast-light .fa-brands,
+  body.software-app.auto-contrast-light .material-icons,
+  body.software-app.auto-contrast-light .material-symbols-outlined,
+  body.software-app.auto-contrast-light .material-symbols-rounded,
+  body.software-app.auto-contrast-light .material-symbols-sharp,
+  body.software-app.auto-contrast-light .iconfont,
+  body.software-app.auto-contrast-light .svg-icon,
+  body.software-app.auto-contrast-light .tab-item i {
+    color: var(--auto-icon) !important;
+  }
+
+  body.software-app.auto-contrast-dark svg,
+  body.software-app.auto-contrast-light svg {
+    color: var(--auto-icon);
+  }
+
+  body.software-app.auto-contrast-dark svg path,
+  body.software-app.auto-contrast-dark svg circle,
+  body.software-app.auto-contrast-dark svg rect,
+  body.software-app.auto-contrast-dark svg line,
+  body.software-app.auto-contrast-dark svg polyline,
+  body.software-app.auto-contrast-dark svg polygon,
+  body.software-app.auto-contrast-light svg path,
+  body.software-app.auto-contrast-light svg circle,
+  body.software-app.auto-contrast-light svg rect,
+  body.software-app.auto-contrast-light svg line,
+  body.software-app.auto-contrast-light svg polyline,
+  body.software-app.auto-contrast-light svg polygon {
+    stroke: currentColor;
+    fill: currentColor;
+  }
+
+    body.software-app.auto-contrast-dark.todo-page-liquid,
+    body.software-app.auto-contrast-light.todo-page-liquid {
+      --todo-lg-text: var(--auto-content-ink, var(--auto-text-main));
+      --todo-lg-subtext: var(--auto-content-soft, var(--auto-text-sub));
+      --todo-lg-primary: var(--auto-icon);
+    }
+
+    body.software-app.auto-contrast-dark.pomodoro-page-liquid,
+    body.software-app.auto-contrast-light.pomodoro-page-liquid {
+      --pm-text-main: var(--auto-content-ink, var(--auto-text-main));
+      --pm-text-sub: var(--auto-content-soft, var(--auto-text-sub));
+      --pm-accent: var(--auto-icon);
+    }
+
+    body.software-app.auto-contrast-dark.calendar-page-liquid,
+    body.software-app.auto-contrast-light.calendar-page-liquid {
+      --calendar-text-main: var(--auto-content-ink, var(--auto-text-main));
+      --calendar-text-sub: var(--auto-content-soft, var(--auto-text-sub));
+      --calendar-warm: var(--auto-icon);
+    }
+
+    body.software-app.auto-contrast-dark.report-page-liquid,
+    body.software-app.auto-contrast-light.report-page-liquid {
+      --rp-text-main: var(--auto-content-ink, var(--auto-text-main));
+      --rp-text-soft: var(--auto-content-soft, var(--auto-text-sub));
+    }
+
+    body.software-app.auto-contrast-dark.checkin-page-liquid,
+    body.software-app.auto-contrast-light.checkin-page-liquid {
+      --checkin-text-main: var(--auto-content-ink, var(--auto-text-main));
+      --checkin-text-sub: var(--auto-content-soft, var(--auto-text-sub));
+    }
+
+  body.software-app.auto-contrast-dark .unified-top-header-dock .unified-top-header-shell h1,
+  body.software-app.auto-contrast-dark .unified-top-header-dock .unified-top-header-shell p,
+  body.software-app.auto-contrast-dark .unified-top-header-dock .unified-top-header-shell span,
+  body.software-app.auto-contrast-dark .unified-top-header-dock .unified-top-header-shell a,
+  body.software-app.auto-contrast-light .unified-top-header-dock .unified-top-header-shell h1,
+  body.software-app.auto-contrast-light .unified-top-header-dock .unified-top-header-shell p,
+  body.software-app.auto-contrast-light .unified-top-header-dock .unified-top-header-shell span,
+  body.software-app.auto-contrast-light .unified-top-header-dock .unified-top-header-shell a {
+    color: var(--auto-text-main) !important;
+  }
+
+  body.software-app.auto-contrast-dark .unified-top-header-dock .unified-top-header-shell a i,
+  body.software-app.auto-contrast-dark .unified-top-header-dock .unified-top-header-shell button i,
+  body.software-app.auto-contrast-light .unified-top-header-dock .unified-top-header-shell a i,
+  body.software-app.auto-contrast-light .unified-top-header-dock .unified-top-header-shell button i {
+    color: var(--auto-icon) !important;
+  }
+
+  body.software-app.auto-contrast-dark #sort-filter-btn,
+  body.software-app.auto-contrast-dark #select-mode-btn,
+  body.software-app.auto-contrast-dark #mobile-search-btn,
+  body.software-app.auto-contrast-dark #sync-status-badge,
+  body.software-app.auto-contrast-dark #notification-btn,
+  body.software-app.auto-contrast-dark #user-menu-btn,
+  body.software-app.auto-contrast-dark .btn-primary-glass,
+  body.software-app.auto-contrast-dark .btn-secondary-glass,
+  body.software-app.auto-contrast-dark .quick-action-btn,
+  body.software-app.auto-contrast-dark .task-action-btn,
+  body.software-app.auto-contrast-dark .priority-btn,
+  body.software-app.auto-contrast-dark .view-btn,
+  body.software-app.auto-contrast-dark .calendar-nav-btn,
+  body.software-app.auto-contrast-dark .category-chip,
+  body.software-app.auto-contrast-dark .mode-btn,
+  body.software-app.auto-contrast-dark .type-btn,
+  body.software-app.auto-contrast-dark .checkin-btn,
+  body.software-app.auto-contrast-light #sort-filter-btn,
+  body.software-app.auto-contrast-light #select-mode-btn,
+  body.software-app.auto-contrast-light #mobile-search-btn,
+  body.software-app.auto-contrast-light #sync-status-badge,
+  body.software-app.auto-contrast-light #notification-btn,
+  body.software-app.auto-contrast-light #user-menu-btn,
+  body.software-app.auto-contrast-light .btn-primary-glass,
+  body.software-app.auto-contrast-light .btn-secondary-glass,
+  body.software-app.auto-contrast-light .quick-action-btn,
+  body.software-app.auto-contrast-light .task-action-btn,
+  body.software-app.auto-contrast-light .priority-btn,
+  body.software-app.auto-contrast-light .view-btn,
+  body.software-app.auto-contrast-light .calendar-nav-btn,
+  body.software-app.auto-contrast-light .category-chip,
+  body.software-app.auto-contrast-light .mode-btn,
+  body.software-app.auto-contrast-light .type-btn,
+  body.software-app.auto-contrast-light .checkin-btn {
+    color: var(--auto-text-main) !important;
+  }
+
+  body.software-app.auto-contrast-dark #sort-filter-btn i,
+  body.software-app.auto-contrast-dark #select-mode-btn i,
+  body.software-app.auto-contrast-dark #mobile-search-btn i,
+  body.software-app.auto-contrast-dark #sync-status-badge i,
+  body.software-app.auto-contrast-dark #notification-btn i,
+  body.software-app.auto-contrast-dark #user-menu-btn i,
+  body.software-app.auto-contrast-dark .btn-primary-glass i,
+  body.software-app.auto-contrast-dark .btn-secondary-glass i,
+  body.software-app.auto-contrast-dark .quick-action-btn i,
+  body.software-app.auto-contrast-dark .task-action-btn i,
+  body.software-app.auto-contrast-dark .priority-btn i,
+  body.software-app.auto-contrast-dark .view-btn i,
+  body.software-app.auto-contrast-dark .calendar-nav-btn i,
+  body.software-app.auto-contrast-dark .category-chip i,
+  body.software-app.auto-contrast-dark .mode-btn i,
+  body.software-app.auto-contrast-dark .type-btn i,
+  body.software-app.auto-contrast-dark .checkin-btn i,
+  body.software-app.auto-contrast-light #sort-filter-btn i,
+  body.software-app.auto-contrast-light #select-mode-btn i,
+  body.software-app.auto-contrast-light #mobile-search-btn i,
+  body.software-app.auto-contrast-light #sync-status-badge i,
+  body.software-app.auto-contrast-light #notification-btn i,
+  body.software-app.auto-contrast-light #user-menu-btn i,
+  body.software-app.auto-contrast-light .btn-primary-glass i,
+  body.software-app.auto-contrast-light .btn-secondary-glass i,
+  body.software-app.auto-contrast-light .quick-action-btn i,
+  body.software-app.auto-contrast-light .task-action-btn i,
+  body.software-app.auto-contrast-light .priority-btn i,
+  body.software-app.auto-contrast-light .view-btn i,
+  body.software-app.auto-contrast-light .calendar-nav-btn i,
+  body.software-app.auto-contrast-light .category-chip i,
+  body.software-app.auto-contrast-light .mode-btn i,
+  body.software-app.auto-contrast-light .type-btn i,
+  body.software-app.auto-contrast-light .checkin-btn i {
+    color: var(--auto-icon) !important;
+  }
+
+  body.software-app.auto-contrast-dark #sort-filter-btn span,
+  body.software-app.auto-contrast-dark #select-mode-btn span,
+  body.software-app.auto-contrast-dark #mobile-search-btn span,
+  body.software-app.auto-contrast-dark #sync-status-badge span,
+  body.software-app.auto-contrast-dark .btn-primary-glass span,
+  body.software-app.auto-contrast-dark .btn-secondary-glass span,
+  body.software-app.auto-contrast-dark .quick-action-btn span,
+  body.software-app.auto-contrast-dark .task-action-btn span,
+  body.software-app.auto-contrast-dark .view-btn span,
+  body.software-app.auto-contrast-dark .category-chip span,
+  body.software-app.auto-contrast-light #sort-filter-btn span,
+  body.software-app.auto-contrast-light #select-mode-btn span,
+  body.software-app.auto-contrast-light #mobile-search-btn span,
+  body.software-app.auto-contrast-light #sync-status-badge span,
+  body.software-app.auto-contrast-light .btn-primary-glass span,
+  body.software-app.auto-contrast-light .btn-secondary-glass span,
+  body.software-app.auto-contrast-light .quick-action-btn span,
+  body.software-app.auto-contrast-light .task-action-btn span,
+  body.software-app.auto-contrast-light .view-btn span,
+  body.software-app.auto-contrast-light .category-chip span {
+    color: inherit !important;
+  }
+
+  body.software-app.auto-contrast-dark #sync-status-badge,
+  body.software-app.auto-contrast-light #sync-status-badge {
+    color: var(--auto-text-main) !important;
+  }
+
+  body.software-app.auto-contrast-dark #todo-main .text-gray-500,
+  body.software-app.auto-contrast-dark #todo-main .text-gray-600,
+  body.software-app.auto-contrast-dark #todo-main .sync-status-text,
+  body.software-app.auto-contrast-light #todo-main .text-gray-500,
+  body.software-app.auto-contrast-light #todo-main .text-gray-600,
+  body.software-app.auto-contrast-light #todo-main .sync-status-text {
+    color: var(--auto-text-sub) !important;
+  }
+}
+
+/* Pomodoro mobile liquid glass skin aligned with todo/calendar random background style. */
+@media (max-width: 900px) {
+  body.software-app.pomodoro-page-liquid {
+    --pm-glass-bg: rgba(255, 255, 255, 0.05);
+    --pm-glass-bg-strong: rgba(255, 255, 255, 0.08);
+    --pm-glass-border: rgba(255, 255, 255, 0.1);
+    --pm-glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --pm-glass-backdrop: blur(30px);
+    --pm-text-main: rgba(255, 255, 255, 0.98);
+    --pm-text-sub: rgba(255, 255, 255, 0.82);
+    --pm-accent: #f1d09a;
+    background: url('https://picsum.photos/1920/1080?random=1') center/cover fixed !important;
+  }
+
+  body.software-app.pomodoro-page-liquid .bg-orb {
+    display: none !important;
+  }
+
+  body.software-app.pomodoro-page-liquid #pomodoro-header:not(.unified-top-header-shell),
+  body.software-app.pomodoro-page-liquid footer.glass-tab {
+    background: var(--pm-glass-bg-strong) !important;
+    border-color: var(--pm-glass-border) !important;
+    box-shadow: var(--pm-glass-shadow) !important;
+    backdrop-filter: var(--pm-glass-backdrop) !important;
+    -webkit-backdrop-filter: var(--pm-glass-backdrop) !important;
+  }
+
+  body.software-app.pomodoro-page-liquid #pomodoro-header:not(.unified-top-header-shell) .text-gray-800,
+  body.software-app.pomodoro-page-liquid #pomodoro-header:not(.unified-top-header-shell) .text-gray-700,
+  body.software-app.pomodoro-page-liquid #pomodoro-header:not(.unified-top-header-shell) .text-gray-600 {
+    color: var(--pm-text-main) !important;
+  }
+
+  body.software-app.pomodoro-page-liquid #pomodoro-header:not(.unified-top-header-shell) .text-gray-500,
+  body.software-app.pomodoro-page-liquid #pomodoro-header:not(.unified-top-header-shell) .text-xs {
+    color: var(--pm-text-sub) !important;
+  }
+
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item {
+    color: var(--pm-text-sub) !important;
+  }
+
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item.active {
+    color: var(--pm-text-main) !important;
+  }
+
+  body.software-app.pomodoro-page-liquid main > section.w-full.max-w-xl,
+  body.software-app.pomodoro-page-liquid #focus-core-card,
+  body.software-app.pomodoro-page-liquid #focus-core-card #no-task-empty > div,
+  body.software-app.pomodoro-page-liquid #mobile-task-modal > div {
+    background: var(--pm-glass-bg) !important;
+    backdrop-filter: var(--pm-glass-backdrop) !important;
+    -webkit-backdrop-filter: var(--pm-glass-backdrop) !important;
+    border: 1px solid var(--pm-glass-border) !important;
+    box-shadow: var(--pm-glass-shadow) !important;
+  }
+
+  body.software-app.pomodoro-page-liquid main > section.w-full.max-w-xl,
+  body.software-app.pomodoro-page-liquid #focus-core-card,
+  body.software-app.pomodoro-page-liquid #mobile-task-modal > div {
+    border-radius: 24px !important;
+  }
+
+  body.software-app.pomodoro-page-liquid #focus-core-card #no-task-empty > div {
+    border-radius: 20px !important;
+    border-style: dashed !important;
+  }
+
+  body.software-app.pomodoro-page-liquid main .text-gray-800 {
+    color: var(--pm-text-main) !important;
+  }
+
+  body.software-app.pomodoro-page-liquid main .text-gray-700,
+  body.software-app.pomodoro-page-liquid main .text-gray-600,
+  body.software-app.pomodoro-page-liquid main .text-gray-500,
+  body.software-app.pomodoro-page-liquid main .text-gray-400 {
+    color: var(--pm-text-sub) !important;
+  }
+
+  body.software-app.pomodoro-page-liquid main .text-primary {
+    color: var(--pm-accent) !important;
+  }
+
+  body.software-app.pomodoro-page-liquid .mode-switch-wrap,
+  body.software-app.pomodoro-page-liquid .task-select-dropdown,
+  body.software-app.pomodoro-page-liquid .task-select-options,
+  body.software-app.pomodoro-page-liquid .stat-box,
+  body.software-app.pomodoro-page-liquid .control-btn.secondary,
+  body.software-app.pomodoro-page-liquid .custom-checkbox .checkmark,
+  body.software-app.pomodoro-page-liquid #timer-core,
+  body.software-app.pomodoro-page-liquid #toast,
+  body.software-app.pomodoro-page-liquid .message-toast {
+    background: var(--pm-glass-bg-strong) !important;
+    border: 1px solid var(--pm-glass-border) !important;
+    box-shadow: var(--pm-glass-shadow) !important;
+    backdrop-filter: var(--pm-glass-backdrop) !important;
+    -webkit-backdrop-filter: var(--pm-glass-backdrop) !important;
+  }
+
+  body.software-app.pomodoro-page-liquid .mode-btn {
+    color: var(--pm-text-sub) !important;
+  }
+
+  body.software-app.pomodoro-page-liquid .mode-btn.active {
+    color: var(--pm-text-main) !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.24) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  body.software-app.pomodoro-page-liquid .mode-switch-wrap h2,
+  body.software-app.pomodoro-page-liquid .mode-switch-wrap .mode-btn,
+  body.software-app.pomodoro-page-liquid .mode-switch-wrap + p,
+  body.software-app.pomodoro-page-liquid .task-select-arrow,
+  body.software-app.pomodoro-page-liquid .control-btn.secondary,
+  body.software-app.pomodoro-page-liquid .control-btn.secondary i {
+    color: var(--pm-text-sub) !important;
+  }
+
+  body.software-app.pomodoro-page-liquid .mode-btn.active,
+  body.software-app.pomodoro-page-liquid .control-btn.primary,
+  body.software-app.pomodoro-page-liquid .control-btn.primary i,
+  body.software-app.pomodoro-page-liquid #current-task-label,
+  body.software-app.pomodoro-page-liquid #message-text,
+  body.software-app.pomodoro-page-liquid #mobile-task-modal .font-semibold {
+    color: var(--pm-text-main) !important;
+  }
+
+  body.software-app.pomodoro-page-liquid #timer-shell > div:first-child {
+    position: absolute !important;
+    inset: 0 !important;
+    border-color: rgba(255, 255, 255, 0.62) !important;
+    background: transparent !important;
+  }
+
+  body.software-app.pomodoro-page-liquid #progress-circle {
+    inset: 0 !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    transform: rotate(-90deg) !important;
+    background:
+      conic-gradient(
+        from 0deg,
+        #8378e0 0deg,
+        #a776d2 var(--pomodoro-progress-soft-deg, 72deg),
+        #cc75b1 var(--pomodoro-progress-mid-deg, 174deg),
+        #ed747d var(--pomodoro-progress-warm-deg, 252deg),
+        #ff7043 var(--pomodoro-progress-deg, 300deg),
+        rgba(255, 112, 67, 0) var(--pomodoro-progress-deg, 300deg),
+        rgba(255, 112, 67, 0) 360deg
+      ) !important;
+    box-shadow:
+      0 0 12px rgba(131, 120, 224, 0.22),
+      0 0 22px rgba(204, 117, 177, 0.16),
+      0 0 30px rgba(255, 112, 67, 0.1) !important;
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 11px), #000 calc(100% - 10px));
+    mask: radial-gradient(farthest-side, transparent calc(100% - 11px), #000 calc(100% - 10px));
+    transition:
+      --pomodoro-progress-deg 560ms cubic-bezier(0.22, 1, 0.36, 1),
+      --pomodoro-progress-mid-deg 560ms cubic-bezier(0.22, 1, 0.36, 1),
+      --pomodoro-progress-soft-deg 560ms cubic-bezier(0.22, 1, 0.36, 1),
+      --pomodoro-progress-warm-deg 560ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 420ms ease,
+      opacity 420ms ease,
+      transform 560ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+  }
+
+  body.software-app.pomodoro-page-liquid #progress-circle::before {
+    display: none !important;
+  }
+
+  body.software-app.pomodoro-page-liquid #progress-circle.mode-changing {
+    animation: pomodoroRingModeShift 620ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @keyframes pomodoroRingModeShift {
+    0% {
+      opacity: 0.78;
+      filter: saturate(0.86) brightness(0.96);
+      transform: rotate(-90deg) scale(0.975);
+    }
+    45% {
+      opacity: 1;
+      filter: saturate(1.1) brightness(1.04);
+      transform: rotate(-90deg) scale(1.01);
+    }
+    100% {
+      opacity: 1;
+      filter: saturate(1) brightness(1);
+      transform: rotate(-90deg) scale(1);
+    }
+  }
+
+  body.software-app.pomodoro-page-liquid #timer-core {
+    background: rgba(255, 255, 255, 0.08) !important;
+  }
+
+  body.software-app.pomodoro-page-liquid #timer-display {
+    color: rgba(255, 255, 255, 0.96) !important;
+    text-shadow: 0 8px 26px rgba(0, 0, 0, 0.18) !important;
+  }
+
+  body.software-app.pomodoro-page-liquid .control-btn.primary {
+    background: rgba(255, 255, 255, 0.88) !important;
+    color: rgba(17, 24, 39, 0.92) !important;
+    border: 1px solid rgba(255, 255, 255, 0.66) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+  }
+
+  body.software-app.pomodoro-page-liquid .control-btn.primary:hover,
+  body.software-app.pomodoro-page-liquid .control-btn.secondary:hover {
+    transform: translateY(-2px);
+  }
+
+  body.software-app.pomodoro-page-liquid .task-select-dropdown,
+  body.software-app.pomodoro-page-liquid .task-select-option {
+    color: var(--pm-text-main) !important;
+  }
+
+  body.software-app.pomodoro-page-liquid .task-select-options {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    backdrop-filter: blur(34px) saturate(128%) !important;
+    -webkit-backdrop-filter: blur(34px) saturate(128%) !important;
+  }
+
+  body.software-app.pomodoro-page-liquid .task-select-option {
+    background: transparent !important;
+  }
+
+  body.software-app.pomodoro-page-liquid .task-select-option:hover,
+  body.software-app.pomodoro-page-liquid .task-select-option.selected {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: var(--pm-text-main) !important;
+  }
+}
+
+html,
+body {
+  overscroll-behavior-y: contain;
+}
+
+/* Better touch behavior */
+button,
+a,
+[role="button"] {
+  touch-action: manipulation;
+}
+
+@media (max-width: 900px) {
+  /* 缁熶竴椤堕儴 Dock 琛ュ伩锛氶伩鍏嶅浐瀹氬ご閮ㄩ伄鎸￠灞忓唴瀹?*/
+  body.has-unified-top-header .unified-top-content-offset,
+  body.has-unified-top-header .unified-top-content-offset-shift,
+  body.has-unified-top-header .unified-top-pane-offset,
+  body.has-unified-top-header .unified-top-content-offset.unified-top-content-offset-extra {
+    padding-top: calc(var(--unified-top-header-space, 56px) + 8px + env(safe-area-inset-top, 0px)) !important;
+    scroll-padding-top: calc(var(--unified-top-header-space, 56px) + 8px + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  body.has-unified-top-header #todo-main,
+  body.has-unified-top-header #calendar-main {
+    padding-top: calc(var(--unified-top-header-space, 56px) + 8px + env(safe-area-inset-top, 0px)) !important;
+    scroll-padding-top: calc(var(--unified-top-header-space, 56px) + 16px + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell {
+    min-height: 58px !important;
+    border-bottom-left-radius: 14px !important;
+    border-bottom-right-radius: 14px !important;
+    border: 1px solid #d7deea !important;
+    background: #e8edf7 !important;
+    backdrop-filter: blur(14px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(140%) !important;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08) !important;
+    overflow: hidden;
+  }
+
+  /* 椤甸潰涓婚缁熶竴锛氬悓涓€澶存爮妯℃澘锛屼笉鍚岄〉闈繚鐣欒嚜韬富棰樿壊璋?*/
+  .unified-top-header-dock .unified-top-header-shell#main-header,
+  .unified-top-header-dock .unified-top-header-shell#report-header,
+  .unified-top-header-dock .unified-top-header-shell#profile-header {
+    background: rgba(231, 232, 249, 0.9) !important;
+    border-color: #d8dbf4 !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell#calendar-header {
+    background: rgba(247, 238, 198, 0.9) !important;
+    border-color: #ecdba1 !important;
+  }
+
+  /* 寰呭姙/鏃ュ巻锛氬己鍒朵繚鐣欏ご鏍忓簳閮ㄥ渾瑙掞紙瑕嗙洊 common.js 鐨?border-radius:0锛?*/
+  .unified-top-header-dock .unified-top-header-shell#main-header,
+  .unified-top-header-dock .unified-top-header-shell#calendar-header {
+    border-radius: 0 0 16px 16px !important;
+    overflow: hidden !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell#pomodoro-header {
+    background: rgba(246, 218, 198, 0.9) !important;
+    border-color: #ebc7ac !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell#checkin-header {
+    background: rgba(198, 219, 241, 0.9) !important;
+    border-color: #bdd6ef !important;
+  }
+
+  /* 缁熶竴澶存爮灏哄锛氱畝娲佺殑涓€琛屼富淇℃伅锛屽噺灏戣瑙夊櫔闊?*/
+  .unified-top-header-dock .unified-top-header-shell {
+    min-height: 58px;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell .container,
+  .unified-top-header-dock .unified-top-header-shell > div:first-child {
+    min-height: 58px;
+    padding: 8px 12px !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+  }
+
+  /* 澶存爮灏哄涓庡搴︾粺涓€璧板叏灞€瑙勫垯锛岄伩鍏嶉〉闈㈤棿鑺傚涓嶄竴鑷?*/
+
+
+  .unified-top-header-dock .unified-top-header-shell .container > :nth-child(2):not(:has([data-view])),
+  .unified-top-header-dock .unified-top-header-shell > div:first-child > :nth-child(2):not(:has([data-view])) {
+    display: none !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell .container > :nth-child(2):has([data-view]),
+  .unified-top-header-dock .unified-top-header-shell > div:first-child > :nth-child(2):has([data-view]) {
+    display: flex !important;
+    order: 3;
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    gap: 6px;
+    padding-top: 2px;
+    padding-bottom: 0 !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell .container > :nth-child(3),
+  .unified-top-header-dock .unified-top-header-shell > div:first-child > :nth-child(3) {
+    flex: 0 0 auto !important;
+    margin-left: auto;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell .container > :nth-child(3) button:has(i):not(:has(span)):not(:has(img)),
+  .unified-top-header-dock .unified-top-header-shell .container > :nth-child(3) a:has(i):not(:has(span)):not(:has(img)),
+  .unified-top-header-dock .unified-top-header-shell > div:first-child > :nth-child(3) button:has(i):not(:has(span)):not(:has(img)),
+  .unified-top-header-dock .unified-top-header-shell > div:first-child > :nth-child(3) a:has(i):not(:has(span)):not(:has(img)) {
+    display: none !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell h1,
+  .unified-top-header-dock .unified-top-header-shell .text-lg,
+  .unified-top-header-dock .unified-top-header-shell .text-xl {
+    font-size: 17px !important;
+    line-height: 1.2 !important;
+    margin: 0 !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell .header-user-avatar {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell .header-user-name {
+    display: none !important;
+  }
+
+  /* 鍘绘帀澶存爮澶村儚鍙充晶涓嬫媺绠ご锛屽噺灏戣瑙夊櫔闊?*/
+  .unified-top-header-dock .unified-top-header-shell .fa-chevron-down,
+  .unified-top-header-dock .unified-top-header-shell #user-menu-arrow,
+  .unified-top-header-dock .unified-top-header-shell #checkin-user-menu-btn .fa-chevron-down,
+  .unified-top-header-dock .unified-top-header-shell #report-user-menu-btn .fa-chevron-down,
+  .unified-top-header-dock .unified-top-header-shell #profile-user-menu-btn .fa-chevron-down,
+  .unified-top-header-dock .unified-top-header-shell #pm-user-menu-btn .fa-chevron-down {
+    display: none !important;
+  }
+
+  /* 寰呭姙椤典笉鍐嶈蛋鐗规畩澶存爮鍒嗘敮锛岀粺涓€浣跨敤鍏ㄥ眬妯℃澘 */
+
+  /* 鍏ㄥ眬鍒犻櫎澶存爮澶村儚鍏ュ彛锛堢敤鎴疯彍鍗曟寜閽粍锛?*/
+  .unified-top-header-dock .unified-top-header-shell #user-menu-container,
+  .unified-top-header-dock .unified-top-header-shell #checkin-user-menu-container,
+  .unified-top-header-dock .unified-top-header-shell #report-user-menu-container,
+  .unified-top-header-dock .unified-top-header-shell #profile-user-menu-container,
+  .unified-top-header-dock .unified-top-header-shell #pm-user-menu-container,
+  .unified-top-header-dock .unified-top-header-shell #calendar-user-menu-container {
+    display: none !important;
+  }
+
+  /* 缁熶竴澶存爮妯℃澘锛氱澶?鏍囬瀵归綈銆侀棿璺濄€佸瓧鍙蜂笌鍚庨潰椤甸潰涓€鑷?*/
+  .unified-top-header-dock .unified-top-header-shell .container,
+  .unified-top-header-dock .unified-top-header-shell > div:first-child {
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    min-height: 58px !important;
+    padding: 9px 14px !important;
+    gap: 8px !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell .container > :nth-child(1),
+  .unified-top-header-dock .unified-top-header-shell > div:first-child > :nth-child(1) {
+    order: 1 !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell .container > :nth-child(2),
+  .unified-top-header-dock .unified-top-header-shell > div:first-child > :nth-child(2),
+  .unified-top-header-dock .unified-top-header-shell .container > :nth-child(3),
+  .unified-top-header-dock .unified-top-header-shell > div:first-child > :nth-child(3) {
+    display: none !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell .container > :nth-child(4),
+  .unified-top-header-dock .unified-top-header-shell > div:first-child > :nth-child(4) {
+    display: none !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell#main-header .container > :nth-child(4),
+  .unified-top-header-dock .unified-top-header-shell#main-header > div:first-child > :nth-child(4) {
+    display: flex !important;
+    align-items: center !important;
+    order: 2 !important;
+    margin-left: auto !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell#main-header #mobile-search-btn {
+    display: inline-flex !important;
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    border-radius: 10px !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell#main-header #notification-btn,
+  .unified-top-header-dock .unified-top-header-shell#main-header #add-task-header-btn,
+  .unified-top-header-dock .unified-top-header-shell#main-header #user-menu-container {
+    display: none !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell .container > :nth-child(1) > a,
+  .unified-top-header-dock .unified-top-header-shell > div:first-child > :nth-child(1) > a {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    border-radius: 10px !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell .container > :nth-child(1) .fa-arrow-left,
+  .unified-top-header-dock .unified-top-header-shell > div:first-child > :nth-child(1) .fa-arrow-left {
+    font-size: 18px !important;
+  }
+
+  body.software-app.calendar-page-liquid #main-header > div > .flex.items-center.space-x-4 > a:first-child,
+  body.software-app #main-header .profile-header-back-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 42px !important;
+    height: 42px !important;
+    padding: 0 !important;
+    border-radius: 999px !important;
+    background: rgba(255, 255, 255, 0.72) !important;
+    border: 1px solid rgba(255, 255, 255, 0.42) !important;
+    box-shadow:
+      0 6px 16px rgba(15, 23, 42, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(12px) saturate(130%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(130%) !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell .container > :nth-child(1) p,
+  .unified-top-header-dock .unified-top-header-shell > div:first-child > :nth-child(1) p {
+    display: none !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell .container > :nth-child(1) h1,
+  .unified-top-header-dock .unified-top-header-shell > div:first-child > :nth-child(1) h1 {
+    font-size: 17px !important;
+    line-height: 1.15 !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
+  }
+
+  /* 鏃ュ巻宸ュ叿鏉★紙淇濈暀鏍峰紡锛岄粯璁や笉鍚敤锛?*/
+  #calendar-mobile-toolbar {
+    margin-top: 0;
+    margin-bottom: 10px;
+    padding: 2px 2px 6px;
+    position: relative;
+    z-index: 25;
+    display: block;
+  }
+
+  #calendar-mobile-toolbar > .calendar-mobile-toolbar-inner {
+    display: block;
+    overflow: visible;
+  }
+
+  #calendar-mobile-toolbar .calendar-mobile-toolbar-inner > div {
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px !important;
+    padding: 10px 10px 12px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(255, 252, 241, 0.985), rgba(248, 241, 222, 0.965));
+    border: 1px solid rgba(243, 188, 92, 0.35);
+    box-shadow: 0 6px 16px rgba(244, 162, 52, 0.14);
+    overflow: visible;
+  }
+
+  #calendar-mobile-toolbar,
+  #calendar-mobile-toolbar * {
+    pointer-events: auto;
+  }
+
+  #calendar-mobile-toolbar .calendar-mobile-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow: visible;
+    -webkit-overflow-scrolling: touch;
+    min-height: 38px;
+    /* remove fixed height to avoid vertical clipping on some devices */
+    scrollbar-width: none;
+  }
+
+  /* 闄愬埗鏃ユ湡鍗＄殑鏈€澶у搴︼紝閬垮厤鍦ㄧ獎灞忎笅鎾戝嚭涓€鐗囩┖鐧藉尯鍩?*/
+  #calendar-mobile-toolbar .calendar-mobile-meta-row .glass-card {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: min(60%, 260px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  #calendar-mobile-toolbar .calendar-mobile-meta-row::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  #calendar-mobile-toolbar .calendar-mobile-view-row {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center;
+    gap: 8px !important;
+    width: 100%;
+    padding-top: 2px;
+    padding-bottom: 6px;
+    min-height: 36px;
+    /* allow a bit more breathing room to avoid clipping */
+    scrollbar-width: none;
+  }
+
+  #calendar-mobile-toolbar .calendar-mobile-view-row::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  #calendar-mobile-toolbar #today-btn {
+    min-height: 36px;
+    box-sizing: border-box;
+    padding: 0 14px !important;
+    border-radius: 999px;
+    font-size: 13px !important;
+    flex: 0 0 auto;
+  }
+
+  #calendar-mobile-toolbar #current-date {
+    display: block;
+    font-size: 13px !important;
+    font-weight: 600;
+    color: #4b5563;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #calendar-mobile-toolbar .glass-card:has(#current-date) {
+    min-height: 36px;
+    /* avoid fixed height so the card can breathe within the toolbar */
+    padding: 0 10px !important;
+    border-radius: 999px !important;
+    background: rgba(255, 255, 255, 0.72) !important;
+    border: 1px solid rgba(229, 231, 235, 0.9);
+    min-width: 0;
+    flex: 0 1 auto;
+    max-width: min(65%, 280px);
+    display: inline-flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  #calendar-mobile-toolbar .calendar-mobile-toolbar-inner > div > .flex.space-x-2 {
+    display: flex !important;
+    gap: 6px !important;
+    width: 100%;
+    flex: 1 1 100%;
+    overflow-x: hidden;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    padding-top: 2px;
+  }
+
+  #calendar-mobile-toolbar .calendar-mobile-toolbar-inner > div > *:has([data-view]) {
+    width: 100%;
+    flex: 1 1 100%;
+    display: flex !important;
+    gap: 6px !important;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    padding-top: 2px;
+  }
+
+  #calendar-mobile-toolbar .calendar-mobile-toolbar-inner > div > .flex.space-x-2 > .view-btn {
+    width: auto;
+    min-width: 68px;
+    flex: 0 0 auto;
+    justify-content: center;
+    border-radius: 10px !important;
+    padding: 0 6px !important;
+    font-size: 12px !important;
+    border: 1px solid rgba(214, 211, 209, 0.9);
+    background: rgba(255, 255, 255, 0.82);
+    color: #374151;
+    box-shadow: none !important;
+  }
+
+  #calendar-mobile-toolbar .calendar-mobile-view-row > .view-btn,
+  #calendar-mobile-toolbar .calendar-mobile-view-row > [data-view] {
+    width: auto;
+    min-width: 68px;
+    flex: 0 0 auto;
+    justify-content: center;
+    touch-action: manipulation;
+    min-height: 38px;
+    height: 38px;
+    padding: 0 10px !important;
+    border-radius: 12px !important;
+    font-size: 13px !important;
+  }
+
+  #calendar-mobile-toolbar .calendar-mobile-toolbar-inner > div > *:has([data-view]) > .view-btn,
+  #calendar-mobile-toolbar .calendar-mobile-toolbar-inner > div > *:has([data-view]) > [data-view] {
+    width: auto;
+    min-width: 68px;
+    flex: 0 0 auto;
+  }
+
+  #calendar-mobile-toolbar .calendar-mobile-toolbar-inner > div > .flex.space-x-2 > .view-btn.active {
+    border-color: rgba(249, 161, 45, 0.9);
+    background: linear-gradient(180deg, #f8bc57, #f6a437);
+    color: #fff;
+  }
+
+  #calendar-mobile-toolbar .calendar-mobile-view-row > .view-btn.active,
+  #calendar-mobile-toolbar .calendar-mobile-view-row > [data-view].active {
+    border-color: rgba(249, 161, 45, 0.9);
+    background: linear-gradient(180deg, #f8bc57, #f6a437);
+    color: #fff;
+  }
+
+  #calendar-mobile-toolbar .calendar-mobile-toolbar-inner:empty {
+    display: none !important;
+  }
+
+  #calendar-mobile-toolbar:has(.calendar-mobile-toolbar-inner:empty) {
+    display: none !important;
+    margin-top: 0;
+    padding: 0;
+  }
+
+  #calendar-mobile-toolbar .view-btn,
+  #calendar-mobile-toolbar .btn-glass,
+  #calendar-mobile-toolbar .btn-primary,
+  #calendar-mobile-toolbar .glass-card {
+    flex: 0 0 auto;
+  }
+
+  /* 鍥為€€淇濋殰锛氳嫢鏃ュ巻鎺т欢浠嶅湪澶存爮锛屼繚鎸佸彲瑙侊紝涓嶈閫氱敤闅愯棌瑙勫垯璇激 */
+  .unified-top-header-dock .unified-top-header-shell:has([data-view]) #today-btn,
+  .unified-top-header-dock .unified-top-header-shell:has([data-view]) .view-btn,
+  .unified-top-header-dock .unified-top-header-shell:has([data-view]) .btn-primary,
+  .unified-top-header-dock .unified-top-header-shell:has([data-view]) .btn-glass {
+    display: inline-flex !important;
+  }
+
+  body {
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    padding-top: var(--app-top-safe);
+  }
+
+  .container,
+  .max-w-6xl,
+  .max-w-xl,
+  .max-w-md {
+    max-width: 100% !important;
+  }
+
+  .container {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  .glass-card,
+  .glass-max,
+  .glass-strong,
+  .glass-header,
+  .glass-tab {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .bg-orb {
+    filter: blur(34px) !important;
+    opacity: 0.16 !important;
+  }
+
+  .dropdown-menu {
+    z-index: 260;
+    max-width: min(88vw, 300px);
+    max-height: 58vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #sort-filter-menu {
+    left: auto !important;
+    right: 0 !important;
+    min-width: 7.5rem;
+    max-width: calc(100vw - 16px) !important;
+  }
+
+  #sort-filter-menu .dropdown-item {
+    white-space: nowrap;
+  }
+
+  #user-dropdown,
+  #checkin-user-dropdown,
+  #report-user-dropdown,
+  #profile-user-dropdown,
+  #pm-user-dropdown {
+    left: auto !important;
+    right: 0 !important;
+  }
+
+  .btn-primary,
+  .btn-primary-glass,
+  .btn-secondary-glass,
+  button[type="submit"] {
+    min-height: 42px;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  /* App-like bottom tab safe area */
+  .glass-tab {
+    padding-bottom: calc(8px + var(--app-bottom-safe)) !important;
+  }
+
+  main,
+  .overflow-y-auto {
+    padding-bottom: calc(96px + var(--app-bottom-safe));
+  }
+
+  .software-app > .flex.flex-1.overflow-hidden,
+  .software-app #todo-app-shell {
+    overflow: visible !important;
+    min-height: 0;
+  }
+
+  /* 寰呭姙椤电Щ鍔ㄧ鏀逛负鏁撮〉鍗曟粴鍔紝閬垮厤 main 鍐呭眰婊氬姩閫犳垚鈥滃垎灞傛劅鈥?*/
+  .software-app #todo-main {
+    overflow-y: visible !important;
+    overflow-x: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    -webkit-overflow-scrolling: auto !important;
+  }
+
+  /* Collapse desktop sidebars on mobile app */
+  aside.w-64,
+  .hidden.lg\:block.w-64,
+  .hidden.md\:block.w-64 {
+    display: none !important;
+  }
+
+  /* Header compaction for software client */
+  header .container > div {
+    min-width: 0;
+  }
+
+  header h1 {
+    font-size: 18px !important;
+    line-height: 1.2;
+  }
+
+  header p.text-xs {
+    display: none;
+  }
+
+  /* Modal and sheets */
+  .modal-content {
+    max-height: 86vh;
+    overflow-y: auto;
+    border-radius: 14px;
+  }
+
+  /* Calendar controls */
+  .view-btn {
+    padding: 0.38rem 0.52rem;
+    font-size: 12px;
+  }
+
+  #day-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* TODO list spacing */
+  #task-list-container {
+    gap: 14px;
+  }
+}
+
+/* Touch dropdown open state shared across pages */
+.software-menu-open > .dropdown-menu,
+.software-menu-open > div[id$="dropdown"],
+.software-menu-open > div.absolute,
+#pm-user-menu-container.menu-open #pm-user-dropdown {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+@media (max-width: 900px) {
+  .unified-top-header-dock .unified-top-header-shell#main-header.mobile-search-open {
+    overflow: visible !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell#main-header.mobile-search-open .container,
+  .unified-top-header-dock .unified-top-header-shell#main-header.mobile-search-open > div:first-child {
+    flex-wrap: wrap !important;
+    align-items: flex-start !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell#main-header.mobile-search-open .container > :nth-child(3),
+  .unified-top-header-dock .unified-top-header-shell#main-header.mobile-search-open > div:first-child > :nth-child(3) {
+    display: block !important;
+    order: 3 !important;
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-top: 6px;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell#main-header.mobile-search-open .container > :nth-child(3) .input-glass,
+  .unified-top-header-dock .unified-top-header-shell#main-header.mobile-search-open > div:first-child > :nth-child(3) .input-glass {
+    width: 100% !important;
+  }
+
+  .software-app .card-hover:hover,
+  .software-app .tab-item:hover,
+  .software-app .btn-primary:hover,
+  .software-app .btn-primary-glass:hover,
+  .software-app .btn-secondary-glass:hover {
+    transform: none !important;
+    box-shadow: inherit !important;
+  }
+
+  .software-app main {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    font-size: 13px;
+  }
+
+  /* 鍏ㄥ眬缁熶竴鑺傚锛氬崱鐗囧眰绾у拰鍦嗚涓€鑷达紝鍑忓皯妗岄潰鎰?*/
+  .software-app .card-shadow,
+  .software-app .glass-card,
+  .software-app .glass-max,
+  .software-app .glass-strong,
+  .software-app .modal-content {
+    border-radius: 14px !important;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08) !important;
+  }
+
+  .software-app .glass-header,
+  .software-app .glass-tab {
+    box-shadow: 0 2px 14px rgba(15, 23, 42, 0.08) !important;
+  }
+
+  .software-app .glass-header .container {
+    align-items: center;
+  }
+
+  .software-app .glass-header .btn-primary,
+  .software-app .glass-header .btn-glass,
+  .software-app .glass-header .view-btn {
+    min-height: 34px;
+    padding: 0 10px;
+    font-size: 12px !important;
+  }
+
+  .software-app .glass-tab .tab-item {
+    min-width: 50px;
+  }
+
+  .software-app .glass-tab .tab-item i {
+    font-size: 15px;
+  }
+
+  .software-app .glass-tab .tab-item span {
+    font-size: 10px !important;
+  }
+
+  .software-app .max-w-6xl {
+    gap: 12px !important;
+  }
+
+  /* 椤堕儴鏍忕粺涓€锛氳蒋浠剁鎵嬫満鎵嬫劅 */
+  .software-app .glass-header .container {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    gap: 8px;
+  }
+
+  .software-app .glass-header .header-user-avatar {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .software-app .glass-header .header-user-name {
+    display: none !important;
+  }
+
+  .software-app .glass-header .container > .flex.items-center.space-x-4,
+  .software-app .glass-header .container > .flex.items-center.space-x-6 {
+    min-width: 0;
+  }
+
+  .software-app .glass-header .container > .flex.items-center.space-x-6 {
+    gap: 8px !important;
+  }
+
+  .software-app .glass-header #today-btn,
+  .software-app .glass-header .view-btn[data-view="week"],
+  .software-app .glass-header .view-btn[data-view="day"] {
+    display: none !important;
+  }
+
+  .software-app .glass-header .custom-select-wrapper {
+    width: 88px !important;
+  }
+
+  .software-app .glass-header #current-date {
+    font-size: 11px !important;
+  }
+
+  /* 澶存爮鏃ユ湡鍗¤鍓細鍦ㄧ獎灞忔垨闀挎枃鏈椂鎴柇鏄剧ず锛岄槻姝㈡孩鍑哄埌澶栧眰鍦嗚浠ュ */
+  .software-app .glass-header .glass-card:has(#current-date) {
+    min-width: 0;
+    max-width: calc(100% - 140px);
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 0 10px !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .software-app .glass-header #current-date {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: block;
+    max-width: 100%;
+  }
+
+  /* 搴曢儴 Tab 缁熶竴锛? 绛夊垎 + 鍥哄畾瑙︽帶鍖?*/
+  .software-app .glass-tab {
+    padding-top: 6px !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+
+  .software-app .glass-tab .container {
+    display: grid !important;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 2px;
+    align-items: end;
+  }
+
+  .software-app .glass-tab .tab-item {
+    min-height: 52px;
+    padding: 6px 2px !important;
+    border-radius: 10px;
+  }
+
+  .software-app .glass-tab .tab-item i {
+    line-height: 1;
+  }
+
+  .software-app .glass-tab .tab-item span {
+    line-height: 1.1;
+    white-space: nowrap;
+  }
+
+  .software-app .glass-tab .tab-item.active {
+    box-shadow: inset 0 0 0 1px rgba(79, 70, 229, 0.16);
+  }
+
+  html, body {
+    min-height: 100%;
+  }
+
+  /* 鎵撳崱椤碉細鏀逛负鎵嬫満搴旂敤娴佸竷灞€ */
+  #checkin-app-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  #checkin-main-column {
+    order: 1;
+  }
+
+  #checkin-side-column {
+    order: 2;
+  }
+
+  #checkin-main-column > section,
+  #checkin-side-column > section {
+    border-radius: 14px !important;
+    padding: 14px !important;
+  }
+
+  #checkin-main-column .card-shadow .flex.items-center.justify-between.mb-3 {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  #checkin-main-column .inline-flex.items-center.px-2.py-0\.5.rounded-full {
+    font-size: 11px !important;
+  }
+
+  #checkin-main-column > section:first-child {
+    position: relative;
+  }
+
+  #checkin-main-column .type-btn {
+    min-height: 34px;
+    padding: 0.45rem 0.65rem;
+    border-radius: 999px;
+  }
+
+  #checkin-main-column #checkin-note {
+    min-height: 88px;
+    border-radius: 10px;
+  }
+
+  #checkin-main-column #checkin-btn {
+    min-height: 42px;
+    border-radius: 10px;
+  }
+
+  #checkin-side-column .stat-card {
+    padding: 10px !important;
+  }
+
+  #checkin-side-column .suggestion-card {
+    padding: 12px !important;
+  }
+
+  body.software-app.checkin-page-liquid {
+    background: url('https://picsum.photos/1920/1080?random=1') center/cover fixed !important;
+  }
+
+  body.software-app.checkin-page-liquid .bg-orb {
+    display: none !important;
+  }
+
+  body.software-app.checkin-page-liquid #checkin-app-grid::before,
+  body.software-app.checkin-page-liquid #checkin-app-grid::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  /* Mobile check-in glass skin (content only, keep header/tab unchanged). */
+  #checkin-app-grid {
+    position: relative;
+    isolation: isolate;
+  }
+
+  body.software-app #checkin-app-grid::before {
+    content: "";
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 100vh;
+    background: url('https://picsum.photos/1920/1080?random=1') center/cover no-repeat;
+    z-index: -2;
+    pointer-events: none;
+  }
+
+  body.software-app #checkin-app-grid::after {
+    content: "";
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 100vh;
+    background: rgba(8, 12, 22, 0.12);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  #checkin-app-grid {
+    --ci-glass-bg: rgba(255, 255, 255, 0.06);
+    --ci-glass-bg-strong: rgba(255, 255, 255, 0.1);
+    --ci-glass-border: rgba(255, 255, 255, 0.14);
+    --ci-glass-shadow: 0 8px 28px rgba(15, 23, 42, 0.16);
+    --ci-glass-backdrop: blur(30px) saturate(132%);
+  }
+
+  #checkin-main-column > section,
+  #checkin-side-column > section,
+  #checkin-summary-grid,
+  #checkin-mobile-hub,
+  #checkin-calendar-section,
+  #checkin-history-section,
+  #checkin-distribution-section,
+  #checkin-ai-section {
+    background: var(--ci-glass-bg) !important;
+    border: 1px solid var(--ci-glass-border) !important;
+    box-shadow: var(--ci-glass-shadow) !important;
+    backdrop-filter: var(--ci-glass-backdrop) !important;
+    -webkit-backdrop-filter: var(--ci-glass-backdrop) !important;
+  }
+
+  #checkin-main-column #checkin-note,
+  #checkin-main-column .checkin-note-field {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border: 1px solid var(--ci-glass-border) !important;
+    box-shadow: var(--ci-glass-shadow) !important;
+    backdrop-filter: blur(24px) saturate(130%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(130%) !important;
+  }
+
+  #checkin-main-column .type-btn,
+  #checkin-main-column #checkin-btn,
+  #checkin-main-column .checkin-btn,
+  #checkin-main-column .mobile-checkin-tab {
+    background: var(--ci-glass-bg-strong) !important;
+    border: 1px solid var(--ci-glass-border) !important;
+    box-shadow: var(--ci-glass-shadow) !important;
+    backdrop-filter: blur(20px) saturate(120%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(120%) !important;
+  }
+
+  #checkin-main-column .mobile-checkin-tab.is-active {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35), var(--ci-glass-shadow) !important;
+  }
+
+  body.software-app.checkin-page-liquid #checkin-summary-grid {
+    padding: 4px !important;
+  }
+
+  body.software-app.checkin-page-liquid #checkin-summary-grid .summary-stat-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    align-items: stretch;
+  }
+
+  body.software-app.checkin-page-liquid #checkin-summary-grid .summary-stat {
+    border-radius: 12px !important;
+    padding: 4px 2px !important;
+    min-height: 52px;
+    min-width: 0 !important;
+    width: 100%;
+    text-align: center;
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.12)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.32) !important;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12) !important;
+    backdrop-filter: blur(26px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(26px) saturate(140%) !important;
+  }
+
+  body.software-app.checkin-page-liquid #checkin-summary-grid .summary-stat-label {
+    font-size: 9px !important;
+    line-height: 1.15 !important;
+  }
+
+  body.software-app.checkin-page-liquid #checkin-summary-grid .summary-stat-value {
+    font-size: 14px !important;
+    line-height: 1.1 !important;
+    margin-top: 2px;
+  }
+
+  /* Check-in calendar should match calendar page liquid glass style (size unchanged). */
+  body.software-app.checkin-page-liquid #checkin-calendar-section > .flex.items-center.justify-between.mb-3 {
+    display: grid !important;
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar-section > .flex.items-center.justify-between.mb-3 > .flex.items-center.space-x-2 {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    margin: 0 auto;
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar-section #calendar-title {
+    text-align: center !important;
+    min-width: max-content;
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar-section .calendar-nav-btn {
+    color: rgba(255, 255, 255, 0.92) !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.28) !important;
+    border-radius: 12px;
+    padding: 4px 6px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+    backdrop-filter: blur(20px) saturate(130%);
+    -webkit-backdrop-filter: blur(20px) saturate(130%);
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar-section #calendar-title,
+  body.software-app.checkin-page-liquid #checkin-calendar-section .text-gray-500,
+  body.software-app.checkin-page-liquid #checkin-calendar-section .text-gray-600 {
+    color: rgba(255, 255, 255, 0.88) !important;
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar {
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar .calendar-day {
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.1);
+    backdrop-filter: blur(26px) saturate(140%);
+    -webkit-backdrop-filter: blur(26px) saturate(140%);
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar .calendar-day.empty {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.42);
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar .calendar-day.checked {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.32);
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar .calendar-day.checked-streak {
+    border-color: rgba(255, 236, 205, 0.8);
+    box-shadow: 0 0 0 1px rgba(255, 236, 205, 0.32), 0 8px 20px rgba(15, 23, 42, 0.12);
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar .calendar-day.today {
+    background: linear-gradient(150deg, rgba(255, 197, 106, 0.22), rgba(255, 255, 255, 0.08));
+    border-color: rgba(255, 236, 205, 0.95);
+    box-shadow: 0 0 0 1px rgba(255, 236, 205, 0.48), 0 10px 24px rgba(15, 23, 42, 0.16);
+    color: #fff3de;
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar .calendar-day-indicator {
+    background: rgba(255, 236, 205, 0.95);
+  }
+
+  body.software-app.checkin-page-liquid #checkin-calendar .calendar-day-indicator.outline {
+    background: transparent;
+    border-color: rgba(255, 236, 205, 0.9);
+  }
+
+  /* 涓汉涓績锛氭墜鏈虹鏀逛负搴旂敤璁剧疆娴?*/
+  #profile-app-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  #profile-main-column {
+    order: 1;
+  }
+
+  #profile-settings-column {
+    order: 2;
+  }
+
+  #profile-main-column > section,
+  #profile-settings-column > section {
+    border-radius: 14px !important;
+    padding: 14px !important;
+  }
+
+  #profile-main-column .user-card .relative.p-6.pb-4,
+  #profile-main-column .user-card .p-6.pt-4 {
+    padding: 14px !important;
+  }
+
+  #profile-main-column #user-name {
+    font-size: 1.1rem !important;
+    line-height: 1.3;
+    flex: 1 1 140px;
+    min-width: 0;
+  }
+
+  #profile-main-column .flex.items-center.space-x-3.mb-2 {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px !important;
+  }
+
+  #profile-main-column #user-level-tag {
+    flex: 0 0 auto;
+    margin-left: auto;
+  }
+
+  #profile-main-column #profile-avatar {
+    width: 76px !important;
+    height: 76px !important;
+  }
+
+  #profile-main-column #change-avatar-btn {
+    width: 30px !important;
+    height: 30px !important;
+  }
+
+  #profile-settings-column .setting-item,
+  #profile-settings-column label.flex.items-center.justify-between,
+  #profile-settings-column button.w-full.flex.items-center.justify-between {
+    min-height: 44px;
+  }
+
+  #profile-settings-column .grid.grid-cols-3,
+  #profile-settings-column .grid.grid-cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  #profile-settings-column .achievement-badge {
+    padding: 8px 6px;
+  }
+
+  #profile-settings-column .achievement-badge .text-2xl {
+    font-size: 1.15rem !important;
+    margin-bottom: 2px !important;
+  }
+
+  #profile-settings-column .achievement-badge .text-xs,
+  #profile-settings-column .achievement-badge .text-\[10px\] {
+    line-height: 1.2;
+  }
+
+  /* 寰呭姙锛氭墜鏈哄簲鐢ㄥ寲宸ュ叿鍖轰笌浠诲姟鍖?*/
+  #todo-app-shell {
+    display: block;
+  }
+
+  #todo-sidebar {
+    display: none !important;
+  }
+
+  #todo-main {
+    padding: 12px !important;
+  }
+
+  #todo-main .glass-max.rounded-2xl {
+    padding: 12px !important;
+    border-radius: 14px !important;
+  }
+
+  #todo-main > .glass-max.rounded-2xl:first-child {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 2px 0 8px !important;
+  }
+
+  #todo-main #task-list-container {
+    gap: 12px !important;
+  }
+
+  #todo-main .btn-secondary-glass,
+  #todo-main .btn-primary-glass {
+    min-height: 40px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  #todo-main .dropdown-menu {
+    right: 0;
+    left: auto;
+    max-width: min(86vw, 280px);
+  }
+
+  #todo-main .modal-content {
+    margin: 0 6px;
+    width: auto;
+  }
+
+  /* 寰呭姙蹇嵎鎿嶄綔鍖猴細鎵嬫満绔繚鎸佷竴鎺掞紝妯悜婊戝姩锛岄伩鍏嶆姌琛?*/
+  #todo-main > .glass-max.rounded-2xl {
+    overflow: visible !important;
+    position: relative;
+    z-index: 40;
+  }
+
+  #todo-main > .glass-max.rounded-2xl > .flex.flex-col.md\:flex-row.md\:items-center.justify-between.gap-4 {
+    display: grid !important;
+    grid-template-columns: 1fr max-content;
+    align-items: center !important;
+    gap: 8px !important;
+    overflow: visible;
+    -webkit-overflow-scrolling: touch;
+    padding: 8px 6px;
+    border-radius: 12px;
+    border: 1px solid rgba(191, 219, 254, 0.75);
+    background: linear-gradient(180deg, rgba(248, 250, 252, 0.78), rgba(239, 246, 255, 0.72));
+    box-shadow: 0 8px 18px rgba(99, 102, 241, 0.08);
+    scrollbar-width: none;
+  }
+
+  #todo-main > .glass-max.rounded-2xl > .flex.flex-col.md\:flex-row.md\:items-center.justify-between.gap-4::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  /* 绗竴鍒楀彲缂╂斁锛屽彸渚ф搷浣滀繚鎸佸唴瀹瑰搴﹀苟闈犲彸瀵归綈 */
+  #todo-main > .glass-max.rounded-2xl > .flex.flex-col.md\:flex-row.md\:items-center.justify-between.gap-4 > :first-child {
+    min-width: 0;
+    width: auto;
+    grid-column: 2;
+    justify-self: end;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  #todo-main > .glass-max.rounded-2xl > .flex.flex-col.md\:flex-row.md\:items-center.justify-between.gap-4 > :last-child {
+    min-width: 0;
+    width: 100%;
+    grid-column: 1;
+    justify-self: start;
+    display: flex;
+    gap: 8px !important;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  #todo-main > .glass-max.rounded-2xl > .flex.flex-col.md\:flex-row.md\:items-center.justify-between.gap-4 > .flex.flex-wrap.gap-2 {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px !important;
+    overflow: visible !important;
+    min-width: 0;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #todo-main > .glass-max.rounded-2xl > .flex.flex-col.md\:flex-row.md\:items-center.justify-between.gap-4 > .flex.flex-wrap.gap-2::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  #todo-main #sort-filter-menu {
+    min-width: 156px;
+    width: max-content;
+    max-width: none;
+    max-height: none !important;
+    z-index: 9999 !important;
+    border: 1px solid rgba(191, 219, 254, 0.9);
+    box-shadow: 0 18px 40px rgba(99, 102, 241, 0.14), 0 4px 12px rgba(15, 23, 42, 0.08);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(12px);
+    margin-top: 8px;
+    box-sizing: border-box;
+    padding: 6px 8px;
+    overflow: hidden !important;
+    scrollbar-width: none;
+  }
+
+  #todo-main #sort-filter-menu::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  #todo-main #sort-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    min-width: 86px;
+    padding: 0 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(129, 140, 248, 0.38);
+    background: rgba(238, 242, 255, 0.92);
+    color: #3730a3;
+    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.12);
+    position: relative;
+    z-index: 381;
+    touch-action: manipulation;
+    white-space: nowrap;
+  }
+
+  #todo-main #sort-filter-btn {
+    z-index: 361;
+  }
+
+  #todo-main #sort-filter-menu {
+    z-index: 390 !important;
+  }
+
+  #todo-main #sort-filter-btn .fa-sort,
+  #todo-main #sort-filter-btn .fa-chevron-down,
+  #todo-main #sort-filter-btn .fa-chevron-up {
+    color: #4f46e5;
+  }
+
+  /* 褰撲笅鎷夋墦寮€鏃讹紝鏃嬭浆鎺掑簭绠ご骞剁粰鍑哄钩婊戣繃娓★紙鍏煎涓嶅悓鐖跺鍣ㄧ粨鏋勶級 */
+  #todo-main .relative.software-menu-open > #sort-filter-btn .fa-chevron-down,
+  #todo-main .relative.software-menu-open > #sort-filter-btn #sort-icon,
+  #todo-main .relative.software-menu-open > #sort-filter-btn .fa-chevron-up,
+  #todo-main .software-menu-open #sort-filter-btn .fa-chevron-down,
+  #todo-main .software-menu-open #sort-filter-btn #sort-icon,
+  #todo-main .software-menu-open #sort-filter-btn .fa-chevron-up {
+    transform: rotate(180deg);
+    transition: transform 0.18s ease;
+    color: #3730a3;
+  }
+
+  #todo-main #batch-complete-btn,
+  #todo-main #batch-delete-btn,
+  #todo-main #sync-status-badge {
+    min-height: 38px;
+    border-radius: 12px !important;
+    border: 1px solid rgba(203, 213, 225, 0.85);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.07);
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+  }
+
+  #todo-main #batch-delete-btn {
+    border-color: rgba(252, 165, 165, 0.75);
+    background: rgba(254, 242, 242, 0.9);
+  }
+
+  #todo-main #sync-status-badge {
+    border-color: rgba(134, 239, 172, 0.75);
+    background: rgba(220, 252, 231, 0.88);
+  }
+
+  #todo-main #sort-filter-menu,
+  #todo-main #sort-filter-menu a {
+    touch-action: manipulation;
+  }
+
+  #todo-main #sort-filter-menu a {
+    display: flex;
+    align-items: center;
+    min-height: 42px;
+    padding: 8px 10px;
+    overflow: visible;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  #todo-main #sort-filter-menu a,
+  #todo-main #sort-filter-menu .dropdown-item {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: #374151;
+  }
+
+  #todo-main #sort-filter-menu a i,
+  #todo-main #sort-filter-menu .dropdown-item i {
+    color: #6366f1 !important;
+  }
+
+  #todo-main #sort-filter-menu a,
+  #todo-main #sort-filter-menu .dropdown-item {
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.25;
+  }
+
+  /* 鏃ュ巻锛氭墜鏈虹搴旂敤鍖栧竷灞€ */
+  #calendar-main {
+    padding: 12px !important;
+  }
+
+  #calendar-main .glass-card.rounded-2xl,
+  #calendar-main .calendar-container,
+  #calendar-main .card-shadow.rounded-2xl {
+    border-radius: 14px !important;
+  }
+
+  #calendar-main #month-grid,
+  #calendar-main #week-grid,
+  #calendar-main #day-grid {
+    gap: 6px !important;
+  }
+
+  #calendar-main #scheduled-task-list {
+    max-height: 170px;
+  }
+
+  #calendar-main .view-btn,
+  #calendar-main .btn-glass,
+  #calendar-main .btn-primary {
+    min-height: 36px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  #calendar-main .calendar-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    line-height: 1;
+    border-radius: 999px;
+    border: 1px solid rgba(243, 188, 92, 0.35);
+    background: rgba(255, 255, 255, 0.75);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  }
+
+  /* Ensure chevron icons are centered and don't shift baseline */
+  #calendar-main .calendar-nav-btn i,
+  #calendar-main .calendar-nav-btn svg {
+    display: inline-block;
+    line-height: 1;
+    vertical-align: middle;
+    transform: none;
+  }
+
+  #calendar-main .glass-card.rounded-2xl.p-4.mb-6 {
+    margin-bottom: 12px !important;
+    padding: 12px !important;
+    border: 1px solid rgba(243, 188, 92, 0.2);
+    background: linear-gradient(180deg, rgba(255, 253, 245, 0.96), rgba(246, 239, 220, 0.88));
+  }
+
+  #calendar-main .glass-card.rounded-2xl.p-4.mb-6 .relative.md\:hidden.w-full input {
+    border-radius: 12px !important;
+    border: 1px solid rgba(209, 213, 219, 0.95);
+    background: rgba(255, 255, 255, 0.85);
+  }
+
+  #calendar-main .glass-card.rounded-2xl.p-4.mb-6 #batch-complete-btn,
+  #calendar-main .glass-card.rounded-2xl.p-4.mb-6 #batch-delete-btn {
+    min-height: 36px;
+    border-radius: 12px !important;
+    padding: 0 12px !important;
+    font-size: 12px !important;
+  }
+
+  #calendar-main #month-view > .flex.justify-between.items-center.mb-4 {
+    margin-bottom: 10px !important;
+    padding: 2px 2px 0;
+  }
+
+  #calendar-main #month-title {
+    font-size: 20px !important;
+    letter-spacing: 0.4px;
+    color: #1f2937;
+  }
+
+  #calendar-main .calendar-container > .glass-card.rounded-2xl.p-4.mb-4 {
+    padding: 12px !important;
+    margin-bottom: 10px !important;
+  }
+
+  #calendar-main h2.text-lg,
+  #calendar-main .text-lg.font-semibold {
+    font-size: 15px !important;
+    line-height: 1.3;
+  }
+
+  #calendar-main .calendar-day,
+  #calendar-main .day-cell,
+  #calendar-main #month-grid > div {
+    min-height: 56px;
+  }
+
+  #calendar-main .task-item,
+  #calendar-main .event-item,
+  #calendar-main .scheduled-task-item {
+    padding: 8px 10px !important;
+    border-radius: 10px !important;
+  }
+
+  /* 鏁版嵁鍛ㄦ姤锛氱Щ鍔ㄧ娑叉€佺幓鐠冿紙绮剧畝锛岄伩鍏嶉噸澶嶈鐩栵級 */
+  body.software-app.report-page-liquid {
+    --rp-glass-bg: rgba(255, 255, 255, 0.032);
+    --rp-glass-border: rgba(255, 255, 255, 0.14);
+    --rp-glass-shadow: 0 3px 14px rgba(0, 0, 0, 0.06);
+    --rp-glass-blur: blur(34px);
+    --rp-text-main: rgba(255, 255, 255, 0.96);
+    --rp-text-soft: rgba(255, 255, 255, 0.82);
+    background: url('https://picsum.photos/1920/1080?random=1') center/cover fixed !important;
+  }
+
+  body.software-app.report-page-liquid .bg-orb {
+    display: none !important;
+  }
+
+  body.software-app.report-page-liquid #report-main {
+    padding: 12px !important;
+    padding-bottom: calc(148px + var(--app-bottom-safe)) !important;
+  }
+
+  body.software-app.report-page-liquid #report-range-tabs button,
+  body.software-app.report-page-liquid #report-main .stat-card,
+  body.software-app.report-page-liquid #report-main .chart-container,
+  body.software-app.report-page-liquid #report-main .card-shadow.rounded-2xl,
+  body.software-app.report-page-liquid #report-main #time-slots-container .time-slot-card,
+  body.software-app.report-page-liquid #report-main #ai-suggestions-refresh,
+  body.software-app.report-page-liquid #report-main .suggestion-card {
+    background: var(--rp-glass-bg) !important;
+    background-image: none !important;
+    border: 1px solid var(--rp-glass-border) !important;
+    box-shadow: var(--rp-glass-shadow) !important;
+    backdrop-filter: var(--rp-glass-blur) !important;
+    -webkit-backdrop-filter: var(--rp-glass-blur) !important;
+  }
+
+  body.software-app.report-page-liquid #report-range-tabs button {
+    min-height: 34px;
+    border-radius: 999px !important;
+    color: var(--rp-text-soft) !important;
+  }
+
+  body.software-app.report-page-liquid #report-range-tabs button.bg-primary {
+    color: #fff !important;
+    background: rgba(76, 107, 255, 0.62) !important;
+    border-color: rgba(180, 200, 255, 0.95) !important;
+  }
+
+  body.software-app.report-page-liquid #report-stats-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  body.software-app.report-page-liquid #report-main #report-stats-grid .stat-card {
+    border-radius: 16px !important;
+    min-height: 132px;
+    padding: 10px 8px !important;
+  }
+
+  body.software-app.report-page-liquid #report-main #report-stats-grid .stat-card h3 {
+    font-size: 11px !important;
+    line-height: 1.3 !important;
+    font-weight: 600 !important;
+    color: var(--rp-text-soft) !important;
+  }
+
+  body.software-app.report-page-liquid #report-main #report-stats-grid .stat-card .icon-wrapper {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 10px !important;
+    margin-right: 8px !important;
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.18) !important;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  }
+
+  body.software-app.report-page-liquid #report-main #report-stats-grid .stat-card .icon-wrapper i {
+    font-size: 18px !important;
+  }
+
+  body.software-app.report-page-liquid #report-main #report-stats-grid .stat-card .stat-value {
+    width: 100% !important;
+    display: block !important;
+    text-align: center !important;
+    font-size: 1.05rem !important;
+    line-height: 1.2 !important;
+    font-weight: 800 !important;
+  }
+
+  body.software-app.report-page-liquid #report-main #report-stats-grid .stat-card .trend-indicator {
+    margin-top: 6px !important;
+    font-size: 10px !important;
+    color: var(--rp-text-soft) !important;
+  }
+
+  body.software-app.report-page-liquid #report-charts-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  body.software-app.report-page-liquid #report-main .chart-container,
+  body.software-app.report-page-liquid #report-main .card-shadow.rounded-2xl {
+    border-radius: 20px !important;
+    padding: 12px !important;
+  }
+
+  body.software-app.report-page-liquid #report-main .w-full.h-64 {
+    height: 220px !important;
+  }
+
+  body.software-app.report-page-liquid #report-main #time-slots-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 14px !important;
+  }
+
+  body.software-app.report-page-liquid #report-main #time-slots-container .time-slot-card {
+    border-radius: 20px !important;
+    min-height: 172px;
+    padding: 16px !important;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  body.software-app.report-page-liquid #report-main #time-slots-container .time-slot-card > .flex.items-center.mb-3 {
+    width: 100%;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px;
+    margin-bottom: 14px !important;
+  }
+
+  body.software-app.report-page-liquid #report-main #time-slots-container .time-slot-card .slot-icon {
+    margin-right: 0 !important;
+    font-size: 32px !important;
+    line-height: 1;
+  }
+
+  body.software-app.report-page-liquid #report-main #time-slots-container .time-slot-card .text-sm.font-medium.text-gray-700 {
+    font-size: 16px !important;
+    line-height: 1.35 !important;
+    color: var(--rp-text-main) !important;
+  }
+
+  body.software-app.report-page-liquid #report-main #time-slots-container .time-slot-card .slot-count {
+    margin-top: auto;
+    font-size: 28px !important;
+    line-height: 1 !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #2a85ff, #1f6cec) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+  }
+
+  body.software-app.report-page-liquid #report-main #time-slots-container .slot-best-indicator {
+    display: none !important;
+  }
+
+  body.software-app.report-page-liquid #report-main #time-slots-container .fa-sunrise::before {
+    content: "\f185";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+  }
+
+  body.software-app.report-page-liquid #report-main h2.text-lg,
+  body.software-app.report-page-liquid #report-main .text-lg.font-semibold {
+    font-size: 15px !important;
+    line-height: 1.3;
+    color: var(--rp-text-main) !important;
+  }
+
+  body.software-app.report-page-liquid #report-main > :last-child {
+    margin-bottom: calc(16px + var(--app-bottom-safe)) !important;
+  }
+
+  /* 寰呭姙椤靛眬閮ㄦ帶浠朵粎鍋氬唴瀹规敹鍙ｏ紝涓嶆敼澶存爮鍑犱綍 */
+  #main-header .flex.items-center.space-x-4 {
+    gap: 6px !important;
+  }
+
+  #main-header .theme-header-icon {
+    display: none !important;
+  }
+
+  #main-header h1 {
+    font-size: 16px !important;
+    line-height: 1.2 !important;
+    margin: 0 !important;
+  }
+
+  #main-header p {
+    line-height: 1.1 !important;
+    margin: 0 !important;
+  }
+
+  #main-header .header-user-avatar {
+    width: 32px !important;
+    height: 32px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  body.has-unified-top-header .unified-top-content-offset,
+  body.has-unified-top-header .unified-top-content-offset-shift,
+  body.has-unified-top-header .unified-top-pane-offset,
+  body.has-unified-top-header .unified-top-content-offset.unified-top-content-offset-extra {
+    padding-top: calc(var(--unified-top-header-space, 52px) + 6px + env(safe-area-inset-top, 0px)) !important;
+    scroll-padding-top: calc(var(--unified-top-header-space, 52px) + 6px + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  .software-app main {
+    font-size: 12px;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell {
+    min-height: 54px;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell .container,
+  .unified-top-header-dock .unified-top-header-shell > div:first-child {
+    min-height: 54px;
+    padding: 7px 10px !important;
+    gap: 6px !important;
+  }
+
+  .unified-top-header-dock .unified-top-header-shell h1,
+  .unified-top-header-dock .unified-top-header-shell .text-lg,
+  .unified-top-header-dock .unified-top-header-shell .text-xl {
+    font-size: 16px !important;
+  }
+
+  .software-app main,
+  .software-app .overflow-y-auto {
+    padding-bottom: calc(108px + var(--app-bottom-safe)) !important;
+  }
+
+  #sort-filter-menu {
+    min-width: 124px;
+  }
+
+  #calendar-mobile-toolbar {
+    margin-top: 0;
+    margin-bottom: 8px;
+    padding: 2px 2px 0;
+  }
+
+  .software-app .glass-header .container {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+
+  .software-app .glass-header .container > .flex.items-center.space-x-4 {
+    gap: 6px !important;
+  }
+
+  .software-app .glass-header h1 {
+    font-size: 16px !important;
+  }
+
+  .software-app .glass-header .custom-select-wrapper,
+  .software-app .glass-header .btn-primary {
+    display: none !important;
+  }
+
+  .software-app .glass-tab .tab-item {
+    min-height: 50px;
+    padding: 5px 1px !important;
+  }
+
+  .software-app .glass-tab .tab-item span {
+    font-size: 9px !important;
+  }
+
+  .software-app .glass-tab .tab-item i {
+    font-size: 14px !important;
+  }
+
+  #checkin-main-column > section,
+  #checkin-side-column > section,
+  #calendar-main .glass-card.rounded-2xl {
+    border-radius: 12px !important;
+    padding: 10px !important;
+  }
+
+  #checkin-main-column .type-btn {
+    min-height: 32px;
+    padding: 0.36rem 0.55rem;
+    font-size: 11px;
+  }
+
+  #checkin-main-column #checkin-note {
+    min-height: 80px;
+  }
+
+  #calendar-main {
+    padding: 10px !important;
+  }
+
+  #calendar-main .view-btn,
+  #calendar-main .btn-glass,
+  #calendar-main .btn-primary {
+    min-height: 34px;
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: 11px !important;
+  }
+
+  #calendar-main #month-grid,
+  #calendar-main #week-grid,
+  #calendar-main #day-grid {
+    gap: 4px !important;
+  }
+
+  body.software-app.report-page-liquid #report-main .w-full.h-64 {
+    height: 200px !important;
+  }
+
+  body.software-app.report-page-liquid #report-main {
+    padding-bottom: calc(158px + var(--app-bottom-safe)) !important;
+  }
+}
+
+/* Bottom tab micro-tune: neutral liquid-glass (no color cast) */
+@media (max-width: 900px) {
+  body.software-app .unified-bottom-tab-dock {
+    left: 50% !important;
+    right: auto !important;
+    width: min(75vw, 450px) !important;
+    max-width: min(75vw, 450px) !important;
+    transform: translateX(-50%) !important;
+    bottom: calc(6px + env(safe-area-inset-bottom, 0px)) !important;
+    padding: 0 !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock.unified-bottom-tab-dock-hidden {
+    transform: translateX(-50%) translateY(10px) !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-row {
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 1px !important;
+    padding: 3px 8px !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(255, 255, 255, 0.24) !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)) !important;
+    box-shadow: 0 5px 12px rgba(15, 23, 42, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.42), inset 0 -1px 0 rgba(255, 255, 255, 0.42) !important;
+    backdrop-filter: blur(2.2px) saturate(105%) contrast(106%) brightness(106%) !important;
+    -webkit-backdrop-filter: blur(2.2px) saturate(105%) contrast(106%) brightness(106%) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    isolation: isolate !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-row::before {
+    content: "";
+    position: absolute;
+    inset: -16px -14px;
+    border-radius: inherit;
+    pointer-events: none;
+    background: rgba(255, 255, 255, 0.01);
+    backdrop-filter: blur(5px) saturate(110%) contrast(110%) brightness(108%);
+    -webkit-backdrop-filter: blur(5px) saturate(110%) contrast(110%) brightness(108%);
+    opacity: 0.26;
+    transform: scaleX(1.03);
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-row::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+      radial-gradient(130% 180% at 8% 50%, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 45%),
+      radial-gradient(130% 180% at 92% 50%, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 47%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.03) 40%, rgba(255, 255, 255, 0.14) 100%);
+    opacity: 0.52;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-item {
+    min-height: 42px !important;
+    padding: 3px 2px !important;
+    border-radius: 999px !important;
+    gap: 1px !important;
+    transform: none !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-item:hover {
+    transform: none !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-icon {
+    width: 22px !important;
+    height: 22px !important;
+    font-size: 13px !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-label {
+    font-size: 8px !important;
+    letter-spacing: 0 !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-item.active {
+    background: transparent !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon {
+    color: #1d4ed8 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-label {
+    color: #1d4ed8 !important;
+  }
+}
+
+@media (max-width: 420px) {
+  body.software-app .unified-bottom-tab-dock {
+    width: min(79vw, 350px) !important;
+    max-width: min(79vw, 350px) !important;
+    bottom: calc(4px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-row {
+    padding: 2px 7px !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-item {
+    min-height: 40px !important;
+    padding: 2px 1px !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-icon {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 12px !important;
+  }
+
+  body.software-app .unified-bottom-tab-dock .unified-tab-label {
+    font-size: 8px !important;
+  }
+}
+/* Top nav micro-tune: neutral liquid-glass with softer bottom transition */
+@media (max-width: 900px) {
+  body.software-app .unified-top-header-dock .unified-top-header-shell,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#main-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#calendar-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#pomodoro-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#report-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#checkin-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#profile-header {
+    border: 0 !important;
+    border-color: transparent !important;
+    min-height: 60px !important;
+    border-radius: 0 0 22px 22px !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.12) 54%, rgba(255, 255, 255, 0.045) 100%) !important;
+    backdrop-filter: blur(2.4px) saturate(108%) contrast(104%) brightness(105%) !important;
+    -webkit-backdrop-filter: blur(2.4px) saturate(108%) contrast(104%) brightness(105%) !important;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.38) !important;
+    position: relative !important;
+    isolation: isolate !important;
+    overflow: hidden !important;
+  }
+
+  body.software-app .unified-top-header-dock .unified-top-header-shell::before {
+    content: "";
+    position: absolute;
+    inset: -14px -10px 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: rgba(255, 255, 255, 0.015);
+    backdrop-filter: blur(5px) saturate(116%) contrast(110%) brightness(108%);
+    -webkit-backdrop-filter: blur(5px) saturate(116%) contrast(110%) brightness(108%);
+    opacity: 0.26;
+    transform: scaleX(1.02);
+  }
+
+  body.software-app .unified-top-header-dock .unified-top-header-shell::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 52%, rgba(255, 255, 255, 0) 100%);
+    opacity: 0.56;
+  }
+
+  body.software-app .unified-top-header-dock .unified-top-header-shell .container,
+  body.software-app .unified-top-header-dock .unified-top-header-shell > div:first-child {
+    background: transparent !important;
+  }
+
+  body.software-app .unified-top-header-dock .unified-top-header-shell .container > :nth-child(1) > a,
+  body.software-app .unified-top-header-dock .unified-top-header-shell > div:first-child > :nth-child(1) > a,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#main-header #mobile-search-btn {
+    border: 0 !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 1px 6px rgba(15, 23, 42, 0.08) !important;
+  }
+}
+
+@media (max-width: 420px) {
+  body.software-app .unified-top-header-dock .unified-top-header-shell,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#main-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#calendar-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#pomodoro-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#report-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#checkin-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#profile-header {
+    min-height: 56px !important;
+    border-radius: 0 0 20px 20px !important;
+  }
+}
+/* Top nav final override: no radius, no edge feel */
+@media (max-width: 900px) {
+  body.software-app .unified-top-header-dock .unified-top-header-shell,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#main-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#calendar-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#pomodoro-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#report-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#checkin-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#profile-header {
+    border: 0 !important;
+    border-bottom: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.04) 52%, rgba(255, 255, 255, 0.008) 100%) !important;
+    backdrop-filter: blur(1.6px) saturate(104%) contrast(101%) brightness(100%) !important;
+    -webkit-backdrop-filter: blur(1.6px) saturate(104%) contrast(101%) brightness(100%) !important;
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.992) 64%, rgba(0, 0, 0, 0.86) 78%, rgba(0, 0, 0, 0.56) 90%, rgba(0, 0, 0, 0.22) 96%, rgba(0, 0, 0, 0) 100%);
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.992) 64%, rgba(0, 0, 0, 0.86) 78%, rgba(0, 0, 0, 0.56) 90%, rgba(0, 0, 0, 0.22) 96%, rgba(0, 0, 0, 0) 100%);
+  }
+
+  body.software-app .unified-top-header-dock .unified-top-header-shell::before,
+  body.software-app .unified-top-header-dock .unified-top-header-shell::after {
+    display: none !important;
+  }
+}
+
+@media (max-width: 420px) {
+  body.software-app .unified-top-header-dock .unified-top-header-shell,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#main-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#calendar-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#pomodoro-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#report-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#checkin-header,
+  body.software-app .unified-top-header-dock .unified-top-header-shell#profile-header {
+    border-radius: 0 !important;
+  }
+}
+
+/* Modal liquid-glass tune: web-like refraction, smaller cards on mobile software client */
+@media (max-width: 900px) {
+  body .modal-overlay,
+  body .phone-modal-overlay,
+  body .confirm-modal-overlay,
+  body #mobile-task-modal,
+  body #forgot-password-modal,
+  body #task-detail-panel {
+    background: rgba(15, 23, 42, 0.14) !important;
+    backdrop-filter: blur(8px) saturate(128%) contrast(104%) !important;
+    -webkit-backdrop-filter: blur(8px) saturate(128%) contrast(104%) !important;
+  }
+
+  body .modal-content,
+  body .confirm-modal-card,
+  body .detail-modal,
+  body #mobile-task-modal > div,
+  body #forgot-password-modal > div {
+    position: relative !important;
+    isolation: isolate !important;
+    overflow: hidden !important;
+    width: min(88vw, 360px) !important;
+    max-width: min(88vw, 360px) !important;
+    max-height: min(78vh, 640px) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    border-radius: 18px !important;
+    border: 0 !important;
+    background: linear-gradient(140deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.12) 44%, rgba(255, 255, 255, 0.05) 100%) !important;
+    box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.54), inset 0 -1px 0 rgba(255, 255, 255, 0.14) !important;
+    backdrop-filter: blur(20px) saturate(160%) contrast(106%) brightness(104%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(160%) contrast(106%) brightness(104%) !important;
+  }
+
+  body #task-detail-panel .modal-content,
+  body #task-detail-panel .task-detail-content {
+    width: min(92vw, 392px) !important;
+    max-width: min(92vw, 392px) !important;
+  }
+
+  body #mobile-task-modal > div {
+    width: min(90vw, 372px) !important;
+    max-width: min(90vw, 372px) !important;
+    margin-bottom: calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  body .modal-content::before,
+  body .confirm-modal-card::before,
+  body .detail-modal::before,
+  body #mobile-task-modal > div::before,
+  body #forgot-password-modal > div::before {
+    content: "";
+    position: absolute;
+    inset: -14px -12px;
+    border-radius: inherit;
+    pointer-events: none;
+    background: rgba(255, 255, 255, 0.016);
+    backdrop-filter: blur(5px) saturate(112%) contrast(108%) brightness(108%);
+    -webkit-backdrop-filter: blur(5px) saturate(112%) contrast(108%) brightness(108%);
+    opacity: 0.3;
+    transform: scale(1.02);
+  }
+
+  body .modal-content::after,
+  body .confirm-modal-card::after,
+  body .detail-modal::after,
+  body #mobile-task-modal > div::after,
+  body #forgot-password-modal > div::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+      radial-gradient(128% 176% at 8% 10%, rgba(255, 255, 255, 0.36), rgba(255, 255, 255, 0) 44%),
+      radial-gradient(120% 156% at 88% 88%, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 50%);
+    opacity: 0.58;
+  }
+
+  body .modal-content > *,
+  body .confirm-modal-card > *,
+  body .detail-modal > *,
+  body #mobile-task-modal > div > *,
+  body #forgot-password-modal > div > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  body .modal-content .modal-input,
+  body .modal-content .input-glass,
+  body .confirm-modal-card .modal-input,
+  body #forgot-password-modal input {
+    background: rgba(255, 255, 255, 0.34) !important;
+    border-color: rgba(255, 255, 255, 0.42) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.44) !important;
+    backdrop-filter: blur(7px) saturate(120%) !important;
+    -webkit-backdrop-filter: blur(7px) saturate(120%) !important;
+  }
+}
+
+@media (max-width: 420px) {
+  body .modal-content,
+  body .confirm-modal-card,
+  body .detail-modal,
+  body #mobile-task-modal > div,
+  body #forgot-password-modal > div {
+    width: min(90vw, 334px) !important;
+    max-width: min(90vw, 334px) !important;
+    border-radius: 16px !important;
+  }
+
+  body #task-detail-panel .modal-content,
+  body #task-detail-panel .task-detail-content {
+    width: min(94vw, 354px) !important;
+    max-width: min(94vw, 354px) !important;
+  }
+}
+
+@media (max-width: 900px) {
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-row {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)) !important;
+    border-color: rgba(255, 255, 255, 0.24) !important;
+  }
+
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item {
+    color: rgba(255, 255, 255, 0.84) !important;
+  }
+
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-icon {
+    color: rgba(255, 255, 255, 0.88) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item.active {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item.active::before {
+    opacity: 0 !important;
+    background: transparent !important;
+  }
+
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon {
+    color: #ffffff !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-label {
+    color: #ffffff !important;
+  }
+}
+
+@media (max-width: 900px) {
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item {
+    color: rgba(255, 255, 255, 0.84) !important;
+  }
+
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-icon {
+    color: rgba(255, 255, 255, 0.88) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item.active {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item.active::before {
+    opacity: 0 !important;
+    background: transparent !important;
+  }
+
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-label {
+    color: #ffffff !important;
+  }
+
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon {
+    background: transparent !important;
+    transform: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  html.unified-dark-mode body.software-app #todo-main .glass-card.rounded-2xl.p-4.mb-6,
+  body.software-app.theme-night #todo-main .glass-card.rounded-2xl.p-4.mb-6 {
+    background: linear-gradient(180deg, rgba(31, 42, 61, 0.86), rgba(21, 31, 48, 0.8)) !important;
+    border-color: rgba(148, 163, 184, 0.24) !important;
+  }
+
+  html.unified-dark-mode body.software-app #todo-main > .glass-max.rounded-2xl:first-child > .flex.flex-col.md\:flex-row.md\:items-center.justify-between.gap-4,
+  body.software-app.theme-night #todo-main > .glass-max.rounded-2xl:first-child > .flex.flex-col.md\:flex-row.md\:items-center.justify-between.gap-4 {
+    background: linear-gradient(180deg, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.38)) !important;
+    border-color: rgba(148, 163, 184, 0.24) !important;
+    box-shadow: 0 10px 24px rgba(2, 6, 23, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+  }
+
+  html.unified-dark-mode body.software-app #todo-main #sort-filter-btn,
+  body.software-app.theme-night #todo-main #sort-filter-btn {
+    background: rgba(51, 65, 85, 0.54) !important;
+    border-color: rgba(148, 163, 184, 0.34) !important;
+    color: #dbeafe !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  }
+
+  html.unified-dark-mode body.software-app #todo-main #sort-filter-btn .fa-sort,
+  html.unified-dark-mode body.software-app #todo-main #sort-filter-btn .fa-chevron-down,
+  html.unified-dark-mode body.software-app #todo-main #sort-filter-btn .fa-chevron-up,
+  body.software-app.theme-night #todo-main #sort-filter-btn .fa-sort,
+  body.software-app.theme-night #todo-main #sort-filter-btn .fa-chevron-down,
+  body.software-app.theme-night #todo-main #sort-filter-btn .fa-chevron-up {
+    color: #9fb9ff !important;
+  }
+
+  html.unified-dark-mode body.software-app #todo-main #batch-complete-btn,
+  html.unified-dark-mode body.software-app #todo-main #batch-delete-btn,
+  body.software-app.theme-night #todo-main #batch-complete-btn,
+  body.software-app.theme-night #todo-main #batch-delete-btn {
+    background: rgba(51, 65, 85, 0.54) !important;
+    border-color: rgba(148, 163, 184, 0.34) !important;
+    color: #dbeafe !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  }
+
+  html.unified-dark-mode body.software-app #todo-main #sync-status-badge,
+  body.software-app.theme-night #todo-main #sync-status-badge {
+    background: rgba(21, 128, 61, 0.26) !important;
+    border-color: rgba(74, 222, 128, 0.45) !important;
+    color: #86efac !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+  }
+
+  html.unified-dark-mode body.software-app #calendar-main .glass-card.rounded-2xl.p-4.mb-6,
+  body.software-app.theme-night #calendar-main .glass-card.rounded-2xl.p-4.mb-6 {
+    background: linear-gradient(180deg, rgba(31, 42, 61, 0.86), rgba(21, 31, 48, 0.8)) !important;
+    border-color: rgba(148, 163, 184, 0.24) !important;
+  }
+
+  html.unified-dark-mode body.software-app #calendar-main #batch-complete-btn,
+  html.unified-dark-mode body.software-app #calendar-main #batch-delete-btn,
+  body.software-app.theme-night #calendar-main #batch-complete-btn,
+  body.software-app.theme-night #calendar-main #batch-delete-btn {
+    background: rgba(71, 85, 105, 0.76) !important;
+    border-color: rgba(148, 163, 184, 0.35) !important;
+    color: #dbe7ff !important;
+    box-shadow: none !important;
+  }
+
+  html.unified-dark-mode body.software-app #calendar-main #sort-filter-btn,
+  body.software-app.theme-night #calendar-main #sort-filter-btn {
+    background: rgba(71, 85, 105, 0.76) !important;
+    border-color: rgba(148, 163, 184, 0.35) !important;
+    color: #dbe7ff !important;
+    box-shadow: none !important;
+  }
+
+  html.unified-dark-mode body.software-app #calendar-main #sort-filter-btn .fa-sort,
+  html.unified-dark-mode body.software-app #calendar-main #sort-filter-btn .fa-chevron-down,
+  html.unified-dark-mode body.software-app #calendar-main #sort-filter-btn .fa-chevron-up,
+  body.software-app.theme-night #calendar-main #sort-filter-btn .fa-sort,
+  body.software-app.theme-night #calendar-main #sort-filter-btn .fa-chevron-down,
+  body.software-app.theme-night #calendar-main #sort-filter-btn .fa-chevron-up {
+    color: #8aa4ff !important;
+  }
+
+  html.unified-dark-mode body.software-app #calendar-mobile-toolbar .calendar-mobile-toolbar-inner > div,
+  body.software-app.theme-night #calendar-mobile-toolbar .calendar-mobile-toolbar-inner > div {
+    background: linear-gradient(180deg, rgba(30, 41, 59, 0.54), rgba(15, 23, 42, 0.4)) !important;
+    border-color: rgba(148, 163, 184, 0.24) !important;
+    box-shadow: 0 10px 24px rgba(2, 6, 23, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+  }
+
+  html.unified-dark-mode body.software-app #calendar-mobile-toolbar #today-btn,
+  body.software-app.theme-night #calendar-mobile-toolbar #today-btn {
+    background: linear-gradient(180deg, rgba(83, 107, 255, 0.98), rgba(66, 88, 222, 0.98)) !important;
+    border-color: rgba(129, 150, 255, 0.75) !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+  }
+
+  html.unified-dark-mode body.software-app #calendar-mobile-toolbar .calendar-mobile-meta-row .glass-card,
+  body.software-app.theme-night #calendar-mobile-toolbar .calendar-mobile-meta-row .glass-card {
+    background: rgba(51, 65, 85, 0.56) !important;
+    border-color: rgba(148, 163, 184, 0.34) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  }
+
+  html.unified-dark-mode body.software-app #calendar-mobile-toolbar #current-date,
+  body.software-app.theme-night #calendar-mobile-toolbar #current-date {
+    color: #dbeafe !important;
+  }
+
+  html.unified-dark-mode body.software-app #calendar-mobile-toolbar .calendar-mobile-view-row > .view-btn,
+  html.unified-dark-mode body.software-app #calendar-mobile-toolbar .calendar-mobile-view-row > [data-view],
+  body.software-app.theme-night #calendar-mobile-toolbar .calendar-mobile-view-row > .view-btn,
+  body.software-app.theme-night #calendar-mobile-toolbar .calendar-mobile-view-row > [data-view] {
+    background: rgba(51, 65, 85, 0.54) !important;
+    border-color: rgba(148, 163, 184, 0.34) !important;
+    color: #dbeafe !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  }
+
+  html.unified-dark-mode body.software-app #calendar-mobile-toolbar .calendar-mobile-view-row > .view-btn.active,
+  html.unified-dark-mode body.software-app #calendar-mobile-toolbar .calendar-mobile-view-row > [data-view].active,
+  body.software-app.theme-night #calendar-mobile-toolbar .calendar-mobile-view-row > .view-btn.active,
+  body.software-app.theme-night #calendar-mobile-toolbar .calendar-mobile-view-row > [data-view].active {
+    background: linear-gradient(180deg, rgba(83, 107, 255, 0.98), rgba(66, 88, 222, 0.98)) !important;
+    border-color: rgba(129, 150, 255, 0.75) !important;
+    color: #ffffff !important;
+  }
+}
+
+/* =========================================================
+   TODO Mobile Final Skin (iOS17+ Liquid Glass)
+   Scoped to todo page only: body.software-app.todo-page-liquid
+   ========================================================= */
+@media (max-width: 900px) {
+  body.software-app.todo-page-liquid {
+    --todo-lg-primary: #007aff;
+    --todo-lg-pink: #f2c4ce;
+    --todo-lg-green: #34c759;
+    --todo-lg-text: #1c1c1e;
+    --todo-lg-subtext: #636366;
+    --todo-lg-glass: rgba(255, 255, 255, 0.22);
+    --todo-lg-border: rgba(255, 255, 255, 0.35);
+    --todo-lg-shadow: 0 12px 40px rgba(0, 0, 0, 0.08), 0 2px 10px rgba(0, 0, 0, 0.04);
+    --todo-lg-inner-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.46),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.46),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    --todo-lg-motion-ease: cubic-bezier(0.25, 1, 0.36, 1);
+    --todo-lg-motion-fast: 180ms;
+    --todo-lg-motion-mid: 220ms;
+    --todo-lg-motion-slow: 320ms;
+    background: url('https://picsum.photos/1920/1080?random=1') center/cover fixed !important;
+    color: var(--todo-lg-text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Helvetica, Arial, sans-serif !important;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body.software-app.todo-page-liquid .bg-orb {
+    display: none !important;
+  }
+
+  body.software-app.todo-page-liquid #main-header,
+  body.software-app.todo-page-liquid #todo-toolbar,
+  body.software-app.todo-page-liquid #todo-main .task-group-card,
+  body.software-app.todo-page-liquid #todo-main .task-card,
+  body.software-app.todo-page-liquid #todo-main .task-empty-state,
+  body.software-app.todo-page-liquid #todo-main .dropdown-menu,
+  body.software-app.todo-page-liquid #todo-main .toolbar-dropdown-panel,
+  body.software-app.todo-page-liquid #todo-main .datetime-select-menu,
+  body.software-app.todo-page-liquid .modal-content,
+  body.software-app.todo-page-liquid #main-header .dropdown-menu,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab {
+    border: 1px solid var(--todo-lg-border) !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.18)), var(--todo-lg-glass) !important;
+    box-shadow: var(--todo-lg-shadow), var(--todo-lg-inner-shadow) !important;
+    backdrop-filter: blur(30px) saturate(160%) brightness(110%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(160%) brightness(110%) !important;
+  }
+
+  body.software-app.todo-page-liquid #main-header {
+    border-radius: 20px !important;
+  }
+
+  body.software-app.todo-page-liquid .unified-top-header-dock .unified-top-header-shell#main-header::before,
+  body.software-app.todo-page-liquid .unified-top-header-dock .unified-top-header-shell#main-header::after,
+  body.software-app.todo-page-liquid #main-header::before,
+  body.software-app.todo-page-liquid #main-header::after,
+  body.software-app.todo-page-liquid #main-header .container > .flex.items-center.space-x-4 > a::before,
+  body.software-app.todo-page-liquid #main-header .container > .flex.items-center.space-x-4 > a::after {
+    content: none !important;
+    display: none !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  body.software-app.todo-page-liquid #main-header .container > .flex.items-center.space-x-4 > a,
+  body.software-app.todo-page-liquid #main-header a[href*="鐧诲綍椤甸潰"],
+  body.software-app.todo-page-liquid #main-header a[title*="杩斿洖"] {
+    width: 44px !important;
+    height: 44px !important;
+    padding: 0 !important;
+    border-radius: 999px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid var(--todo-lg-border) !important;
+    background: var(--todo-lg-glass) !important;
+    box-shadow: var(--todo-lg-shadow), var(--todo-lg-inner-shadow) !important;
+    backdrop-filter: blur(30px) saturate(160%) brightness(110%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(160%) brightness(110%) !important;
+  }
+
+  body.software-app.todo-page-liquid #main-header h1 {
+    color: var(--todo-lg-text) !important;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Helvetica, Arial, sans-serif !important;
+    font-size: 21px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.01em;
+  }
+
+  body.software-app.todo-page-liquid #main-header p,
+  body.software-app.todo-page-liquid #today-date-info,
+  body.software-app.todo-page-liquid #tomorrow-date-info,
+  body.software-app.todo-page-liquid #todo-main .text-gray-500,
+  body.software-app.todo-page-liquid #todo-main .text-gray-600 {
+    color: var(--todo-lg-subtext) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main {
+    padding: 14px !important;
+    padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main > .glass-max.rounded-2xl:first-child,
+  body.software-app.todo-page-liquid #todo-toolbar {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 2px 0 8px !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-toolbar {
+    overflow: visible !important;
+    position: relative !important;
+    z-index: 14 !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-toolbar,
+  body.software-app.todo-page-liquid #todo-toolbar.todo-toolbar,
+  body.software-app.todo-page-liquid #todo-toolbar.batch-mode-active {
+    border: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    animation: none !important;
+    transition: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main > #todo-toolbar.glass-max.rounded-2xl,
+  body.software-app.todo-page-liquid #todo-toolbar::before,
+  body.software-app.todo-page-liquid #todo-toolbar::after,
+  body.software-app.todo-page-liquid #todo-toolbar .todo-toolbar-main::before,
+  body.software-app.todo-page-liquid #todo-toolbar .todo-toolbar-main::after,
+  body.software-app.todo-page-liquid #todo-toolbar .quick-action-item::before,
+  body.software-app.todo-page-liquid #todo-toolbar .quick-action-item::after {
+    border: 0 !important;
+    border-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    content: none !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-toolbar .todo-toolbar-main {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex-wrap: nowrap !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main > .glass-max.rounded-2xl > .flex.flex-col.md\:flex-row.md\:items-center.justify-between.gap-4 {
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-toolbar .todo-toolbar-main > * {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-toolbar .quick-action-item {
+    flex: 0 0 auto !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-toolbar .sync-status-text {
+    margin-left: auto !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-toolbar.batch-mode-active .todo-toolbar-main > * {
+    opacity: 1 !important;
+    filter: none !important;
+    transition: none !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-toolbar.batch-mode-active .todo-toolbar-main > *:not(#select-mode-btn):not(.sync-status-text) {
+    opacity: 1 !important;
+    filter: none !important;
+    transition: none !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .task-group-card {
+    border-radius: 28px !important;
+    padding: 16px !important;
+    box-shadow: var(--todo-lg-shadow), var(--todo-lg-inner-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.54), inset 0 -1px 0 rgba(255, 255, 255, 0.54) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .task-group-card h2,
+  body.software-app.todo-page-liquid #todo-main .text-lg.font-semibold {
+    font-size: 19px !important;
+    font-weight: 600 !important;
+    color: var(--todo-lg-text) !important;
+    line-height: 1.15;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .task-empty-state {
+    min-height: 136px;
+    border-radius: 24px !important;
+    border-style: solid !important;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.2)) !important;
+    backdrop-filter: blur(28px) saturate(160%) brightness(112%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(160%) brightness(112%) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06), var(--todo-lg-inner-shadow) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .task-empty-state .title {
+    color: var(--todo-lg-text) !important;
+    font-size: 17px !important;
+    font-weight: 600 !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .task-empty-state .desc {
+    color: var(--todo-lg-subtext) !important;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+    max-width: 230px;
+    line-height: 1.45;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .task-empty-state i {
+    color: var(--todo-lg-primary) !important;
+    font-size: 24px !important;
+    text-shadow: 0 0 12px rgba(0, 122, 255, 0.32);
+    animation: todo-lg-breathe 5s ease-in-out infinite;
+  }
+
+  body.software-app.todo-page-liquid #sort-filter-btn,
+  body.software-app.todo-page-liquid #select-mode-btn,
+  body.software-app.todo-page-liquid #mobile-search-btn,
+  body.software-app.todo-page-liquid #batch-complete-btn,
+  body.software-app.todo-page-liquid #batch-delete-btn,
+  body.software-app.todo-page-liquid #batch-cancel-btn,
+  body.software-app.todo-page-liquid #sync-status-badge,
+  body.software-app.todo-page-liquid #notification-btn,
+  body.software-app.todo-page-liquid #user-menu-btn,
+  body.software-app.todo-page-liquid .btn-primary-glass,
+  body.software-app.todo-page-liquid .btn-secondary-glass,
+  body.software-app.todo-page-liquid .task-action-btn,
+  body.software-app.todo-page-liquid .priority-btn,
+  body.software-app.todo-page-liquid .datetime-select-trigger,
+  body.software-app.todo-page-liquid .datetime-quick-btn,
+  body.software-app.todo-page-liquid .datetime-calendar-nav,
+  body.software-app.todo-page-liquid .datetime-calendar-action,
+  body.software-app.todo-page-liquid .modal-tag-btn,
+  body.software-app.todo-page-liquid .modal-tag-color-btn,
+  body.software-app.todo-page-liquid .subtask-compose-btn {
+    min-height: 44px !important;
+    border-radius: 20px !important;
+    border: 1px solid var(--todo-lg-border) !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.18)), var(--todo-lg-glass) !important;
+    box-shadow: var(--todo-lg-shadow), var(--todo-lg-inner-shadow) !important;
+    backdrop-filter: blur(30px) saturate(160%) brightness(110%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(160%) brightness(110%) !important;
+    transition: transform 0.32s cubic-bezier(0.25, 1.15, 0.35, 1.05), box-shadow 0.32s cubic-bezier(0.25, 1.15, 0.35, 1.05), filter 0.24s ease !important;
+    will-change: transform;
+    position: relative;
+    overflow: hidden;
+  }
+
+  body.software-app.todo-page-liquid .modal-content .btn-primary-glass {
+    color: #ffffff !important;
+    background:
+      linear-gradient(138deg, rgba(34, 140, 255, 0.96), rgba(69, 110, 255, 0.92)) !important;
+    border-color: rgba(166, 213, 255, 0.5) !important;
+    box-shadow:
+      0 10px 20px rgba(34, 131, 255, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.34) !important;
+  }
+
+  body.software-app.todo-page-liquid .modal-content .btn-secondary-glass,
+  body.software-app.todo-page-liquid .modal-content .bg-white.border-gray-300 {
+    color: #2f3f56 !important;
+    border-color: rgba(188, 220, 255, 0.62) !important;
+    background:
+      linear-gradient(136deg, rgba(255, 255, 255, 0.72), rgba(240, 248, 255, 0.58)) !important;
+    box-shadow:
+      0 8px 16px rgba(74, 120, 180, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  }
+
+  body.software-app.todo-page-liquid .modal-content .priority-btn {
+    border-color: rgba(185, 206, 237, 0.7) !important;
+    color: #5a6a82 !important;
+    background: rgba(244, 250, 255, 0.58) !important;
+  }
+
+  body.software-app.todo-page-liquid .modal-content .priority-btn.active {
+    border-color: rgba(80, 154, 255, 0.72) !important;
+    color: #1d5dd3 !important;
+    background: linear-gradient(132deg, rgba(177, 221, 255, 0.36), rgba(166, 196, 255, 0.24)) !important;
+    box-shadow: 0 0 0 1px rgba(153, 208, 255, 0.58), 0 7px 14px rgba(106, 165, 255, 0.18) !important;
+  }
+
+  /* Remove outer stroke ring from top toolbar pills (as requested). */
+  body.software-app.todo-page-liquid #todo-toolbar #sort-filter-btn,
+  body.software-app.todo-page-liquid #todo-toolbar #select-mode-btn,
+  body.software-app.todo-page-liquid #todo-toolbar #mobile-search-btn,
+  body.software-app.todo-page-liquid #todo-toolbar #sync-status-badge {
+    border-width: 0 !important;
+    border-color: transparent !important;
+    box-shadow: 0 8px 24px rgba(31, 38, 135, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  body.software-app.todo-page-liquid #sort-filter-btn::before,
+  body.software-app.todo-page-liquid #select-mode-btn::before,
+  body.software-app.todo-page-liquid #mobile-search-btn::before,
+  body.software-app.todo-page-liquid #batch-complete-btn::before,
+  body.software-app.todo-page-liquid #batch-delete-btn::before,
+  body.software-app.todo-page-liquid #batch-cancel-btn::before,
+  body.software-app.todo-page-liquid #sync-status-badge::before,
+  body.software-app.todo-page-liquid #notification-btn::before,
+  body.software-app.todo-page-liquid #user-menu-btn::before,
+  body.software-app.todo-page-liquid .btn-primary-glass::before,
+  body.software-app.todo-page-liquid .btn-secondary-glass::before,
+  body.software-app.todo-page-liquid .task-action-btn::before,
+  body.software-app.todo-page-liquid .priority-btn::before,
+  body.software-app.todo-page-liquid .datetime-select-trigger::before,
+  body.software-app.todo-page-liquid .datetime-quick-btn::before,
+  body.software-app.todo-page-liquid .datetime-calendar-nav::before,
+  body.software-app.todo-page-liquid .datetime-calendar-action::before,
+  body.software-app.todo-page-liquid .modal-tag-btn::before,
+  body.software-app.todo-page-liquid .modal-tag-color-btn::before,
+  body.software-app.todo-page-liquid .subtask-compose-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+      radial-gradient(120% 140% at 18% 12%, rgba(255, 255, 255, 0.66), rgba(255, 255, 255, 0) 48%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.06) 56%, rgba(255, 255, 255, 0.24));
+    opacity: 0.9;
+    mix-blend-mode: screen;
+  }
+
+  body.software-app.todo-page-liquid #sort-filter-btn:hover,
+  body.software-app.todo-page-liquid #select-mode-btn:hover,
+  body.software-app.todo-page-liquid #mobile-search-btn:hover,
+  body.software-app.todo-page-liquid #batch-complete-btn:hover,
+  body.software-app.todo-page-liquid #batch-delete-btn:hover,
+  body.software-app.todo-page-liquid #batch-cancel-btn:hover,
+  body.software-app.todo-page-liquid #notification-btn:hover,
+  body.software-app.todo-page-liquid #user-menu-btn:hover,
+  body.software-app.todo-page-liquid .btn-primary-glass:hover,
+  body.software-app.todo-page-liquid .btn-secondary-glass:hover,
+  body.software-app.todo-page-liquid .task-action-btn:hover,
+  body.software-app.todo-page-liquid .priority-btn:hover,
+  body.software-app.todo-page-liquid .datetime-select-trigger:hover,
+  body.software-app.todo-page-liquid .datetime-quick-btn:hover,
+  body.software-app.todo-page-liquid .datetime-calendar-nav:hover,
+  body.software-app.todo-page-liquid .datetime-calendar-action:hover,
+  body.software-app.todo-page-liquid .modal-tag-btn:hover,
+  body.software-app.todo-page-liquid .modal-tag-color-btn:hover,
+  body.software-app.todo-page-liquid .subtask-compose-btn:hover {
+    box-shadow:
+      0 0 0 1px rgba(164, 212, 255, 0.46),
+      0 0 16px rgba(126, 187, 255, 0.38),
+      var(--todo-lg-shadow) !important;
+    filter: brightness(1.06);
+  }
+
+  body.software-app.todo-page-liquid #sync-status-badge {
+    color: #0a84ff !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+  }
+
+  body.software-app.todo-page-liquid #sync-status-badge i {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .input-glass,
+  body.software-app.todo-page-liquid .subtask-compose-input,
+  body.software-app.todo-page-liquid .datetime-time-field {
+    border: 1px solid var(--todo-lg-border) !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.18)), var(--todo-lg-glass) !important;
+    border-radius: 20px !important;
+    backdrop-filter: blur(30px) saturate(160%) brightness(110%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(160%) brightness(110%) !important;
+    box-shadow: var(--todo-lg-shadow), var(--todo-lg-inner-shadow) !important;
+    color: var(--todo-lg-text) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .dropdown-menu,
+  body.software-app.todo-page-liquid #todo-main .datetime-select-menu,
+  body.software-app.todo-page-liquid #main-header .dropdown-menu {
+    border-radius: 20px !important;
+    padding: 8px !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.19)), rgba(255, 255, 255, 0.22) !important;
+  }
+
+  /* 鎺掑簭涓嬫媺锛氶檷浣庝笉閫忔槑搴︼紙鏇撮€氶€忎竴鐐癸級锛屽彧褰卞搷璇ヨ彍鍗曘€?*/
+  body.software-app.todo-page-liquid #todo-main #sort-filter-menu {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.26)), rgba(255, 255, 255, 0.28) !important;
+    border-color: rgba(255, 255, 255, 0.44) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .dropdown-menu a,
+  body.software-app.todo-page-liquid #todo-main .datetime-select-option {
+    border-radius: 12px !important;
+    color: var(--todo-lg-text) !important;
+  }
+
+  /* Hidden panels must not leave residual outline lines. */
+  body.software-app.todo-page-liquid #todo-main .toolbar-dropdown-panel {
+    border: 0 !important;
+    border-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transition: opacity 0.16s ease, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1) !important;
+    will-change: transform, opacity;
+    max-height: none !important;
+    opacity: 0;
+    transform: translate3d(0, -6px, 0) scale(0.985);
+  }
+
+  body.software-app.todo-page-liquid .modal-overlay {
+    background:
+      radial-gradient(120% 95% at 8% 10%, rgba(255, 235, 246, 0.24), rgba(255, 235, 246, 0) 58%),
+      radial-gradient(110% 90% at 92% 4%, rgba(210, 233, 255, 0.22), rgba(210, 233, 255, 0) 56%),
+      rgba(18, 24, 40, 0.12) !important;
+    backdrop-filter: blur(12px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(140%) !important;
+  }
+
+  body.software-app.todo-page-liquid .modal-content {
+    border-radius: 20px !important;
+    width: min(92vw, 392px) !important;
+    max-width: min(92vw, 392px) !important;
+    max-height: min(82vh, 680px) !important;
+    background:
+      radial-gradient(132% 116% at 10% 8%, rgba(255, 226, 241, 0.54), rgba(255, 226, 241, 0) 54%),
+      radial-gradient(124% 118% at 90% 6%, rgba(193, 223, 255, 0.52), rgba(193, 223, 255, 0) 54%),
+      radial-gradient(108% 108% at 48% 100%, rgba(210, 248, 231, 0.38), rgba(210, 248, 231, 0) 58%),
+      linear-gradient(152deg, rgba(255, 255, 255, 0.56), rgba(246, 252, 255, 0.4) 44%, rgba(240, 255, 247, 0.34)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08), 0 2px 10px rgba(0, 0, 0, 0.04), inset 0 0 0 1px rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(34px) saturate(172%) brightness(112%) !important;
+    -webkit-backdrop-filter: blur(34px) saturate(172%) brightness(112%) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab {
+    border-radius: 20px !important;
+    border: 1px solid rgba(255, 255, 255, 0.36) !important;
+    background:
+      linear-gradient(140deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.16)),
+      rgba(255, 255, 255, 0.22) !important;
+    box-shadow:
+      0 12px 28px rgba(10, 19, 36, 0.12),
+      0 0 0 1px rgba(199, 232, 255, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.56),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.56) !important;
+    backdrop-filter: blur(24px) saturate(168%) contrast(96%) brightness(112%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(168%) contrast(96%) brightness(112%) !important;
+    overflow: hidden !important;
+    isolation: isolate !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab::before,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    border-radius: inherit;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab::before {
+    inset: -20px -12px 32%;
+    background: radial-gradient(88% 76% at 50% 0%, rgba(255, 255, 255, 0.36), rgba(255, 255, 255, 0));
+    opacity: 0.7;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab::after {
+    inset: 0;
+    background:
+      conic-gradient(from 220deg at 50% 50%, rgba(110, 190, 255, 0.04), rgba(196, 152, 255, 0.03), rgba(115, 234, 210, 0.03), rgba(110, 190, 255, 0.04));
+    mix-blend-mode: screen;
+    opacity: 0.45;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item {
+    border-radius: 16px !important;
+    color: rgba(32, 42, 60, 0.68) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    transform: translateY(0) scale(1) !important;
+    position: relative;
+    z-index: 1;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.16);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    color: currentColor;
+    font-size: 13px !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item span {
+    color: currentColor !important;
+    opacity: 0.9;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item.active {
+    color: #0a7bff !important;
+    background:
+      linear-gradient(140deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.18)),
+      rgba(101, 179, 255, 0.12) !important;
+    box-shadow:
+      0 5px 12px rgba(20, 97, 216, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.58) !important;
+    border: 1px solid rgba(173, 219, 255, 0.42) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item.active {
+    color: #0a7bff !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item.active i {
+    background: rgba(255, 255, 255, 0.28) !important;
+    box-shadow:
+      0 0 8px rgba(122, 197, 255, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.64) !important;
+  }
+
+  body.software-app.todo-page-liquid .toolbar-dropdown-panel.hidden {
+    display: none !important;
+  }
+
+  body.software-app.todo-page-liquid .toolbar-dropdown-panel.show {
+    display: block !important;
+    opacity: 1 !important;
+    transform: translate3d(0, 0, 0) scale(1) !important;
+    pointer-events: auto !important;
+  }
+
+  body.software-app.todo-page-liquid .toolbar-dropdown-panel.dropdown-closing {
+    opacity: 0 !important;
+    transform: translate3d(0, -6px, 0) scale(0.985) !important;
+    pointer-events: none !important;
+  }
+
+  body.software-app.todo-page-liquid #batch-actions-row.toolbar-dropdown-panel.show {
+    display: flex !important;
+  }
+
+  body.software-app.todo-page-liquid #batch-actions-row.toolbar-dropdown-panel {
+    margin-top: 0 !important;
+    padding: 10px !important;
+    border-radius: 18px !important;
+    border: 0 !important;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.2) 56%, rgba(255, 255, 255, 0.26)),
+      radial-gradient(120% 130% at 22% 12%, rgba(255, 255, 255, 0.44), rgba(255, 255, 255, 0) 58%) !important;
+    box-shadow: 0 8px 24px rgba(31, 38, 135, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.48) !important;
+    z-index: 6 !important;
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: calc(100% + 6px + var(--todo-toolbar-stack-offset, 0px)) !important;
+    width: 100% !important;
+  }
+
+  body.software-app.todo-page-liquid #batch-selected-tip {
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  body.software-app.todo-page-liquid #mobile-toolbar-search-panel.toolbar-dropdown-panel {
+    margin-top: 0 !important;
+    padding: 8px 10px !important;
+    border-radius: 18px !important;
+    border: 1px solid rgba(255, 255, 255, 0.52) !important;
+    background: rgba(255, 255, 255, 0.28) !important;
+    box-shadow: 0 10px 22px rgba(31, 38, 135, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.62) !important;
+    backdrop-filter: blur(18px) saturate(165%) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(165%) !important;
+    overflow: visible !important;
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: calc(100% + 6px + var(--todo-toolbar-stack-offset, 0px)) !important;
+    z-index: 7 !important;
+    width: 100% !important;
+  }
+
+  body.software-app.todo-page-liquid #mobile-toolbar-search-panel .relative {
+    border-radius: 14px !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    padding: 0 !important;
+  }
+
+  body.software-app.todo-page-liquid #mobile-toolbar-search-panel #mobile-toolbar-search-input {
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    border-radius: 14px !important;
+    padding: 11px 38px 11px 34px !important;
+    min-height: 40px !important;
+  }
+
+  body.software-app.todo-page-liquid #mobile-toolbar-search-panel #mobile-toolbar-search-input:focus {
+    box-shadow: none !important;
+    border: 0 !important;
+  }
+
+  body.software-app.todo-page-liquid #mobile-toolbar-search-panel.toolbar-dropdown-panel.show {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+    pointer-events: auto !important;
+  }
+
+  body.software-app.todo-page-liquid #mobile-toolbar-search-panel.toolbar-dropdown-panel.hidden {
+    display: none !important;
+    opacity: 0 !important;
+  }
+
+  body.software-app.todo-page-liquid #mobile-toolbar-search-panel.toolbar-dropdown-panel {
+    transform-origin: 0% 0% !important;
+  }
+
+  body.software-app.todo-page-liquid #batch-actions-row.toolbar-dropdown-panel {
+    transform-origin: 0% 0% !important;
+  }
+
+  /* In-flow dropdown animation: smooth push-down / return without card overlap. */
+  body.software-app.todo-page-liquid #mobile-toolbar-search-panel.toolbar-dropdown-panel,
+  body.software-app.todo-page-liquid #batch-actions-row.toolbar-dropdown-panel {
+    max-height: none !important;
+    opacity: 0 !important;
+    transform: translate3d(0, -6px, 0) scale(0.985) !important;
+    overflow: hidden !important;
+    will-change: transform, opacity;
+    transition:
+      top var(--todo-lg-motion-mid) var(--todo-lg-motion-ease),
+      opacity var(--todo-lg-motion-fast) ease,
+      transform var(--todo-lg-motion-mid) var(--todo-lg-motion-ease) !important;
+  }
+
+  body.software-app.todo-page-liquid #mobile-toolbar-search-panel.toolbar-dropdown-panel.show,
+  body.software-app.todo-page-liquid #batch-actions-row.toolbar-dropdown-panel.show {
+    opacity: 1 !important;
+    transform: translate3d(0, 0, 0) scale(1) !important;
+  }
+
+  /* Smooth card push/pull by GPU transform instead of heavy reflow animation. */
+  body.software-app.todo-page-liquid #task-list-container {
+    --todo-toolbar-card-offset: 0px;
+    transform: translate3d(0, var(--todo-toolbar-card-offset), 0);
+    transition: transform var(--todo-lg-motion-mid) var(--todo-lg-motion-ease);
+    will-change: transform;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .task-group-card,
+  body.software-app.todo-page-liquid #todo-main .task-card,
+  body.software-app.todo-page-liquid #todo-toolbar .quick-action-btn,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item,
+  body.software-app.todo-page-liquid .btn-primary-glass,
+  body.software-app.todo-page-liquid .btn-secondary-glass {
+    transition-duration: var(--todo-lg-motion-mid) !important;
+    transition-timing-function: var(--todo-lg-motion-ease) !important;
+  }
+
+  body.software-app.todo-page-liquid .todo-lg-ripple {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.78), rgba(155, 214, 255, 0.35) 58%, rgba(155, 214, 255, 0));
+    transform: translate(-50%, -50%) scale(0);
+    pointer-events: none;
+    animation: todo-lg-ripple 0.52s ease-out forwards;
+    mix-blend-mode: screen;
+  }
+
+  body.software-app.todo-page-liquid .todo-lg-ripple--second {
+    width: 14px;
+    height: 14px;
+    opacity: 0.7;
+    animation-duration: 0.58s;
+  }
+
+  body.software-app.todo-page-liquid .todo-lg-press-glow {
+    box-shadow:
+      0 0 0 1px rgba(134, 191, 255, 0.6),
+      0 0 14px rgba(86, 170, 255, 0.46),
+      0 6px 18px rgba(31, 38, 135, 0.18) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .task-group-card:active,
+  body.software-app.todo-page-liquid #todo-main .task-card:active {
+    transform: scale(1.015);
+    filter: brightness(1.08);
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item {
+    transition:
+      transform 0.28s cubic-bezier(0.25, 1.15, 0.35, 1.05),
+      color 0.22s ease,
+      background 0.28s ease,
+      box-shadow 0.28s ease,
+      border-color 0.28s ease !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item.active {
+    transform: translateY(-1px) scale(1.04);
+  }
+
+  body.software-app.todo-page-liquid:not(.todo-lg-ready) .todo-lg-enter-header,
+  body.software-app.todo-page-liquid:not(.todo-lg-ready) .todo-lg-enter-toolbar,
+  body.software-app.todo-page-liquid:not(.todo-lg-ready) .todo-lg-enter-card,
+  body.software-app.todo-page-liquid:not(.todo-lg-ready) .todo-lg-enter-footer {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+
+  body.software-app.todo-page-liquid.todo-lg-ready .todo-lg-enter-header {
+    animation: todo-lg-enter-up 0.46s cubic-bezier(0.25, 1.15, 0.35, 1.05) 0.1s both;
+  }
+
+  body.software-app.todo-page-liquid.todo-lg-ready .todo-lg-enter-toolbar {
+    animation: todo-lg-enter-up 0.48s cubic-bezier(0.25, 1.15, 0.35, 1.05) 0.16s both;
+  }
+
+  body.software-app.todo-page-liquid.todo-lg-ready .todo-lg-enter-card {
+    animation: todo-lg-enter-up 0.54s cubic-bezier(0.25, 1.15, 0.35, 1.05) var(--todo-lg-delay, 0.24s) both;
+  }
+
+  body.software-app.todo-page-liquid.todo-lg-ready .todo-lg-enter-footer {
+    animation: todo-lg-enter-up 0.5s cubic-bezier(0.25, 1.15, 0.35, 1.05) 0.5s both;
+  }
+
+  body.software-app.todo-page-liquid.todo-lg-scrolling #main-header,
+  body.software-app.todo-page-liquid.todo-lg-scrolling #todo-main .task-group-card,
+  body.software-app.todo-page-liquid.todo-lg-scrolling #todo-main .task-card,
+  body.software-app.todo-page-liquid.todo-lg-scrolling #todo-app-shell + footer.glass-tab,
+  body.software-app.todo-page-liquid.todo-lg-scrolling #mobile-toolbar-search-panel.toolbar-dropdown-panel,
+  body.software-app.todo-page-liquid.todo-lg-scrolling .modal-content {
+    backdrop-filter: blur(35px) saturate(160%) brightness(110%) !important;
+    -webkit-backdrop-filter: blur(35px) saturate(160%) brightness(110%) !important;
+  }
+
+  @keyframes todo-lg-breathe {
+    0%, 100% { transform: translateY(0); opacity: 0.8; }
+    50% { transform: translateY(-4px); opacity: 1; }
+  }
+
+  @keyframes todo-lg-ripple {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 0.7; }
+    100% { transform: translate(-50%, -50%) scale(12); opacity: 0; }
+  }
+
+  @keyframes todo-lg-enter-up {
+    0% { opacity: 0; transform: translateY(20px) scale(0.98); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  @keyframes todo-lg-sync-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.software-app.todo-page-liquid * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Mobile todo page: ultra-transparent liquid-glass skin (style only, no behavior changes). */
+@media (max-width: 900px) {
+  body.software-app.todo-page-liquid {
+    --todo-ios26-glass-fill: rgba(255, 255, 255, 0.055);
+    --todo-ios26-glass-border: rgba(255, 255, 255, 0.18);
+    --todo-ios26-glass-shadow:
+      0 6px 24px rgba(26, 41, 71, 0.12),
+      0 2px 10px rgba(26, 41, 71, 0.07),
+      inset 0 1px 0 rgba(255, 255, 255, 0.58),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.58),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    --todo-ios26-glass-backdrop: blur(30px) saturate(132%) brightness(106%);
+  }
+
+  body.software-app.todo-page-liquid #todo-main .task-group-card,
+  body.software-app.todo-page-liquid #todo-main .task-card,
+  body.software-app.todo-page-liquid #todo-main .task-empty-state,
+  body.software-app.todo-page-liquid #todo-toolbar,
+  body.software-app.todo-page-liquid #batch-actions-row.toolbar-dropdown-panel,
+  body.software-app.todo-page-liquid #mobile-toolbar-search-panel.toolbar-dropdown-panel,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab,
+  body.software-app.todo-page-liquid #main-header .container > .flex.items-center.space-x-4 > a,
+  body.software-app.todo-page-liquid #main-header #notification-btn,
+  body.software-app.todo-page-liquid #main-header #user-menu-btn,
+  body.software-app.todo-page-liquid #sort-filter-btn,
+  body.software-app.todo-page-liquid #select-mode-btn,
+  body.software-app.todo-page-liquid #mobile-search-btn,
+  body.software-app.todo-page-liquid #batch-complete-btn,
+  body.software-app.todo-page-liquid #batch-delete-btn,
+  body.software-app.todo-page-liquid #batch-cancel-btn,
+  body.software-app.todo-page-liquid .btn-primary-glass,
+  body.software-app.todo-page-liquid .btn-secondary-glass,
+  body.software-app.todo-page-liquid .task-action-btn {
+    border-color: var(--todo-ios26-glass-border) !important;
+    background:
+      linear-gradient(135deg,
+        rgba(255, 255, 255, 0.16) 0%,
+        rgba(255, 255, 255, 0.08) 42%,
+        rgba(255, 255, 255, 0.03) 100%),
+      var(--todo-ios26-glass-fill) !important;
+    box-shadow: var(--todo-ios26-glass-shadow) !important;
+    backdrop-filter: var(--todo-ios26-glass-backdrop) !important;
+    -webkit-backdrop-filter: var(--todo-ios26-glass-backdrop) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-main .task-empty-state {
+    background:
+      linear-gradient(138deg,
+        rgba(255, 255, 255, 0.2) 0%,
+        rgba(255, 255, 255, 0.09) 44%,
+        rgba(255, 255, 255, 0.04) 100%),
+      rgba(255, 255, 255, 0.06) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab {
+    background:
+      linear-gradient(138deg,
+        rgba(255, 255, 255, 0.2) 0%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(173, 226, 255, 0.13) 100%),
+      rgba(255, 255, 255, 0.065) !important;
+  }
+
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item i {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: 0 !important;
+  }
+
+}
+
+/* Calendar mobile content-only liquid glass skin (does NOT touch top header / bottom tab). */
+@media (max-width: 900px) {
+  body.software-app.calendar-page-liquid {
+    background: url('https://picsum.photos/1920/1080?random=1') center/cover fixed !important;
+  }
+
+  body.software-app.calendar-page-liquid .bg-orb {
+    display: none !important;
+  }
+
+  body.software-app.calendar-page-liquid {
+    --calendar-glass-bg: rgba(255, 255, 255, 0.05);
+    --calendar-glass-border: rgba(255, 255, 255, 0.1);
+    --calendar-glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --calendar-glass-backdrop: blur(30px);
+    --calendar-text-main: rgba(255, 255, 255, 0.98);
+    --calendar-text-sub: rgba(255, 255, 255, 0.82);
+    --calendar-warm: #f1d09a;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .glass-card,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-task-stream,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-secondary-shell,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-empty,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-task-item,
+  body.software-app.calendar-page-liquid #calendar-main .scheduled-task-item,
+  body.software-app.calendar-page-liquid #calendar-main .task-item,
+  body.software-app.calendar-page-liquid #calendar-main .event-item,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-cell,
+  body.software-app.calendar-page-liquid #calendar-main .day-cell,
+  body.software-app.calendar-page-liquid #calendar-main #month-grid > div,
+  body.software-app.calendar-page-liquid #calendar-main #week-grid > div,
+  body.software-app.calendar-page-liquid #calendar-main #day-grid > div,
+  body.software-app.calendar-page-liquid #calendar-main .dropdown-menu,
+  body.software-app.calendar-page-liquid #calendar-main .datetime-select-menu,
+  body.software-app.calendar-page-liquid #calendar-main .detail-datetime-panel,
+  body.software-app.calendar-page-liquid #calendar-main .detail-datetime-shell {
+    background: var(--calendar-glass-bg) !important;
+    backdrop-filter: var(--calendar-glass-backdrop) !important;
+    -webkit-backdrop-filter: var(--calendar-glass-backdrop) !important;
+    border: 1px solid var(--calendar-glass-border) !important;
+    box-shadow: var(--calendar-glass-shadow) !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .btn-glass,
+  body.software-app.calendar-page-liquid #calendar-main .btn-primary,
+  body.software-app.calendar-page-liquid #calendar-main .view-btn,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-nav-btn,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-empty-cta,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-secondary-header,
+  body.software-app.calendar-page-liquid #calendar-main .category-chip,
+  body.software-app.calendar-page-liquid #calendar-main .datetime-select-trigger,
+  body.software-app.calendar-page-liquid #calendar-main .datetime-quick-btn,
+  body.software-app.calendar-page-liquid #calendar-main .datetime-calendar-nav,
+  body.software-app.calendar-page-liquid #calendar-main .datetime-calendar-action,
+  body.software-app.calendar-page-liquid #calendar-main #selected-day-sort {
+    background: var(--calendar-glass-bg) !important;
+    backdrop-filter: var(--calendar-glass-backdrop) !important;
+    -webkit-backdrop-filter: var(--calendar-glass-backdrop) !important;
+    border: 1px solid var(--calendar-glass-border) !important;
+    box-shadow: var(--calendar-glass-shadow) !important;
+    color: var(--calendar-text-main) !important;
+  }
+
+  /* Cover mobile date/view strip in main area (the block with 4鏈?鏃ユ槦鏈熷叚 + 鏈堝懆鏃?. */
+  body.software-app.calendar-page-liquid #calendar-mobile-toolbar .calendar-mobile-toolbar-inner > div,
+  body.software-app.calendar-page-liquid #calendar-mobile-toolbar .calendar-mobile-meta-row .glass-card,
+  body.software-app.calendar-page-liquid #calendar-mobile-toolbar .calendar-mobile-view-row > .view-btn,
+  body.software-app.calendar-page-liquid #calendar-mobile-toolbar .calendar-mobile-view-row > [data-view],
+  body.software-app.calendar-page-liquid #calendar-main #today-quick-btn {
+    background: var(--calendar-glass-bg) !important;
+    backdrop-filter: var(--calendar-glass-backdrop) !important;
+    -webkit-backdrop-filter: var(--calendar-glass-backdrop) !important;
+    border: 1px solid var(--calendar-glass-border) !important;
+    box-shadow: var(--calendar-glass-shadow) !important;
+    color: var(--calendar-text-main) !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .glass-card,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-task-stream,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-secondary-shell,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-task-item,
+  body.software-app.calendar-page-liquid #calendar-main .btn-glass,
+  body.software-app.calendar-page-liquid #calendar-main .btn-primary,
+  body.software-app.calendar-page-liquid #calendar-main .view-btn,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-nav-btn,
+  body.software-app.calendar-page-liquid #calendar-main .category-chip,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-secondary-header {
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Remove unwanted top/bottom white hairlines from pseudo highlight layers. */
+  body.software-app.calendar-page-liquid #calendar-main .glass-card::before,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-task-stream::before,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-secondary-shell::before,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-task-item::before,
+  body.software-app.calendar-page-liquid #calendar-main .btn-glass::before,
+  body.software-app.calendar-page-liquid #calendar-main .btn-primary::before,
+  body.software-app.calendar-page-liquid #calendar-main .view-btn::before,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-nav-btn::before,
+  body.software-app.calendar-page-liquid #calendar-main .category-chip::before,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-secondary-header::before,
+  body.software-app.calendar-page-liquid #calendar-main .glass-card::after,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-task-stream::after,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-secondary-shell::after,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-task-item::after,
+  body.software-app.calendar-page-liquid #calendar-main .btn-glass::after,
+  body.software-app.calendar-page-liquid #calendar-main .btn-primary::after,
+  body.software-app.calendar-page-liquid #calendar-main .view-btn::after,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-nav-btn::after,
+  body.software-app.calendar-page-liquid #calendar-main .category-chip::after,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-secondary-header::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .text-gray-800,
+  body.software-app.calendar-page-liquid #calendar-main #month-title,
+  body.software-app.calendar-page-liquid #calendar-main #selected-day-title,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-secondary-shell .text-sm.font-semibold {
+    color: var(--calendar-text-main) !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .text-gray-500,
+  body.software-app.calendar-page-liquid #calendar-main .text-gray-600,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-empty,
+  body.software-app.calendar-page-liquid #calendar-main #selected-day-batch-tip,
+  body.software-app.calendar-page-liquid #calendar-main #ai-schedule-status {
+    color: var(--calendar-text-sub) !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .category-chip.active {
+    border-color: rgba(255, 255, 255, 0.66) !important;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22), var(--calendar-glass-shadow) !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .view-btn.active,
+  body.software-app.calendar-page-liquid #calendar-main .btn-primary {
+    color: #fff6e9 !important;
+    border-color: rgba(255, 230, 184, 0.7) !important;
+    background: linear-gradient(145deg, rgba(245, 198, 132, 0.22), rgba(255, 255, 255, 0.06)) !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main #month-grid > div,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-cell {
+    color: rgba(255, 255, 255, 0.92) !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main #month-grid > div.selected-date-cell,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-cell.selected-date-cell,
+  body.software-app.calendar-page-liquid #calendar-main .day-cell.selected-date-cell {
+    border-color: rgba(255, 236, 205, 0.96) !important;
+    box-shadow: 0 0 0 1px rgba(255, 236, 205, 0.52), var(--calendar-glass-shadow) !important;
+    background: linear-gradient(145deg, rgba(255, 197, 106, 0.2), rgba(255, 255, 255, 0.08)) !important;
+    color: #fff1d6 !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main #month-grid > div.other-month,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-cell.other-month {
+    color: rgba(255, 255, 255, 0.62) !important;
+  }
+
+  /* Day view: keep outer/inner empty-state corners consistent. */
+  body.software-app.calendar-page-liquid #calendar-main #day-grid > .col-span-10 {
+    width: calc(100% - 8px) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    transform: translateX(4px);
+    border-radius: 12px !important;
+    overflow: hidden !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main #day-grid > .col-span-10 > .rounded-2xl.border-dashed {
+    width: calc(100% - 10px) !important;
+    margin: 0 auto !important;
+    border-radius: 10px !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .text-primary {
+    color: var(--calendar-warm) !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .dropdown-menu,
+  body.software-app.calendar-page-liquid #calendar-main .datetime-select-menu {
+    opacity: 0;
+    transform: translate3d(0, -6px, 0) scale(0.985);
+    transition: opacity 0.2s ease-out, transform 0.3s ease !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .dropdown-menu.show,
+  body.software-app.calendar-page-liquid #calendar-main .datetime-select-menu.show {
+    opacity: 1 !important;
+    transform: translate3d(0, 0, 0) scale(1) !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .dropdown-menu a,
+  body.software-app.calendar-page-liquid #calendar-main .datetime-select-option {
+    color: var(--calendar-text-main) !important;
+    border-radius: 12px !important;
+    transition: 0.3s ease;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .dropdown-menu a:hover,
+  body.software-app.calendar-page-liquid #calendar-main .datetime-select-option:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12) !important;
+  }
+
+  /* Make sure scheduled card and calendar block are visually separated (not one shared shell). */
+  body.software-app.calendar-page-liquid #calendar-main .calendar-container {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Category chips: keep all 5 tags visible in one row without clipping. */
+  body.software-app.calendar-page-liquid #calendar-main #calendar-top-filter-row {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+    overflow: visible !important;
+    padding-bottom: 0 !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main #calendar-top-filter-row .category-chip {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 40px !important;
+    padding: 0 7px !important;
+    justify-content: center !important;
+    gap: 6px !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main #calendar-top-filter-row .category-chip-label {
+    font-size: 12.5px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main #calendar-top-filter-row .category-chip-dot {
+    width: 10px !important;
+    height: 10px !important;
+  }
+
+  /* Remove dark focus ring on controls. */
+  body.software-app.calendar-page-liquid #calendar-main .btn-glass:focus,
+  body.software-app.calendar-page-liquid #calendar-main .btn-primary:focus,
+  body.software-app.calendar-page-liquid #calendar-main .btn-glass:focus-visible,
+  body.software-app.calendar-page-liquid #calendar-main .btn-primary:focus-visible,
+  body.software-app.calendar-page-liquid #calendar-main .view-btn:focus,
+  body.software-app.calendar-page-liquid #calendar-main .view-btn:focus-visible,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-nav-btn:focus,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-nav-btn:focus-visible,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-secondary-header:focus,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-secondary-header:focus-visible,
+  body.software-app.calendar-page-liquid #calendar-main .datetime-select-trigger:focus,
+  body.software-app.calendar-page-liquid #calendar-main .datetime-select-trigger:focus-visible,
+  body.software-app.calendar-page-liquid #calendar-main #selected-day-sort:focus,
+  body.software-app.calendar-page-liquid #calendar-main #selected-day-sort:focus-visible,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-trigger:focus,
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-trigger:focus-visible {
+    outline: none !important;
+    box-shadow: var(--calendar-glass-shadow) !important;
+  }
+
+  /* Liquid custom dropdown for selected-day-sort. */
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-shell {
+    position: relative;
+    flex: 0 0 auto;
+    min-width: 106px;
+    z-index: 48;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-native-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    left: 0 !important;
+    top: 0 !important;
+    border: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-trigger {
+    width: 100%;
+    min-height: 40px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0 12px;
+    white-space: nowrap;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: transparent;
+    outline: none !important;
+    border-color: var(--calendar-glass-border) !important;
+    background: var(--calendar-glass-bg) !important;
+    color: var(--calendar-text-main) !important;
+    writing-mode: horizontal-tb !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-trigger:active {
+    outline: none !important;
+    border-color: var(--calendar-glass-border) !important;
+    box-shadow: var(--calendar-glass-shadow) !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-trigger i {
+    transition: transform 220ms cubic-bezier(0.25, 1, 0.36, 1);
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-shell.open .calendar-liquid-sort-trigger i {
+    transform: rotate(180deg);
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-menu {
+    position: absolute;
+    left: 0;
+    right: auto;
+    top: calc(100% + 6px);
+    width: 182px;
+    max-width: calc(100vw - 40px);
+    border-radius: 14px !important;
+    padding: 6px !important;
+    background:
+      linear-gradient(165deg, rgba(255, 255, 255, 0.115), rgba(255, 255, 255, 0.02)) !important;
+    backdrop-filter: blur(34px) saturate(138%) brightness(108%) !important;
+    -webkit-backdrop-filter: blur(34px) saturate(138%) brightness(108%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow:
+      0 10px 28px rgba(22, 30, 60, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.42) !important;
+    opacity: 0;
+    transform: translate3d(0, -6px, 0) scale(0.985);
+    transform-origin: top left;
+    pointer-events: none;
+    z-index: 60;
+    overflow: hidden;
+    transition:
+      opacity 0.2s ease-out,
+      transform 0.24s cubic-bezier(0.25, 1, 0.36, 1) !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-menu.show {
+    opacity: 1 !important;
+    transform: translate3d(0, 0, 0) scale(1) !important;
+    pointer-events: auto;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-option {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: var(--calendar-text-main);
+    text-align: left;
+    padding: 11px 10px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.1;
+    cursor: pointer;
+    transition: 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    white-space: nowrap;
+    writing-mode: horizontal-tb !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-option.active {
+    background: rgba(124, 168, 255, 0.2);
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-option:hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-menu.dropdown-closing {
+    opacity: 0 !important;
+    transform: translate3d(0, -6px, 0) scale(0.985) !important;
+    pointer-events: none !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main .calendar-liquid-sort-option i {
+    width: 14px;
+    text-align: center;
+    color: rgba(164, 197, 255, 0.94);
+    flex: 0 0 14px;
+  }
+
+  /* Keep selected-day header title + controls on one row in mobile. */
+  body.software-app.calendar-page-liquid #calendar-main #selected-day-task-section {
+    overflow: visible !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main #selected-day-task-section > .flex.items-center.justify-between.gap-3.mb-3 {
+    flex-wrap: nowrap !important;
+    align-items: flex-start !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main #selected-day-title {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: clip !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main #selected-day-task-section > .flex.items-center.justify-between.gap-3.mb-3 > .flex.items-center.gap-2 {
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-main #selected-day-multi-toggle {
+    min-width: 52px !important;
+    white-space: nowrap !important;
+    writing-mode: horizontal-tb !important;
+    text-align: center !important;
+    line-height: 1 !important;
+  }
+
+  /* Keep date + month/week/day controls visually aligned in one row area. */
+  body.software-app.calendar-page-liquid #calendar-mobile-toolbar .calendar-mobile-toolbar-inner > div {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-mobile-toolbar .calendar-mobile-meta-row {
+    width: auto !important;
+    flex: 0 0 auto !important;
+    min-height: 38px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-mobile-toolbar .calendar-mobile-view-row {
+    width: auto !important;
+    flex: 1 1 auto !important;
+    min-height: 38px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+  }
+
+  body.software-app.calendar-page-liquid #calendar-mobile-toolbar .calendar-mobile-view-row > .view-btn,
+  body.software-app.calendar-page-liquid #calendar-mobile-toolbar .calendar-mobile-view-row > [data-view] {
+    height: 38px !important;
+    min-height: 38px !important;
+    line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+  }
+
+  /* Final mobile top-dock offset override for pages whose own padding rules come later. */
+  body.has-unified-top-header.software-app.todo-page-liquid #todo-main,
+  body.has-unified-top-header.software-app #todo-main {
+    padding-top: calc(var(--unified-top-header-space, 56px) + 8px + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  /* Align all non-todo mobile pages closer to the unified top header.
+     Todo already looks balanced, so keep its slightly roomier offset. */
+  body.has-unified-top-header.software-app > .flex.flex-1.overflow-hidden > main,
+  body.has-unified-top-header.software-app > main {
+    padding-top: calc(var(--unified-top-header-space, 56px) + 4px + env(safe-area-inset-top, 0px)) !important;
+    scroll-padding-top: calc(var(--unified-top-header-space, 56px) + 10px + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  body.has-unified-top-header.software-app.todo-page-liquid #todo-main {
+    padding-top: calc(var(--unified-top-header-space, 56px) + 8px + env(safe-area-inset-top, 0px)) !important;
+    scroll-padding-top: calc(var(--unified-top-header-space, 56px) + 16px + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  body.has-unified-top-header.software-app.calendar-page-liquid #calendar-main,
+  body.has-unified-top-header.software-app #calendar-main {
+    padding-top: calc(var(--unified-top-header-space, 56px) + 4px + env(safe-area-inset-top, 0px)) !important;
+    scroll-padding-top: calc(var(--unified-top-header-space, 56px) + 10px + env(safe-area-inset-top, 0px)) !important;
+  }
+
+  body.has-unified-top-header.software-app.calendar-page-liquid #calendar-main > :first-child,
+  body.has-unified-top-header.software-app.calendar-page-liquid #calendar-mobile-toolbar,
+  body.has-unified-top-header.software-app #calendar-mobile-toolbar {
+    margin-top: -8px !important;
+  }
+
+  body.has-unified-top-header.software-app #calendar-main > :first-child {
+    margin-top: 0 !important;
+  }
+}
+
+/* Final mobile unification: shared random background and region-based text/icon contrast. */
+@media (max-width: 900px) {
+  body.software-app {
+    --mobile-random-bg-image: url("https://picsum.photos/seed/xydb-mobile-default/1920/1080");
+    --auto-header-ink: rgba(248, 250, 255, 0.98);
+    --auto-header-soft: rgba(228, 234, 245, 0.84);
+    --auto-header-active: rgba(255, 255, 255, 0.99);
+    --auto-header-active-bg: rgba(255, 255, 255, 0.16);
+    --auto-header-shell-bg: linear-gradient(180deg, rgba(34, 45, 62, 0.34) 0%, rgba(22, 31, 48, 0.24) 58%, rgba(18, 26, 42, 0.18) 100%);
+    --auto-header-shell-border: rgba(255, 255, 255, 0.2);
+    --auto-footer-ink: rgba(248, 250, 255, 0.98);
+    --auto-footer-soft: rgba(228, 234, 245, 0.84);
+    --auto-footer-active: rgba(255, 255, 255, 0.99);
+    --auto-footer-active-bg: rgba(255, 255, 255, 0.16);
+    --auto-footer-shell-bg: linear-gradient(180deg, rgba(34, 45, 62, 0.34) 0%, rgba(22, 31, 48, 0.24) 58%, rgba(18, 26, 42, 0.18) 100%);
+    --auto-footer-shell-border: rgba(255, 255, 255, 0.2);
+    background-image:
+      linear-gradient(180deg, rgba(9, 15, 28, 0.12) 0%, rgba(9, 15, 28, 0.06) 22%, rgba(9, 15, 28, 0.14) 100%),
+      var(--mobile-random-bg-image) !important;
+    background-position: center center !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
+  }
+
+  body.software-app.profile-page,
+  body.software-app.todo-page-liquid,
+  body.software-app.pomodoro-page-liquid,
+  body.software-app.calendar-page-liquid,
+  body.software-app.report-page-liquid,
+  body.software-app.checkin-page-liquid {
+    background-image:
+      linear-gradient(180deg, rgba(9, 15, 28, 0.12) 0%, rgba(9, 15, 28, 0.06) 22%, rgba(9, 15, 28, 0.14) 100%),
+      var(--mobile-random-bg-image) !important;
+  }
+
+  body.software-app .unified-top-header-dock .unified-top-header-shell,
+  body.software-app .unified-top-header-dock .unified-top-header-shell *,
+  body.software-app header.glass-header,
+  body.software-app header.glass-header * {
+    color: inherit;
+  }
+
+  body.software-app .unified-top-header-dock .unified-top-header-shell h1,
+  body.software-app .unified-top-header-dock .unified-top-header-shell p,
+  body.software-app .unified-top-header-dock .unified-top-header-shell span,
+  body.software-app .unified-top-header-dock .unified-top-header-shell a,
+  body.software-app .unified-top-header-dock .unified-top-header-shell button,
+  body.software-app header.glass-header h1,
+  body.software-app header.glass-header p,
+  body.software-app header.glass-header span,
+  body.software-app header.glass-header a,
+  body.software-app header.glass-header button {
+    color: var(--auto-header-ink) !important;
+  }
+
+  body.software-app .unified-top-header-dock .unified-top-header-shell .text-xs,
+  body.software-app .unified-top-header-dock .unified-top-header-shell .text-sm,
+  body.software-app header.glass-header .text-xs,
+  body.software-app header.glass-header .text-sm {
+    color: var(--auto-header-soft) !important;
+  }
+
+  body.software-app .unified-top-header-dock .unified-top-header-shell i,
+  body.software-app .unified-top-header-dock .unified-top-header-shell svg,
+  body.software-app header.glass-header i,
+  body.software-app header.glass-header svg {
+    color: var(--auto-header-ink) !important;
+  }
+
+  body.software-app .unified-top-header-dock .unified-top-header-shell #today-btn,
+  body.software-app .unified-top-header-dock .unified-top-header-shell .view-btn,
+  body.software-app .unified-top-header-dock .unified-top-header-shell .btn-primary,
+  body.software-app .unified-top-header-dock .unified-top-header-shell .btn-glass,
+  body.software-app .unified-top-header-dock .unified-top-header-shell [data-view],
+  body.software-app .unified-top-header-dock .unified-top-header-shell #mobile-search-btn,
+  body.software-app header.glass-header #today-btn,
+  body.software-app header.glass-header .view-btn,
+  body.software-app header.glass-header .btn-primary,
+  body.software-app header.glass-header .btn-glass,
+  body.software-app header.glass-header [data-view],
+  body.software-app header.glass-header #mobile-search-btn,
+  body.software-app .unified-top-header-dock .unified-top-header-shell #today-btn *,
+  body.software-app .unified-top-header-dock .unified-top-header-shell .view-btn *,
+  body.software-app .unified-top-header-dock .unified-top-header-shell .btn-primary *,
+  body.software-app .unified-top-header-dock .unified-top-header-shell .btn-glass *,
+  body.software-app .unified-top-header-dock .unified-top-header-shell [data-view] *,
+  body.software-app .unified-top-header-dock .unified-top-header-shell #mobile-search-btn *,
+  body.software-app header.glass-header #today-btn *,
+  body.software-app header.glass-header .view-btn *,
+  body.software-app header.glass-header .btn-primary *,
+  body.software-app header.glass-header .btn-glass *,
+  body.software-app header.glass-header [data-view] *,
+  body.software-app header.glass-header #mobile-search-btn * {
+    color: var(--auto-header-ink) !important;
+  }
+
+  body.software-app footer.glass-tab .tab-item,
+  body.software-app footer.glass-tab .tab-item i,
+  body.software-app footer.glass-tab .tab-item span,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item i,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item span,
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item,
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item i,
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item span,
+  body.software-app .unified-bottom-tab-dock .unified-tab-item,
+  body.software-app .unified-bottom-tab-dock .unified-tab-icon,
+  body.software-app .unified-bottom-tab-dock .unified-tab-label,
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item,
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-icon,
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-label,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-icon,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-label {
+    color: var(--auto-footer-soft) !important;
+  }
+
+  body.software-app footer.glass-tab .tab-item.active,
+  body.software-app footer.glass-tab .tab-item.active i,
+  body.software-app footer.glass-tab .tab-item.active span,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item.active,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item.active i,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item.active span,
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item.active,
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item.active i,
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item.active span,
+  body.software-app .unified-bottom-tab-dock .unified-tab-item.active,
+  body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon,
+  body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-label,
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item.active,
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon,
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-label,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item.active,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-label {
+    color: var(--auto-footer-active) !important;
+    opacity: 1 !important;
+  }
+
+  body.software-app footer.glass-tab .tab-item:not(.active),
+  body.software-app footer.glass-tab .tab-item:not(.active) i,
+  body.software-app footer.glass-tab .tab-item:not(.active) span,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item:not(.active),
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item:not(.active) i,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item:not(.active) span,
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item:not(.active),
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item:not(.active) i,
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item:not(.active) span,
+  body.software-app .unified-bottom-tab-dock .unified-tab-item:not(.active),
+  body.software-app .unified-bottom-tab-dock .unified-tab-item:not(.active) .unified-tab-icon,
+  body.software-app .unified-bottom-tab-dock .unified-tab-item:not(.active) .unified-tab-label,
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item:not(.active),
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item:not(.active) .unified-tab-icon,
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item:not(.active) .unified-tab-label,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item:not(.active),
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item:not(.active) .unified-tab-icon,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item:not(.active) .unified-tab-label {
+    color: var(--auto-footer-soft) !important;
+    opacity: 0.88 !important;
+  }
+
+  body.software-app footer.glass-tab .tab-item.active,
+  body.software-app footer.glass-tab .tab-item.active i,
+  body.software-app footer.glass-tab .tab-item.active span,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item.active,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item.active i,
+  body.software-app.todo-page-liquid #todo-app-shell + footer.glass-tab .tab-item.active span,
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item.active,
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item.active i,
+  body.software-app.pomodoro-page-liquid footer.glass-tab .tab-item.active span,
+  body.software-app .unified-bottom-tab-dock .unified-tab-item.active,
+  body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon,
+  body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-label,
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item.active,
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon,
+  html.unified-dark-mode body.software-app .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-label,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item.active,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon,
+  body.software-app.theme-night .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-label {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.18);
+  }
+}
+

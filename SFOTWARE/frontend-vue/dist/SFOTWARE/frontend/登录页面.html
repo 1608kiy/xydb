@@ -1,0 +1,193 @@
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>铃记 - 登录</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src='./js/pages/登录页面.inline-01.js?v=20260327_jssplit'></script>
+    <script src='./js/tailwind-style-loader.js?v=20260327_csssplit'></script>
+  <script src='./js/pages/登录页面.inline-02.js?v=20260327_jssplit'></script>
+  <link rel='stylesheet' href='./css/mobile-tune.css?v=20260401_liquid_modal1' />
+    <script defer src='./js/software-mobile.js?v=20260330_app8'></script>
+</head>
+  <body class="font-inter min-h-screen flex flex-col overflow-hidden relative auth-page">
+    <div class="bg-gradient-full"></div>
+    <div class="auth-orb auth-orb-1" aria-hidden="true"></div>
+    <div class="auth-orb auth-orb-2" aria-hidden="true"></div>
+    <div class="auth-orb auth-orb-3" aria-hidden="true"></div>
+
+    <div class="auth-page-shell flex-1 relative z-10 flex items-center justify-center px-4 py-6 sm:px-6">
+      <div class="w-full max-w-md">
+        <div class="auth-brand-block text-center mb-5">
+          <div class="auth-brand-logo mx-auto mb-3" id="auth-brand-logo" role="button" tabindex="0" aria-label="品牌彩蛋图标" aria-pressed="false" title="试试点击我">
+            <svg class="brand-mark-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="bubbleMainFill" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(24 22) rotate(45) scale(30)">
+                  <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.95"></stop>
+                  <stop offset="0.5" stop-color="#EAF1FF" stop-opacity="0.78"></stop>
+                  <stop offset="1" stop-color="#B8CCFF" stop-opacity="0.5"></stop>
+                </radialGradient>
+                <radialGradient id="bubbleMiniFill" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(0 0) rotate(45) scale(12)">
+                  <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.9"></stop>
+                  <stop offset="1" stop-color="#C9D6FF" stop-opacity="0.55"></stop>
+                </radialGradient>
+                <linearGradient id="bubbleWave" x1="20" y1="39" x2="44" y2="39" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#8EA4FF"></stop>
+                  <stop offset="1" stop-color="#7A82FF"></stop>
+                </linearGradient>
+                <linearGradient id="bellBodyFill" x1="27" y1="24" x2="39" y2="43" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#F8FBFF" stop-opacity="0.98"></stop>
+                  <stop offset="1" stop-color="#CFDAFF" stop-opacity="0.84"></stop>
+                </linearGradient>
+                <linearGradient id="bellBodyStroke" x1="26" y1="24" x2="39" y2="44" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#647BFF"></stop>
+                  <stop offset="1" stop-color="#6C5BFF"></stop>
+                </linearGradient>
+              </defs>
+              <circle class="brand-bubble-main" cx="32" cy="34" r="15.8" fill="url(#bubbleMainFill)" stroke="rgba(255,255,255,0.72)" stroke-width="1.5"></circle>
+              <ellipse class="brand-bubble-highlight" cx="25" cy="27" rx="5.8" ry="3.4" fill="rgba(255,255,255,0.62)"></ellipse>
+              <g class="brand-bell-symbol" stroke-linecap="round" stroke-linejoin="round">
+                <path class="brand-bell-crown" d="M31.2 26.1C31.5 25 32 24.4 32.8 24.4C33.6 24.4 34.2 25 34.5 26.1"></path>
+                <path class="brand-bell-outline" d="M27.9 31.3C27.9 28.4 30 26 32.8 26C35.6 26 37.7 28.4 37.7 31.3V35C37.7 35.9 38 36.7 38.6 37.3L39.4 38.2H26.2L27 37.3C27.6 36.7 27.9 35.9 27.9 35V31.3Z" fill="url(#bellBodyFill)" stroke="url(#bellBodyStroke)"></path>
+                <path class="brand-bell-shine" d="M30 28.2C29.2 28.8 28.8 29.8 28.8 31V34.2"></path>
+                <path class="brand-bell-tail" d="M30.4 39.5C31 40.7 31.8 41.2 32.8 41.2C33.8 41.2 34.6 40.7 35.2 39.5"></path>
+                <circle class="brand-bell-clapper" cx="32.8" cy="38.7" r="1.05"></circle>
+              </g>
+              <g class="brand-ring-arcs" stroke-linecap="round">
+                <path class="brand-ring-arc" d="M23.8 30C22.8 31 22.1 32.1 21.8 33.5"></path>
+                <path class="brand-ring-arc brand-ring-arc-right" d="M41.8 30C42.8 31 43.5 32.1 43.8 33.5"></path>
+              </g>
+              <path class="brand-bubble-wave" d="M22.8 40C25.8 38.5 28.8 39.2 32 40.4C35.1 41.6 38 41.8 41 40" stroke="url(#bubbleWave)" stroke-width="1.9" stroke-linecap="round"></path>
+              <circle class="brand-bubble-mini" cx="44.6" cy="20.5" r="5.3" fill="url(#bubbleMiniFill)" stroke="rgba(255,255,255,0.65)" stroke-width="1.2"></circle>
+              <circle class="brand-bubble-mini brand-bubble-mini-left" cx="18.2" cy="17.8" r="3.2" fill="url(#bubbleMiniFill)" stroke="rgba(255,255,255,0.6)" stroke-width="1"></circle>
+            </svg>
+            <span class="logo-glint"></span>
+          </div>
+          <h1 class="auth-brand-title">铃记</h1>
+          <p class="auth-brand-subtitle">专注每一天，高效每一刻</p>
+        </div>
+
+        <div class="glass-card form-enter">
+            
+            <!-- 登录表单 -->
+            <form id="login-form" class="space-y-5" action="待办页面.html" method="GET">
+              <!-- 账号输入 -->
+              <div>
+                <label for="login-account" class="block text-sm font-medium text-gray-700 mb-2">手机号/邮箱</label>
+                <div class="relative field-shell">
+                  <span class="absolute inset-y-0 left-0 flex items-center pl-4 input-icon">
+                    <i class="fas fa-user"> </i>
+                  </span>
+                  <input type="text" id="login-account" class="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl input-focus glass-input hover:border-gray-300" placeholder="请输入手机号或邮箱" required />
+                </div>
+              </div>
+              
+              <!-- 密码输入 -->
+              <div>
+                <label for="login-password" class="block text-sm font-medium text-gray-700 mb-2">密码</label>
+                <div class="relative field-shell">
+                  <span class="absolute inset-y-0 left-0 flex items-center pl-4 input-icon">
+                    <i class="fas fa-lock"> </i>
+                  </span>
+                  <input type="password" id="login-password" class="w-full pl-12 pr-12 py-3.5 border-2 border-gray-200 rounded-xl input-focus glass-input hover:border-gray-300" placeholder="请输入密码" required />
+                  <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-primary transition-colors duration-300" id="toggle-password">
+                    <i class="fas fa-eye-slash"> </i>
+                  </button>
+                </div>
+              </div>
+              
+              <!-- 记住我 & 忘记密码 -->
+              <div class="flex items-center justify-between">
+                <div class="remember-option flex items-center">
+                  <input type="checkbox" id="remember-me" class="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary cursor-pointer" />
+                  <label for="remember-me" class="remember-label ml-2 text-sm text-gray-600 cursor-pointer transition-colors duration-300">记住我</label>
+                </div>
+                <a id="forgot-password-link" href="javascript:void(0);" class="text-sm text-primary font-medium hover:text-primary/70 transition-colors duration-300">忘记密码？</a>
+              </div>
+              
+              <!-- 登录按钮 -->
+              <button type="submit" class="w-full btn-primary text-base shadow-lg shadow-primary/30 btn-glow">登 录</button>
+              
+              <!-- 分割线 -->
+              <div class="relative my-6">
+                <div class="absolute inset-0 flex items-center">
+                  <div class="w-full auth-divider-line"></div>
+                </div>
+                <div class="relative flex justify-center">
+                  <span class="auth-alt-divider px-4">其他登录方式</span>
+                </div>
+              </div>
+              
+              <!-- 社交登录 -->
+              <div class="auth-social-row">
+                <button type="button" class="btn-social group" title="微信登录" aria-label="微信登录">
+                  <i class="fab fa-weixin text-green-500 social-icon"> </i>
+                </button>
+                <button type="button" class="btn-social group" title="苹果登录" aria-label="苹果登录">
+                  <i class="fab fa-apple text-gray-800 social-icon"> </i>
+                </button>
+                <button type="button" class="btn-social group" title="谷歌登录" aria-label="谷歌登录">
+                  <i class="fab fa-google text-red-500 social-icon"> </i>
+                </button>
+                <button type="button" class="btn-social group" title="访客体验" aria-label="访客体验" data-social-auth="guest">
+                  <i class="fas fa-user-secret text-purple-500 social-icon"> </i>
+                </button>
+              </div>
+              
+              <!-- 注册链接 -->
+              <div class="text-center mt-6 pt-6 border-t border-gray-100">
+                <p class="auth-switch-note">
+                  还没有账号？
+                  <a href="注册页面.html">立即注册</a>
+                </p>
+              </div>
+            </form>
+        </div>
+
+        <!-- 底部提示 -->
+        <p class="auth-privacy-note text-center mt-6 px-4 leading-relaxed">
+          登录即代表您同意我们的
+          <a href="javascript:void(0);">用户协议</a>
+          和
+          <a href="javascript:void(0);">隐私政策</a>
+        </p>
+      </div>
+    </div>
+
+    <div id="forgot-password-modal" class="fixed inset-0 hidden items-center justify-center z-50 p-4" aria-hidden="true">
+      <div class="forgot-modal-panel w-full max-w-md rounded-2xl shadow-2xl p-6">
+        <button id="forgot-password-close" type="button" class="forgot-modal-close" aria-label="关闭找回密码弹窗">
+          <i class="fas fa-times"></i>
+        </button>
+        <div class="mb-4">
+          <h3 class="text-xl font-bold text-gray-800">找回密码</h3>
+        </div>
+        <p class="text-sm text-gray-500 mb-4">请输入注册邮箱并设置新密码。</p>
+        <form id="forgot-password-form" class="forgot-modal-form space-y-3">
+          <input id="forgot-email" type="email" class="w-full input-focus bg-white" placeholder="注册邮箱" required />
+          <div class="forgot-code-row flex gap-3">
+            <input id="forgot-code" type="text" inputmode="numeric" maxlength="6" class="flex-1 input-focus bg-white" placeholder="验证码" required />
+            <button id="forgot-send-code" type="button" class="shrink-0 px-4 rounded-lg text-sm font-medium transition-colors duration-300 bg-primary text-white hover:bg-primary/90 disabled:cursor-not-allowed">发送验证码</button>
+          </div>
+          <input id="forgot-new-password" type="password" class="w-full input-focus bg-white" placeholder="请输入新密码" minlength="6" required />
+          <input id="forgot-confirm-password" type="password" class="w-full input-focus bg-white" placeholder="确认新密码" minlength="6" required />
+          <button type="submit" class="w-full btn-primary forgot-submit-btn">确认重置密码</button>
+        </form>
+      </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script src="../../SHARE/data.js"></script>
+    <script src="../../SHARE/common.js"></script>
+    <script src="components.js"></script>
+    <script src='./js/pages/登录页面.inline-03.js?v=20260402_logo_easter_1'></script>
+  </body>
+</html>
+
+
+
+

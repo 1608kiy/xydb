@@ -1,0 +1,131 @@
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>铃记 - 注册</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <script src='./js/pages/注册页面.inline-01.js?v=20260327_jssplit'></script>
+    <script src='./js/tailwind-style-loader.js?v=20260327_csssplit'></script>
+  <script src='./js/pages/注册页面.inline-02.js?v=20260327_jssplit'></script>
+</head>
+  <body class="font-inter min-h-screen flex flex-col overflow-hidden relative auth-page">
+    <div class="bg-gradient-full"></div>
+    <div class="auth-orb auth-orb-1" aria-hidden="true"></div>
+    <div class="auth-orb auth-orb-2" aria-hidden="true"></div>
+    <div class="auth-orb auth-orb-3" aria-hidden="true"></div>
+
+    <div class="auth-page-shell flex-1 relative z-10 flex items-center justify-center px-4 py-6 sm:px-6">
+      <div class="w-full max-w-md">
+        <div class="auth-brand-block text-center mb-5">
+          <div class="auth-brand-logo mx-auto mb-3">☀️</div>
+          <h1 class="auth-brand-title">铃记</h1>
+          <p class="auth-brand-subtitle">专注每一天，高效每一刻</p>
+        </div>
+
+        <div class="glass-card">
+            <form id="register-form" class="space-y-5" action="待办页面.html" method="GET">
+              <div>
+                <label for="register-account" class="block text-sm font-medium text-gray-700 mb-2">手机号/邮箱</label>
+                <div class="relative group">
+                  <span class="absolute inset-y-0 left-0 flex items-center pl-4 input-icon">
+                    <i class="fas fa-user"> </i>
+                  </span>
+                  <input type="text" id="register-account" class="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl input-focus glass-input hover:border-gray-300" placeholder="请输入手机号或邮箱" required />
+                </div>
+              </div>
+              <div>
+                <label for="register-password" class="block text-sm font-medium text-gray-700 mb-2">设置密码</label>
+                <div class="relative group">
+                  <span class="absolute inset-y-0 left-0 flex items-center pl-4 input-icon">
+                    <i class="fas fa-lock"> </i>
+                  </span>
+                  <input type="password" id="register-password" class="w-full pl-12 pr-12 py-3.5 border-2 border-gray-200 rounded-xl input-focus glass-input hover:border-gray-300" placeholder="请输入密码" required />
+                  <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-primary transition-colors duration-300" id="toggle-register-password">
+                    <i class="fas fa-eye-slash"> </i>
+                  </button>
+                </div>
+                <div class="mt-2 hidden" id="password-strength-wrap" aria-live="polite">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-[11px] text-gray-500">密码强度</span>
+                    <span class="text-[11px] font-medium text-gray-500" id="password-strength-label">待检测</span>
+                  </div>
+                  <div class="password-strength-row flex items-center gap-2">
+                    <div class="flex-1 flex gap-1 h-1 rounded-[2px] overflow-hidden bg-gray-200">
+                      <div id="password-strength-segment-1" class="flex-1 rounded-[2px] bg-gray-200 transition-colors duration-300"></div>
+                      <div id="password-strength-segment-2" class="flex-1 rounded-[2px] bg-gray-200 transition-colors duration-300"></div>
+                      <div id="password-strength-segment-3" class="flex-1 rounded-[2px] bg-gray-200 transition-colors duration-300"></div>
+                    </div>
+                    <span class="password-strength-tip text-[11px] text-gray-500">建议包含字母和数字</span>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label for="register-confirm" class="block text-sm font-medium text-gray-700 mb-2">确认密码</label>
+                <div class="relative group">
+                  <span class="absolute inset-y-0 left-0 flex items-center pl-4 input-icon">
+                    <i class="fas fa-lock"> </i>
+                  </span>
+                  <input type="password" id="register-confirm" class="w-full pl-12 pr-12 py-3.5 border-2 border-gray-200 rounded-xl input-focus glass-input hover:border-gray-300" placeholder="请再次输入密码" required />
+                  <span id="register-confirm-match" class="absolute inset-y-0 right-0 flex items-center pr-4 text-green-500 opacity-0 transition-opacity duration-300" aria-live="polite">
+                    <i class="fas fa-check-circle"> </i>
+                  </span>
+                </div>
+              </div>
+              <button type="submit" class="w-full btn-primary text-base shadow-lg shadow-primary/30 btn-glow">注 册</button>
+              
+              <!-- 其他注册方式 -->
+              <div class="relative my-6">
+                <div class="absolute inset-0 flex items-center">
+                  <div class="w-full auth-divider-line"></div>
+                </div>
+                <div class="relative flex justify-center">
+                  <span class="auth-alt-divider px-4">其他注册方式</span>
+                </div>
+              </div>
+              
+              <!-- 社交注册按钮 -->
+              <div class="auth-social-row">
+                <button type="button" class="btn-social group" title="微信注册" aria-label="微信注册">
+                  <i class="fab fa-weixin text-green-500 social-icon"> </i>
+                </button>
+                <button type="button" class="btn-social group" title="苹果注册" aria-label="苹果注册">
+                  <i class="fab fa-apple text-gray-800 social-icon"> </i>
+                </button>
+                <button type="button" class="btn-social group" title="谷歌注册" aria-label="谷歌注册">
+                  <i class="fab fa-google text-red-500 social-icon"> </i>
+                </button>
+                <button type="button" class="btn-social group" title="访客体验" aria-label="访客体验" data-social-auth="guest">
+                  <i class="fas fa-user-secret text-purple-500 social-icon"> </i>
+                </button>
+              </div>
+              
+              <div class="text-center mt-6 pt-6 border-t border-gray-100">
+                <p class="auth-switch-note">
+                  已有账号？
+                  <a href="登录页面.html">立即登录</a>
+                </p>
+              </div>
+            </form>
+        </div>
+
+        <p class="auth-privacy-note text-center mt-6 px-4 leading-relaxed">
+          注册即代表您同意我们的
+          <a href="javascript:void(0);">用户协议</a>
+          和
+          <a href="javascript:void(0);">隐私政策</a>
+        </p>
+      </div>
+    </div>
+    <link rel='stylesheet' href='./css/mobile-tune.css?v=20260401_liquid_modal1' />
+      <script defer src='./js/software-mobile.js?v=20260330_app8'></script>
+    <script src="../../SHARE/data.js"></script>
+    <script src="../../SHARE/common.js"></script>
+    <script src="components.js"></script>
+    <script src='./js/pages/注册页面.inline-03.js?v=20260327_jssplit'></script>
+  </body>
+</html>
+
+
+
+

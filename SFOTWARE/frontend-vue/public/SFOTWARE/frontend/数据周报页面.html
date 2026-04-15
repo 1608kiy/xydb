@@ -1,0 +1,405 @@
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>数据周报 - 铃记</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../SHARE/data.js?v=20260325_syncfix4"></script>
+    <script src="../../SHARE/common.js?v=20260325_syncfix4"></script>
+    <link rel='stylesheet' href='./css/mobile-tune.css?v=20260401_liquid_modal1' />
+    <script defer src='./js/software-mobile.js?v=20260330_app8'></script>
+    <script src="components.js?v=20260322_sync2"></script>
+    <link
+      href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src='./js/pages/数据周报页面.inline-01.js?v=20260327_jssplit'></script>
+    <script id="report-data-fetch" src='./js/pages/数据周报页面.report-data-fetch.js?v=20260327_jssplit'></script>
+    <script src='./js/tailwind-style-loader.js?v=20260327_csssplit'></script>
+  <script src='./js/pages/数据周报页面.inline-03.js?v=20260327_jssplit'></script>
+</head>
+  <body class="software-app report-page-liquid font-inter bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden fade-in scroll-smooth">
+    <!-- ✅ 背景装饰光斑 -->
+    <div class="bg-orb w-[500px] h-[500px] bg-primary top-0 left-0"></div>
+    <div class="bg-orb w-[400px] h-[400px] bg-secondary bottom-0 right-0" style="animation-delay: -5s;"></div>
+    <div class="bg-orb w-[350px] h-[350px] bg-info top-1/2 left-1/2" style="animation-delay: -10s;"></div>
+    <div class="bg-orb w-[300px] h-[300px] bg-warning top-0 right-0" style="animation-delay: -15s;"></div>
+    <div class="bg-orb w-[250px] h-[250px] bg-success bottom-0 left-0" style="animation-delay: -20s;"></div>
+    
+    <!-- [MODULE] a1b_顶部导航 -->
+    <header class="glass-header sticky top-0 z-30" id="report-header">
+      <div
+        class="container mx-auto px-4 py-3 flex items-center justify-between"
+      >
+        <!-- 返回首页/应用名称 -->
+        <div class="flex items-center space-x-4">
+          <a
+            class="text-gray-600 hover:text-primary transition-all duration-300 p-2.5 rounded-xl hover:bg-primary/10 hover:scale-110"
+            href="javascript:void(0);"
+            onclick="history.back()"
+          >
+            <i class="fas fa-arrow-left text-lg"> </i>
+          </a>
+          <div>
+            <h1 class="text-lg md:text-xl font-bold text-gray-800">数据周报</h1>
+            <p class="text-xs text-gray-500 mt-0.5 hidden md:block">洞察你的效率趋势</p>
+          </div>
+        </div>
+        <!-- 日期显示和时间范围选择器 -->
+        <div class="flex items-center space-x-4">
+          <div class="text-gray-600 text-sm hidden md:block">
+            <span class="font-medium" id="current-date"> </span>
+          </div>
+          <!-- ✅ 优化后的自定义下拉列表 -->
+          <div class="custom-select-wrapper w-32">
+            <div class="custom-select-trigger" onclick="toggleTimeRangeDropdown()">
+              <span id="time-range-text">本周</span>
+              <i class="fas fa-chevron-down custom-select-arrow" id="time-range-arrow"></i>
+            </div>
+            <div class="custom-select-dropdown" id="time-range-dropdown">
+              <div class="custom-select-option selected" onclick="selectTimeRange('本周', this)">本周</div>
+              <div class="custom-select-option" onclick="selectTimeRange('上周', this)">上周</div>
+              <div class="custom-select-option" onclick="selectTimeRange('本月', this)">本月</div>
+              <div class="custom-select-option" onclick="selectTimeRange('自定义', this)">近30天</div>
+            </div>
+          </div>
+        </div>
+        <!-- 右侧操作区 -->
+        <div class="flex items-center space-x-4">
+          <button class="text-gray-600 hover:text-primary transition-all duration-300 p-2.5 rounded-xl hover:bg-primary/10 hover:scale-110" title="导出报告" onclick="exportReport()">
+            <i class="fas fa-download text-lg"> </i>
+          </button>
+          <button class="text-gray-600 hover:text-primary transition-all duration-300 p-2.5 rounded-xl hover:bg-primary/10 hover:scale-110" title="分享" onclick="shareReport()">
+            <i class="fas fa-share-alt text-lg"> </i>
+          </button>
+          <div class="relative group" id="report-user-menu-container">
+            <button class="flex items-center space-x-2 focus:outline-none cursor-pointer" id="report-user-menu-btn" type="button" aria-label="用户菜单">
+              <img
+                alt="用户头像"
+                class="header-user-avatar w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300"
+                src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
+              />
+              <span class="header-user-name hidden md:inline-block font-medium text-sm"> 张明 </span>
+              <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform duration-300"> </i>
+            </button>
+            <!-- 下拉菜单 (默认隐藏) -->
+            <div
+              id="report-user-dropdown"
+              class="absolute right-0 mt-2 w-48 glass-max rounded-lg shadow-xl py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
+              style="pointer-events: auto;"
+            >
+              <a
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors"
+                href="个人中心页面.html"
+              >
+                <i class="fas fa-user mr-2 text-gray-500"> </i>
+                个人中心
+              </a>
+              <a
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors"
+                href="javascript:void(0);"
+              >
+                <i class="fas fa-cog mr-2 text-gray-500"> </i>
+                设置
+              </a>
+              <div class="border-t border-gray-100 my-1"></div>
+              <a
+                class="block px-4 py-2 text-sm text-danger hover:bg-danger/10 transition-colors"
+                href="javascript:void(0);"
+              >
+                <i class="fas fa-sign-out-alt mr-2"> </i>
+                退出登录
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- [/MODULE] a1b_顶部导航 -->
+    
+    <div class="flex flex-1 overflow-hidden">
+      <!-- [MODULE] e3f_主内容区域 -->
+      <main class="flex-1 overflow-y-auto content-auto bg-transparent p-4 md:p-6 scrollbar-thin fade-in" id="report-main">
+        <div class="mb-4" id="report-range-tabs">
+          <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+            <button type="button" class="px-3 py-1.5 rounded-full text-xs font-medium bg-primary text-white" data-range="本周">本周</button>
+            <button type="button" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white/70 text-gray-600 border border-white/60" data-range="上周">上周</button>
+            <button type="button" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white/70 text-gray-600 border border-white/60" data-range="本月">本月</button>
+            <button type="button" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white/70 text-gray-600 border border-white/60" data-range="自定义">近30天</button>
+          </div>
+        </div>
+        <!-- 概览卡片 -->
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 mb-6" id="report-stats-grid">
+          <div class="stat-card group">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="text-sm font-medium text-gray-500 flex items-center">
+                <div class="icon-wrapper mr-3">
+                  <i class="fas fa-check-circle text-success text-xl"></i>
+                </div>
+                本周完成任务总数
+              </h3>
+            </div>
+            <div class="stat-value bg-gradient-to-r from-success to-emerald-500 bg-clip-text text-transparent" id="completed-tasks">28 项</div>
+            <div class="trend-indicator text-green-600 mt-2 flex items-center" id="report-overview-compare-text">
+              <i class="fas fa-arrow-up mr-1"> </i>
+              12% 较上周
+            </div>
+          </div>
+          <div class="stat-card group">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="text-sm font-medium text-gray-500 flex items-center">
+                <div class="icon-wrapper mr-3">
+                  <i class="fas fa-clock text-primary text-xl"></i>
+                </div>
+                本周专注总时长
+              </h3>
+            </div>
+            <div class="stat-value bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent" id="focus-hours">14 小时</div>
+          </div>
+          <div class="stat-card group">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="text-sm font-medium text-gray-500 flex items-center">
+                <div class="icon-wrapper mr-3">
+                  <i class="fas fa-fire text-danger text-xl"></i>
+                </div>
+                本周完成番茄总数
+              </h3>
+            </div>
+            <div class="stat-value bg-gradient-to-r from-danger to-red-500 bg-clip-text text-transparent" id="pomodoro-count">32 个</div>
+          </div>
+          <div class="stat-card group">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="text-sm font-medium text-gray-500 flex items-center">
+                <div class="icon-wrapper mr-3">
+                  <i class="fas fa-bolt text-warning text-xl"></i>
+                </div>
+                本周最长连续专注
+              </h3>
+            </div>
+            <div class="stat-value bg-gradient-to-r from-warning to-orange-500 bg-clip-text text-transparent" id="max-continuous-pomodoros">4 个番茄</div>
+          </div>
+        </div>
+        
+        <!-- 任务完成趋势图 -->
+        <div class="chart-container mb-6 fade-in">
+          <div class="chart-header">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+              <i class="fas fa-chart-line text-primary mr-2"></i>
+              任务完成趋势
+            </h2>
+          </div>
+          <div class="w-full h-64" id="task-trend-chart"></div>
+        </div>
+        
+        <!-- 任务分类统计和番茄专注分析 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6" id="report-charts-grid">
+          <div class="chart-container focus-chart fade-in">
+            <div class="chart-header">
+              <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-tags text-secondary mr-2"></i>
+                任务分类统计
+              </h2>
+            </div>
+            <div class="w-full h-64" id="category-pie-chart"></div>
+          </div>
+          <div class="chart-container focus-chart fade-in">
+            <div class="chart-header">
+              <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-chart-bar text-info mr-2"></i>
+                番茄专注分析
+              </h2>
+            </div>
+            <div class="w-full h-64" id="focus-bar-chart"></div>
+          </div>
+        </div>
+        
+        <!-- 专注时间段分布热力图 -->
+        <div class="chart-container focus-chart mb-6 fade-in">
+          <div class="chart-header">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+              <i class="fas fa-th text-warning mr-2"></i>
+              专注时间段分布
+            </h2>
+          </div>
+          <div class="w-full h-64" id="focus-heatmap"></div>
+        </div>
+        
+        <!-- 效率时段分析 -->
+        <div class="card-shadow card-hover glass-strong rounded-2xl p-6 mb-6 fade-in">
+          <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+            <i class="fas fa-clock text-primary mr-2"></i>
+            效率时段分析
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="time-slots-container">
+            <div class="time-slot-card" data-slot="early_morning">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-sunrise slot-icon text-yellow-500 text-2xl mr-3"></i>
+                <div class="text-sm font-medium text-gray-700">清晨 (6-8 点)</div>
+              </div>
+              <div class="slot-count">3 项</div>
+            </div>
+            <div class="time-slot-card best-slot" data-slot="morning">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-sun slot-icon text-yellow-400 text-2xl mr-3"></i>
+                <div class="text-sm font-medium text-gray-700">上午 (9-11 点)</div>
+              </div>
+              <div class="slot-count">8 项</div>
+            </div>
+            <div class="time-slot-card" data-slot="noon">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-cloud-sun slot-icon text-orange-400 text-2xl mr-3"></i>
+                <div class="text-sm font-medium text-gray-700">中午 (12-14 点)</div>
+              </div>
+              <div class="slot-count">2 项</div>
+            </div>
+            <div class="time-slot-card" data-slot="afternoon">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-sun slot-icon text-orange-500 text-2xl mr-3"></i>
+                <div class="text-sm font-medium text-gray-700">下午 (15-17 点)</div>
+              </div>
+              <div class="slot-count">7 项</div>
+            </div>
+            <div class="time-slot-card" data-slot="evening">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-moon slot-icon text-indigo-400 text-2xl mr-3"></i>
+                <div class="text-sm font-medium text-gray-700">晚上 (18-21 点)</div>
+              </div>
+              <div class="slot-count">6 项</div>
+            </div>
+            <div class="time-slot-card" data-slot="late_night">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-moon slot-icon text-purple-400 text-2xl mr-3"></i>
+                <div class="text-sm font-medium text-gray-700">深夜 (22-24 点)</div>
+              </div>
+              <div class="slot-count">2 项</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 智能建议栏 -->
+        <div class="card-shadow card-hover glass-strong rounded-2xl p-6 mb-6 fade-in">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-800 flex items-center">
+              <i class="fas fa-lightbulb text-yellow-500 mr-2 float"></i>
+              智能建议
+            </h2>
+            <button id="ai-suggestions-refresh" class="text-xs px-2.5 py-1 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all">
+              刷新建议
+            </button>
+          </div>
+          <div class="space-y-3" id="smart-suggestions-list">
+            <div class="suggestion-card flex items-start">
+              <i class="fas fa-lightbulb text-yellow-500 mt-1 mr-3 flex-shrink-0"></i>
+              <p class="text-gray-700 text-sm leading-relaxed">正在生成个性化建议...</p>
+            </div>
+          </div>
+        </div>
+      </main>
+      <!-- [/MODULE] e3f_主内容区域 -->
+    </div>
+    
+    <!-- [MODULE] m7n_底部 Tab 栏 -->
+    <footer
+      class="glass-tab py-1.5 px-2 sticky bottom-0 z-40"
+    >
+      <div class="container mx-auto flex justify-around items-center">
+        <a
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+          href="待办页面.html"
+        >
+          <i class="fas fa-list-alt text-base"> </i>
+          <span class="text-[10px] mt-0.5"> 待办 </span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+          href="日历页面.html"
+        >
+          <i class="fas fa-calendar text-base"> </i>
+          <span class="text-[10px] mt-0.5"> 日历 </span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+          href="番茄钟页面.html"
+        >
+          <i class="fas fa-clock text-base"> </i>
+          <span class="text-[10px] mt-0.5"> 番茄钟 </span>
+          <span class="tab-indicator"></span>
+        </a>
+        <!-- 当前页：数据周报 -->
+        <a
+          class="tab-item active flex flex-col items-center text-primary px-2 py-1 rounded-lg bg-primary/10"
+          href="数据周报页面.html"
+        >
+          <i class="fas fa-chart-line text-base"> </i>
+          <span class="text-[10px] mt-0.5 font-semibold"> 数据周报 </span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+          href="打卡页面.html"
+        >
+          <i class="fas fa-check-circle text-base"> </i>
+          <span class="text-[10px] mt-0.5"> 打卡 </span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+          href="个人中心页面.html"
+        >
+          <i class="fas fa-user text-base"> </i>
+          <span class="text-[10px] mt-0.5"> 我的 </span>
+          <span class="tab-indicator"></span>
+        </a>
+      </div>
+    </footer>
+    <!-- [/MODULE] m7n_底部 Tab 栏 -->
+
+    <div id="report-chart-modal" class="fixed inset-0 z-[120] hidden items-center justify-center bg-black/25 px-4">
+      <div class="glass-strong rounded-2xl p-4 w-full max-w-sm card-shadow">
+        <div class="flex items-start justify-between gap-3">
+          <h3 id="report-chart-modal-title" class="text-base font-semibold text-gray-800">数据详情</h3>
+          <button id="report-chart-modal-close" type="button" class="text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <p id="report-chart-modal-content" class="text-sm text-gray-600 mt-3 leading-relaxed"></p>
+      </div>
+    </div>
+    
+    <!-- [JSMOD] n8o_日期显示功能 -->
+    <script id="date-script" src='./js/pages/数据周报页面.date-script.js?v=20260327_jssplit'></script>
+    <!-- [/JSMOD] n8o_日期显示功能 -->
+
+    <script>
+      (function applyReportMobileRandomBg() {
+        try {
+          if (!window.matchMedia || !window.matchMedia('(max-width: 900px)').matches) return;
+          var body = document.body;
+          if (!body || !body.classList || !body.classList.contains('report-page-liquid')) return;
+          var seed = Math.floor(Math.random() * 1000000);
+          body.style.backgroundImage = "url('https://picsum.photos/1080/1920?random=" + seed + "')";
+          body.style.backgroundSize = 'cover';
+          body.style.backgroundPosition = 'center';
+          body.style.backgroundAttachment = 'fixed';
+        } catch (err) {}
+      })();
+    </script>
+    
+    <!-- [JSMOD] p9q_ECharts 图表初始化 -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <script id="echarts-script" src='./js/pages/数据周报页面.echarts-script.js?v=20260327_jssplit'></script>
+    <!-- [/JSMOD] p9q_ECharts 图表初始化 -->
+    
+    <script src='./js/pages/数据周报页面.inline-06.js?v=20260327_jssplit'></script>
+  </body>
+</html>
+
+
+
+
+
+
+
+

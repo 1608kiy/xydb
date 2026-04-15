@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>待办清单 - 铃记</title>
+  <style>
+    /* Inline critical mobile rules to avoid flash-of-old-layout when navigating between pages */
+    @media (max-width: 900px) {
+      .software-app .glass-header #today-btn,
+      .software-app .glass-header .view-btn,
+      .software-app .glass-header .btn-primary,
+      .software-app .glass-header .btn-glass,
+      .software-app .glass-header .flex.space-x-2 {
+        display: none !important;
+      }
+      .calendar-nav-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 36px !important;
+        height: 36px !important;
+        padding: 0 !important;
+        border-radius: 999px !important;
+      }
+      .calendar-nav-btn i { line-height: 1 !important; vertical-align: middle !important; display: inline-block !important; }
+      /* 当 header 存在 mobile-search-open 时，强制显示搜索容器（避免切换闪烁或样式竞态） */
+      .software-app .glass-header.mobile-search-open #main-header-search.mobile-search-container { display: block !important; }
+      .software-app .glass-header.mobile-search-open #main-header-search.mobile-search-container .input-glass { width: 100% !important; }
+    }
+    /* 快速导航遮罩：在用户开始触摸或按下底部导航时遮盖旧内容，减少页面切换闪烁 */
+    .nav-transition-overlay::before {
+      content: "";
+      position: fixed;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255,255,255,0.94);
+      z-index: 99999;
+      pointer-events: none;
+    }
+    /* ================================================ */
+    /* 待办页完整交互动画规范 (150-300ms, 无阻塞) */
+    /* ================================================ */
+    /* 【1】勾选完成任务：左滑+淡出+高度收缩 (250ms) */
+    .task-card.task-complete-exit {
+      animation: taskCompleteExit 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important;
+    }
+    @keyframes taskCompleteExit {
+      0% { opacity: 1; transform: translateX(0) scaleY(1); height: auto; }
+      60% { opacity: 0.6; transform: translateX(-18px) scaleY(0.95); }
+      100% { opacity: 0; transform: translateX(-32px) scaleY(0.8); height: 0; margin: 0; padding: 0; overflow: hidden; }
+    }
+    /* 【2】删除任务：缩小+淡出 (220ms) */
+    .task-card.task-delete-exit {
+      animation: taskDeleteExit 0.22s cubic-bezier(0.32, 0, 0.67, 0.34) forwards !important;
+    }
+    @keyframes taskDeleteExit {
+      0% { opacity: 1; transform: scale(1); }
+      50% { transform: scale(0.98); }
+      100% { opacity: 0; transform: scale(0.85); height: 0; margin: 0; padding: 0; overflow: hidden; }
+    }
+    /* 【3】新增任务：从顶部插入 (200ms) */
+    .task-card.task-new-enter {
+      animation: taskNewEnter 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both !important;
+    }
+    @keyframes taskNewEnter {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* 【4】批量模式 checkbox 淡入+左移 (200ms) */
+    .task-card .task-checkbox.batch-appear {
+      animation: checkboxAppear 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both !important;
+    }
+    @keyframes checkboxAppear {
+      from { opacity: 0; transform: translateX(-10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    /* 【4b】Checkbox 隐藏状态 */
+    .task-card .task-checkbox.checkbox-hidden {
+      visibility: hidden;
+      pointer-events: none;
+    }
+    /* 【5】按钮点击反馈：scale 脉冲 (120ms) */
+    .task-action-btn:active,
+    .btn-primary:active,
+    button:active:not(.todo-liquid-fab) {
+      animation: buttonPress 0.12s ease-out !important;
+    }
+    @keyframes buttonPress {
+      0% { transform: scale(1); }
+      50% { transform: scale(0.94); }
+      100% { transform: scale(1); }
+    }
+    /* 【6】批量模式工具栏背景淡入 (200ms) */
+    #todo-toolbar.batch-mode-active {
+      animation: toolbarBatchBg 0.2s ease-out both !important;
+    }
+    @keyframes toolbarBatchBg {
+      from { background: transparent; }
+      to { background: rgba(79, 70, 229, 0.08); }
+    }
+    /* 【7】页面切换淡出上移 (200ms) */
+    .page-exit {
+      animation: pageExit 0.2s ease-in forwards !important;
+    }
+    @keyframes pageExit {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-10px); }
+    }
+    /* 【8】页面切换淡入上移 (200ms) */
+    .page-enter {
+      animation: pageEnter 0.2s ease-out both !important;
+    }
+    @keyframes pageEnter {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+  <script>
+    // Inline quick toggle for mobile search to ensure responsiveness before main JS loads
+    window.toggleTodoDropdownPanel = function (panel, shouldOpen, options) {
+      if (!panel) return false;
+      var duration = (options && options.duration) || 220;
+      if (panel._todoHideTimer) {
+        clearTimeout(panel._todoHideTimer);
+        panel._todoHideTimer = null;
+      }
+      if (shouldOpen) {
+        if (!panel.classList.contains('hidden') && panel.classList.contains('show')) return true;
+        panel.classList.remove('hidden');
+        panel.classList.remove('dropdown-closing');
+        panel.style.display = 'block';
+        requestAnimationFrame(function () {
+          panel.classList.add('show');
+        });
+        return true;
+      }
+      if (panel.classList.contains('hidden') && !panel.classList.contains('show')) return false;
+      panel.classList.remove('show');
+      panel.classList.add('dropdown-closing');
+      panel._todoHideTimer = setTimeout(function () {
+        panel.classList.add('hidden');
+        panel.classList.remove('dropdown-closing');
+        panel.style.display = '';
+        panel._todoHideTimer = null;
+      }, duration);
+      return false;
+    };
+
+    window.applyTodoMobileSearchOffset = function (isOpen) {
+      try {
+        var isMobile = window.matchMedia && window.matchMedia('(max-width: 900px)').matches;
+        if (isMobile && document.body && document.body.classList && document.body.classList.contains('todo-page-liquid')) return;
+        var main = document.getElementById('todo-main') || document.querySelector('main');
+        var header = document.querySelector('.unified-top-header-dock .unified-top-header-shell#main-header') || document.getElementById('main-header');
+        if (!main || !header || !isMobile) return;
+        var dockHeight = Math.ceil(header.getBoundingClientRect().height || 0);
+        if (!dockHeight) return;
+        var extra = (window.matchMedia && window.matchMedia('(max-width: 420px)').matches) ? 14 : 20;
+        var searchExtra = 0;
+        if (isOpen) {
+          var searchShell = header.querySelector('#main-header-search');
+          if (searchShell && !searchShell.classList.contains('hidden')) {
+            searchExtra = Math.ceil(searchShell.getBoundingClientRect().height || 0) + 6;
+          }
+          if (searchExtra < 52) searchExtra = 52;
+        }
+        main.style.setProperty('padding-top', String(dockHeight + extra + searchExtra) + 'px', 'important');
+      } catch (err) {}
+    };
+
+    window.toggleMobileSearchInline = function (e) {
+      e = e || window.event;
+      try { e.preventDefault && e.preventDefault(); } catch (err) {}
+      try { e.stopPropagation && e.stopPropagation(); } catch (err) {}
+      var isMobile = window.matchMedia && window.matchMedia('(max-width: 900px)').matches;
+      var mobilePanel = document.getElementById('mobile-toolbar-search-panel');
+      var mobileInput = document.getElementById('mobile-toolbar-search-input');
+      if (isMobile && mobilePanel && mobileInput) {
+        var shouldOpenMobilePanel = mobilePanel.classList.contains('hidden') || !mobilePanel.classList.contains('show');
+        if (typeof window.toggleTodoToolbarPanelWithListAnimation === 'function') {
+          window.toggleTodoToolbarPanelWithListAnimation(mobilePanel, shouldOpenMobilePanel);
+        } else if (typeof window.toggleTodoDropdownPanel === 'function') {
+          window.toggleTodoDropdownPanel(mobilePanel, shouldOpenMobilePanel, { duration: 220 });
+        } else if (shouldOpenMobilePanel) {
+          mobilePanel.classList.remove('hidden');
+          mobilePanel.style.display = 'block';
+          mobilePanel.classList.add('show');
+        } else {
+          mobilePanel.classList.add('hidden');
+          mobilePanel.classList.remove('show');
+          mobilePanel.style.display = '';
+        }
+        if (shouldOpenMobilePanel) {
+          try { mobileInput.focus(); } catch (err) {}
+        }
+        try { if (e && e.currentTarget) e.currentTarget.setAttribute('data-inline-search','1'); } catch (err) {}
+        return;
+      }
+      var activeHeader = document.querySelector('.unified-top-header-dock .unified-top-header-shell#main-header') || document.getElementById('main-header');
+      var searchInput = activeHeader ? activeHeader.querySelector('#search-input') : document.getElementById('search-input');
+      if (!searchInput) return;
+      var parent = searchInput.parentElement;
+      if (!parent) return;
+      var header = activeHeader;
+      if (parent.classList.contains('hidden')) {
+        parent.classList.remove('hidden');
+        if (header) header.classList.add('mobile-search-open');
+        try { searchInput.focus(); } catch (err) {}
+        try {
+          window.applyTodoMobileSearchOffset && window.applyTodoMobileSearchOffset(true);
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              window.applyTodoMobileSearchOffset && window.applyTodoMobileSearchOffset(true);
+            });
+          });
+        } catch (err) {}
+      } else {
+        parent.classList.add('hidden');
+        if (header) header.classList.remove('mobile-search-open');
+        try {
+          window.applyTodoMobileSearchOffset && window.applyTodoMobileSearchOffset(false);
+          requestAnimationFrame(function () {
+            window.applyTodoMobileSearchOffset && window.applyTodoMobileSearchOffset(false);
+          });
+        } catch (err) {}
+      }
+      // mark that inline handler exists so main JS skips redundant binding
+      try { if (e && e.currentTarget) e.currentTarget.setAttribute('data-inline-search','1'); } catch (err) {}
+    };
+  </script>
+  <link rel="prefetch" href="日历页面.html" as="document" />
+  <link rel="preload" href="./js/software-mobile.js?v=20260330_app12" as="script" />
+    <link rel="preload" href="./css/mobile-tune.css?v=20260403_todo_fab_liquid_light1" as="style" />
+  <script>
+    (function(){
+      function addNavTouchHandlers(){
+        var tabs = document.querySelectorAll('footer .tab-item[href]');
+        if(!tabs || !tabs.length) return;
+        tabs.forEach(function(tab){
+          tab.addEventListener('touchstart', function(){ document.documentElement.classList.add('nav-transition-overlay'); }, {passive:true});
+          tab.addEventListener('mousedown', function(){ document.documentElement.classList.add('nav-transition-overlay'); });
+        });
+        window.addEventListener('pageshow', function(){ document.documentElement.classList.remove('nav-transition-overlay'); });
+        window.addEventListener('pagehide', function(){ document.documentElement.classList.remove('nav-transition-overlay'); });
+      }
+      if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addNavTouchHandlers); else addNavTouchHandlers();
+    })();
+  </script>
+  <script>
+    // Synchronous navigation helper: show overlay, let browser paint, then navigate
+    window.navWithOverlay = function (url, ev) {
+      try { ev && ev.preventDefault && ev.preventDefault(); } catch (e) {}
+      try { document.documentElement.classList.add('nav-transition-overlay'); } catch (e) {}
+      // two RAFs to ensure overlay is painted before leaving
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { window.location.href = url; });
+      });
+      return false;
+    };
+  </script>
+  <script>
+    // Lightweight PJAX: intercept footer tab clicks, fetch target page and replace <main> + <footer>
+    (function (){
+      if (window.__pjax_installed) return; window.__pjax_installed = true;
+      window.__pjax_cache = window.__pjax_cache || {};
+      function absHref(src){ try { return new URL(src, location.href).href; } catch(e){ return src; } }
+      async function loadPage(url){
+        try{
+          document.documentElement.classList.add('nav-transition-overlay');
+          let text;
+          if (window.__pjax_cache && window.__pjax_cache[url]) {
+            text = window.__pjax_cache[url];
+          } else {
+            const res = await fetch(url, { credentials: 'same-origin', cache: 'no-cache' });
+            if (!res.ok) { window.location.href = url; return; }
+            text = await res.text();
+            try { window.__pjax_cache[url] = text; } catch (e) {}
+          }
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(text, 'text/html');
+          const newMain = doc.querySelector('main');
+          const curMain = document.querySelector('main');
+          if (!newMain || !curMain) { window.location.href = url; return; }
+          // Replace main content
+          curMain.innerHTML = newMain.innerHTML;
+          // Replace footer content if present
+          const newFooter = doc.querySelector('footer');
+          const curFooter = document.querySelector('footer');
+          if (newFooter && curFooter) curFooter.innerHTML = newFooter.innerHTML;
+          // Update title
+          if (doc.title) document.title = doc.title;
+          // Execute scripts from the fetched document in order
+          const fetchedScripts = Array.from(doc.querySelectorAll('script'));
+          for (const s of fetchedScripts) {
+            if (s.src) {
+              const src = absHref(s.src);
+              // skip if already loaded
+              if (Array.from(document.scripts).some(x=>absHref(x.src)===src)) continue;
+              await new Promise((resolve)=>{
+                const sc = document.createElement('script');
+                sc.src = src;
+                sc.async = false;
+                sc.onload = sc.onerror = resolve;
+                document.body.appendChild(sc);
+              });
+            } else if (s.textContent && s.textContent.trim()) {
+              const sc = document.createElement('script');
+              sc.text = s.textContent;
+              document.body.appendChild(sc);
+            }
+          }
+          history.pushState({pjax: true, url: url}, '', url);
+        } catch (err) {
+          console.error('PJAX failed, fallback', err);
+          window.location.href = url;
+        } finally {
+          document.documentElement.classList.remove('nav-transition-overlay');
+        }
+      }
+
+      // Prefetch other footer pages on idle to reduce fetch latency
+      function prefetchFooterPages(){
+        try {
+          const links = Array.from(document.querySelectorAll('footer .tab-item[href]'));
+          links.forEach(function(a){
+            const href = a.getAttribute('href');
+            if (!href) return;
+            const abs = absHref(href);
+            if (abs === location.href || window.__pjax_cache[abs]) return;
+            fetch(abs, {credentials:'same-origin', cache:'no-cache'}).then(function(res){
+              if (!res.ok) return null;
+              return res.text();
+            }).then(function(txt){ if (txt) window.__pjax_cache[abs] = txt; }).catch(()=>{});
+          });
+        } catch (e) {}
+      }
+
+      if ('requestIdleCallback' in window) requestIdleCallback(prefetchFooterPages, {timeout:2000}); else setTimeout(prefetchFooterPages, 1500);
+
+      document.addEventListener('click', function(ev){
+        const a = ev.target.closest && ev.target.closest('a.tab-item[href]');
+        if (!a) return;
+        const href = a.getAttribute('href');
+        if (!href) return;
+        // only same-origin and HTML files
+        if (href.indexOf('http')===0 && new URL(href).origin !== location.origin) return;
+        ev.preventDefault();
+        loadPage(href);
+      });
+
+      window.addEventListener('popstate', function(ev){
+        const url = (ev.state && ev.state.url) || location.pathname;
+        if (url) loadPage(url);
+      });
+    })();
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <script defer src="../../SHARE/data.js?v=20260325_syncfix4"></script>
+  <script defer src="../../SHARE/common.js?v=20260325_syncfix4"></script>
+  <script src='./js/pages/待办页面.inline-01.js?v=20260327_jssplit'></script>
+  <link rel='stylesheet' href='./css/待办页面.css?v=20260403_todo_fab_liquid_light1' />
+    <link rel='stylesheet' href='./css/mobile-tune.css?v=20260403_todo_fab_liquid_light1' />
+  <script defer src='./js/software-mobile.js?v=20260330_app12'></script>
+</head>
+
+<body class="software-app">
+  <!-- ===== 背景装饰光斑 ===== -->
+  <div class="bg-orb" style="width: 500px; height: 500px; background: #4F46E5; top: 0; left: 0;"></div>
+  <div class="bg-orb"
+    style="width: 400px; height: 400px; background: #7C3AED; bottom: 0; right: 0; animation-delay: -5s;"></div>
+  <div class="bg-orb"
+    style="width: 350px; height: 350px; background: #3B82F6; top: 50%; left: 50%; animation-delay: -10s;"></div>
+  <div class="bg-orb"
+    style="width: 300px; height: 300px; background: #F59E0B; top: 0; right: 0; animation-delay: -15s;"></div>
+  <div class="bg-orb"
+    style="width: 250px; height: 250px; background: #10B981; bottom: 0; left: 0; animation-delay: -20s;"></div>
+
+  <!-- 顶部导航 -->
+  <header class="glass-header sticky top-0 z-40 transition-all duration-300" id="main-header">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <a class="text-gray-600 hover:text-primary transition-all duration-300 p-2.5 rounded-xl hover:bg-primary/10"
+          href="登录页面.html" title="返回首页">
+          <i class="fas fa-arrow-left text-lg"></i>
+        </a>
+        <div class="flex items-center space-x-2.5">
+          <span class="text-2xl float theme-header-icon theme-header-icon--sun" aria-hidden="true">☀️</span>
+          <span class="text-2xl float theme-header-icon theme-header-icon--moon" aria-hidden="true">🌙</span>
+          <div>
+            <h1 class="text-lg md:text-xl font-bold text-gray-800">待办清单</h1>
+            <p class="text-xs text-gray-500 hidden md:block">铃记 · 高效每一天</p>
+          </div>
+        </div>
+      </div>
+      <div class="hidden md:flex items-center text-gray-600 glass-input px-5 py-2.5 rounded-xl">
+        <i class="fas fa-calendar-alt mr-2.5 text-primary"></i>
+        <span class="font-medium" id="current-date"></span>
+      </div>
+      <div class="relative hidden md:block flex-1 max-w-md mx-8 mobile-search-container" id="main-header-search">
+        <input class="input-glass pl-12 pr-10" id="search-input" placeholder="搜索任务..." type="text" />
+        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" id="search-icon"></i>
+        <button
+          class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-primary opacity-0 transition-all"
+          id="clear-search" title="清除搜索">
+          <i class="fas fa-times-circle"></i>
+        </button>
+      </div>
+      <div class="flex items-center space-x-2">
+        <button
+          class="relative text-gray-600 hover:text-primary transition-all duration-300 p-2.5 rounded-xl hover:bg-primary/10"
+          id="notification-btn" title="通知">
+          <i class="fas fa-bell text-lg"></i>
+          <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-danger rounded-full animate-pulse badge-count"
+            style="animation: badgePulse 2s ease-in-out infinite;"></span>
+        </button>
+        <button class="hidden md:flex btn-primary-glass items-center" id="add-task-header-btn">
+          <i class="fas fa-plus mr-2"></i>
+          新建任务
+        </button>
+        <div class="relative" id="user-menu-container">
+          <button class="flex items-center space-x-2 p-1.5 rounded-xl hover:bg-primary/10" id="user-menu-btn" type="button">
+            <img alt="用户头像" class="header-user-avatar w-10 h-10 rounded-full object-cover border-2 border-primary/40"
+              src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png" />
+            <span class="header-user-name hidden lg:inline-block font-medium text-gray-700">张明</span>
+            <i class="fas fa-chevron-down text-xs text-gray-500 transition-transform" id="user-menu-arrow"></i>
+          </button>
+          <div class="dropdown-menu" id="user-dropdown" style="pointer-events: none;">
+            <a href="个人中心页面.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors" style="pointer-events: auto;">
+              <i class="fas fa-user mr-2 text-gray-500"></i>个人中心
+            </a>
+            <a href="javascript:void(0);" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors" style="pointer-events: auto;">
+              <i class="fas fa-cog mr-2 text-gray-500"></i>设置
+            </a>
+            <div class="border-t border-gray-200 my-1"></div>
+            <a href="登录页面.html" id="todo-logout-link" class="block px-4 py-2 text-sm text-danger hover:bg-danger/10 transition-colors" style="pointer-events: auto;">
+              <i class="fas fa-sign-out-alt mr-2"></i>退出登录
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex flex-1 overflow-hidden relative z-10" id="todo-app-shell">
+    <!-- 侧边栏 -->
+    <aside class="w-64 glass-strong border-r border-gray-200/50 hidden md:block overflow-y-auto z-20" id="todo-sidebar"
+      style="width: 256px;">
+      <div class="p-4">
+        <!-- 主要分类 -->
+        <nav>
+          <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-3">主要分类</h2>
+          <ul class="space-y-1" id="sidebar-main-list">
+            <li>
+              <a class="sidebar-item-active sidebar-item" href="javascript:void(0);" data-main="all">
+                <div class="flex items-center">
+                  <i class="fas fa-tasks w-5 h-5 mr-3 text-primary"></i>
+                  <span>所有任务</span>
+                </div>
+                <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-all">0</span>
+              </a>
+            </li>
+            <li>
+              <a class="sidebar-item" href="javascript:void(0);" data-main="myday">
+                <div class="flex items-center">
+                  <i class="fas fa-sun w-5 h-5 mr-3 text-warning"></i>
+                  <span>我的一天</span>
+                </div>
+                <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-today">0</span>
+              </a>
+            </li>
+            <li>
+              <a class="sidebar-item" href="javascript:void(0);" data-main="important">
+                <div class="flex items-center">
+                  <i class="fas fa-star w-5 h-5 mr-3 text-warning"></i>
+                  <span>重要任务</span>
+                </div>
+                <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-important">0</span>
+              </a>
+            </li>
+            <li>
+              <a class="sidebar-item" href="javascript:void(0);" data-main="planned">
+                <div class="flex items-center">
+                  <i class="fas fa-calendar w-5 h-5 mr-3 text-info"></i>
+                  <span>已计划</span>
+                </div>
+                <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-planned">0</span>
+              </a>
+            </li>
+            <li>
+              <a class="sidebar-item" href="javascript:void(0);" data-main="assigned">
+                <div class="flex items-center">
+                  <i class="fas fa-user w-5 h-5 mr-3 text-secondary"></i>
+                  <span>已分配给我</span>
+                </div>
+                <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-assigned">0</span>
+              </a>
+            </li>
+          </ul>
+
+          <!-- 标签列表 -->
+          <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mt-6 mb-3 px-3">标签</h2>
+          <ul class="space-y-1" id="sidebar-tag-list">
+            <li>
+              <a class="sidebar-item" href="javascript:void(0);" data-tag="work">
+                <div class="flex items-center">
+                  <i class="fas fa-briefcase sidebar-tag-icon sidebar-tag-work"></i>
+                  <span class="sidebar-tag-work">#工作</span>
+                </div>
+                <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-work">0</span>
+              </a>
+            </li>
+            <li>
+              <a class="sidebar-item" href="javascript:void(0);" data-tag="study">
+                <div class="flex items-center">
+                  <i class="fas fa-book sidebar-tag-icon sidebar-tag-study"></i>
+                  <span class="sidebar-tag-study">#学习</span>
+                </div>
+                <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-study">0</span>
+              </a>
+            </li>
+            <li>
+              <a class="sidebar-item" href="javascript:void(0);" data-tag="life">
+                <div class="flex items-center">
+                  <i class="fas fa-home sidebar-tag-icon sidebar-tag-life"></i>
+                  <span class="sidebar-tag-life">#生活</span>
+                </div>
+                <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-life">0</span>
+              </a>
+            </li>
+            <li>
+              <a class="sidebar-item" href="javascript:void(0);" data-tag="health">
+                <div class="flex items-center">
+                  <i class="fas fa-heart sidebar-tag-icon sidebar-tag-health"></i>
+                  <span class="sidebar-tag-health">#健康</span>
+                </div>
+                <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-health">0</span>
+              </a>
+            </li>
+          </ul>
+
+          <button
+            class="mt-6 w-full flex items-center justify-center px-3 py-2.5 rounded-xl border border-dashed border-gray-300 text-sm text-gray-500 hover:border-primary hover:text-primary hover:bg-primary/5"
+            id="add-tag-btn">
+            <i class="fas fa-plus-circle mr-2"></i>添加新标签
+          </button>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- 主内容区域 -->
+    <main class="flex-1 overflow-y-auto overflow-x-visible bg-transparent p-4 md:p-6" id="todo-main" style="overflow-y: auto; overflow-x: visible;">
+      <!-- 顶部工具（弱化） -->
+      <div class="glass-max rounded-2xl shadow-lg p-4 mb-5 todo-toolbar" id="todo-toolbar" style="position: relative; z-index: 10;">
+        <div class="todo-toolbar-main">
+          <button class="btn-secondary-glass inline-flex items-center quick-action-btn" id="select-mode-btn" type="button">
+            <i class="fas fa-list-check mr-2"></i>选择模式
+          </button>
+          <div class="relative quick-action-item" style="position: relative;">
+            <button class="btn-secondary-glass inline-flex items-center quick-action-btn" id="sort-filter-btn">
+              <i class="fas fa-sort mr-2"></i>排序
+              <i class="fas fa-chevron-down ml-2 text-xs" id="sort-icon"></i>
+            </button>
+            <div class="absolute right-0 mt-2 glass-max rounded-xl shadow-2xl py-2 dropdown-menu"
+              id="sort-filter-menu" style="position: absolute; right: 0; top: 100%; margin-top: 0.5rem; width: 10rem; min-width: 10rem; max-width: calc(100vw - 16px);">
+              <a class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10 whitespace-nowrap" href="javascript:void(0);"
+                data-sort="time">
+                <i class="fas fa-clock mr-2.5 text-gray-500"></i>按时间
+              </a>
+              <a class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10 whitespace-nowrap" href="javascript:void(0);"
+                data-sort="category">
+                <i class="fas fa-layer-group mr-2.5 text-gray-500"></i>按分类
+              </a>
+              <a class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10 whitespace-nowrap" href="javascript:void(0);"
+                data-sort="priority">
+                <i class="fas fa-flag mr-2.5 text-gray-500"></i>按优先级
+              </a>
+              <a class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10 whitespace-nowrap" href="javascript:void(0);"
+                data-sort="tag">
+                <i class="fas fa-tags mr-2.5 text-gray-500"></i>按标签
+              </a>
+              <div class="border-t border-gray-100 my-1"></div>
+              <a class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10 whitespace-nowrap" href="javascript:void(0);"
+                data-sort="status">
+                <i class="fas fa-check-circle mr-2.5 text-gray-500"></i>按完成状态
+              </a>
+            </div>
+          </div>
+          <button
+            class="md:hidden btn-secondary-glass inline-flex items-center justify-center quick-action-btn"
+            id="mobile-search-btn" title="搜索" onclick="toggleMobileSearchInline(event)">
+            <i class="fas fa-search"></i>
+          </button>
+          <span class="sync-status-text" id="sync-status-badge">已同步</span>
+        </div>
+        <div class="hidden md:hidden mt-2 toolbar-dropdown-panel" id="mobile-toolbar-search-panel">
+          <div class="relative">
+            <input class="input-glass pl-10 pr-10" id="mobile-toolbar-search-input" placeholder="搜索任务..." type="text" />
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <button
+              class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-primary opacity-0 transition-all"
+              id="mobile-toolbar-clear-search" title="清除搜索" type="button">
+              <i class="fas fa-times-circle"></i>
+            </button>
+          </div>
+        </div>
+        <div class="todo-toolbar-batch hidden toolbar-dropdown-panel" id="batch-actions-row">
+          <span class="batch-selected-tip" id="batch-selected-tip">已选择 0 项</span>
+          <button class="btn-secondary-glass inline-flex items-center quick-action-btn" id="batch-complete-btn" type="button">
+            <i class="fas fa-check-square mr-2"></i>批量完成
+          </button>
+          <button class="btn-secondary-glass inline-flex items-center quick-action-btn" id="batch-delete-btn" type="button">
+            <i class="fas fa-trash-alt mr-2"></i>批量删除
+          </button>
+          <button class="btn-secondary-glass inline-flex items-center quick-action-btn" id="batch-cancel-btn" type="button">退出选择</button>
+        </div>
+      </div>
+
+      <!-- 任务列表 -->
+      <div class="space-y-5" id="task-list-container">
+        <!-- 今日待办 -->
+        <section class="fade-in task-group-card">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-lg font-semibold text-gray-800">今日待办（<span id="today-task-count">0</span>）</h2>
+              <p class="text-xs text-gray-500" id="today-date-info">今天</p>
+            </div>
+          </div>
+          <div class="space-y-3" id="today-task-list">
+            <div class="task-empty-state"><i class="fas fa-seedling"></i><div class="title">今天很清爽</div><div class="desc">点击右下角 + 新增任务，开始你的第一项待办</div></div>
+          </div>
+        </section>
+        <!-- 明日待办 -->
+        <section class="fade-in task-group-card">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-lg font-semibold text-gray-800">明日待办（<span id="tomorrow-task-count">0</span>）</h2>
+              <p class="text-xs text-gray-500" id="tomorrow-date-info">明天</p>
+            </div>
+          </div>
+          <div class="space-y-3" id="tomorrow-task-list">
+            <div class="task-empty-state"><i class="fas fa-rocket"></i><div class="title">明天先留白</div><div class="desc">提前规划 1-2 项关键任务，效率会更稳</div></div>
+          </div>
+        </section>
+      </div>
+      <div class="todo-fab-light-layer md:hidden" id="todo-fab-light-layer" aria-hidden="true">
+        <span class="todo-fab-light-layer__core"></span>
+      </div>
+      <button class="todo-liquid-fab md:hidden" id="add-task-fab" type="button" aria-label="新建任务" title="新建任务">
+        <span class="todo-liquid-fab__glass" aria-hidden="true"></span>
+        <span class="todo-liquid-fab__icon" aria-hidden="true"><i class="fas fa-plus"></i></span>
+      </button>
+    </main>
+
+  </div>
+
+  <!-- 任务详情模态框 -->
+  <div id="task-detail-panel" class="modal-overlay hidden">
+    <div class="modal-content task-detail-scrollbar-hide">
+      <div class="flex justify-between items-center mb-5">
+        <h2 class="text-xl font-bold text-gray-800">
+          <i class="fas fa-clipboard-list text-primary mr-2"></i>任务详情
+        </h2>
+        <button class="text-gray-500 hover:text-gray-700 p-2.5 rounded-xl hover:bg-gray-100" type="button" id="close-detail-btn">
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">任务标题</label>
+          <input class="input-glass" id="detail-title" type="text" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">描述</label>
+          <textarea class="input-glass resize-none" id="detail-description" placeholder="添加描述..." rows="3"></textarea>
+        </div>
+        <div class="task-detail-section">
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">截止日期和时间</label>
+          <div class="detail-datetime-shell" id="detail-datetime-shell">
+            <button type="button" class="detail-datetime-trigger" id="detail-datetime-trigger">
+              <span id="detail-datetime-text">未设置截止时间</span>
+              <i class="fas fa-chevron-down text-xs text-gray-500"></i>
+            </button>
+            <div class="detail-datetime-panel" id="detail-datetime-panel">
+              <div class="detail-datetime-grid">
+                <div class="datetime-select-shell" id="detail-date-shell">
+                  <button type="button" class="datetime-select-trigger" id="detail-date-trigger">
+                    <span id="detail-date-text">选择日期</span>
+                    <i class="fas fa-chevron-down"></i>
+                  </button>
+                  <div class="datetime-select-menu dropdown-menu" id="detail-date-menu"></div>
+                  <input class="hidden" id="detail-date-input" type="date" />
+                </div>
+                <div class="datetime-select-shell" id="detail-time-shell">
+                  <button type="button" class="datetime-select-trigger" id="detail-time-trigger">
+                    <span id="detail-time-text">选择时间</span>
+                    <i class="fas fa-chevron-down"></i>
+                  </button>
+                  <div class="datetime-select-menu dropdown-menu" id="detail-time-menu"></div>
+                  <input class="hidden" id="detail-time-input" type="time" />
+                </div>
+              </div>
+              <div class="datetime-quick-actions">
+                <button type="button" class="datetime-quick-btn" data-offset="today" id="detail-datetime-today">今天</button>
+                <button type="button" class="datetime-quick-btn" data-offset="tomorrow" id="detail-datetime-tomorrow">明天</button>
+                <button type="button" class="datetime-quick-btn" data-offset="clear" id="detail-datetime-clear">清空</button>
+              </div>
+            </div>
+          </div>
+          <input class="hidden" id="detail-datetime" type="datetime-local" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">优先级</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button class="py-2.5 px-3 rounded-xl text-sm priority-btn" data-priority="high" onclick="window.selectDetailPriority('high')">
+              <i class="fas fa-flag mr-1"></i>高
+            </button>
+            <button class="py-2.5 px-3 rounded-xl text-sm priority-btn" data-priority="medium" onclick="window.selectDetailPriority('medium')">
+              <i class="fas fa-flag mr-1"></i>中
+            </button>
+            <button class="py-2.5 px-3 rounded-xl text-sm priority-btn" data-priority="low" onclick="window.selectDetailPriority('low')">
+              <i class="fas fa-flag mr-1"></i>低
+            </button>
+          </div>
+        </div>
+        <div class="task-detail-section">
+          <div class="flex justify-between items-center mb-2.5">
+            <label class="block text-sm font-medium text-gray-700">子任务</label>
+            <div class="flex items-center gap-2">
+              <button class="text-xs text-primary hover:text-primary/80" id="copy-subtasks-btn">
+                <i class="fas fa-copy mr-1"></i>复制
+              </button>
+              <button class="text-xs text-primary hover:text-primary/80" id="share-subtasks-btn">
+                <i class="fas fa-share-alt mr-1"></i>分享
+              </button>
+              <button class="text-xs text-primary hover:text-primary/80" id="complete-all-subtasks">
+                <i class="fas fa-check-square mr-1"></i>全部完成
+              </button>
+            </div>
+          </div>
+          <div class="space-y-2 mb-3 max-h-40 overflow-y-auto task-detail-scrollbar-hide" id="subtask-list"></div>
+          <div class="subtask-compose">
+            <input class="subtask-compose-input"
+              id="new-subtask-input" placeholder="添加子任务..." type="text" maxlength="60" />
+            <button class="subtask-compose-btn" id="add-subtask-btn" type="button">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">标签</label>
+          <div class="flex flex-wrap gap-2 mb-2.5" id="tag-list"></div>
+          <button class="text-sm text-primary hover:text-primary/80" id="add-tag-inline">
+            <i class="fas fa-plus mr-1"></i>添加标签
+          </button>
+        </div>
+        <div class="flex space-x-3 pt-4 border-t border-gray-200/50">
+          <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white" id="cancel-edit-btn">取消</button>
+          <button class="flex-1 py-2.5 btn-primary-glass" id="save-task-btn">
+            <i class="fas fa-save mr-2"></i>保存任务
+          </button>
+        </div>
+        <div class="grid grid-cols-3 gap-2 pt-1">
+          <button class="min-w-[80px] py-2.5 btn-secondary-glass text-primary inline-flex items-center justify-center gap-1.5 text-xs"
+            id="share-task-btn">
+            <i class="fas fa-share-alt text-sm"></i>
+            <span>分享</span>
+          </button>
+          <button class="min-w-[80px] py-2.5 btn-secondary-glass inline-flex items-center justify-center gap-1.5 text-xs"
+            id="copy-task-btn">
+            <i class="fas fa-copy text-sm"></i>
+            <span>复制</span>
+          </button>
+          <button class="min-w-[80px] py-2.5 btn-secondary-glass text-danger inline-flex items-center justify-center gap-1.5 text-xs"
+            id="delete-task-btn">
+            <i class="fas fa-trash-alt text-sm"></i>
+            <span>删除</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 新建任务模态框 -->
+  <div id="new-task-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-bold text-gray-800">
+          <i class="fas fa-plus-circle text-primary mr-2"></i>新建任务
+        </h2>
+        <button class="text-gray-500 hover:text-gray-700 p-2.5 rounded-xl hover:bg-gray-100" type="button"
+          onclick="window.closeModalFunc()">
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
+      <div class="space-y-5">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">任务标题 <span class="text-danger">*</span></label>
+          <input class="input-glass" id="modal-title" type="text" placeholder="输入任务标题..." />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">描述</label>
+          <textarea class="input-glass resize-none" id="modal-description" placeholder="添加任务描述..." rows="3"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">截止日期</label>
+            <div class="datetime-select-shell" id="modal-date-shell">
+              <button type="button" class="datetime-select-trigger" id="modal-date-trigger">
+                <span id="modal-date-text">选择日期</span>
+                <i class="fas fa-chevron-down"></i>
+              </button>
+              <div class="datetime-select-menu dropdown-menu" id="modal-date-menu"></div>
+              <input class="hidden" id="modal-date" type="date" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">时间</label>
+            <div class="datetime-select-shell" id="modal-time-shell">
+              <button type="button" class="datetime-select-trigger" id="modal-time-trigger">
+                <span id="modal-time-text">选择时间</span>
+                <i class="fas fa-chevron-down"></i>
+              </button>
+              <div class="datetime-select-menu dropdown-menu" id="modal-time-menu"></div>
+              <input class="hidden" id="modal-time" type="time" />
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">优先级</label>
+          <div class="flex gap-2">
+            <button
+              class="flex-1 py-2.5 px-3 rounded-xl text-sm priority-btn"
+              data-priority="low" onclick="window.selectModalPriority('low')">
+              <i class="fas fa-flag mr-1"></i>低
+            </button>
+            <button
+              class="flex-1 py-2.5 px-3 rounded-xl text-sm priority-btn active"
+              data-priority="medium" onclick="window.selectModalPriority('medium')">
+              <i class="fas fa-flag mr-1"></i>中
+            </button>
+            <button
+              class="flex-1 py-2.5 px-3 rounded-xl text-sm priority-btn"
+              data-priority="high" onclick="window.selectModalPriority('high')">
+              <i class="fas fa-flag mr-1"></i>高
+            </button>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label class="block text-sm font-medium text-gray-700">标签</label>
+            <button class="text-sm text-primary hover:text-primary/80" id="modal-add-tag-btn" type="button">
+              <i class="fas fa-plus mr-1"></i>新建标签
+            </button>
+          </div>
+          <div class="flex flex-wrap gap-2" id="modal-tag-list">
+            <button
+              class="px-3 py-1.5 rounded-full text-sm font-medium bg-task-work/10 text-task-work modal-tag-btn active"
+              data-tag="work" onclick="window.selectModalTag('work')">
+              <i class="fas fa-briefcase mr-1"></i>工作
+            </button>
+            <button class="px-3 py-1.5 rounded-full text-sm font-medium bg-task-study/10 text-task-study modal-tag-btn"
+              data-tag="study" onclick="window.selectModalTag('study')">
+              <i class="fas fa-book mr-1"></i>学习
+            </button>
+            <button class="px-3 py-1.5 rounded-full text-sm font-medium bg-task-life/10 text-task-life modal-tag-btn"
+              data-tag="life" onclick="window.selectModalTag('life')">
+              <i class="fas fa-home mr-1"></i>生活
+            </button>
+            <button
+              class="px-3 py-1.5 rounded-full text-sm font-medium bg-task-health/10 text-task-health modal-tag-btn"
+              data-tag="health" onclick="window.selectModalTag('health')">
+              <i class="fas fa-heart mr-1"></i>健康
+            </button>
+          </div>
+        </div>
+        <div class="flex space-x-3 pt-4">
+          <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white" type="button"
+            onclick="window.closeModalFunc()">
+            取消
+          </button>
+          <button class="flex-1 py-2.5 btn-primary-glass" type="button" onclick="window.createTaskFunc()">
+            <i class="fas fa-check mr-2"></i>创建任务
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 添加标签模态框 -->
+  <div id="new-tag-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-bold text-gray-800">
+          <i class="fas fa-tags text-primary mr-2"></i>添加新标签
+        </h2>
+        <button class="text-gray-500 hover:text-gray-700 p-2.5 rounded-xl hover:bg-gray-100" type="button"
+          onclick="window.closeTagModalFunc()">
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
+      <div class="space-y-5">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">标签名称 <span class="text-danger">*</span></label>
+          <input class="input-glass" id="modal-tag-name" type="text" placeholder="输入标签名称..." />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">标签颜色</label>
+          <div class="flex flex-wrap gap-3" id="modal-tag-color-list">
+            <button class="w-10 h-10 rounded-full border-2 border-primary bg-task-work modal-tag-color-btn active"
+              data-color="task-work" onclick="window.selectTagColor('task-work')" title="工作"></button>
+            <button class="w-10 h-10 rounded-full border-2 border-gray-300 bg-task-study modal-tag-color-btn"
+              data-color="task-study" onclick="window.selectTagColor('task-study')" title="学习"></button>
+            <button class="w-10 h-10 rounded-full border-2 border-gray-300 bg-task-life modal-tag-color-btn"
+              data-color="task-life" onclick="window.selectTagColor('task-life')" title="生活"></button>
+            <button class="w-10 h-10 rounded-full border-2 border-gray-300 bg-task-health modal-tag-color-btn"
+              data-color="task-health" onclick="window.selectTagColor('task-health')" title="健康"></button>
+            <button class="w-10 h-10 rounded-full border-2 border-gray-300 bg-primary modal-tag-color-btn"
+              data-color="primary" onclick="window.selectTagColor('primary')" title="主要"></button>
+            <button class="w-10 h-10 rounded-full border-2 border-gray-300 bg-secondary modal-tag-color-btn"
+              data-color="secondary" onclick="window.selectTagColor('secondary')" title="次要"></button>
+          </div>
+        </div>
+        <div class="flex space-x-3 pt-4">
+          <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white" type="button"
+            onclick="window.closeTagModalFunc()">
+            取消
+          </button>
+          <button class="flex-1 py-2.5 btn-primary-glass" type="button" onclick="window.createTagFunc()">
+            <i class="fas fa-check mr-2"></i>创建标签
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部 Tab 栏 -->
+  <footer
+    class="glass-tab py-1.5 px-2 sticky bottom-0 z-40"
+  >
+    <div class="container mx-auto flex justify-around items-center">
+      <a
+        href="待办页面.html"
+        onclick="return navWithOverlay('待办页面.html', event)"
+        class="tab-item active flex flex-col items-center text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+      >
+        <div class="relative">
+          <i class="fas fa-list-alt text-base"></i>
+          <span class="absolute -top-1 -right-1 w-2 h-2 bg-danger rounded-full animate-pulse"></span>
+        </div>
+        <span class="text-[10px] mt-0.5 font-semibold">待办</span>
+        <span class="tab-indicator"></span>
+      </a>
+      <a
+        href="日历页面.html"
+        onclick="return navWithOverlay('日历页面.html', event)"
+        class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+      >
+        <i class="fas fa-calendar text-base"></i>
+        <span class="text-[10px] mt-0.5">日历</span>
+        <span class="tab-indicator"></span>
+      </a>
+      <a
+        href="番茄钟页面.html"
+        onclick="return navWithOverlay('番茄钟页面.html', event)"
+        class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+      >
+        <i class="fas fa-clock text-base"></i>
+        <span class="text-[10px] mt-0.5">番茄钟</span>
+        <span class="tab-indicator"></span>
+      </a>
+      <a
+        href="数据周报页面.html"
+        onclick="return navWithOverlay('数据周报页面.html', event)"
+        class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+      >
+        <i class="fas fa-chart-line text-base"></i>
+        <span class="text-[10px] mt-0.5">数据周报</span>
+        <span class="tab-indicator"></span>
+      </a>
+      <a
+        href="打卡页面.html"
+        onclick="return navWithOverlay('打卡页面.html', event)"
+        class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+      >
+        <i class="fas fa-check-circle text-base"></i>
+        <span class="text-[10px] mt-0.5">打卡</span>
+        <span class="tab-indicator"></span>
+      </a>
+      <a
+        href="个人中心页面.html"
+        onclick="return navWithOverlay('个人中心页面.html', event)"
+        class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+      >
+        <i class="fas fa-user text-base"></i>
+        <span class="text-[10px] mt-0.5">我的</span>
+        <span class="tab-indicator"></span>
+      </a>
+    </div>
+  </footer>
+
+  <!-- JavaScript 功能 -->
+<script src='./js/pages/待办页面.inline-02.js?v=20260403_todo_fab_liquid_light1'></script>
+</body>
+
+</html>
+
+
+
+
+
+

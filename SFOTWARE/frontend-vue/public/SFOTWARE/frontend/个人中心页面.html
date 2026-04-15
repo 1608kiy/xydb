@@ -1,0 +1,493 @@
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>个人中心 - 铃记</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../SHARE/data.js?v=20260322_sync2"></script>
+    <script src="../../SHARE/common.js?v=20260322_sync2"></script>
+    <link rel='stylesheet' href='./css/mobile-tune.css?v=20260401_liquid_modal1' />
+    <script defer src='./js/software-mobile.js?v=20260330_app8'></script>
+    <script src="components.js?v=20260322_sync2"></script>
+    <link
+      href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src='./js/pages/个人中心页面.inline-01.js?v=20260327_jssplit'></script>
+    <script src='./js/tailwind-style-loader.js?v=20260327_csssplit'></script>
+  <script src='./js/pages/个人中心页面.inline-02.js?v=20260327_jssplit'></script>
+</head>
+  <body class="software-app profile-page bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden fade-in scroll-smooth">
+    <!-- ✅ 背景装饰光斑 -->
+    <div class="bg-orb bg-orb-primary w-[500px] h-[500px] -top-40 -left-40"></div>
+    <div class="bg-orb bg-orb-secondary w-[400px] h-[400px] bottom-0 right-0" style="animation-delay: -6s;"></div>
+    
+    <!-- 顶部导航 -->
+    <header class="glass-header sticky top-0 z-30" id="profile-header">
+      <div
+        class="container mx-auto px-4 py-3 flex items-center justify-between"
+      >
+        <div class="flex items-center space-x-4">
+          <a
+            href="待办页面.html"
+            class="profile-header-back-btn text-gray-600 transition-all duration-300 p-2.5 rounded-xl"
+          >
+            <i class="fas fa-arrow-left text-lg"></i>
+          </a>
+          <div>
+            <h1 class="text-xl font-bold text-gray-800">个人中心</h1>
+            <p class="text-xs text-gray-500 mt-0.5">
+              管理你的账号信息、应用偏好和数据隐私
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-3">
+          <div class="hidden md:flex profile-header-meta-card flex-col items-end text-xs text-gray-500">
+            <span>加入于 2023-06-01</span>
+            <span>连续打卡 <span class="text-primary font-semibold">15</span> 天</span>
+          </div>
+          <div class="relative group" id="profile-user-menu-container">
+            <button class="profile-header-user-btn flex items-center space-x-2 focus:outline-none cursor-pointer" id="profile-user-menu-btn" type="button" aria-label="用户菜单">
+              <img
+                src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
+                alt="用户头像"
+                onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2296%22 height=%2296%22 viewBox=%220 0 96 96%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop offset=%220%25%22 stop-color=%22%23a5b4fc%22/%3E%3Cstop offset=%22100%25%22 stop-color=%22%23c4b5fd%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx=%2248%22 cy=%2248%22 r=%2248%22 fill=%22url(%23g)%22/%3E%3Ccircle cx=%2248%22 cy=%2238%22 r=%2216%22 fill=%22rgba(255,255,255,0.9)%22/%3E%3Cpath d=%22M20 82c4-14 15-22 28-22s24 8 28 22%22 fill=%22rgba(255,255,255,0.9)%22/%3E%3C/svg%3E';"
+                class="header-user-avatar w-9 h-9 rounded-full object-cover border-2 border-white/80 shadow-sm hover:scale-105 transition-transform duration-300"
+              />
+              <span class="hidden md:inline-block font-medium header-user-name">张明</span>
+              <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform duration-300"></i>
+            </button>
+            <div
+              id="profile-user-dropdown"
+              class="absolute right-0 mt-2 w-48 glass-max rounded-lg shadow-xl py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
+              style="pointer-events: none;"
+            >
+              <a
+                href="个人中心页面.html"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors"
+                style="pointer-events: auto;"
+              >
+                <i class="fas fa-user mr-2 text-gray-500"></i>
+                个人中心
+              </a>
+              <a
+                href="javascript:void(0);"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors"
+                style="pointer-events: auto;"
+              >
+                <i class="fas fa-cog mr-2 text-gray-500"></i>
+                设置
+              </a>
+              <div class="border-t border-gray-100 my-1"></div>
+              <a
+                href="javascript:void(0);"
+                id="profile-logout"
+                class="block px-4 py-2 text-sm text-danger hover:bg-danger/10 transition-colors"
+                style="pointer-events: auto;"
+              >
+                <i class="fas fa-sign-out-alt mr-2"></i>
+                退出登录
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+      <main class="flex-1 overflow-y-auto content-auto p-4 pb-28 md:p-6 md:pb-32 scrollbar-thin">
+        <div class="max-w-3xl mx-auto space-y-4">
+          <section id="profile-main-column" class="user-card rounded-2xl p-5 relative overflow-hidden">
+            <div class="profile-hero-orb absolute top-0 right-0 w-32 h-32 rounded-bl-full"></div>
+            <div class="relative flex items-center gap-4">
+              <div class="relative group flex-shrink-0">
+                <img
+                  id="profile-avatar"
+                  src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
+                  alt="头像"
+                  class="w-20 h-20 rounded-full object-cover border-4 border-white shadow-md"
+                />
+                <button
+                  id="change-avatar-btn"
+                  class="profile-avatar-action absolute -bottom-1 -right-1 w-8 h-8 rounded-full text-white flex items-center justify-center text-xs shadow-md hover:scale-105 transition-all"
+                  title="更换头像"
+                  type="button"
+                >
+                  <i class="fas fa-camera"></i>
+                </button>
+                <input id="avatar-file-input" type="file" accept="image/*" class="hidden" />
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                  <input
+                    id="user-name"
+                    type="text"
+                    value="张明"
+                    class="text-[20px] font-medium leading-6 bg-transparent border-b border-transparent focus:border-primary focus:outline-none transition-all w-full"
+                  />
+                  <span id="user-level-tag" class="badge-level flex-shrink-0">
+                    <i class="fas fa-crown mr-1"></i>LV.1
+                  </span>
+                </div>
+                <p class="text-[13px] text-gray-600">高效不是忙碌，而是专注于真正重要的事情。</p>
+              </div>
+            </div>
+
+          </section>
+
+          <section class="profile-status-strip">
+            <div class="profile-status-chip">
+              <span class="profile-status-label">连续打卡</span>
+              <span class="profile-status-value">15 天</span>
+            </div>
+            <div class="profile-status-chip">
+              <span class="profile-status-label">本周专注</span>
+              <span class="profile-status-value">12.5 小时</span>
+            </div>
+            <div class="profile-status-chip">
+              <span class="profile-status-label">当前等级</span>
+              <span class="profile-status-value">LV.1</span>
+            </div>
+          </section>
+
+          <section class="profile-tab-shell">
+            <div class="profile-tab-nav" role="tablist" aria-label="个人中心分组">
+              <button class="profile-tab-btn active" id="tab-btn-overview" type="button" data-tab="overview" role="tab" aria-selected="true">概览</button>
+              <button class="profile-tab-btn" id="tab-btn-growth" type="button" data-tab="growth" role="tab" aria-selected="false">成长</button>
+              <button class="profile-tab-btn" id="tab-btn-settings" type="button" data-tab="settings" role="tab" aria-selected="false">设置</button>
+              <span id="profile-tab-indicator" class="profile-tab-indicator" aria-hidden="true"></span>
+            </div>
+          </section>
+
+          <div id="profile-tab-container" class="space-y-4 mt-0">
+            <section id="tab-overview" class="profile-tab-pane active" role="tabpanel" aria-labelledby="tab-btn-overview">
+              <div id="profile-stats-module" class="profile-card p-4">
+                <h2 class="profile-card-title">数据概要</h2>
+                <div class="stats-grid">
+                  <div class="stat-tile stat-item task-item">
+                    <p class="stat-label">累计完成任务</p>
+                    <p id="stat-completed-tasks" class="stat-value">-</p>
+                  </div>
+                  <div class="stat-tile stat-item focus-item">
+                    <p class="stat-label">累计专注时长</p>
+                    <p id="stat-focus-hours" class="stat-value">-</p>
+                  </div>
+                  <div class="stat-tile stat-item streak-item">
+                    <p class="stat-label">最长连续打卡</p>
+                    <p id="stat-max-streak" class="stat-value">-</p>
+                  </div>
+                  <div class="stat-tile stat-item pomodoro-item">
+                    <p class="stat-label">累计番茄数</p>
+                    <p id="stat-total-pomodoros" class="stat-value">-</p>
+                  </div>
+                </div>
+                <div class="module-empty-state mt-3" id="profile-stats-empty">
+                  <i class="far fa-chart-bar text-lg"></i>
+                  <h3>暂无数据</h3>
+                  <p>从今天开始积累你的第一条成长曲线吧。</p>
+                </div>
+              </div>
+
+              <div class="profile-card p-4">
+                <h2 class="profile-card-title">趋势概览</h2>
+                <div id="overview-trend-empty" class="overview-trend-empty">
+                  <div class="trend-illustration">📈</div>
+                  <p class="text-[13px] text-gray-600">从今天开始积累你的第一条成长曲线吧。</p>
+                </div>
+              </div>
+
+              <div class="profile-card p-4">
+                <div class="flex items-center justify-between mb-3">
+                  <h2 class="profile-card-title mb-0">成就徽章</h2>
+                  <button id="go-growth-tab-btn" type="button" class="text-[13px] text-primary font-medium">查看全部 →</button>
+                </div>
+                <div id="achievement-preview-grid" class="grid grid-cols-2 gap-3">
+                  <div class="achievement-badge unlocked" data-category="task">
+                    <div class="achievement-icon">✅</div>
+                    <p class="achievement-name">任务起步</p>
+                    <p class="achievement-desc">完成 1 个任务</p>
+                  </div>
+                  <div class="achievement-badge unlocked" data-category="focus">
+                    <div class="achievement-icon">🍅</div>
+                    <p class="achievement-name">专注入门</p>
+                    <p class="achievement-desc">累计 10 个番茄</p>
+                  </div>
+                  <div class="achievement-badge locked" data-category="checkin">
+                    <div class="achievement-icon">📅</div>
+                    <p class="achievement-name">打卡达人</p>
+                    <p class="achievement-desc">连续打卡 30 天</p>
+                  </div>
+                  <div class="achievement-badge locked" data-category="focus">
+                    <div class="achievement-icon">🧠</div>
+                    <p class="achievement-name">心流专家</p>
+                    <p class="achievement-desc">单日专注 4 小时</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section id="tab-growth" class="profile-tab-pane hidden" role="tabpanel" aria-labelledby="tab-btn-growth">
+              <div class="profile-card p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <h2 class="profile-card-title mb-0">经验值进度</h2>
+                  <span id="exp-text" class="text-[13px] text-gray-500">0 / 1000</span>
+                </div>
+                <div class="exp-track-wrap">
+                  <div class="exp-track">
+                    <div id="exp-bar" class="exp-fill" style="width: 0%;"></div>
+                  </div>
+                  <span id="exp-progress-bubble" class="exp-progress-bubble">0%</span>
+                </div>
+                <p id="exp-next-text" class="text-[12px] text-[#999] mt-2">当前 LV.1，距离下一级还需 1000 经验值</p>
+              </div>
+
+              <div class="profile-card p-4">
+                <h2 class="profile-card-title">数据趋势</h2>
+                <div id="trend-empty" class="trend-empty-state">
+                  <div class="trend-illustration">📈</div>
+                  <p class="text-[13px] text-gray-600">暂无趋势数据，完成一次专注后即可生成可视化曲线</p>
+                  <button id="start-focus-btn" class="trend-cta-btn" type="button">开始第一个专注</button>
+                </div>
+              </div>
+
+              <div id="profile-achievement-module" class="profile-card p-4">
+                <div class="flex items-center justify-between mb-3">
+                  <h2 class="profile-card-title mb-0">完整成就墙</h2>
+                </div>
+                <div class="achievement-filter-row mb-3">
+                  <button type="button" class="achievement-filter-btn active" data-filter="all">全部</button>
+                  <button type="button" class="achievement-filter-btn" data-filter="focus">专注</button>
+                  <button type="button" class="achievement-filter-btn" data-filter="checkin">打卡</button>
+                  <button type="button" class="achievement-filter-btn" data-filter="task">任务</button>
+                </div>
+                <div id="achievement-grid" class="grid grid-cols-2 gap-3">
+                  <div class="achievement-badge unlocked" data-category="task">
+                    <div class="achievement-icon">✅</div>
+                    <p class="achievement-name">任务起步</p>
+                    <p class="achievement-desc">完成 1 个任务</p>
+                  </div>
+                  <div class="achievement-badge unlocked" data-category="focus">
+                    <div class="achievement-icon">🍅</div>
+                    <p class="achievement-name">番茄入门</p>
+                    <p class="achievement-desc">累计 10 个番茄</p>
+                  </div>
+                  <div class="achievement-badge unlocked" data-category="checkin">
+                    <div class="achievement-icon">🗓️</div>
+                    <p class="achievement-name">一周坚持</p>
+                    <p class="achievement-desc">连续打卡 7 天</p>
+                  </div>
+                  <div class="achievement-badge locked" data-category="focus">
+                    <div class="achievement-icon">🎯</div>
+                    <p class="achievement-name">深度专注者</p>
+                    <p class="achievement-desc">单次专注 120 分钟</p>
+                  </div>
+                  <div class="achievement-badge locked" data-category="checkin">
+                    <div class="achievement-icon">🏅</div>
+                    <p class="achievement-name">百日坚持</p>
+                    <p class="achievement-desc">累计打卡 100 次</p>
+                  </div>
+                  <div class="achievement-badge locked" data-category="task">
+                    <div class="achievement-icon">🚀</div>
+                    <p class="achievement-name">任务清空者</p>
+                    <p class="achievement-desc">一天内清空待办</p>
+                  </div>
+                </div>
+                <div class="module-empty-state mt-3" id="achievement-empty">
+                  <i class="far fa-star text-lg"></i>
+                  <h3>暂无可展示徽章</h3>
+                  <p>完成任务、专注和打卡后，可逐步解锁专属成就。</p>
+                </div>
+              </div>
+            </section>
+
+            <section id="tab-settings" class="profile-tab-pane hidden" role="tabpanel" aria-labelledby="tab-btn-settings">
+              <div id="profile-security-module" class="profile-card p-0 overflow-hidden">
+                <div class="security-top-strip"></div>
+                <div class="security-summary-row">
+                  <div class="flex items-center gap-2">
+                    <i class="fas fa-shield-alt text-[#34C759]"></i>
+                    <span class="text-[14px] text-[#333333]">安全级别：高</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="security-dot"></span>
+                    <span class="text-[12px] text-[#34C759]">已完成主要安全设置</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="profile-card settings-block-card">
+                <h3 class="settings-group-title">账户信息</h3>
+                <div class="settings-list-row">
+                  <div class="settings-row-main">
+                    <div>
+                      <p class="settings-main">邮箱地址</p>
+                      <p id="user-email" class="settings-sub">user@example.com</p>
+                    </div>
+                    <span class="settings-verified">已验证</span>
+                  </div>
+                </div>
+                <div class="settings-list-row no-divider">
+                  <div class="settings-row-main">
+                    <div>
+                      <p class="settings-main">手机号码</p>
+                      <p id="user-phone" class="settings-sub">188****0000</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="profile-card settings-block-card">
+                <h3 class="settings-group-title">安全设置</h3>
+                <div class="settings-list-row">
+                  <div class="settings-row-main">
+                    <div>
+                      <p class="settings-main">登录密码</p>
+                      <p id="password-updated-tip" class="settings-sub">上次修改：从未更新</p>
+                    </div>
+                    <button id="change-password-btn" type="button" class="settings-action-btn action-press">修改</button>
+                  </div>
+                </div>
+                <div class="settings-list-row">
+                  <div class="settings-row-main">
+                    <div>
+                      <p class="settings-main">绑定手机</p>
+                      <p id="security-phone-tip" class="settings-sub">用于登录、找回密码和安全验证</p>
+                    </div>
+                    <button id="bind-phone-btn" type="button" class="settings-action-btn action-press">修改</button>
+                  </div>
+                </div>
+                <div class="settings-list-row no-divider">
+                  <div class="settings-row-main">
+                    <div>
+                      <p class="settings-main">两步验证</p>
+                      <p id="two-step-status" class="settings-sub">状态：未开启</p>
+                    </div>
+                    <button id="two-step-btn" type="button" class="settings-action-btn action-press">去开启</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="profile-card settings-block-card">
+                <h3 class="settings-group-title">关于</h3>
+                <div class="settings-list-row">
+                  <div class="settings-row-main">
+                    <p class="settings-main">版本号</p>
+                    <p class="settings-version">v1.0.0</p>
+                  </div>
+                </div>
+                <a href="javascript:void(0);" class="settings-link-row settings-list-row">
+                  <span>用户协议</span>
+                  <i class="fas fa-chevron-right"></i>
+                </a>
+                <a href="javascript:void(0);" class="settings-link-row settings-list-row no-divider">
+                  <span>隐私政策</span>
+                  <i class="fas fa-chevron-right"></i>
+                </a>
+              </div>
+
+              <div id="profile-danger-module" class="danger-zone">
+                  <h3 class="danger-title">危险操作</h3>
+                  <div class="danger-row">
+                    <button id="logout-btn" type="button" class="danger-logout-btn action-press">退出登录</button>
+                  </div>
+                  <div class="danger-row">
+                    <button id="clear-all-data-btn" type="button" class="danger-clear-btn action-press">
+                      <i class="fas fa-triangle-exclamation mr-2"></i>清除所有数据
+                    </button>
+                  </div>
+                  <div class="danger-row no-divider">
+                    <button id="delete-account-btn" type="button" class="danger-delete-btn action-press">注销账号</button>
+                    <span class="danger-delete-underline" aria-hidden="true"></span>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+      <script src='./js/pages/个人中心页面.inline-03.js?v=20260327_jssplit'></script>
+    </div>
+
+    <!-- 底部 Tab 栏 -->
+    <footer
+      class="glass-tab py-1.5 px-2 sticky bottom-0 z-40"
+    >
+      <div class="container mx-auto flex justify-around items-center">
+        <a
+          href="待办页面.html"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+        >
+          <i class="fas fa-list-alt text-base"></i>
+          <span class="text-[10px] mt-0.5">待办</span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          href="日历页面.html"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+        >
+          <i class="fas fa-calendar text-base"></i>
+          <span class="text-[10px] mt-0.5">日历</span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          href="番茄钟页面.html"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+        >
+          <i class="fas fa-clock text-base"></i>
+          <span class="text-[10px] mt-0.5">番茄钟</span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          href="数据周报页面.html"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+        >
+          <i class="fas fa-chart-line text-base"></i>
+          <span class="text-[10px] mt-0.5">数据周报</span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          href="打卡页面.html"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+        >
+          <i class="fas fa-check-circle text-base"></i>
+          <span class="text-[10px] mt-0.5">打卡</span>
+          <span class="tab-indicator"></span>
+        </a>
+        <!-- 当前页：个人中心 -->
+        <a
+          href="个人中心页面.html"
+          class="tab-item active flex flex-col items-center text-primary px-2 py-1 rounded-lg bg-primary/10"
+        >
+          <i class="fas fa-user text-base"></i>
+          <span class="text-[10px] mt-0.5 font-semibold">我的</span>
+          <span class="tab-indicator"></span>
+        </a>
+      </div>
+    </footer>
+
+    <div id="danger-bottom-sheet" class="danger-sheet hidden" aria-hidden="true">
+      <div class="danger-sheet-mask" id="danger-sheet-mask"></div>
+      <div class="danger-sheet-panel" role="dialog" aria-modal="true">
+        <div class="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-4"></div>
+        <h3 id="danger-sheet-title" class="text-[16px] font-medium text-gray-800">确认操作</h3>
+        <p id="danger-sheet-desc" class="text-[13px] text-gray-600 mt-2">该操作不可逆，请谨慎确认。</p>
+        <div id="danger-sheet-confirm-wrap" class="mt-4 hidden">
+          <label class="text-[12px] text-[#999]">请输入“确认”继续</label>
+          <input id="danger-confirm-input" type="text" class="danger-sheet-input" placeholder="请输入确认" />
+        </div>
+        <div class="mt-5 grid grid-cols-2 gap-3">
+          <button id="danger-sheet-cancel" type="button" class="danger-sheet-cancel">取消</button>
+          <button id="danger-sheet-confirm" type="button" class="danger-sheet-confirm" disabled>确认执行</button>
+        </div>
+      </div>
+    </div>
+
+    <script src='./js/pages/个人中心页面.inline-04.js?v=20260327_jssplit'></script>
+  </body>
+</html>
+
+
+
+
+
+

@@ -1,0 +1,14 @@
+<template>
+  <div class="min-h-screen flex flex-col">
+    <Header />
+    <main class="flex-1 container mx-auto px-4 py-6 mb-20 md:mb-0">
+      <slot></slot>
+    </main>
+    <Footer />
+  </div>
+</template>
+
+<script setup lang="ts">
+import Header from './Header.vue'
+import Footer from './Footer.vue'
+</script>

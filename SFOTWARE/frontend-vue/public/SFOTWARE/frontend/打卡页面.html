@@ -1,0 +1,642 @@
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <script src='./js/pages/打卡页面.inline-01.js?v=20260327_jssplit'></script>
+    <title>打卡 - 铃记</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../SHARE/data.js?v=20260322_sync4"></script>
+    <script src="../../SHARE/common.js?v=20260322_sync4"></script>
+    <link rel='stylesheet' href='./css/mobile-tune.css?v=20260401_liquid_modal1' />
+    <script defer src='./js/software-mobile.js?v=20260330_app8'></script>
+    <script src="components.js?v=20260322_sync4"></script>
+    <link
+      href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src='./js/tailwind-style-loader.js?v=20260327_csssplit'></script>
+    <script src='./js/pages/打卡页面.inline-02.js?v=20260327_jssplit'></script>
+  <script src='./js/pages/打卡页面.inline-03.js?v=20260327_jssplit'></script>
+  <style>
+    /* 打卡页面动画规范 */
+    /* 【1】打卡按钮按下反馈 */
+    .checkin-btn:active { animation: buttonPress 0.12s ease-out; }
+    @keyframes buttonPress { 0% { transform: scale(1); } 50% { transform: scale(0.94); } 100% { transform: scale(1); } }
+    /* 【2】打卡成功反馈 */
+    .checkin-success.success-pop { animation: checkinPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+    @keyframes checkinPop { from { opacity: 0; transform: scale(0.75); } to { opacity: 1; transform: scale(1); } }
+    /* 【3】打卡历史列表项淡入 */
+    .checkin-history-item.entry-slide { animation: historySlide 0.2s ease-out both; }
+    @keyframes historySlide { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+    /* 【4】日期点击高亮 */
+    .date-selector.date-tap { animation: dateTap 0.15s ease-out; }
+    @keyframes dateTap { from { transform: scale(0.95); } to { transform: scale(1.05); } }
+  </style>
+</head>
+  <body class="software-app checkin-page-liquid font-inter bg-gradient-to-br from-slate-200 via-blue-200 to-indigo-200 text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden fade-in scroll-smooth">
+    <!-- 背景装饰光斑 -->
+    <div class="bg-orb w-[600px] h-[600px] bg-blue-400 -top-20 -left-20"></div>
+    <div class="bg-orb w-[500px] h-[500px] bg-cyan-400 -bottom-20 -right-20" style="animation-delay: -5s;"></div>
+    <div class="bg-orb w-[400px] h-[400px] bg-indigo-400 top-1/2 left-1/2" style="animation-delay: -10s;"></div>
+    
+    <!-- 顶部导航 -->
+    <header class="glass-header sticky top-0 z-30" id="checkin-header">
+      <div
+        class="container mx-auto px-4 py-3 flex items-center justify-between"
+      >
+        <div class="flex items-center space-x-4">
+          <a
+            href="待办页面.html"
+            class="text-gray-600 hover:text-primary transition-all duration-300 p-2.5 rounded-xl hover:bg-primary/10 hover:scale-110"
+          >
+            <i class="fas fa-arrow-left text-lg"></i>
+          </a>
+          <div>
+            <h1 class="text-xl font-bold text-gray-800">每日打卡</h1>
+            <p class="text-xs text-gray-500 mt-0.5">
+              用一个小小的动作，记录你的每一次坚持
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-6">
+          <div class="hidden md:flex flex-col items-end text-xs text-gray-500">
+            <span>
+              已连续打卡
+              <span id="streak-days" class="text-primary font-semibold">15</span>
+              天
+            </span>
+            <span>
+              历史最长
+              <span class="font-semibold text-gray-700">21</span>
+              天
+            </span>
+          </div>
+          <div class="relative group" id="checkin-user-menu-container">
+            <button class="flex items-center space-x-2 focus:outline-none cursor-pointer" id="checkin-user-menu-btn" type="button" aria-label="用户菜单">
+              <img
+                src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
+                alt="用户头像"
+                class="header-user-avatar w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300"
+              />
+              <span class="header-user-name hidden md:inline-block font-medium">张明</span>
+              <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform duration-300"></i>
+            </button>
+            <div
+              id="checkin-user-dropdown"
+              class="absolute right-0 mt-2 w-48 glass-max rounded-lg shadow-xl py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
+              style="pointer-events: none;"
+            >
+              <a
+                href="个人中心页面.html"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors"
+                style="pointer-events: auto;"
+              >
+                <i class="fas fa-user mr-2 text-gray-500"></i>
+                个人中心
+              </a>
+              <a
+                href="javascript:void(0);"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors"
+                style="pointer-events: auto;"
+              >
+                <i class="fas fa-cog mr-2 text-gray-500"></i>
+                设置
+              </a>
+              <div class="border-t border-gray-100 my-1"></div>
+              <a
+                href="登录页面.html"
+                class="block px-4 py-2 text-sm text-danger hover:bg-danger/10 transition-colors"
+                style="pointer-events: auto;"
+              >
+                <i class="fas fa-sign-out-alt mr-2"></i>
+                退出登录
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <script src='./js/pages/打卡页面.inline-04.js?v=20260327_jssplit'></script>
+
+    <div class="flex flex-1 overflow-hidden">
+      <main class="flex-1 overflow-y-auto content-auto p-4 md:p-6 scrollbar-thin">
+        <div
+          id="checkin-app-grid"
+          class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[3fr,2fr] gap-6"
+        >
+          <!-- 左侧：今日打卡 + 日历 -->
+          <div class="space-y-4" id="checkin-main-column">
+            <!-- 今日打卡卡片 -->
+            <section
+              id="today-checkin-card"
+              class="checkin-hero-card depth-card interactive-glow reveal-card card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 md:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 fade-in scroll-mt-24"
+            >
+              <div class="flex items-start space-x-3">
+                <div
+                  class="checkin-icon-badge w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary text-2xl float"
+                >
+✨
+                </div>
+                <div>
+                  <p class="text-xs text-gray-500 mb-1" id="today-date-text">
+                    今天
+                  </p>
+                  <h2 class="text-lg font-semibold text-gray-800">
+                    记录今天的坚持
+                  </h2>
+                  <p class="text-xs text-gray-500 mt-1">
+                    选择一个打卡类型，写下你今天的小小进步。
+                  </p>
+                  <div class="mt-3 space-y-2">
+                    <div class="flex flex-wrap gap-2 text-xs" id="checkin-type-selector">
+                      <button
+                        class="type-btn study selected"
+                        data-type="学习"
+                        type="button"
+                      >
+                      <i class="fas fa-book-open"></i>
+                      <span>学习</span>
+                      </button>
+                      <button
+                        class="type-btn sport"
+                        data-type="运动"
+                        type="button"
+                      >
+                      <i class="fas fa-running"></i>
+                      <span>运动</span>
+                      </button>
+                      <button
+                        class="type-btn wake"
+                        data-type="早起"
+                        type="button"
+                      >
+                      <i class="fas fa-sun"></i>
+                      <span>早起</span>
+                      </button>
+                      <button
+                        class="type-btn read"
+                        data-type="阅读"
+                        type="button"
+                      >
+                      <i class="fas fa-book"></i>
+                      <span>阅读</span>
+                      </button>
+                    </div>
+                    <p class="text-[11px] text-gray-400">
+                      每次只能选择一种打卡类型
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="checkin-action-panel w-full md:w-72">
+                <div id="checkin-form-panel" class="space-y-2">
+                  <textarea
+                    id="checkin-note"
+                    rows="2"
+                    class="checkin-note-field w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary glass-input resize-none"
+                    placeholder="写下今天做了什么…"
+                  ></textarea>
+                  <button
+                    id="checkin-btn"
+                    class="checkin-btn energy-btn w-full"
+                  >
+                    <i class="fas fa-check mr-2"></i>
+                    今日打卡
+                  </button>
+                </div>
+                <div id="checkin-success-panel" class="checkin-success hidden interactive-glow" aria-live="polite">
+                  <div class="success-burst" aria-hidden="true">
+                    <span class="success-burst-dot dot-1"></span>
+                    <span class="success-burst-dot dot-2"></span>
+                    <span class="success-burst-dot dot-3"></span>
+                    <span class="success-burst-dot dot-4"></span>
+                  </div>
+                  <div class="checkin-success-icon">
+                    <i class="fas fa-check"></i>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <p id="checkin-success-title" class="text-sm font-semibold text-emerald-700">
+                      今日学习打卡完成 ✓
+                    </p>
+                    <p id="checkin-success-summary" class="checkin-success-summary mt-1 text-xs text-emerald-700/80">
+                      继续保持今天的节奏，让每一次坚持都留下痕迹。
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section
+              id="checkin-summary-grid"
+              class="summary-grid-shell depth-card interactive-glow reveal-card card-shadow bg-white/60 backdrop-blur-sm rounded-2xl p-3 fade-in"
+            >
+              <div class="summary-stat-grid">
+                <div class="summary-stat interactive-glow">
+                  <div class="summary-stat-label">本月打卡天数</div>
+                  <div id="month-days" class="summary-stat-value text-gray-800">12</div>
+                </div>
+                <div class="summary-stat interactive-glow">
+                  <div class="summary-stat-label">最长连续打卡</div>
+                  <div id="max-streak" class="summary-stat-value text-gray-800">21</div>
+                </div>
+                <div class="summary-stat interactive-glow">
+                  <div class="summary-stat-label">当前连续打卡</div>
+                  <div id="current-streak" class="summary-stat-value text-primary">15</div>
+                </div>
+                <div class="summary-stat interactive-glow">
+                  <div class="summary-stat-label">本周打卡次数</div>
+                  <div id="week-count" class="summary-stat-value text-gray-800">5</div>
+                </div>
+              </div>
+            </section>
+
+            <!-- 打卡日历 -->
+            <section
+              id="checkin-mobile-hub"
+              class="mobile-checkin-hub depth-card interactive-glow reveal-card card-shadow bg-white/60 backdrop-blur-sm rounded-2xl p-3 fade-in lg:hidden"
+              aria-label="打卡功能切换"
+            >
+              <div class="mobile-checkin-hub-header">
+                <div>
+                  <p class="mobile-hub-eyebrow">移动工作台</p>
+                  <h2 class="mobile-hub-title">把核心信息收进一屏</h2>
+                </div>
+                <span class="mobile-hub-tip">轻点切换</span>
+              </div>
+              <div class="mobile-checkin-tabs" role="tablist" aria-label="打卡功能切换">
+                <button
+                  type="button"
+                  class="mobile-checkin-tab is-active"
+                  data-mobile-checkin-tab="calendar"
+                  aria-selected="true"
+                >
+                  日历
+                </button>
+                <button
+                  type="button"
+                  class="mobile-checkin-tab"
+                  data-mobile-checkin-tab="history"
+                  aria-selected="false"
+                >
+                  记录
+                </button>
+                <button
+                  type="button"
+                  class="mobile-checkin-tab"
+                  data-mobile-checkin-tab="insight"
+                  aria-selected="false"
+                >
+                  洞察
+                </button>
+              </div>
+            </section>
+
+            <section
+              id="checkin-calendar-section"
+              data-mobile-checkin-panel="calendar"
+              class="checkin-panel-section is-mobile-active checkin-calendar-card depth-card interactive-glow reveal-card card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 fade-in"
+            >
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center space-x-2">
+                  <button id="prev-month" class="calendar-nav-btn text-gray-500">
+                    <i class="fas fa-chevron-left text-sm"></i>
+                  </button>
+                  <h2 id="calendar-title" class="text-sm font-semibold text-gray-800">
+                    本月打卡日历
+                  </h2>
+                  <button id="next-month" class="calendar-nav-btn text-gray-500">
+                    <i class="fas fa-chevron-right text-sm"></i>
+                  </button>
+                </div>
+                <div class="flex items-center gap-3 text-xs text-gray-500">
+                  <span class="calendar-legend-item">
+                    <span class="calendar-legend-dot solid"></span>
+                    已打卡
+                  </span>
+                  <span class="calendar-legend-item">
+                    <span class="calendar-legend-dot outline"></span>
+                    连续打卡
+                  </span>
+                </div>
+              </div>
+              <div id="checkin-calendar" class="text-xs text-gray-600"></div>
+            </section>
+
+            <!-- 历史打卡记录 -->
+            <section
+              id="checkin-history-section"
+              data-mobile-checkin-panel="history"
+              class="checkin-panel-section checkin-history-card depth-card interactive-glow reveal-card card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 fade-in"
+            >
+              <div class="flex items-center justify-between mb-3">
+                <h2 class="text-sm font-semibold text-gray-800">
+                  最近打卡记录
+                </h2>
+                <button
+                  id="clear-history"
+                  class="text-xs text-gray-400 hover:text-danger transition-colors"
+                >
+                  清空
+                </button>
+              </div>
+              <ul
+                id="checkin-list"
+                class="space-y-2 text-xs text-gray-700 max-h-56 overflow-y-auto scrollbar-hide"
+              ></ul>
+              <div id="checkin-empty-state" class="hidden flex flex-col items-center justify-center py-8 text-center">
+                <div class="text-3xl leading-none text-gray-300" aria-hidden="true">📋</div>
+                <p class="mt-3 text-sm text-gray-500">还没有打卡记录</p>
+                <button
+                  id="empty-checkin-cta"
+                  type="button"
+                  class="empty-checkin-link mt-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                >
+                  立即打卡 →
+                </button>
+              </div>
+            </section>
+          </div>
+
+          <!-- 右侧：打卡统计与建议 -->
+          <div class="space-y-4" id="checkin-side-column">
+            <!-- 打卡类型分布 -->
+            <section
+              id="checkin-distribution-section"
+              data-mobile-checkin-panel="insight"
+              class="checkin-panel-section distribution-card depth-card interactive-glow reveal-card card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-4 md:p-5 fade-in"
+            >
+              <h2 class="text-sm font-semibold text-gray-800 mb-3">
+                打卡类型分布（<span id="distribution-period">本月</span>）
+              </h2>
+              <div class="space-y-3 text-xs text-gray-700">
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center space-x-1.5">
+                      <i class="fas fa-book-open text-task-study"></i>
+                      <span>学习</span>
+                    </div>
+                    <span data-type="study-percent" class="font-medium">40%</span>
+                  </div>
+                  <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      class="h-full bg-task-study rounded-full progress-bar"
+                      data-type="study-bar"
+                      style="width: 40%"
+                    ></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center space-x-1.5">
+                      <i class="fas fa-running text-task-health"></i>
+                      <span>运动</span>
+                    </div>
+                    <span data-type="sport-percent" class="font-medium">30%</span>
+                  </div>
+                  <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      class="h-full bg-task-health rounded-full progress-bar"
+                      data-type="sport-bar"
+                      style="width: 30%"
+                    ></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center space-x-1.5">
+                      <i class="fas fa-sun text-warning"></i>
+                      <span>早起</span>
+                    </div>
+                    <span data-type="wake-percent" class="font-medium">20%</span>
+                  </div>
+                  <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      class="h-full bg-warning rounded-full progress-bar"
+                      data-type="wake-bar"
+                      style="width: 20%"
+                    ></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center space-x-1.5">
+                      <i class="fas fa-book text-info"></i>
+                      <span>阅读</span>
+                    </div>
+                    <span data-type="read-percent" class="font-medium">10%</span>
+                  </div>
+                  <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      class="h-full bg-info rounded-full progress-bar"
+                      data-type="read-bar"
+                      style="width: 10%"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- 智能建议 -->
+            <section
+              id="checkin-ai-section"
+              data-mobile-checkin-panel="insight"
+              class="checkin-panel-section ai-insight-panel depth-card interactive-glow reveal-card card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-5 fade-in"
+            >
+              <div class="ai-panel-topline">
+                <div class="ai-panel-heading">
+                  <div class="ai-panel-icon-wrap">
+                    <svg
+                      class="h-4 w-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M9 18h6"></path>
+                      <path d="M10 22h4"></path>
+                      <path d="M12 2a7 7 0 0 0-4 12.75c.62.46 1 1.18 1 1.95V18h6v-1.3c0-.77.38-1.49 1-1.95A7 7 0 0 0 12 2Z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="ai-panel-label">AI 习惯洞察</p>
+                    <h2 class="ai-panel-title">把打卡记录变成下一步行动</h2>
+                    <p class="ai-panel-subtitle">当前先用本地智能分析，后续可直接接入 AI API 做个性化建议。</p>
+                  </div>
+                </div>
+                <button
+                  id="refresh-ai-suggestions"
+                  type="button"
+                  class="ai-refresh-btn"
+                >
+                  <i class="fas fa-sparkles text-[11px]"></i>
+                  刷新洞察
+                </button>
+              </div>
+
+              <div class="ai-panel-meta">
+                <span id="ai-source-badge" class="ai-source-badge local">
+                  <span class="ai-source-dot"></span>
+                  本地智能
+                </span>
+                <span id="ai-scope-text" class="ai-scope-text">基于最近 7 天与本月打卡统计</span>
+              </div>
+
+              <div id="ai-loading-state" class="ai-loading-state hidden" aria-hidden="true">
+                <div class="ai-skeleton ai-skeleton-hero"></div>
+                <div class="ai-skeleton-list">
+                  <div class="ai-skeleton ai-skeleton-line"></div>
+                  <div class="ai-skeleton ai-skeleton-line short"></div>
+                  <div class="ai-skeleton ai-skeleton-line"></div>
+                </div>
+              </div>
+
+              <div id="ai-insight-content" class="space-y-4">
+                <div class="ai-hero-insight">
+                  <div class="ai-hero-head">
+                    <span id="ai-priority-chip" class="ai-priority-chip">优先优化</span>
+                    <span id="ai-last-updated" class="ai-last-updated">刚刚更新</span>
+                  </div>
+                  <h3 id="ai-summary-title" class="ai-summary-title">先把打卡节奏稳定在固定时段</h3>
+                  <p id="ai-summary-text" class="ai-summary-text">
+                    你的打卡频次已经有起色，下一步更值得优化的是触发时机，让习惯形成更稳定的闭环。
+                  </p>
+                  <div class="ai-mini-metrics">
+                    <div class="ai-mini-stat">
+                      <span id="ai-current-streak" class="ai-mini-value">0天</span>
+                      <span class="ai-mini-label">当前连续</span>
+                    </div>
+                    <div class="ai-mini-stat">
+                      <span id="ai-weekly-volume" class="ai-mini-value">0次</span>
+                      <span class="ai-mini-label">近7天频率</span>
+                    </div>
+                    <div class="ai-mini-stat">
+                      <span id="ai-focus-type" class="ai-mini-value">学习</span>
+                      <span class="ai-mini-label">当前重心</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="ai-suggestion-list" class="space-y-3">
+                  <div class="ai-suggestion-card">
+                    <div class="ai-suggestion-index">01</div>
+                    <div class="ai-suggestion-body">
+                      <div class="ai-suggestion-title-row">
+                        <h4 class="ai-suggestion-title">建立稳定触发点</h4>
+                        <span class="ai-suggestion-tag">习惯节奏</span>
+                      </div>
+                      <p class="ai-suggestion-text">建议把打卡安排到每天同一时间段，减少“想起来再做”的波动。</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="ai-api-ready-bar">
+                  <div>
+                    <p class="ai-api-ready-title">AI API 接入预留位</p>
+                    <p class="ai-api-ready-text">后续接入后，这里将升级为基于最近记录内容的个性化建议与行动计划。</p>
+                  </div>
+                  <span id="ai-connection-status" class="ai-connection-status">READY FOR API</span>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- 底部 Tab -->
+    <footer
+      class="glass-tab py-1.5 px-2 sticky bottom-0 z-40"
+    >
+      <div class="container mx-auto flex justify-around items-center">
+        <a
+          href="待办页面.html"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+        >
+          <i class="fas fa-list-alt text-base"></i>
+          <span class="text-[10px] mt-0.5">待办</span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          href="日历页面.html"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+        >
+          <i class="fas fa-calendar text-base"></i>
+          <span class="text-[10px] mt-0.5">日历</span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          href="番茄钟页面.html"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+        >
+          <i class="fas fa-clock text-base"></i>
+          <span class="text-[10px] mt-0.5">番茄钟</span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          href="数据周报页面.html"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+        >
+          <i class="fas fa-chart-line text-base"></i>
+          <span class="text-[10px] mt-0.5">数据周报</span>
+          <span class="tab-indicator"></span>
+        </a>
+        <!-- 当前页：打卡 -->
+        <a
+          href="打卡页面.html"
+          class="tab-item active flex flex-col items-center text-primary px-2 py-1 rounded-lg bg-primary/10"
+        >
+          <i class="fas fa-check-circle text-base"></i>
+          <span class="text-[10px] mt-0.5 font-semibold">打卡</span>
+          <span class="tab-indicator"></span>
+        </a>
+        <a
+          href="个人中心页面.html"
+          class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-all duration-300"
+        >
+          <i class="fas fa-user text-base"></i>
+          <span class="text-[10px] mt-0.5">个人中心</span>
+          <span class="tab-indicator"></span>
+        </a>
+      </div>
+    </footer>
+
+    <!-- 清空打卡记录确认弹窗 -->
+    <div id="clear-history-modal" class="confirm-modal-overlay" aria-hidden="true">
+      <div class="confirm-modal-card">
+        <div class="flex items-start space-x-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-danger/10 text-danger flex items-center justify-center shrink-0">
+            <i class="fas fa-trash-alt"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-semibold text-gray-800">清空最近打卡记录</h3>
+            <p class="text-sm text-gray-600 mt-1">将删除当前会话内的打卡记录，此操作不可撤销。</p>
+          </div>
+        </div>
+        <div class="flex items-center justify-end gap-3">
+          <button id="cancel-clear-history-btn" class="px-4 py-2 rounded-xl border border-gray-200 text-gray-600 bg-white/70 hover:bg-white transition-colors">
+            取消
+          </button>
+          <button id="confirm-clear-history-btn" class="px-4 py-2 rounded-xl text-white bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 shadow-md shadow-red-500/25 transition-all">
+            <i class="fas fa-trash-alt mr-1.5"></i>确认删除
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- JS 代码 -->
+    <script src='./js/pages/打卡页面.inline-05.js?v=20260327_jssplit'></script>
+  </body>
+</html>
+
+
+
+
+
+

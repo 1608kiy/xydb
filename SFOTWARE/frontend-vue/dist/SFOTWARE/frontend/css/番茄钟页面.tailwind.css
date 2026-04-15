@@ -1,0 +1,482 @@
+﻿
+      @layer utilities {
+          .content-auto {
+              content-visibility: auto;
+          }
+          .scrollbar-hide {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
+          }
+          .scrollbar-hide::-webkit-scrollbar {
+              display: none;
+          }
+          .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+          .scrollbar-thin::-webkit-scrollbar-track { background: rgba(243, 244, 246, 0.5); border-radius: 3px; }
+          .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(255, 107, 107, 0.3); border-radius: 3px; }
+          .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(255, 107, 107, 0.5); }
+
+          body.software-app {
+            --focus-glow-primary: rgba(99, 102, 241, 0.34);
+            --focus-glow-secondary: rgba(236, 72, 153, 0.22);
+            --focus-glow-border: rgba(99, 102, 241, 0.22);
+            --focus-ring-color: rgba(99, 102, 241, 0.2);
+            --focus-energy-a: #fb7185;
+            --focus-energy-b: #f59e0b;
+          }
+          html.unified-dark-mode body.software-app,
+          body.software-app.theme-night {
+            --focus-glow-primary: rgba(56, 189, 248, 0.46);
+            --focus-glow-secondary: rgba(129, 140, 248, 0.38);
+            --focus-glow-border: rgba(56, 189, 248, 0.42);
+            --focus-ring-color: rgba(56, 189, 248, 0.34);
+            --focus-energy-a: #22d3ee;
+            --focus-energy-b: #818cf8;
+          }
+          
+          /* ✅ 毛玻璃效果 */
+          .glass { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); }
+          .glass-strong { background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(36px); -webkit-backdrop-filter: blur(36px); border: 1px solid rgba(255, 255, 255, 0.3); }
+          .glass-max { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(48px); -webkit-backdrop-filter: blur(48px); border: 1px solid rgba(255, 255, 255, 0.6); }
+          .glass-tab { 
+            background: rgba(255, 255, 255, 0.5); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border-top: 1px solid rgba(255, 255, 255, 0.3); 
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+          }
+          .glass-header { 
+            background: rgba(255, 255, 255, 0.5); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+          }
+          
+          /* ✅ 卡片阴影 */
+          .card-shadow { box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06); }
+          .card-hover { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+          .card-hover:hover { 
+            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12); 
+            transform: translateY(-4px);
+          }
+          
+          /* ✅ 背景装饰光斑 */
+          .bg-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.18; pointer-events: none; z-index: 0; animation: orbFloat 20s ease-in-out infinite; }
+          @keyframes orbFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -30px) scale(1.05); } 66% { transform: translate(-20px, 20px) scale(0.98); } }
+          
+          /* ✅ 动画效果 */
+          .fade-in { animation: fadeIn 0.5s ease-out; }
+          @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+          .float { animation: float 3s ease-in-out infinite; }
+          @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+          .slide-up { animation: slideUp 0.4s ease-out; }
+          @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+          .scale-in { animation: scaleIn 0.3s ease-out; }
+          @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+          
+          /* ✅ 计时器外圈平滑旋转动画 */
+          .progress-ring { 
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.4s ease;
+            position: absolute;
+            overflow: visible;
+          }
+          .progress-ring::after {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            border-radius: 999px;
+            border: 2px solid var(--focus-ring-color);
+            opacity: 0;
+            transform: scale(0.94);
+            pointer-events: none;
+          }
+          .software-app.pomodoro-running .progress-ring::after {
+            animation: ringAura 1.8s ease-in-out infinite;
+          }
+          @keyframes ringAura {
+            0%, 100% { opacity: 0.14; transform: scale(0.94); }
+            50% { opacity: 0.36; transform: scale(1.02); }
+          }
+          .progress-ring.mode-changing {
+            animation: smoothRotate 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+          }
+          @keyframes smoothRotate {
+            0% { 
+              transform: rotate(-90deg);
+              opacity: 1;
+            }
+            50% {
+              transform: rotate(-60deg);
+              opacity: 0.8;
+            }
+            100% { 
+              transform: rotate(-90deg);
+              opacity: 1;
+            }
+          }
+          .software-app.pomodoro-running #focus-core-card {
+            border: 1px solid var(--focus-glow-border);
+            box-shadow: 0 16px 42px var(--focus-glow-primary), 0 4px 12px rgba(15, 23, 42, 0.08);
+            animation: coreCardPulse 2.4s ease-in-out infinite;
+          }
+          #timer-shell {
+            filter: drop-shadow(0 10px 22px rgba(99, 102, 241, 0.14));
+          }
+          #timer-shell::before,
+          #timer-shell::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 999px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 220ms ease;
+          }
+          #timer-shell::before {
+            border: 2px solid color-mix(in srgb, var(--focus-ring-color) 86%, transparent);
+            box-shadow: 0 0 0 1px color-mix(in srgb, var(--focus-ring-color) 30%, transparent) inset;
+          }
+          #timer-shell::after {
+            inset: -16px;
+            border: 1px solid color-mix(in srgb, var(--focus-ring-color) 48%, transparent);
+            transform: scale(0.92);
+          }
+          .software-app.pomodoro-running #timer-shell::before {
+            opacity: 0.9;
+            animation: timerNeonSpin 5.8s linear infinite;
+          }
+          .software-app.pomodoro-running #timer-shell::after {
+            opacity: 0.55;
+            animation: timerOuterWave 1.8s ease-out infinite;
+          }
+          .software-app.pomodoro-running #timer-core {
+            animation: timerCoreBreathe 1.2s ease-in-out infinite;
+            box-shadow: inset 0 0 22px color-mix(in srgb, var(--focus-ring-color) 28%, transparent), 0 0 26px color-mix(in srgb, var(--focus-ring-color) 22%, transparent);
+          }
+          .software-app.pomodoro-running #timer-display {
+            text-shadow: 0 0 10px color-mix(in srgb, var(--focus-glow-primary) 70%, transparent), 0 0 20px color-mix(in srgb, var(--focus-glow-secondary) 45%, transparent);
+            letter-spacing: 0.08em;
+          }
+          #timer-shell.tick-beat::after {
+            animation: timerTickShock 420ms cubic-bezier(0.2, 0.8, 0.24, 1) 1;
+          }
+          html.unified-dark-mode #timer-shell,
+          body.software-app.theme-night #timer-shell {
+            filter: drop-shadow(0 12px 28px rgba(56, 189, 248, 0.22));
+          }
+          @keyframes timerNeonSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+          @keyframes timerOuterWave {
+            0% { transform: scale(0.9); opacity: 0.48; }
+            70% { transform: scale(1.04); opacity: 0.08; }
+            100% { transform: scale(1.08); opacity: 0; }
+          }
+          @keyframes timerCoreBreathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.012); }
+          }
+          @keyframes timerTickShock {
+            0% { transform: scale(0.9); opacity: 0.56; }
+            100% { transform: scale(1.12); opacity: 0; }
+          }
+          .start-energy {
+            position: relative;
+            overflow: hidden;
+          }
+          .software-app.pomodoro-running .start-energy {
+            animation: startEnergyPulse 1.6s ease-in-out infinite;
+          }
+          @keyframes startEnergyPulse {
+            0%, 100% { box-shadow: 0 8px 16px rgba(99, 102, 241, 0.18); }
+            50% { box-shadow: 0 12px 24px rgba(99, 102, 241, 0.35); }
+          }
+          .software-app.pomodoro-running .start-energy::after {
+            content: '';
+            position: absolute;
+            top: -60%;
+            left: -30%;
+            width: 38%;
+            height: 220%;
+            transform: rotate(18deg) translateX(-160%);
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.75) 50%, transparent 100%);
+            animation: buttonShine 2.1s ease-in-out infinite;
+            pointer-events: none;
+          }
+          .focus-burst {
+            position: fixed;
+            left: 50%;
+            top: 45%;
+            width: 1px;
+            height: 1px;
+            pointer-events: none;
+            z-index: 70;
+          }
+          .focus-particle {
+            position: absolute;
+            width: 7px;
+            height: 7px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, var(--focus-energy-a), var(--focus-energy-b));
+            opacity: 0.95;
+            transform: translate(-50%, -50%);
+            animation: burstFly 700ms cubic-bezier(0.2, 0.9, 0.25, 1) forwards;
+          }
+          @keyframes burstFly {
+            0% { opacity: 0.95; transform: translate(-50%, -50%) scale(0.8); }
+            100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.35); }
+          }
+          @keyframes coreCardPulse {
+            0%, 100% {
+              box-shadow: 0 16px 42px var(--focus-glow-primary), 0 4px 12px rgba(15, 23, 42, 0.08);
+            }
+            50% {
+              box-shadow: 0 22px 56px var(--focus-glow-primary), 0 0 0 2px var(--focus-glow-border), 0 4px 12px rgba(15, 23, 42, 0.1);
+            }
+          }
+          @keyframes buttonShine {
+            0% { transform: rotate(18deg) translateX(-170%); opacity: 0; }
+            16% { opacity: 0.9; }
+            34% { transform: rotate(18deg) translateX(330%); opacity: 0; }
+            100% { transform: rotate(18deg) translateX(330%); opacity: 0; }
+          }
+          
+          /* ✅ 任务卡片 */
+          .task-card {
+            @apply bg-white/50 backdrop-blur-sm rounded-xl p-3 transition-all duration-300 cursor-pointer border border-white/40;
+            box-shadow: 0 2px 6px rgba(255, 107, 107, 0.08);
+          }
+          .task-card:hover {
+            @apply bg-white/70 shadow-lg;
+            transform: translateY(-2px);
+            border-color: rgba(255, 107, 107, 0.3);
+          }
+          .task-card.selected {
+            @apply border-primary border-2 bg-primary/15 shadow-md;
+          }
+          
+          /* ✅ 模式按钮 */
+          .mode-switch-wrap {
+            @apply flex items-center gap-2 p-1 rounded-full;
+            background: rgba(248, 250, 252, 0.7);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+          }
+          .mode-btn {
+            @apply text-xs md:text-sm font-medium px-3 py-2 rounded-full transition-all duration-200 select-none;
+            flex: 1 1 0%;
+            text-align: center;
+          }
+          .mode-btn.active {
+            @apply bg-primary text-white shadow-sm;
+          }
+          .mode-btn:not(.active) {
+            @apply bg-transparent text-gray-500 hover:text-gray-700;
+          }
+          
+          /* ✅ 统计卡片 */
+          .stat-box {
+            @apply bg-gradient-to-br from-white/70 to-white/50 backdrop-blur-sm rounded-xl p-3 transition-all duration-300;
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+          }
+          .stat-box:hover {
+            @apply shadow-lg;
+            transform: translateY(-2px);
+          }
+          
+          /* ✅ 右侧面板项目 - 仿个人中心样式 */
+          /* 🟡 专注小贴士 - 浅黄色外框 + 黄色图标 */
+          .tip-item {
+            @apply flex items-start space-x-2 text-xs p-3 rounded-xl transition-all duration-300 cursor-default;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4));
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            box-shadow: 0 2px 6px rgba(245, 158, 11, 0.08);
+          }
+          .tip-item:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.65));
+            border-color: rgba(245, 158, 11, 0.5);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+            transform: translateX(6px);
+          }
+          .tip-item i {
+            color: #F59E0B !important;
+          }
+          .stat-row {
+            @apply flex justify-between items-center p-3 rounded-xl transition-all duration-300 cursor-default;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4));
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            box-shadow: 0 2px 6px rgba(59, 130, 246, 0.08);
+          }
+          .stat-row:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.65));
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+            transform: translateX(6px);
+          }
+          .achievement-row {
+            @apply flex justify-between items-center p-3 rounded-xl transition-all duration-300 cursor-default;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4));
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.08);
+          }
+          .achievement-row:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.65));
+            border-color: rgba(16, 185, 129, 0.3);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+            transform: translateX(6px);
+          }
+          
+          /* ✅ 关联任务下拉列表 - 自定义样式 + 流畅过渡 */
+          .task-select-container {
+            @apply relative w-full;
+          }
+          .task-select-dropdown {
+            @apply w-full px-4 py-3 rounded-xl text-sm transition-all duration-300 cursor-pointer appearance-none;
+            background: rgba(255, 255, 255, 0.86);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(226, 232, 240, 0.95);
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+            padding-right: 40px;
+          }
+          .task-select-dropdown:focus {
+            @apply outline-none;
+            border-color: rgba(99, 102, 241, 0.35);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12), 0 4px 12px rgba(15, 23, 42, 0.08);
+            transform: translateY(-2px);
+          }
+          .task-select-dropdown option {
+            @apply py-2;
+            background: white;
+            color: #374151;
+          }
+          .task-select-arrow {
+            @apply absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 transition-all duration-300;
+          }
+          .task-select-container.open .task-select-arrow {
+            transform: translate(-50%, -50%) rotate(180deg);
+            color: #6366F1;
+          }
+          .task-select-options {
+            @apply absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-xl rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-50 opacity-0 invisible transition-all duration-300 ease-out;
+            max-height: 0;
+            transform: translateY(-10px);
+          }
+          .task-select-container.open .task-select-options {
+            @apply opacity-100 visible;
+            max-height: 240px;
+            transform: translateY(0);
+          }
+          .task-select-option {
+            @apply px-4 py-3 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary cursor-pointer transition-all duration-200;
+            opacity: 0;
+            transform: translateX(-10px);
+          }
+          .task-select-container.open .task-select-option {
+            animation: optionSlideIn 0.3s ease-out forwards;
+          }
+          .task-select-option:nth-child(1) { animation-delay: 0.05s; }
+          .task-select-option:nth-child(2) { animation-delay: 0.1s; }
+          .task-select-option:nth-child(3) { animation-delay: 0.15s; }
+          .task-select-option:nth-child(4) { animation-delay: 0.2s; }
+          .task-select-option:nth-child(5) { animation-delay: 0.25s; }
+          .task-select-option:nth-child(n+6) { animation-delay: 0.3s; }
+          @keyframes optionSlideIn {
+            to {
+              opacity: 1;
+              transform: translateX(0);
+            }
+          }
+          .task-select-option.selected {
+            @apply bg-primary/15 text-primary font-medium;
+          }
+          
+          /* ✅ 自动开始复选框 - 自定义样式 */
+          .custom-checkbox {
+            @apply relative inline-flex items-center cursor-pointer;
+          }
+          .custom-checkbox input {
+            @apply sr-only;
+          }
+          .custom-checkbox .checkmark {
+            @apply w-5 h-5 rounded-md border-2 transition-all duration-300 flex items-center justify-center;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            border-color: rgba(209, 213, 219, 0.8);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+          }
+          .custom-checkbox input:checked + .checkmark {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.92), rgba(79, 70, 229, 0.92));
+            border-color: rgba(99, 102, 241, 0.92);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.28);
+          }
+          .custom-checkbox .checkmark::after {
+            content: '✓';
+            @apply text-white text-sm font-bold opacity-0 transition-opacity duration-300;
+          }
+          .custom-checkbox input:checked + .checkmark::after {
+            @apply opacity-100;
+          }
+          .custom-checkbox:hover .checkmark {
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 2px 6px rgba(99, 102, 241, 0.14);
+          }
+          
+          /* ✅ 控制按钮 - 仿个人中心，无悬浮放大 */
+          .control-btn {
+            @apply inline-flex items-center justify-center px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300;
+            min-height: 46px;
+          }
+          .control-btn.primary {
+            min-width: 184px;
+          }
+          .control-btn.secondary {
+            width: 46px;
+            min-width: 46px;
+            height: 46px;
+            padding: 0;
+            min-height: 48px;
+          }
+          .control-btn i {
+            @apply w-5 text-center flex-shrink-0;
+          }
+          .control-btn.primary {
+            @apply bg-gradient-to-r from-primary/90 to-secondary/90 text-white shadow-md;
+          }
+          .control-btn.primary:hover {
+            @apply shadow-xl;
+            transform: translateY(-2px);
+          }
+          .control-btn.secondary {
+            @apply text-gray-500 bg-white/80 shadow-sm;
+          }
+          .control-btn.secondary:hover {
+            @apply text-gray-700 shadow-md;
+            transform: translateY(-2px);
+          }
+          
+          /* ✅ 消息弹窗 */
+          .message-toast {
+            @apply fixed top-20 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl shadow-2xl z-50 transition-all duration-300;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.95));
+            backdrop-filter: blur(24px);
+            border: 2px solid rgba(255, 107, 107, 0.3);
+            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.2);
+          }
+          .message-toast.success {
+            border-color: rgba(255, 107, 107, 0.4);
+            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.25);
+          }
+          .message-toast.warning {
+            border-color: rgba(245, 158, 11, 0.4);
+            box-shadow: 0 10px 40px rgba(245, 158, 11, 0.25);
+          }
+          .message-toast.error {
+            border-color: rgba(239, 68, 68, 0.4);
+            box-shadow: 0 10px 40px rgba(239, 68, 68, 0.25);
+          }
+      }
+    

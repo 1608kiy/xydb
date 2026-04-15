@@ -1,0 +1,1 @@
+import{L as e}from"./LegacyPageFrame--UZOf0ff.js";import{d as a,c as t,o}from"./index-CYpVRCRZ.js";const s=a({__name:"CalendarPage",setup(r){return(c,n)=>(o(),t(e,{page:"日历页面.html",title:"铃记 - 日历"}))}});export{s as default};

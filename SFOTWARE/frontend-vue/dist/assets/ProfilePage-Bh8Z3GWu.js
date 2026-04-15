@@ -1,0 +1,1 @@
+import{L as e}from"./LegacyPageFrame--UZOf0ff.js";import{d as a,c as o,o as t}from"./index-CYpVRCRZ.js";const s=a({__name:"ProfilePage",setup(r){return(c,m)=>(t(),o(e,{page:"个人中心页面.html",title:"铃记 - 个人中心"}))}});export{s as default};
