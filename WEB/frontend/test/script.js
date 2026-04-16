@@ -894,6 +894,7 @@ function initGsapSystem() {
   gsap.ticker.lagSmoothing(800, 16);
   ScrollTrigger.config({ ignoreMobileResize: true });
 
+  initPanelLock();
   createHeroEntranceAnimation();
   createWordRevealTimeline();
   createImageRevealTimeline();
@@ -907,6 +908,22 @@ function initGsapSystem() {
   createHeroActionSequence();
 
   gsap.delayedCall(0.06, () => ScrollTrigger.refresh());
+}
+
+function initPanelLock() {
+  const panels = document.querySelectorAll(".narrative-panel");
+  panels.forEach((panel, index) => {
+    if (index === 0) {
+      panel.classList.add("panel-a");
+      panel.style.setProperty("opacity", "1", "important");
+      panel.style.setProperty("transform", "translate3d(0, 0, 0) scale(1)", "important");
+      panel.style.setProperty("pointer-events", "auto", "important");
+    } else {
+      panel.style.setProperty("opacity", "0", "important");
+      panel.style.setProperty("transform", "translate3d(0, 90px, 0) scale(0.96)", "important");
+      panel.style.setProperty("pointer-events", "none", "important");
+    }
+  });
 }
 
 function initFallbackForNoGsap() {
@@ -926,8 +943,9 @@ function initFallbackForNoGsap() {
 
   const panels = document.querySelectorAll(".narrative-panel");
   panels.forEach((panel, index) => {
-    panel.style.opacity = index === 0 ? "1" : "0";
-    panel.style.transform = "translate3d(0, 0, 0) scale(1)";
+    panel.style.setProperty("opacity", index === 0 ? "1" : "0", "important");
+    panel.style.setProperty("transform", index === 0 ? "translate3d(0, 0, 0) scale(1)" : "translate3d(0, 90px, 0) scale(0.96)", "important");
+    panel.style.setProperty("pointer-events", index === 0 ? "auto" : "none", "important");
   });
 }
 
