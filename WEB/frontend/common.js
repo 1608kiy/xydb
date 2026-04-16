@@ -1757,6 +1757,36 @@ window.AiService = {
   parseJson: parseAiJsonContent
 };
 
+function parseTaskAutomationResult(resp, fallbackMessage) {
+  if (!(resp && (resp.status === 200 || resp.status === 201) && resp.body && resp.body.code === 200)) {
+    throw new Error((resp && resp.body && resp.body.message) || fallbackMessage || 'Task automation failed');
+  }
+  var data = resp.body.data || {};
+  return {
+    task: (data && typeof data.task === 'object') ? data.task : data,
+    message: (data && data.message) || (resp.body && resp.body.message) || ''
+  };
+}
+
+window.TaskAutomationClient = {
+  autoCreate: function (payload) {
+    return apiRequest('/api/tasks/auto-create', {
+      method: 'POST',
+      body: JSON.stringify(payload || {})
+    }).then(function (resp) {
+      return parseTaskAutomationResult(resp, 'Create task automation failed');
+    });
+  },
+  autoPlan: function (taskId, payload) {
+    return apiRequest('/api/tasks/' + taskId + '/auto-plan', {
+      method: 'POST',
+      body: JSON.stringify(payload || {})
+    }).then(function (resp) {
+      return parseTaskAutomationResult(resp, 'Update task automation failed');
+    });
+  }
+};
+
 function getCheckinStats() {
   if (!AppState || !AppState.checkins) {
     return {

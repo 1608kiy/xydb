@@ -622,15 +622,17 @@
       var chain = Promise.resolve();
       pendingCreateQueue.slice().forEach(function (item) {
         chain = chain.then(function () {
-          return apiRequest('/api/tasks', {
+          return apiRequest(item.endpoint || '/api/tasks', {
             method: 'POST',
             body: JSON.stringify(item.payload)
           }).then(function (resp) {
-            if (!(resp.status === 200 && resp.body && resp.body.code === 200 && resp.body.data)) {
+            var createdBody = resp && resp.body ? resp.body : null;
+            var createdData = parseCreatedTaskFromBody(createdBody);
+            if (!(resp.status === 200 && resp.body && resp.body.code === 200 && createdData)) {
               throw new Error((resp.body && resp.body.message) || '同步失败');
             }
 
-            var created = normalizeServerTask(resp.body.data, item.fallbackTag);
+            var created = normalizeServerTask(createdData, item.fallbackTag);
             replaceLocalTaskById(item.localId, created);
 
             pendingCreateQueue = pendingCreateQueue.filter(function (q) {
@@ -1037,6 +1039,10 @@
         refreshModalDateTimeSelectors();
         selectedModalPriority = 'medium';
         selectedModalTag = 'work';
+        var autoClassifyEl = document.getElementById('modal-auto-classify');
+        var autoBreakdownEl = document.getElementById('modal-auto-breakdown');
+        if (autoClassifyEl) autoClassifyEl.checked = true;
+        if (autoBreakdownEl) autoBreakdownEl.checked = true;
         updateModalPriorityButtons();
         updateModalTagButtons();
         if (modalTitle) setTimeout(function () { modalTitle.focus(); }, 100);
@@ -1153,7 +1159,7 @@
       });
     }
 
-    function createTaskLocalFallback(payload, title, description, dueAt, time, tag, message) {
+    function createTaskLocalFallback(payload, title, description, dueAt, time, tag, message, endpoint) {
       var localId = 'local_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
       var fallbackTask = {
         id: localId,
@@ -1171,6 +1177,7 @@
       pendingCreateQueue.push({
         localId: localId,
         payload: payload,
+        endpoint: endpoint || '/api/tasks',
         fallbackTag: tag,
         createdAt: new Date().toISOString()
       });
@@ -1189,6 +1196,43 @@
       showToast(message || '网络异常，已保存到本地', 'error');
     }
 
+    function getModalTaskAutomationOptions() {
+      var autoClassifyEl = document.getElementById('modal-auto-classify');
+      var autoBreakdownEl = document.getElementById('modal-auto-breakdown');
+      return {
+        autoClassify: !autoClassifyEl || !!autoClassifyEl.checked,
+        autoBreakdown: !autoBreakdownEl || !!autoBreakdownEl.checked
+      };
+    }
+
+    function parseCreatedTaskFromBody(body) {
+      if (!body) return null;
+      if (body.data && typeof body.data === 'object') {
+        return body.data.task && typeof body.data.task === 'object' ? body.data.task : body.data;
+      }
+      if (body.task && typeof body.task === 'object') {
+        return body.task;
+      }
+      return null;
+    }
+
+    function commitCreatedTask(created, fallbackTag, successMessage) {
+      if (!created || typeof created !== 'object') {
+        return;
+      }
+      created = normalizeServerTask(created, fallbackTag);
+
+      var due = created.dueAt ? created.dueAt.split('T')[0] : null;
+      var today = new Date().toISOString().slice(0, 10);
+      if (due === today) tasks.today.unshift(created);
+      else tasks.tomorrow.unshift(created);
+      renderTaskLists();
+      updateCountStats();
+      saveToLocalStorage();
+      window.closeModalFunc();
+      showToast(successMessage || '✅ 任务创建成功！');
+    }
+
     window.createTaskFunc = function () {
       var modalTitle = document.getElementById('modal-title');
       var modalDesc = document.getElementById('modal-description');
@@ -1202,6 +1246,7 @@
         return;
       }
 
+      var autoOptions = getModalTaskAutomationOptions();
       var payload = {
         title: title,
         description: modalDesc ? modalDesc.value.trim() : '',
@@ -1211,26 +1256,28 @@
         status: 'pending',
         dueAt: (modalDate && modalDate.value ? (modalDate.value + 'T' + ((modalTime && modalTime.value) ? modalTime.value : '12:00') + ':00') : null)
       };
+      var useAutomation = !!((autoOptions.autoClassify || autoOptions.autoBreakdown) && window.TaskAutomationClient);
+      var requestEndpoint = useAutomation ? '/api/tasks/auto-create' : '/api/tasks';
+      var requestPayload = useAutomation ? Object.assign({}, payload, {
+        autoClassify: !!autoOptions.autoClassify,
+        autoBreakdown: !!autoOptions.autoBreakdown
+      }) : payload;
+      if (useAutomation && autoOptions.autoClassify) {
+        delete requestPayload.tags;
+      }
       var localDesc = modalDesc ? modalDesc.value.trim() : '';
       var localDueAt = (modalDate ? (modalDate.value + 'T' + (modalTime ? modalTime.value : '12:00') + ':00') : null);
       var localTime = (modalTime ? modalTime.value : '12:00');
 
-      apiRequest('/api/tasks', {
+      apiRequest(requestEndpoint, {
         method: 'POST',
-        body: JSON.stringify(payload)
+        body: JSON.stringify(requestPayload)
       }).then(function (resp) {
         var statusOk = resp && (resp.status === 200 || resp.status === 201);
         var body = resp && resp.body ? resp.body : null;
         var code = body ? body.code : undefined;
         var codeOk = (code === undefined || code === null || code === 0 || code === 200 || code === 201);
-        var created = null;
-        if (body) {
-          if (body.data && typeof body.data === 'object') {
-            created = body.data.task && typeof body.data.task === 'object' ? body.data.task : body.data;
-          } else if (body.task && typeof body.task === 'object') {
-            created = body.task;
-          }
-        }
+        var created = parseCreatedTaskFromBody(body);
         var successFlag = !!(body && (body.success === true || body.ok === true));
 
         if (statusOk && (codeOk || successFlag || !!created)) {
@@ -1238,26 +1285,16 @@
             // Some backends only return success message without entity.
             created = {
               id: Date.now(),
-              title: payload.title,
-              description: payload.description,
-              priority: payload.priority,
-              tags: payload.tags,
-              status: payload.status,
-              dueAt: payload.dueAt
+              title: requestPayload.title,
+              description: requestPayload.description,
+              priority: requestPayload.priority,
+              tags: requestPayload.tags || JSON.stringify([selectedModalTag]),
+              status: requestPayload.status,
+              dueAt: requestPayload.dueAt
             };
           }
-          // normalize and place into lists based on due date
-          created = normalizeServerTask(created, selectedModalTag);
-
-          var due = created.dueAt ? created.dueAt.split('T')[0] : null;
-          var today = new Date().toISOString().slice(0, 10);
-          if (due === today) tasks.today.unshift(created);
-          else tasks.tomorrow.unshift(created);
-          renderTaskLists();
-          updateCountStats();
-          saveToLocalStorage();
-          window.closeModalFunc();
-          showToast('✅ 任务创建成功！');
+          var successMessage = (body && body.data && body.data.message) || (useAutomation ? '✅ 已自动分类并拆解任务！' : '✅ 任务创建成功！');
+          commitCreatedTask(created, selectedModalTag, successMessage);
         } else {
           if (resp.status === 401 || resp.status === 403) {
             var authMsg = (resp.body && resp.body.message) || ('创建任务失败（HTTP ' + resp.status + '）');
@@ -1268,11 +1305,11 @@
           var fallbackMsg = (resp.status === 404 || resp.status === 405)
             ? '后端接口不可用，已保存到本地'
             : ('服务暂不可用（HTTP ' + resp.status + '），已保存到本地');
-          createTaskLocalFallback(payload, title, localDesc, localDueAt, localTime, selectedModalTag, fallbackMsg);
+          createTaskLocalFallback(requestPayload, title, localDesc, localDueAt, localTime, selectedModalTag, fallbackMsg, requestEndpoint);
         }
       }).catch(function (err) {
         console.error(err);
-        createTaskLocalFallback(payload, title, localDesc, localDueAt, localTime, selectedModalTag, '网络异常，已保存到本地');
+        createTaskLocalFallback(requestPayload, title, localDesc, localDueAt, localTime, selectedModalTag, '网络异常，已保存到本地', requestEndpoint);
       });
     };
 
@@ -1766,9 +1803,25 @@
 
     window.changeDetailTag = function (tagKey) {
       if (currentEditingTask) {
+        var previousTag = currentEditingTask.tag;
         currentEditingTask.tag = tagKey;
         renderDetailTags();
-        saveToLocalStorage();
+
+        if (isLocalTaskId(currentEditingTask.id)) {
+          saveToLocalStorage();
+          return;
+        }
+
+        updateTaskOnServer(currentEditingTask.id, {
+          tags: JSON.stringify([tagKey])
+        }).then(function () {
+          saveToLocalStorage();
+        }).catch(function (err) {
+          console.error('changeDetailTag error', err);
+          currentEditingTask.tag = previousTag;
+          renderDetailTags();
+          showToast((err && err.message) || '标签同步失败', 'error');
+        });
       }
     };
 
@@ -2196,6 +2249,7 @@
 
       // 保存任务
       var saveTaskBtn = document.getElementById('save-task-btn');
+      var autoPlanTaskBtn = document.getElementById('auto-plan-task-btn');
       if (saveTaskBtn) {
         saveTaskBtn.addEventListener('click', function () {
           if (currentEditingTask) {
@@ -2206,6 +2260,7 @@
               title: document.getElementById('detail-title').value,
               description: document.getElementById('detail-description').value,
               priority: selectedDetailPriority,
+              tags: JSON.stringify([currentEditingTask.tag || 'work']),
               dueAt: dueIso
             };
             if (isLocalTaskId(currentEditingTask.id)) {
@@ -2236,6 +2291,50 @@
               showToast('保存任务失败', 'error');
             });
           }
+        });
+      }
+      if (autoPlanTaskBtn) {
+        autoPlanTaskBtn.addEventListener('click', function () {
+          if (!currentEditingTask) {
+            showToast('请先打开任务详情', 'warning');
+            return;
+          }
+          if (isLocalTaskId(currentEditingTask.id)) {
+            showToast('离线任务暂不支持自动拆解，请先同步到服务器', 'warning');
+            return;
+          }
+
+          var autoPlanPayload = {
+            title: document.getElementById('detail-title').value,
+            description: document.getElementById('detail-description').value,
+            priority: selectedDetailPriority,
+            dueAt: (function () {
+              var detailDatetimeEl = document.getElementById('detail-datetime');
+              return detailDatetimeEl && detailDatetimeEl.value ? new Date(detailDatetimeEl.value).toISOString() : null;
+            })(),
+            autoClassify: true,
+            autoBreakdown: true
+          };
+
+          autoPlanTaskBtn.disabled = true;
+          window.TaskAutomationClient.autoPlan(currentEditingTask.id, autoPlanPayload).then(function (result) {
+            if (!result || !result.task) {
+              throw new Error('自动拆解结果为空');
+            }
+            Object.assign(currentEditingTask, normalizeServerTask(result.task, currentEditingTask.tag || selectedModalTag));
+            ensureTaskSubtasks(currentEditingTask);
+            renderSubtasks();
+            renderDetailTags();
+            renderTaskLists();
+            updateCountStats();
+            saveToLocalStorage();
+            showToast(result.message || '✅ 已完成自动分类和子任务拆解');
+          }).catch(function (err) {
+            console.error('autoPlanTask error', err);
+            showToast((err && err.message) || '自动拆解失败', 'error');
+          }).finally(function () {
+            autoPlanTaskBtn.disabled = false;
+          });
         });
       }
 

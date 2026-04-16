@@ -1,0 +1,9 @@
+﻿{
+    "appId":  "com.ringnote.app",
+    "appName":  "RingNote",
+    "webDir":  "dist",
+    "packageId":  "com.ringnote.app",
+    "server":  {
+                   "cleartext":  true
+               }
+}

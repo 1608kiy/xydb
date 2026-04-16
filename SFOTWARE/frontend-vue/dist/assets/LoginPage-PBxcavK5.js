@@ -1,0 +1,1 @@
+import{L as e}from"./LegacyPageFrame-CeC7Bmuf.js";import{d as a,c as o,o as t}from"./index-iaIpL9wr.js";const s=a({__name:"LoginPage",setup(r){return(c,n)=>(t(),o(e,{page:"登录页面.html",title:"铃记 - 登录"}))}});export{s as default};

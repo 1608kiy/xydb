@@ -1,0 +1,1 @@
+import{L as e}from"./LegacyPageFrame-CeC7Bmuf.js";import{d as a,c as o,o as t}from"./index-iaIpL9wr.js";const s=a({__name:"TodoPage",setup(r){return(c,m)=>(t(),o(e,{page:"待办页面.html",title:"铃记 - 待办"}))}});export{s as default};
