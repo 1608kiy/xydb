@@ -2,6 +2,11 @@ const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)
 const SCROLL_SCRUB = 0.95;
 const FLOW_EASE = "power4.out";
 const IS_PREVIEW_MODE = !!window.__PREVIEW_MODE__;
+let heroEntranceTimeline = null;
+
+if ("scrollRestoration" in window.history) {
+  window.history.scrollRestoration = "manual";
+}
 
 function initPreloaderSequence() {
   const preloader = document.querySelector(".test-preloader");
@@ -584,6 +589,76 @@ function createStoryFlowTimelines() {
   });
 }
 
+function createDepthCinematicTimeline() {
+  const depthZone = document.querySelector("#depth");
+  const depthImage = document.querySelector("#depth .depth-bg img");
+  const depthContent = document.querySelector("#depth .depth-content");
+  const vignette = document.querySelector("#depth .depth-vignette");
+
+  if (!depthZone || !depthImage || !depthContent) return;
+
+  gsap.timeline({
+    scrollTrigger: {
+      trigger: depthZone,
+      start: "top bottom",
+      end: "bottom top",
+      scrub: SCROLL_SCRUB,
+      fastScrollEnd: true,
+      invalidateOnRefresh: true
+    }
+  })
+    .fromTo(depthImage, {
+      scale: 1.12,
+      yPercent: -10,
+      filter: "saturate(0.9) contrast(0.92) brightness(0.72)"
+    }, {
+      scale: 1,
+      yPercent: 8,
+      filter: "saturate(1.08) contrast(1.04) brightness(1)",
+      ease: "none"
+    }, 0)
+    .fromTo(depthContent, {
+      yPercent: 16,
+      opacity: 0.72
+    }, {
+      yPercent: -10,
+      opacity: 1,
+      ease: "none"
+    }, 0.02)
+    .fromTo(vignette, {
+      opacity: 0.9
+    }, {
+      opacity: 0.62,
+      ease: "none"
+    }, 0.08);
+
+  gsap.timeline({
+    scrollTrigger: {
+      trigger: "#portfolio",
+      start: "top 96%",
+      end: "top 52%",
+      scrub: 0.65,
+      fastScrollEnd: true,
+      invalidateOnRefresh: true
+    }
+  })
+    .fromTo("#portfolio", {
+      y: 84,
+      clipPath: "inset(14% 0 0 0)",
+      filter: "blur(1px)"
+    }, {
+      y: 0,
+      clipPath: "inset(0% 0 0 0)",
+      filter: "blur(0px)",
+      ease: "none"
+    }, 0)
+    .to("#depth .depth-content", {
+      yPercent: -15,
+      opacity: 0.86,
+      ease: "none"
+    }, 0.06);
+}
+
 function createSectionTransitions() {
   const sections = gsap.utils.toArray("main section");
   sections.forEach((section, index) => {
@@ -663,33 +738,76 @@ function createSceneLifecycleTimelines() {
   });
 }
 
+function createContactRevealTimeline() {
+  const contact = document.querySelector("#contact");
+  const title = document.querySelector("#contact .section-title");
+  const actions = document.querySelector("#contact .hero-actions");
+
+  if (!contact || !title || !actions) return;
+
+  gsap.set([title, actions], {
+    opacity: 0,
+    y: 26
+  });
+
+  gsap.timeline({
+    scrollTrigger: {
+      trigger: contact,
+      start: "top 84%",
+      end: "top 38%",
+      scrub: SCROLL_SCRUB,
+      fastScrollEnd: true,
+      invalidateOnRefresh: true
+    }
+  })
+    .to(title, {
+      opacity: 1,
+      y: 0,
+      ease: FLOW_EASE,
+      duration: 0.9
+    }, 0)
+    .to(actions, {
+      opacity: 1,
+      y: 0,
+      ease: FLOW_EASE,
+      duration: 0.95
+    }, 0.12)
+    .to(actions, {
+      y: -4,
+      ease: "power2.inOut",
+      duration: 0.35
+    }, 0.95);
+}
+
 function createHeroEntranceAnimation() {
   const eyebrow = document.querySelector(".hero .eyebrow");
   const title = document.querySelector(".hero-title");
   const subtitle = document.querySelector(".hero-sub");
   const visual = document.querySelector(".hero-visual");
 
-  const tl = gsap.timeline();
+  heroEntranceTimeline = gsap.timeline({ paused: true });
 
   if (eyebrow) {
     gsap.set(eyebrow, { opacity: 0, y: 12, filter: "blur(6px)" });
-    tl.to(eyebrow, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.72, ease: "power3.out" }, 0);
+    heroEntranceTimeline.to(eyebrow, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.72, ease: "power3.out" }, 0);
   }
 
   if (title) {
-    gsap.set(title, { opacity: 0, y: 28, filter: "blur(8px)" });
-    tl.to(title, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.85, ease: "expo.out" }, 0.12);
+    // 不做任何动画，直接显示
+    gsap.set(title, { opacity: 1, y: 0, filter: "blur(0px)" });
   }
 
   if (subtitle) {
     gsap.set(subtitle, { opacity: 0, y: 18, filter: "blur(6px)" });
-    tl.to(subtitle, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.8, ease: "power3.out" }, 0.2);
+    heroEntranceTimeline.to(subtitle, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.8, ease: "power3.out" }, 0.2);
   }
 
   if (visual) {
     gsap.set(visual, { opacity: 0.4, scale: 0.94, filter: "blur(8px)" });
-    tl.to(visual, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.1, ease: FLOW_EASE }, 0.35);
+    heroEntranceTimeline.to(visual, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.1, ease: FLOW_EASE }, 0.35);
   }
+
+  return heroEntranceTimeline;
 }
 
 function createHeroActionSequence() {
@@ -898,8 +1016,10 @@ function initGsapSystem() {
   createWordRevealTimeline();
   createImageRevealTimeline();
   createStoryFlowTimelines();
+  createDepthCinematicTimeline();
   createSectionTransitions();
   createSceneLifecycleTimelines();
+  createContactRevealTimeline();
   createAmbientMotion();
   initNavMotion();
   initDynamicGridMotion();
@@ -968,8 +1088,20 @@ async function bootstrap() {
   await nextFrame();
   await preloaderPromise;
 
+  window.scrollTo(0, 0);
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+
   if (lenis) {
     lenis.scrollTo(0, { immediate: true });
+  }
+
+  if (heroEntranceTimeline) {
+    heroEntranceTimeline.play(0);
+  }
+
+  if (window.ScrollTrigger) {
+    window.ScrollTrigger.refresh(true);
   }
 }
 

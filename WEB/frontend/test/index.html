@@ -30,6 +30,9 @@
     }
   </style>
   <script>
+    window.__PREVIEW_MODE__ = new URLSearchParams(window.location.search).get("preview") === "1";
+  </script>
+  <script>
     window.addEventListener('DOMContentLoaded', () => {
       const hero = document.getElementById('hero');
       if (!hero) return;
@@ -46,6 +49,14 @@
   </script>
 </head>
 <body>
+  <div class="test-preloader" aria-hidden="true">
+    <div class="preloader-counter"><h1>0</h1></div>
+    <div class="preloader-hero-bg">
+      <iframe class="preloader-hero-frame" title="轻悦待办预览背景" loading="eager"></iframe>
+    </div>
+    <div class="preloader-progress-bar"><div class="preloader-progress"></div></div>
+  </div>
+
   <div class="page-transition" aria-hidden="true"></div>
   <div class="cinematic-shutter" aria-hidden="true"></div>
   <div class="cursor-fog"></div>
@@ -141,6 +152,7 @@
     <section id="depth" class="depth-zone">
       <div class="depth-bg media-shell">
         <img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1900&q=80" alt="沉浸式办公场景" />
+        <span class="depth-vignette" aria-hidden="true"></span>
       </div>
       <div class="depth-content section">
         <p class="eyebrow js-split">沉浸体验</p>
@@ -195,6 +207,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/CustomEase.min.js"></script>
   <script src="./script.js"></script>
 </body>
 </html>
