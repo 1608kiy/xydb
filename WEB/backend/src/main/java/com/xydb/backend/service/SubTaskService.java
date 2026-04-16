@@ -5,6 +5,7 @@ import com.xydb.backend.model.Task;
 import com.xydb.backend.repository.SubTaskRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,9 +25,20 @@ public class SubTaskService {
         if(!exist.isEmpty()){
             subTaskRepository.deleteAll(exist);
         }
-        for(SubTask s : subtasks){
-            s.setTask(task);
+        List<SubTask> normalized = new ArrayList<>();
+        for(SubTask s : subtasks == null ? List.<SubTask>of() : subtasks){
+            if (s == null || s.getTitle() == null || s.getTitle().trim().isEmpty()) {
+                continue;
+            }
+            SubTask copy = SubTask.builder()
+                    .title(s.getTitle().trim())
+                    .completed(Boolean.TRUE.equals(s.getCompleted()))
+                    .build();
+            copy.setTask(task);
+            normalized.add(copy);
         }
-        subTaskRepository.saveAll(subtasks);
+        if (!normalized.isEmpty()) {
+            subTaskRepository.saveAll(normalized);
+        }
     }
 }

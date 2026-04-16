@@ -32,6 +32,7 @@
         var shareTaskBtn = document.getElementById('share-task-btn');
         var copyTaskBtn = document.getElementById('copy-task-btn');
         var deleteTaskBtn = document.getElementById('delete-task-btn');
+        var autoPlanTaskBtn = document.getElementById('auto-plan-task-btn');
         var copySubtasksBtn = document.getElementById('copy-subtasks-btn');
         var shareSubtasksBtn = document.getElementById('share-subtasks-btn');
         var detailDatetimeShell = document.getElementById('detail-datetime-shell');
@@ -443,9 +444,71 @@
         function syncCurrentSubtasksToServer() {
           if (!currentEditingTask || !currentEditingTask.id) return Promise.resolve(true);
           ensureTaskSubtasks(currentEditingTask);
-          // 后端不提供 /api/tasks/{id}/subtasks 接口，仅保存本地
-          saveCalendarState();
-          return Promise.resolve(true);
+          if (String(currentEditingTask.id).indexOf('local_') === 0) {
+            saveCalendarState();
+            return Promise.resolve(true);
+          }
+          var payload = currentEditingTask.subtasks.map(function (s) {
+            return { title: s.title || s.text || '', completed: !!s.completed };
+          });
+          return apiRequest('/api/tasks/' + currentEditingTask.id + '/subtasks', {
+            method: 'PUT',
+            body: JSON.stringify(payload)
+          }).then(function (resp) {
+            if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+              saveCalendarState();
+              return true;
+            }
+            throw new Error((resp && resp.body && resp.body.message) || '子任务同步失败');
+          });
+        }
+
+        function normalizeCalendarServerTask(task) {
+          var item = Object.assign({}, task || {});
+          item.title = item.title || item.name || '未命名任务';
+          item.description = item.description || item.note || '';
+          item.dueAt = item.dueAt || item.due_at || null;
+          item.status = item.status || item.state || 'pending';
+          item.priority = item.priority || 'medium';
+          var labels = parseTags(item.tags || item.labels || item.tag);
+          item.labels = labels.length ? labels : ['工作'];
+          ensureTaskSubtasks(item);
+          return item;
+        }
+
+        function fetchCalendarTasksFromServer() {
+          return apiRequest('/api/tasks', { method: 'GET' }).then(function (resp) {
+            if (!(resp && resp.status === 200 && resp.body && resp.body.code === 200)) {
+              throw new Error((resp && resp.body && resp.body.message) || '获取任务失败');
+            }
+            var data = resp.body.data;
+            var list = [];
+            if (Array.isArray(data)) list = data;
+            else if (data && Array.isArray(data.records)) list = data.records;
+            else if (data && Array.isArray(data.list)) list = data.list;
+            AppState.tasks = list.map(normalizeCalendarServerTask);
+            saveCalendarState();
+            return true;
+          });
+        }
+
+        function updateCalendarTaskOnServer(taskId, payload) {
+          return apiRequest('/api/tasks/' + taskId, {
+            method: 'PUT',
+            body: JSON.stringify(payload)
+          }).then(function (resp) {
+            if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
+              return (resp.body && resp.body.data) || null;
+            }
+            throw new Error((resp && resp.body && resp.body.message) || '更新任务失败');
+          });
+        }
+
+        function deleteCalendarTaskOnServer(taskId) {
+          return apiRequest('/api/tasks/' + taskId, { method: 'DELETE' }).then(function (resp) {
+            if (resp && resp.status === 200 && resp.body && resp.body.code === 200) return true;
+            throw new Error((resp && resp.body && resp.body.message) || '删除任务失败');
+          });
         }
 
         function renderSubtasks() {
@@ -1641,21 +1704,67 @@
               description: detailDescription ? detailDescription.value.trim() : task.description,
               dueAt: detailDueAt && detailDueAt.value ? new Date(detailDueAt.value).toISOString() : null,
               labels: selectedLabels,
-              tags: selectedLabels,
+              tags: JSON.stringify(selectedLabels),
               tag: selectedLabels[0] || '工作'
             };
 
-            // 后端不提供 /api/tasks 端点，仅保存本地
-            task.title = payload.title || task.title;
-            task.description = payload.description || task.description;
-            task.dueAt = payload.dueAt;
-            task.labels = selectedLabels;
-            ensureTaskSubtasks(task);
-            saveCalendarState();
-            renderScheduledTaskList();
-            renderActiveCalendarView();
-            closeTaskDetailModal();
-            showToast('任务已保存', 'success');
+            updateCalendarTaskOnServer(selectedTaskId, payload).then(function (updated) {
+              task.title = payload.title || task.title;
+              task.description = payload.description || task.description;
+              task.dueAt = payload.dueAt;
+              task.labels = selectedLabels;
+              if (updated && updated.status) task.status = updated.status;
+              ensureTaskSubtasks(task);
+              saveCalendarState();
+              renderScheduledTaskList();
+              renderActiveCalendarView();
+              closeTaskDetailModal();
+              showToast('任务已保存', 'success');
+            }).catch(function (err) {
+              console.error('save calendar task error', err);
+              showToast((err && err.message) || '保存任务失败', 'error');
+            });
+          });
+        }
+        if (autoPlanTaskBtn) {
+          autoPlanTaskBtn.addEventListener('click', function () {
+            if (!currentEditingTask || !selectedTaskId) {
+              showToast('请先打开任务详情', 'warning');
+              return;
+            }
+            if (String(currentEditingTask.id).indexOf('local_') === 0) {
+              showToast('离线任务暂不支持自动拆解，请先同步到服务器', 'warning');
+              return;
+            }
+
+            var autoPlanPayload = {
+              title: detailTitle ? detailTitle.value.trim() : currentEditingTask.title,
+              description: detailDescription ? detailDescription.value.trim() : currentEditingTask.description,
+              dueAt: detailDueAt && detailDueAt.value ? new Date(detailDueAt.value).toISOString() : null,
+              autoClassify: true,
+              autoBreakdown: true
+            };
+
+            autoPlanTaskBtn.disabled = true;
+            window.TaskAutomationClient.autoPlan(selectedTaskId, autoPlanPayload).then(function (result) {
+              if (!result || !result.task) {
+                throw new Error('自动拆解结果为空');
+              }
+              var updatedTask = normalizeCalendarServerTask(result.task);
+              Object.assign(currentEditingTask, updatedTask);
+              ensureTaskSubtasks(currentEditingTask);
+              renderDetailTags();
+              renderSubtasks();
+              renderScheduledTaskList();
+              renderActiveCalendarView();
+              saveCalendarState();
+              showToast(result.message || '已完成自动分类和子任务拆解', 'success');
+            }).catch(function (err) {
+              console.error('calendar autoPlanTask error', err);
+              showToast((err && err.message) || '自动拆解失败', 'error');
+            }).finally(function () {
+              autoPlanTaskBtn.disabled = false;
+            });
           });
         }
 
@@ -1934,15 +2043,19 @@
           deleteTaskBtn.addEventListener('click', function () {
             if (!currentEditingTask || !selectedTaskId) return;
             if (!confirm('确定要删除当前任务吗？')) return;
-            // 后端不提供 /api/tasks DELETE 端点，仅删除本地数据
-            AppState.tasks = (AppState.tasks || []).filter(function (t) {
-              return String(t.id) !== String(selectedTaskId);
+            deleteCalendarTaskOnServer(selectedTaskId).then(function () {
+              AppState.tasks = (AppState.tasks || []).filter(function (t) {
+                return String(t.id) !== String(selectedTaskId);
+              });
+              saveCalendarState();
+              closeTaskDetailModal();
+              renderScheduledTaskList();
+              renderActiveCalendarView();
+              showToast('🗑️ 任务已删除', 'success');
+            }).catch(function (err) {
+              console.error('delete calendar task error', err);
+              showToast((err && err.message) || '删除任务失败', 'error');
             });
-            saveCalendarState();
-            closeTaskDetailModal();
-            renderScheduledTaskList();
-            renderActiveCalendarView();
-            showToast('🗑️ 任务已删除', 'success');
           });
         }
 
@@ -2015,10 +2128,12 @@
           return [];
         }
 
-        // 后端不提供 /api/tasks 接口，仅使用本地数据初始化
         Promise.resolve().then(function() {
-          // 仅渲染本地状态
-        }).catch(function(){ /* ignore network errors */ }).finally(function(){
+          return fetchCalendarTasksFromServer();
+        }).catch(function(err){
+          console.warn('fetchCalendarTasksFromServer error', err);
+          showToast('任务同步失败，已展示本地缓存', 'warning');
+        }).finally(function(){
           renderScheduledTaskList();
           renderActiveCalendarView();
         });

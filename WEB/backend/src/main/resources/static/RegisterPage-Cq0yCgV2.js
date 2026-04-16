@@ -1,0 +1,1 @@
+import{L as e}from"./LegacyPageFrame--UZOf0ff.js";import{d as a,c as t,o}from"./index-CYpVRCRZ.js";const p=a({__name:"RegisterPage",setup(r){return(c,s)=>(o(),t(e,{page:"注册页面.html",title:"铃记 - 注册"}))}});export{p as default};
