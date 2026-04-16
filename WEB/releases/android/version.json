@@ -1,0 +1,21 @@
+{
+    "appName":  "RingNote",
+    "packageName":  "com.ringnote.app",
+    "channel":  "stable",
+    "versionName":  "1.0.5",
+    "versionCode":  107,
+    "minSupportedCode":  1,
+    "apk":  {
+                "fileName":  "ringnote-v1.0.5-stable.apk",
+                "url":  "https://ringnote.isleepring.cn/download/android/ringnote-v1.0.5-stable.apk",
+                "sha256":  "2e897bd339c403baa9da23e27b4cb0554d3fc7e9e10fec2cdf67fdd028441700",
+                "size":  3553433
+            },
+    "releaseNotes":  [
+                         "Fix Android startup crash caused by empty Capacitor server URL",
+                         "Signed with the dedicated release certificate",
+                         "Web and app task sync stays enabled"
+                     ],
+    "publishedAt":  "2026-04-15T14:50:39Z",
+    "forceUpdate":  false
+}

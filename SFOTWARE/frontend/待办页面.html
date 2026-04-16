@@ -758,6 +758,10 @@
             <i class="fas fa-plus mr-1"></i>添加标签
           </button>
         </div>
+        <button class="w-full py-2.5 btn-secondary-glass text-primary inline-flex items-center justify-center gap-2 text-sm" id="auto-plan-task-btn" type="button">
+          <i class="fas fa-sitemap"></i>
+          智能分类并拆解并行子任务
+        </button>
         <div class="flex space-x-3 pt-4 border-t border-gray-200/50">
           <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white" id="cancel-edit-btn">取消</button>
           <button class="flex-1 py-2.5 btn-primary-glass" id="save-task-btn">
@@ -878,6 +882,17 @@
               <i class="fas fa-heart mr-1"></i>健康
             </button>
           </div>
+        </div>
+        <div class="rounded-2xl border border-primary/10 bg-primary/5 px-4 py-3 space-y-2">
+          <label class="flex items-center gap-2 text-sm text-gray-700">
+            <input id="modal-auto-classify" type="checkbox" class="rounded text-primary" checked />
+            自动分类任务
+          </label>
+          <label class="flex items-center gap-2 text-sm text-gray-700">
+            <input id="modal-auto-breakdown" type="checkbox" class="rounded text-primary" checked />
+            自动生成并行子任务
+          </label>
+          <p class="text-xs text-gray-500">创建时会自动识别任务类别，并拆成可并行推进的子任务。</p>
         </div>
         <div class="flex space-x-3 pt-4">
           <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white" type="button"

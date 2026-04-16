@@ -17,3 +17,10 @@ backend/.m2/
 backend/.tmp/
 backend/target/
 Microsoft/
+
+# Frontend local dependencies/build artifacts
+SFOTWARE/frontend-vue/node_modules/
+SFOTWARE/frontend-vue/*.apk
+SFOTWARE/frontend-vue/*.apk.idsig
+SFOTWARE/frontend-vue/*.zip
+WEB/releases/android/*.apk

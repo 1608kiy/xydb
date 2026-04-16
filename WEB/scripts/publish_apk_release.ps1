@@ -11,7 +11,8 @@ param(
     [string]$Channel = "stable",
     [string]$PackageName = "com.ringnote.app",
     [string]$BaseUrl = "https://ringnote.isleepring.cn/download/android",
-    [string]$OutputDir = "WEB/releases/android"
+    [string]$OutputDir = "WEB/releases/android",
+    [string]$StableAliasName = "ringnote-stable.apk"
 )
 
 Set-StrictMode -Version Latest
@@ -27,6 +28,10 @@ $sourceApk = Resolve-Path -LiteralPath $ApkPath
 $apkName = "ringnote-v$VersionName-$VersionCode.apk"
 $targetApk = Join-Path $OutputDir $apkName
 Copy-Item -LiteralPath $sourceApk -Destination $targetApk -Force
+if ($StableAliasName) {
+    $stableAliasPath = Join-Path $OutputDir $StableAliasName
+    Copy-Item -LiteralPath $sourceApk -Destination $stableAliasPath -Force
+}
 
 $hash = Get-FileHash -Algorithm SHA256 -LiteralPath $targetApk
 $fileInfo = Get-Item -LiteralPath $targetApk
@@ -57,6 +62,9 @@ $metadata | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $versionJsonPath 
 
 Write-Host "Release metadata generated: $versionJsonPath"
 Write-Host "APK published to: $targetApk"
+if ($StableAliasName) {
+    Write-Host "Stable alias updated: $(Join-Path $OutputDir $StableAliasName)"
+}
 Write-Host ""
 Write-Host "Next step (upload to server):"
 Write-Host "scp \"$targetApk\" root@47.108.170.112:/opt/ringnote-app/releases/android/"

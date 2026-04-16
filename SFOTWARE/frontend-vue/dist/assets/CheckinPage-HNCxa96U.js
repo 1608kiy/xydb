@@ -1,0 +1,1 @@
+import{L as e}from"./LegacyPageFrame-CeC7Bmuf.js";import{d as a,c as t,o}from"./index-iaIpL9wr.js";const s=a({__name:"CheckinPage",setup(r){return(c,n)=>(o(),t(e,{page:"打卡页面.html",title:"铃记 - 打卡"}))}});export{s as default};

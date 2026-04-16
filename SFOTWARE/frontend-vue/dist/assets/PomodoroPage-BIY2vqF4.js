@@ -1,0 +1,1 @@
+import{L as e}from"./LegacyPageFrame-CeC7Bmuf.js";import{d as o,c as a,o as t}from"./index-iaIpL9wr.js";const s=o({__name:"PomodoroPage",setup(r){return(c,m)=>(t(),a(e,{page:"番茄钟页面.html",title:"铃记 - 番茄钟"}))}});export{s as default};

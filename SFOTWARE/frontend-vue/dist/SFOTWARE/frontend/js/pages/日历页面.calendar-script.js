@@ -32,6 +32,7 @@
         var shareTaskBtn = document.getElementById('share-task-btn');
         var copyTaskBtn = document.getElementById('copy-task-btn');
         var deleteTaskBtn = document.getElementById('delete-task-btn');
+        var autoPlanTaskBtn = document.getElementById('auto-plan-task-btn');
         var copySubtasksBtn = document.getElementById('copy-subtasks-btn');
         var shareSubtasksBtn = document.getElementById('share-subtasks-btn');
         var detailDatetimeShell = document.getElementById('detail-datetime-shell');
@@ -1939,7 +1940,7 @@
               description: detailDescription ? detailDescription.value.trim() : task.description,
               dueAt: detailDueAt && detailDueAt.value ? new Date(detailDueAt.value).toISOString() : null,
               labels: selectedLabels,
-              tags: selectedLabels,
+              tags: JSON.stringify(selectedLabels),
               tag: selectedLabels[0] || '工作'
             };
 
@@ -1958,6 +1959,47 @@
             }).catch(function (err) {
               console.error('save calendar task error', err);
               showToast((err && err.message) || '保存任务失败', 'error');
+            });
+          });
+        }
+        if (autoPlanTaskBtn) {
+          autoPlanTaskBtn.addEventListener('click', function () {
+            if (!currentEditingTask || !selectedTaskId) {
+              showToast('请先打开任务详情', 'warning');
+              return;
+            }
+            if (String(currentEditingTask.id).indexOf('local_') === 0) {
+              showToast('离线任务暂不支持自动拆解，请先同步到服务器', 'warning');
+              return;
+            }
+
+            var autoPlanPayload = {
+              title: detailTitle ? detailTitle.value.trim() : currentEditingTask.title,
+              description: detailDescription ? detailDescription.value.trim() : currentEditingTask.description,
+              dueAt: detailDueAt && detailDueAt.value ? new Date(detailDueAt.value).toISOString() : null,
+              autoClassify: true,
+              autoBreakdown: true
+            };
+
+            autoPlanTaskBtn.disabled = true;
+            window.TaskAutomationClient.autoPlan(selectedTaskId, autoPlanPayload).then(function (result) {
+              if (!result || !result.task) {
+                throw new Error('自动拆解结果为空');
+              }
+              var updatedTask = normalizeCalendarServerTask(result.task);
+              Object.assign(currentEditingTask, updatedTask);
+              ensureTaskSubtasks(currentEditingTask);
+              renderDetailTags();
+              renderSubtasks();
+              renderScheduledTaskList();
+              renderActiveCalendarView();
+              saveCalendarState();
+              showToast(result.message || '已完成自动分类和子任务拆解', 'success');
+            }).catch(function (err) {
+              console.error('calendar autoPlanTask error', err);
+              showToast((err && err.message) || '自动拆解失败', 'error');
+            }).finally(function () {
+              autoPlanTaskBtn.disabled = false;
             });
           });
         }

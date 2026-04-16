@@ -529,6 +529,27 @@
         }
       } catch (e) { console.error('保存失败:', e); }
     }
+
+    function getModalTaskAutomationOptions() {
+      var autoClassifyEl = document.getElementById('modal-auto-classify');
+      var autoBreakdownEl = document.getElementById('modal-auto-breakdown');
+      return {
+        autoClassify: !autoClassifyEl || !!autoClassifyEl.checked,
+        autoBreakdown: !autoBreakdownEl || !!autoBreakdownEl.checked
+      };
+    }
+
+    function parseCreatedTaskFromBody(body) {
+      if (!body) return null;
+      if (body.data && typeof body.data === 'object') {
+        return body.data.task && typeof body.data.task === 'object' ? body.data.task : body.data;
+      }
+      if (body.task && typeof body.task === 'object') {
+        return body.task;
+      }
+      return null;
+    }
+
     function savePendingQueue() {
       try {
         localStorage.setItem(getPendingCreateStorageKey(), JSON.stringify(pendingCreateQueue));
@@ -624,15 +645,17 @@
       var chain = Promise.resolve();
       pendingCreateQueue.slice().forEach(function (item) {
         chain = chain.then(function () {
-          return apiRequest('/api/tasks', {
+          return apiRequest(item.endpoint || '/api/tasks', {
             method: 'POST',
             body: JSON.stringify(item.payload)
           }).then(function (resp) {
-            if (!(resp.status === 200 && resp.body && resp.body.code === 200 && resp.body.data)) {
+            var createdBody = resp && resp.body ? resp.body : null;
+            var createdData = parseCreatedTaskFromBody(createdBody);
+            if (!(resp.status === 200 && resp.body && resp.body.code === 200 && createdData)) {
               throw new Error((resp.body && resp.body.message) || '同步失败');
             }
 
-            var created = normalizeServerTask(resp.body.data, item.fallbackTag);
+            var created = normalizeServerTask(createdData, item.fallbackTag);
             replaceLocalTaskById(item.localId, created);
 
             pendingCreateQueue = pendingCreateQueue.filter(function (q) {
@@ -1501,6 +1524,10 @@
           refreshModalDateTimeSelectors();
           selectedModalPriority = 'medium';
           selectedModalTag = (tags && tags.length) ? tags[0].key : 'work';
+          var autoClassifyEl = document.getElementById('modal-auto-classify');
+          var autoBreakdownEl = document.getElementById('modal-auto-breakdown');
+          if (autoClassifyEl) autoClassifyEl.checked = true;
+          if (autoBreakdownEl) autoBreakdownEl.checked = true;
           renderModalTagButtons();
           updateModalPriorityButtons();
           updateModalTagButtons();
@@ -1702,6 +1729,7 @@
         return;
       }
 
+      var autoOptions = getModalTaskAutomationOptions();
       var payload = {
         title: title,
         description: modalDesc ? modalDesc.value.trim() : '',
@@ -1711,23 +1739,25 @@
         status: 'pending',
         dueAt: (modalDate && modalDate.value ? (modalDate.value + 'T' + ((modalTime && modalTime.value) ? modalTime.value : '12:00') + ':00') : null)
       };
+      var useAutomation = !!((autoOptions.autoClassify || autoOptions.autoBreakdown) && window.TaskAutomationClient);
+      var requestEndpoint = useAutomation ? '/api/tasks/auto-create' : '/api/tasks';
+      var requestPayload = useAutomation ? Object.assign({}, payload, {
+        autoClassify: !!autoOptions.autoClassify,
+        autoBreakdown: !!autoOptions.autoBreakdown
+      }) : payload;
+      if (useAutomation && autoOptions.autoClassify) {
+        delete requestPayload.tags;
+      }
 
-      apiRequest('/api/tasks', {
+      apiRequest(requestEndpoint, {
         method: 'POST',
-        body: JSON.stringify(payload)
+        body: JSON.stringify(requestPayload)
       }).then(function (resp) {
         var statusOk = resp && (resp.status === 200 || resp.status === 201);
         var body = resp && resp.body ? resp.body : null;
         var code = body ? body.code : undefined;
         var codeOk = (code === undefined || code === null || code === 0 || code === 200 || code === 201);
-        var created = null;
-        if (body) {
-          if (body.data && typeof body.data === 'object') {
-            created = body.data.task && typeof body.data.task === 'object' ? body.data.task : body.data;
-          } else if (body.task && typeof body.task === 'object') {
-            created = body.task;
-          }
-        }
+        var created = parseCreatedTaskFromBody(body);
         var successFlag = !!(body && (body.success === true || body.ok === true));
 
         if (statusOk && (codeOk || successFlag || !!created)) {
@@ -1735,12 +1765,12 @@
             // Some backends only return success message without entity.
             created = {
               id: Date.now(),
-              title: payload.title,
-              description: payload.description,
-              priority: payload.priority,
-              tags: payload.tags,
-              status: payload.status,
-              dueAt: payload.dueAt
+              title: requestPayload.title,
+              description: requestPayload.description,
+              priority: requestPayload.priority,
+              tags: requestPayload.tags || JSON.stringify([selectedModalTag]),
+              status: requestPayload.status,
+              dueAt: requestPayload.dueAt
             };
           }
           // normalize and place into lists based on due date
@@ -1758,7 +1788,7 @@
           updateCountStats();
           saveToLocalStorage();
           window.closeModalFunc();
-          showToast('任务创建成功');
+          showToast((body && body.data && body.data.message) || (useAutomation ? '已自动分类并拆解任务' : '任务创建成功'));
         } else {
           if (resp.status === 401 || resp.status === 403) {
             var authMsg = (resp.body && resp.body.message) || ('创建任务失败（HTTP ' + resp.status + '）');
@@ -4338,6 +4368,7 @@
 
       // 保存任务
       var saveTaskBtn = document.getElementById('save-task-btn');
+      var autoPlanTaskBtn = document.getElementById('auto-plan-task-btn');
       if (saveTaskBtn) {
         saveTaskBtn.addEventListener('click', function () {
           if (currentEditingTask) {
@@ -4348,6 +4379,7 @@
               title: document.getElementById('detail-title').value,
               description: document.getElementById('detail-description').value,
               priority: selectedDetailPriority,
+              tags: JSON.stringify([currentEditingTask.tag || 'work']),
               dueAt: dueIso
             };
             if (isLocalTaskId(currentEditingTask.id)) {
@@ -4378,6 +4410,50 @@
               showToast('保存任务失败', 'error');
             });
           }
+        });
+      }
+      if (autoPlanTaskBtn) {
+        autoPlanTaskBtn.addEventListener('click', function () {
+          if (!currentEditingTask) {
+            showToast('请先打开任务详情', 'warning');
+            return;
+          }
+          if (isLocalTaskId(currentEditingTask.id)) {
+            showToast('离线任务暂不支持自动拆解，请先同步到服务器', 'warning');
+            return;
+          }
+
+          var autoPlanPayload = {
+            title: document.getElementById('detail-title').value,
+            description: document.getElementById('detail-description').value,
+            priority: selectedDetailPriority,
+            dueAt: (function () {
+              var detailDatetimeEl = document.getElementById('detail-datetime');
+              return detailDatetimeEl && detailDatetimeEl.value ? new Date(detailDatetimeEl.value).toISOString() : null;
+            })(),
+            autoClassify: true,
+            autoBreakdown: true
+          };
+
+          autoPlanTaskBtn.disabled = true;
+          window.TaskAutomationClient.autoPlan(currentEditingTask.id, autoPlanPayload).then(function (result) {
+            if (!result || !result.task) {
+              throw new Error('自动拆解结果为空');
+            }
+            Object.assign(currentEditingTask, normalizeServerTask(result.task, currentEditingTask.tag || selectedModalTag));
+            ensureTaskSubtasks(currentEditingTask);
+            renderSubtasks();
+            renderDetailTags();
+            renderTaskLists();
+            updateCountStats();
+            saveToLocalStorage();
+            showToast(result.message || '已完成自动分类和子任务拆解');
+          }).catch(function (err) {
+            console.error('autoPlanTask error', err);
+            showToast((err && err.message) || '自动拆解失败', 'error');
+          }).finally(function () {
+            autoPlanTaskBtn.disabled = false;
+          });
         });
       }
 
