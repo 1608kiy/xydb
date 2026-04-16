@@ -535,15 +535,15 @@ function createStoryFlowTimelines() {
   });
 
   narrativeTimeline
-    .set(".narrative-panel", { opacity: 0, y: 90, z: -120, scale: 0.94, rotationX: -4, filter: "blur(12px)" })
+    .set(".narrative-panel", { opacity: 0, y: 90, z: -120, scale: 0.94, rotationX: -4, filter: "blur(6px)" })
     .fromTo(".depth-back", { opacity: 0.12, scale: 0.95 }, { opacity: 0.3, scale: 1, ease: "none", duration: 1.2 }, 0)
     .fromTo(".depth-front", { opacity: 0.42, yPercent: 12 }, { opacity: 0.22, yPercent: -8, ease: "none", duration: 1.6 }, 0)
     .to(".panel-a", { opacity: 1, y: 0, z: 0, scale: 1, rotationX: 0, filter: "blur(0px)", ease: FLOW_EASE, duration: 0.9 }, 0)
-    .to(".panel-a", { opacity: 0, y: -80, z: 120, scale: 1.04, rotationX: 3, filter: "blur(10px)", ease: "power2.in", duration: 0.8 }, 1.05)
+    .to(".panel-a", { opacity: 0, y: -80, z: 120, scale: 1.04, rotationX: 3, filter: "blur(4px)", ease: "power2.in", duration: 0.8 }, 1.05)
     .to(".panel-b", { opacity: 1, y: 0, z: 0, scale: 1, rotationX: 0, filter: "blur(0px)", ease: FLOW_EASE, duration: 0.95 }, 1)
-    .to(".panel-b", { opacity: 0, y: -70, z: 130, scale: 1.05, rotationX: 2.5, filter: "blur(10px)", ease: "power2.in", duration: 0.85 }, 2.1)
+    .to(".panel-b", { opacity: 0, y: -70, z: 130, scale: 1.05, rotationX: 2.5, filter: "blur(4px)", ease: "power2.in", duration: 0.85 }, 2.1)
     .to(".panel-c", { opacity: 1, y: 0, z: 0, scale: 1, rotationX: 0, filter: "blur(0px)", ease: "expo.out", duration: 1 }, 2)
-    .to(".panel-c", { opacity: 0, y: -30, rotationX: 2, filter: "blur(8px)", ease: "power1.out", duration: 0.65 }, 3.1)
+    .to(".panel-c", { opacity: 0, y: -30, rotationX: 2, filter: "blur(3px)", ease: "power1.out", duration: 0.65 }, 3.1)
     .to(".depth-back", { opacity: 0.22, scale: 1.08, ease: "none", duration: 0.7 }, 3.05)
     .to(".depth-front", { opacity: 0.44, yPercent: -16, ease: "none", duration: 0.7 }, 3.05);
 
@@ -894,7 +894,6 @@ function initGsapSystem() {
   gsap.ticker.lagSmoothing(800, 16);
   ScrollTrigger.config({ ignoreMobileResize: true });
 
-  initPanelLock();
   createHeroEntranceAnimation();
   createWordRevealTimeline();
   createImageRevealTimeline();
@@ -915,19 +914,22 @@ function initPanelLock() {
   panels.forEach((panel, index) => {
     if (index === 0) {
       panel.classList.add("panel-a");
-      panel.style.setProperty("opacity", "1", "important");
-      panel.style.setProperty("transform", "translate3d(0, 0, 0) scale(1)", "important");
-      panel.style.setProperty("pointer-events", "auto", "important");
+      panel.style.opacity = "1";
+      panel.style.transform = "translate3d(0, 0, 0) scale(1)";
+      panel.style.pointerEvents = "auto";
     } else {
-      panel.style.setProperty("opacity", "0", "important");
-      panel.style.setProperty("transform", "translate3d(0, 90px, 0) scale(0.96)", "important");
-      panel.style.setProperty("pointer-events", "none", "important");
+      panel.style.opacity = "0";
+      panel.style.transform = "translate3d(0, 90px, 0) scale(0.96)";
+      panel.style.pointerEvents = "none";
     }
   });
 }
 
 function initFallbackForNoGsap() {
   if (window.gsap && window.ScrollTrigger && !prefersReducedMotion) return;
+  
+  initPanelLock();
+  
   document.querySelectorAll(".split-word").forEach((word, index) => {
     word.style.transform = "translate3d(0, 0, 0)";
     word.style.opacity = "1";
@@ -939,13 +941,6 @@ function initFallbackForNoGsap() {
     shell.style.transform = "translate3d(0, 0, 0) scale(1)";
     shell.style.filter = "blur(0px)";
     shell.style.setProperty("--mask-o", "0");
-  });
-
-  const panels = document.querySelectorAll(".narrative-panel");
-  panels.forEach((panel, index) => {
-    panel.style.setProperty("opacity", index === 0 ? "1" : "0", "important");
-    panel.style.setProperty("transform", index === 0 ? "translate3d(0, 0, 0) scale(1)" : "translate3d(0, 90px, 0) scale(0.96)", "important");
-    panel.style.setProperty("pointer-events", index === 0 ? "auto" : "none", "important");
   });
 }
 

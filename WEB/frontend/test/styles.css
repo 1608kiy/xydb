@@ -517,17 +517,14 @@ a {
   background: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(14px);
   transform-style: preserve-3d;
-  opacity: 0 !important;
-  transform: translate3d(0, 90px, 0) scale(0.96) !important;
-  pointer-events: none !important;
+  opacity: 0;
+  transform: translate3d(0, 90px, 0) scale(0.96);
+  pointer-events: none;
   z-index: 2;
 }
 
 .panel-a {
-  opacity: 1 !important;
-  transform: translate3d(0, 0, 0) scale(1) !important;
-  pointer-events: auto !important;
-  z-index: 3 !important;
+  z-index: 3;
 }
 
 .panel-title {
