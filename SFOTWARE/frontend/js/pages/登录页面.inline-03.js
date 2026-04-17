@@ -17,7 +17,7 @@
           apiRequest('/api/me', { method: 'GET' }).then(function (r) {
             if (r && r.status === 200 && r.body && r.body.code === 200) {
               var me = (r.body && r.body.data) || {};
-              if (String(me.email || '').toLowerCase() === 'admin@ringnote.local') {
+              if (me && me.admin) {
                 safeNavigate('后台管理页面.html');
                 return;
               }
@@ -201,12 +201,11 @@
         }
 
         function isAdminAccount(v) {
-          return String(v || '').trim().toLowerCase() === 'admin';
+          return false;
         }
 
         function normalizeLoginIdentifier(v) {
           var raw = String(v || '').trim();
-          if (isAdminAccount(raw)) return 'admin@ringnote.local';
           if (isMobileNumber(raw)) return raw + '@mobile.local';
           return raw;
         }
@@ -370,21 +369,21 @@
           var account = document.getElementById('login-account').value.trim();
           var password = document.getElementById('login-password').value;
 
-          var emailMobileRegex = /^(\S+@\S+\.\S+|1\d{10}|admin)$/i;
+          var emailMobileRegex = /^(\S+@\S+\.\S+|1\d{10})$/i;
           if (!account || !password) {
             showToast('请输入账号和密码');
             setSubmitButtonLoading(loginSubmitBtn, false, '登 录');
             return;
           }
           if (!emailMobileRegex.test(account)) {
-            showToast('请输入有效的邮箱、手机号或管理员账号');
+            showToast('请输入有效的邮箱或手机号');
             setSubmitButtonLoading(loginSubmitBtn, false, '登 录');
             return;
           }
 
           setSubmitButtonLoading(loginSubmitBtn, true, '登 录');
 
-          var isAdminInput = isAdminAccount(account);
+          var isAdminInput = false;
 
           // 组装请求体：后端要求 email 字段
           var normalizedAccount = normalizeLoginIdentifier(account);
@@ -423,8 +422,7 @@
                       }
                     }
 
-                    var meEmail = String((me && me.email) || normalizedAccount || '').toLowerCase();
-                    var goAdmin = !!(me && me.admin) || meEmail === 'admin@ringnote.local' || isAdminInput;
+                    var goAdmin = !!(me && me.admin);
 
                     showToast('登录成功，正在跳转...');
                     setTimeout(function () {
@@ -437,7 +435,7 @@
                     }
                     showToast('登录成功，正在跳转...');
                     setTimeout(function () {
-                      safeNavigate(isAdminInput ? '后台管理页面.html' : '待办页面.html');
+                      safeNavigate('待办页面.html');
                     }, 400);
                     setSubmitButtonLoading(loginSubmitBtn, false, '登 录');
                   });
@@ -534,18 +532,7 @@
         }
 
         function openForgotPasswordModal() {
-          if (!forgotPasswordModal) return;
-          if (forgotModalCloseTimer) {
-            clearTimeout(forgotModalCloseTimer);
-            forgotModalCloseTimer = null;
-          }
-          forgotPasswordModal.classList.remove('hidden');
-          forgotPasswordModal.classList.add('flex');
-          forgotPasswordModal.classList.remove('is-closing');
-          requestAnimationFrame(function () {
-            forgotPasswordModal.classList.add('is-visible');
-            forgotPasswordModal.setAttribute('aria-hidden', 'false');
-          });
+          showToast('找回密码功能升级中，请联系管理员或客服处理');
         }
 
         function closeForgotPasswordModal() {
@@ -573,13 +560,7 @@
 
         if (forgotSendCodeButton) {
           forgotSendCodeButton.addEventListener('click', function () {
-            var email = (document.getElementById('forgot-email').value || '').trim();
-            if (!email) {
-              showToast('请先输入注册邮箱');
-              return;
-            }
-            showToast('验证码已发送，请注意查收');
-            startForgotPasswordCountdown();
+            showToast('找回密码功能升级中，请联系管理员或客服处理');
           });
         }
 
@@ -592,53 +573,10 @@
         if (forgotPasswordForm) {
           forgotPasswordForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            var email = (document.getElementById('forgot-email').value || '').trim();
-            var code = (document.getElementById('forgot-code').value || '').trim();
-            var newPassword = document.getElementById('forgot-new-password').value || '';
-            var confirmPassword = document.getElementById('forgot-confirm-password').value || '';
-
-            if (!email || !code || !newPassword || !confirmPassword) {
-              showToast('请填写完整信息');
-              setSubmitButtonLoading(forgotSubmitBtn, false, '确认重置密码');
-              return;
-            }
-            if (newPassword.length < 6) {
-              showToast('新密码至少 6 位');
-              setSubmitButtonLoading(forgotSubmitBtn, false, '确认重置密码');
-              return;
-            }
-            if (newPassword !== confirmPassword) {
-              showToast('两次输入的新密码不一致');
-              setSubmitButtonLoading(forgotSubmitBtn, false, '确认重置密码');
-              return;
-            }
-
-            setSubmitButtonLoading(forgotSubmitBtn, true, '确认重置密码');
-
-            apiRequest('/api/auth/forgot-password', {
-              method: 'POST',
-              timeoutMs: 8000,
-              body: JSON.stringify({ email: email, code: code, newPassword: newPassword })
-            }).then(function (resp) {
-              if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
-                showToast('密码已重置，请使用新密码登录');
-                closeForgotPasswordModal();
-                var accountInput = document.getElementById('login-account');
-                var passwordInput = document.getElementById('login-password');
-                if (accountInput) accountInput.value = email;
-                if (passwordInput) passwordInput.value = newPassword;
-                stopForgotPasswordCountdown();
-                setSubmitButtonLoading(forgotSubmitBtn, false, '确认重置密码');
-              } else {
-                var msg = authErrorMessage(resp, '找回密码失败');
-                showToast(msg);
-                setSubmitButtonLoading(forgotSubmitBtn, false, '确认重置密码');
-              }
-            }).catch(function (err) {
-              console.error('forgot password error', err);
-              showToast('网络错误，找回密码失败');
-              setSubmitButtonLoading(forgotSubmitBtn, false, '确认重置密码');
-            });
+            showToast('找回密码功能升级中，请联系管理员或客服处理');
+            closeForgotPasswordModal();
+            stopForgotPasswordCountdown();
+            setSubmitButtonLoading(forgotSubmitBtn, false, '确认重置密码');
           });
         }
       });

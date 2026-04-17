@@ -1,6 +1,5 @@
 ﻿
       document.addEventListener('DOMContentLoaded', function () {
-        var ADMIN_EMAIL = 'admin@ringnote.local';
         var usersTbody = document.getElementById('users-tbody');
         var userCount = document.getElementById('user-count');
         var selectedCount = document.getElementById('selected-count');
@@ -549,8 +548,7 @@
         addLog('info', '后台页面已就绪', '等待管理员身份校验...');
 
         checkAuthOnLoad({ redirect: true, silent: true }).then(function (me) {
-          var email = String((me && me.email) || '').toLowerCase();
-          var isAdmin = !!(me && me.admin) || email === ADMIN_EMAIL;
+          var isAdmin = !!(me && me.admin);
           if (!isAdmin) {
             showToast('仅管理员可访问后台页面');
             addLog('warning', '访问受限', '当前账号无管理员权限');

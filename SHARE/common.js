@@ -1613,9 +1613,19 @@ function checkAuthOnLoad(opts) {
   // If this is a local dev/demo token or dev flag is set, skip remote validation
   try {
     var devFlag = localStorage.getItem('devSkipAuth');
-    if ((token && String(token).startsWith('dev-')) || devFlag === '1') {
+    var allowDevLocalAuth = localStorage.getItem('allowDevLocalAuth') === '1';
+    var protocol = (window.location && window.location.protocol) || '';
+    var host = (window.location && window.location.hostname) || '';
+    var isExplicitLocalDev = allowDevLocalAuth && (protocol === 'file:' || host === 'localhost' || host === '127.0.0.1');
+    if (isExplicitLocalDev && ((token && String(token).startsWith('dev-')) || devFlag === '1')) {
       if (!silent) console.info('auth: dev token detected, skipping remote validation');
       return Promise.resolve(window.AppState && window.AppState.user ? window.AppState.user : {});
+    }
+    if (!isExplicitLocalDev && ((token && String(token).startsWith('dev-')) || devFlag === '1')) {
+      try { localStorage.removeItem('devSkipAuth'); } catch (ignore) {}
+      if (token && String(token).startsWith('dev-')) {
+        try { localStorage.removeItem('token'); } catch (ignoreToken) {}
+      }
     }
   } catch (e) { /* ignore localStorage errors */ }
 

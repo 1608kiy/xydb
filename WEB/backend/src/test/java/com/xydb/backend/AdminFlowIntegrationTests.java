@@ -18,10 +18,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(properties = "JWT_SECRET=01234567890123456789012345678901")
+@SpringBootTest(properties = {
+        "JWT_SECRET=01234567890123456789012345678901",
+        "ringnote.bootstrap-admin.email=bootstrap-admin@example.test",
+        "ringnote.bootstrap-admin.password=Admin#123456",
+        "ringnote.bootstrap-admin.nickname=Bootstrap Admin"
+})
 @AutoConfigureMockMvc
 @ActiveProfiles("local")
 class AdminFlowIntegrationTests {
+    private static final String BOOTSTRAP_ADMIN_EMAIL = "bootstrap-admin@example.test";
+    private static final String BOOTSTRAP_ADMIN_PASSWORD = "Admin#123456";
 
     @Autowired
     private MockMvc mockMvc;
@@ -29,22 +36,23 @@ class AdminFlowIntegrationTests {
     @Autowired
     private ObjectMapper objectMapper;
 
-        @Test
-        void unauthenticatedUserShouldNotAccessAdminApis() throws Exception {
-                mockMvc.perform(get("/api/admin/users"))
-                                .andExpect(status().isUnauthorized())
-                                .andExpect(jsonPath("$.code").value(401));
-        }
+    @Test
+    void unauthenticatedUserShouldNotAccessAdminApis() throws Exception {
+        mockMvc.perform(get("/api/admin/users"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value(401));
+    }
 
     @Test
     void adminLoginAndAdminApisShouldWork() throws Exception {
-        String adminToken = loginAndGetToken("admin", "admin");
+        String adminToken = loginAndGetToken(BOOTSTRAP_ADMIN_EMAIL, BOOTSTRAP_ADMIN_PASSWORD);
 
         mockMvc.perform(get("/api/me")
                         .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.data.email").value("admin@ringnote.local"));
+                .andExpect(jsonPath("$.data.email").value(BOOTSTRAP_ADMIN_EMAIL))
+                .andExpect(jsonPath("$.data.admin").value(true));
 
         mockMvc.perform(get("/api/admin/users")
                         .header("Authorization", "Bearer " + adminToken))
@@ -58,16 +66,16 @@ class AdminFlowIntegrationTests {
         String adminEmail2 = "subadmin_" + unique + "@ringnote.local";
         String adminPassword2 = "Admin#123456";
 
-        String adminToken = loginAndGetToken("admin", "admin");
+        String adminToken = loginAndGetToken(BOOTSTRAP_ADMIN_EMAIL, BOOTSTRAP_ADMIN_PASSWORD);
         mockMvc.perform(post("/api/admin/users/create-admin")
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{" +
-                                "\"nickname\":\"sub-admin\"," +
-                                "\"email\":\"" + adminEmail2 + "\"," +
-                                "\"password\":\"" + adminPassword2 + "\"," +
-                                "\"phone\":\"13800138009\"" +
-                                "}"))
+                        .content("{"
+                                + "\"nickname\":\"sub-admin\","
+                                + "\"email\":\"" + adminEmail2 + "\","
+                                + "\"password\":\"" + adminPassword2 + "\","
+                                + "\"phone\":\"13800138009\""
+                                + "}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.data.email").value(adminEmail2))
@@ -95,12 +103,12 @@ class AdminFlowIntegrationTests {
 
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{" +
-                                "\"nickname\":\"normal\"," +
-                                "\"email\":\"" + email + "\"," +
-                                "\"password\":\"P@ssw0rd\"," +
-                                "\"phone\":\"13800138000\"" +
-                                "}"))
+                        .content("{"
+                                + "\"nickname\":\"normal\","
+                                + "\"email\":\"" + email + "\","
+                                + "\"password\":\"P@ssw0rd\","
+                                + "\"phone\":\"13800138000\""
+                                + "}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200));
 
@@ -109,39 +117,39 @@ class AdminFlowIntegrationTests {
         mockMvc.perform(post("/api/tasks")
                         .header("Authorization", "Bearer " + normalToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{" +
-                                "\"title\":\"t1\"," +
-                                "\"description\":\"to delete\"" +
-                                "}"))
+                        .content("{"
+                                + "\"title\":\"t1\","
+                                + "\"description\":\"to delete\""
+                                + "}"))
                 .andExpect(status().isOk());
 
         mockMvc.perform(post("/api/checkins")
                         .header("Authorization", "Bearer " + normalToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{" +
-                                "\"type\":\"daily\"," +
-                                "\"note\":\"checkin\"" +
-                                "}"))
+                        .content("{"
+                                + "\"type\":\"daily\","
+                                + "\"note\":\"checkin\""
+                                + "}"))
                 .andExpect(status().isOk());
 
         mockMvc.perform(post("/api/tags")
                         .header("Authorization", "Bearer " + normalToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{" +
-                                "\"name\":\"tag-a\"," +
-                                "\"color\":\"#22c55e\"" +
-                                "}"))
+                        .content("{"
+                                + "\"name\":\"tag-a\","
+                                + "\"color\":\"#22c55e\""
+                                + "}"))
                 .andExpect(status().isOk());
 
         mockMvc.perform(post("/api/pomodoros")
                         .header("Authorization", "Bearer " + normalToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{" +
-                                "\"mode\":\"focus\"," +
-                                "\"plannedMinutes\":25," +
-                                "\"actualMinutes\":25," +
-                                "\"completed\":true" +
-                                "}"))
+                        .content("{"
+                                + "\"mode\":\"focus\","
+                                + "\"plannedMinutes\":25,"
+                                + "\"actualMinutes\":25,"
+                                + "\"completed\":true"
+                                + "}"))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/api/admin/users")
@@ -149,7 +157,7 @@ class AdminFlowIntegrationTests {
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.code").value(403));
 
-        String adminToken = loginAndGetToken("admin", "admin");
+        String adminToken = loginAndGetToken(BOOTSTRAP_ADMIN_EMAIL, BOOTSTRAP_ADMIN_PASSWORD);
         MvcResult listResult = mockMvc.perform(get("/api/admin/users")
                         .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk())
@@ -175,12 +183,12 @@ class AdminFlowIntegrationTests {
         String email2 = "u2_" + unique + "@example.com";
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{" +
-                                "\"nickname\":\"normal2\"," +
-                                "\"email\":\"" + email2 + "\"," +
-                                "\"password\":\"P@ssw0rd\"," +
-                                "\"phone\":\"13800138001\"" +
-                                "}"))
+                        .content("{"
+                                + "\"nickname\":\"normal2\","
+                                + "\"email\":\"" + email2 + "\","
+                                + "\"password\":\"P@ssw0rd\","
+                                + "\"phone\":\"13800138001\""
+                                + "}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200));
 
@@ -210,13 +218,31 @@ class AdminFlowIntegrationTests {
                 .andExpect(jsonPath("$.data.deleted").value(1));
     }
 
+    @Test
+    void legacyAdminShortcutShouldNotWorkAnymore() throws Exception {
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"admin\",\"password\":\"admin\"}"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value(401));
+    }
+
+    @Test
+    void forgotPasswordEndpointShouldStayUnavailableUntilVerifiedFlowIsReady() throws Exception {
+        mockMvc.perform(post("/api/auth/forgot-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"user@example.com\",\"newPassword\":\"Secret123!\"}"))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(jsonPath("$.code").value(503));
+    }
+
     private String loginAndGetToken(String email, String password) throws Exception {
         MvcResult result = mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{" +
-                                "\"email\":\"" + email + "\"," +
-                                "\"password\":\"" + password + "\"" +
-                                "}"))
+                        .content("{"
+                                + "\"email\":\"" + email + "\","
+                                + "\"password\":\"" + password + "\""
+                                + "}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
                 .andReturn();

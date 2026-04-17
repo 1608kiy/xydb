@@ -81,8 +81,7 @@ public class UserService {
     }
 
     public boolean isAdmin(User user) {
-        return user != null && (Boolean.TRUE.equals(user.getAdmin())
-                || AuthService.ADMIN_EMAIL.equalsIgnoreCase(user.getEmail()));
+        return user != null && Boolean.TRUE.equals(user.getAdmin());
     }
 
     @Transactional

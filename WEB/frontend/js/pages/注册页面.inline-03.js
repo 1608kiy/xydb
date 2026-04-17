@@ -30,35 +30,7 @@
         }
 
         function enterLocalMode(accountHint) {
-          var display = String(accountHint || '').trim();
-          if (!display) display = '本地用户';
-          var userName = display;
-          if (display.indexOf('@') > -1) {
-            userName = display.split('@')[0] || '本地用户';
-          }
-          if (/^1\d{10}$/.test(display)) {
-            userName = '用户' + display.slice(-4);
-          }
-
-          try {
-            localStorage.setItem('token', 'dev-local-' + Date.now());
-            localStorage.setItem('devSkipAuth', '1');
-            if (window.AppState) {
-              window.AppState.user = window.AppState.user || {};
-              window.AppState.user.name = userName;
-              if (display.indexOf('@') > -1) {
-                window.AppState.user.email = display;
-              }
-              if (/^1\d{10}$/.test(display)) {
-                window.AppState.user.phone = display;
-                window.AppState.user.email = display + '@mobile.local';
-              }
-              if (typeof window.AppState.save === 'function') window.AppState.save();
-            }
-          } catch (e) {}
-
-          showToast('服务繁忙，已切换本地快速登录');
-          setTimeout(function () { safeNavigate('待办页面.html'); }, 320);
+          showToast('服务暂时不可用，请稍后重试');
         }
 
         function isMobileNumber(v) {
@@ -231,21 +203,16 @@
                 var token = resp.body.data && resp.body.data.token;
                 if (token) {
                   localStorage.setItem('token', token);
-                  try { localStorage.removeItem('devSkipAuth'); } catch (e) {}
                   showToast('注册并登录成功，正在跳转...');
                   setTimeout(function () { safeNavigate('待办页面.html'); }, 400);
                   return;
                 }
               }
-              if (shouldEnterLocalMode(resp)) {
-                enterLocalMode(payload.email || payload.phone || account);
-                return;
-              }
               var msg = authErrorMessage(resp, '注册失败');
               showToast(msg);
             }).catch(function (err) {
               console.error('register error', err);
-              enterLocalMode(payload.email || payload.phone || account);
+              showToast('网络错误，请稍后重试');
             });
         });
 
@@ -255,7 +222,6 @@
             socialRegisterAndLogin().then(function (resp) {
               if (resp && resp.status === 200 && resp.body && resp.body.code === 200 && resp.body.data && resp.body.data.token) {
                 localStorage.setItem('token', resp.body.data.token);
-                try { localStorage.removeItem('devSkipAuth'); } catch (e) {}
                 showToast('扫码注册成功，已自动登录');
                 setTimeout(function () { safeNavigate('待办页面.html'); }, 400);
                 return;

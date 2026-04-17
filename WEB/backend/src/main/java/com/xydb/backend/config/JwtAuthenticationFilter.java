@@ -19,7 +19,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import com.xydb.backend.service.AuthService;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -75,8 +74,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private List<SimpleGrantedAuthority> authoritiesFor(User user) {
-        if (user != null && (Boolean.TRUE.equals(user.getAdmin())
-                || AuthService.ADMIN_EMAIL.equalsIgnoreCase(user.getEmail()))) {
+        if (user != null && Boolean.TRUE.equals(user.getAdmin())) {
             return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
         }
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));

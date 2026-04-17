@@ -5,30 +5,44 @@ import com.xydb.backend.dto.AuthResponse;
 import com.xydb.backend.model.User;
 import com.xydb.backend.repository.UserRepository;
 import com.xydb.backend.util.JWTUtil;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
 public class AuthService {
-    public static final String ADMIN_EMAIL = "admin@ringnote.local";
-    private static final String ADMIN_LOGIN_IDENTIFIER = "admin";
-    private static final String ADMIN_DEFAULT_PASSWORD = "admin";
-
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JWTUtil jwtUtil;
+    private final String bootstrapAdminEmail;
+    private final String bootstrapAdminPassword;
+    private final String bootstrapAdminNickname;
+    private final String bootstrapAdminPhone;
 
-    public AuthService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, JWTUtil jwtUtil) {
+    public AuthService(UserRepository userRepository,
+                       BCryptPasswordEncoder passwordEncoder,
+                       JWTUtil jwtUtil,
+                       @Value("${ringnote.bootstrap-admin.email:}") String bootstrapAdminEmail,
+                       @Value("${ringnote.bootstrap-admin.password:}") String bootstrapAdminPassword,
+                       @Value("${ringnote.bootstrap-admin.nickname:系统管理员}") String bootstrapAdminNickname,
+                       @Value("${ringnote.bootstrap-admin.phone:}") String bootstrapAdminPhone) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
+        this.bootstrapAdminEmail = bootstrapAdminEmail == null ? "" : bootstrapAdminEmail.trim();
+        this.bootstrapAdminPassword = bootstrapAdminPassword == null ? "" : bootstrapAdminPassword;
+        this.bootstrapAdminNickname = bootstrapAdminNickname == null ? "系统管理员" : bootstrapAdminNickname.trim();
+        this.bootstrapAdminPhone = bootstrapAdminPhone == null ? "" : bootstrapAdminPhone.trim();
     }
 
-    public AuthResponse register(AuthRequest req){
-        if(userRepository.findByEmail(req.getEmail()).isPresent()){
+    public AuthResponse register(AuthRequest req) {
+        if (userRepository.findByEmail(req.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email already registered");
         }
         User user = User.builder()
@@ -39,7 +53,7 @@ public class AuthService {
                 .securityPhone(req.getPhone())
                 .level(1)
                 .exp(0)
-            .admin(false)
+                .admin(false)
                 .createdAt(LocalDateTime.now())
                 .build();
         userRepository.save(user);
@@ -47,65 +61,51 @@ public class AuthService {
         return new AuthResponse(token);
     }
 
-    public AuthResponse login(String email, String password){
-        if (isAdminIdentifier(email)) {
-            if (!ADMIN_DEFAULT_PASSWORD.equals(password)) {
-                throw new IllegalArgumentException("Invalid credentials");
-            }
-            User admin = ensureAdminUser();
-            String token = jwtUtil.generateToken(admin.getEmail());
-            return new AuthResponse(token);
-        }
-
-        User user = userRepository.findByEmail(email).orElseThrow(()-> new IllegalArgumentException("Invalid credentials"));
-        if(!passwordEncoder.matches(password, user.getPassword())){
+    public AuthResponse login(String email, String password) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("Invalid credentials");
         }
         String token = jwtUtil.generateToken(user.getEmail());
         return new AuthResponse(token);
     }
 
-    public void resetPasswordByEmail(String email, String newPassword) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("用户不存在"));
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
-    }
-
-    private boolean isAdminIdentifier(String email) {
-        if (email == null) {
-            return false;
+    @EventListener(ApplicationReadyEvent.class)
+    public void initializeBootstrapAdmin() {
+        if (!StringUtils.hasText(bootstrapAdminEmail) || !StringUtils.hasText(bootstrapAdminPassword)) {
+            return;
         }
-        String normalized = email.trim();
-        return ADMIN_LOGIN_IDENTIFIER.equalsIgnoreCase(normalized)
-                || ADMIN_EMAIL.equalsIgnoreCase(normalized);
-    }
 
-    private User ensureAdminUser() {
-        Optional<User> maybeAdmin = userRepository.findByEmail(ADMIN_EMAIL);
+        Optional<User> maybeAdmin = userRepository.findByEmail(bootstrapAdminEmail);
         if (maybeAdmin.isPresent()) {
             User existing = maybeAdmin.get();
+            boolean changed = false;
             if (!Boolean.TRUE.equals(existing.getAdmin())) {
                 existing.setAdmin(true);
+                changed = true;
             }
-            if (!passwordEncoder.matches(ADMIN_DEFAULT_PASSWORD, existing.getPassword())) {
-                existing.setPassword(passwordEncoder.encode(ADMIN_DEFAULT_PASSWORD));
+            if (!StringUtils.hasText(existing.getSecurityPhone()) && StringUtils.hasText(bootstrapAdminPhone)) {
+                existing.setSecurityPhone(bootstrapAdminPhone);
+                changed = true;
             }
-            userRepository.save(existing);
-            return existing;
+            if (changed) {
+                userRepository.save(existing);
+            }
+            return;
         }
 
         User admin = User.builder()
-                .nickname("系统管理员")
-                .email(ADMIN_EMAIL)
-                .password(passwordEncoder.encode(ADMIN_DEFAULT_PASSWORD))
-                .phone("admin")
-                .securityPhone("admin")
+                .nickname(StringUtils.hasText(bootstrapAdminNickname) ? bootstrapAdminNickname : "系统管理员")
+                .email(bootstrapAdminEmail)
+                .password(passwordEncoder.encode(bootstrapAdminPassword))
+                .phone(bootstrapAdminPhone)
+                .securityPhone(bootstrapAdminPhone)
                 .level(99)
                 .exp(0)
                 .admin(true)
                 .createdAt(LocalDateTime.now())
                 .build();
-        return userRepository.save(admin);
+        userRepository.save(admin);
     }
 }

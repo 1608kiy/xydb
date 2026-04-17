@@ -1,13 +1,13 @@
 ﻿(function () {
   'use strict';
 
-  // Local dev safety: allow opening pages directly without being forced to login
-  // when running from file:// or localhost and no token exists.
+  // Keep local dev bypass explicit so production-like shells do not auto-create sessions.
   try {
     var host = (window.location && window.location.hostname) || '';
     var protocol = (window.location && window.location.protocol) || '';
     var isLocalRuntime = protocol === 'file:' || host === 'localhost' || host === '127.0.0.1';
-    if (isLocalRuntime) {
+    var allowDevLocalAuth = localStorage.getItem('allowDevLocalAuth') === '1';
+    if (isLocalRuntime && allowDevLocalAuth) {
       var token = localStorage.getItem('token');
       if (!token) {
         localStorage.setItem('token', 'dev-local');

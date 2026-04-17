@@ -17,7 +17,7 @@
           apiRequest('/api/me', { method: 'GET' }).then(function (r) {
             if (r && r.status === 200 && r.body && r.body.code === 200) {
               var me = (r.body && r.body.data) || {};
-              if (String(me.email || '').toLowerCase() === 'admin@ringnote.local') {
+              if (me && me.admin) {
                 safeNavigate('后台管理页面.html');
                 return;
               }
@@ -34,12 +34,11 @@
         }
 
         function isAdminAccount(v) {
-          return String(v || '').trim().toLowerCase() === 'admin';
+          return false;
         }
 
         function normalizeLoginIdentifier(v) {
           var raw = String(v || '').trim();
-          if (isAdminAccount(raw)) return 'admin@ringnote.local';
           if (isMobileNumber(raw)) return raw + '@mobile.local';
           return raw;
         }
@@ -117,40 +116,7 @@
         }
 
         function enterLocalMode(accountHint) {
-          var display = String(accountHint || '').trim();
-          if (!display) display = '本地用户';
-          var userName = display;
-          if (display.indexOf('@') > -1) {
-            userName = display.split('@')[0] || '本地用户';
-          }
-          if (/^1\d{10}$/.test(display)) {
-            userName = '用户' + display.slice(-4);
-          }
-
-          try {
-            localStorage.setItem('token', 'dev-local-' + Date.now());
-            localStorage.setItem('devSkipAuth', '1');
-            if (window.AppState) {
-              var localProfile = { name: userName };
-              if (display.indexOf('@') > -1) {
-                localProfile.email = display;
-              }
-              if (/^1\d{10}$/.test(display)) {
-                localProfile.phone = display;
-                localProfile.email = display + '@mobile.local';
-              }
-
-              if (typeof window.AppState.switchUser === 'function') {
-                window.AppState.switchUser(localProfile);
-              } else {
-                window.AppState.user = Object.assign({}, window.AppState.user || {}, localProfile);
-                if (typeof window.AppState.save === 'function') window.AppState.save();
-              }
-            }
-          } catch (e) {}
-
-          showToast('服务繁忙，已切换本地快速登录');
-          setTimeout(function () { safeNavigate('待办页面.html'); }, 320);
+          showToast('服务暂时不可用，请稍后重试');
         }
 
         var heroThemeIcon = document.getElementById('hero-theme-icon');
@@ -198,17 +164,17 @@
           var account = document.getElementById('login-account').value.trim();
           var password = document.getElementById('login-password').value;
 
-          var emailMobileRegex = /^(\S+@\S+\.\S+|1\d{10}|admin)$/i;
+          var emailMobileRegex = /^(\S+@\S+\.\S+|1\d{10})$/i;
           if (!account || !password) {
             showToast('请输入账号和密码');
             return;
           }
           if (!emailMobileRegex.test(account)) {
-            showToast('请输入有效的邮箱、手机号或管理员账号');
+            showToast('请输入有效的邮箱或手机号');
             return;
           }
 
-          var isAdminInput = isAdminAccount(account);
+          var isAdminInput = false;
 
           // 组装请求体：后端要求 email 字段
           var normalizedAccount = normalizeLoginIdentifier(account);
@@ -248,8 +214,7 @@
                       }
                     }
 
-                    var meEmail = String((me && me.email) || normalizedAccount || '').toLowerCase();
-                    var goAdmin = !!(me && me.admin) || meEmail === 'admin@ringnote.local' || isAdminInput;
+                    var goAdmin = !!(me && me.admin);
 
                     showToast('登录成功，正在跳转...');
                     setTimeout(function () {
@@ -261,21 +226,17 @@
                     }
                     showToast('登录成功，正在跳转...');
                     setTimeout(function () {
-                      safeNavigate(isAdminInput ? '后台管理页面.html' : '待办页面.html');
+                      safeNavigate('待办页面.html');
                     }, 400);
                   });
                   return;
                 }
               }
-              if (shouldEnterLocalMode(resp)) {
-                enterLocalMode(account);
-                return;
-              }
               var msg = authErrorMessage(resp, '登录失败，请检查账号密码');
               showToast(msg);
             }).catch(function (err) {
               console.error('login error', err);
-              enterLocalMode(account);
+              showToast('网络错误，请稍后重试');
             });
         });
 
@@ -313,9 +274,7 @@
         var forgotPasswordForm = document.getElementById('forgot-password-form');
 
         function openForgotPasswordModal() {
-          if (!forgotPasswordModal) return;
-          forgotPasswordModal.classList.remove('hidden');
-          forgotPasswordModal.classList.add('flex');
+          showToast('找回密码功能升级中，请联系管理员或客服处理');
         }
 
         function closeForgotPasswordModal() {
@@ -343,43 +302,8 @@
         if (forgotPasswordForm) {
           forgotPasswordForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            var email = (document.getElementById('forgot-email').value || '').trim();
-            var newPassword = document.getElementById('forgot-new-password').value || '';
-            var confirmPassword = document.getElementById('forgot-confirm-password').value || '';
-
-            if (!email || !newPassword || !confirmPassword) {
-              showToast('请填写完整信息');
-              return;
-            }
-            if (newPassword.length < 6) {
-              showToast('新密码至少 6 位');
-              return;
-            }
-            if (newPassword !== confirmPassword) {
-              showToast('两次输入的新密码不一致');
-              return;
-            }
-
-            apiRequest('/api/auth/forgot-password', {
-              method: 'POST',
-              timeoutMs: 8000,
-              body: JSON.stringify({ email: email, newPassword: newPassword })
-            }).then(function (resp) {
-              if (resp && resp.status === 200 && resp.body && resp.body.code === 200) {
-                showToast('密码已重置，请使用新密码登录');
-                closeForgotPasswordModal();
-                var accountInput = document.getElementById('login-account');
-                var passwordInput = document.getElementById('login-password');
-                if (accountInput) accountInput.value = email;
-                if (passwordInput) passwordInput.value = newPassword;
-              } else {
-                var msg = authErrorMessage(resp, '找回密码失败');
-                showToast(msg);
-              }
-            }).catch(function (err) {
-              console.error('forgot password error', err);
-              showToast('网络错误，找回密码失败');
-            });
+            showToast('找回密码功能升级中，请联系管理员或客服处理');
+            closeForgotPasswordModal();
           });
         }
       });

@@ -3,13 +3,13 @@ name: Backend CI
 on:
   push:
     paths:
-      - backend/**
-      - scripts/**
+      - WEB/backend/**
+      - WEB/scripts/**
       - .github/workflows/backend-ci.yml
   pull_request:
     paths:
-      - backend/**
-      - scripts/**
+      - WEB/backend/**
+      - WEB/scripts/**
       - .github/workflows/backend-ci.yml
 
 jobs:
@@ -28,8 +28,8 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          chmod +x backend/mvnw
-          ./backend/mvnw -f backend/pom.xml -q test
+          chmod +x WEB/backend/mvnw
+          ./WEB/backend/mvnw -f WEB/backend/pom.xml -q test
 
   api-smoke:
     runs-on: windows-latest
@@ -48,7 +48,7 @@ jobs:
       - name: Start Backend (local profile)
         shell: pwsh
         run: |
-          $mvnCommand = '.\backend\mvnw.cmd -f .\backend\pom.xml spring-boot:run "-Dspring-boot.run.profiles=local" "-Dspring-boot.run.arguments=--server.port=8082"'
+          $mvnCommand = '.\WEB\backend\mvnw.cmd -f .\WEB\backend\pom.xml spring-boot:run "-Dspring-boot.run.profiles=local" "-Dspring-boot.run.arguments=--server.port=8082"'
           $proc = Start-Process -FilePath "cmd.exe" -ArgumentList "/c", $mvnCommand -PassThru
           "BACKEND_PID=$($proc.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Host "Started backend PID=$($proc.Id)"
@@ -76,7 +76,7 @@ jobs:
       - name: Run API Smoke Script
         shell: pwsh
         run: |
-          powershell -ExecutionPolicy Bypass -File .\scripts\verify_api.ps1 -ApiBase 'http://localhost:8082'
+          powershell -ExecutionPolicy Bypass -File .\WEB\scripts\verify_api.ps1 -ApiBase 'http://localhost:8082'
 
       - name: Stop Backend
         if: always()
