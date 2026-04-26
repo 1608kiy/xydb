@@ -44,7 +44,7 @@
           }
           
           /* ✅ 背景装饰光斑 */
-          .bg-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.18; pointer-events: none; z-index: 0; animation: orbFloat 20s ease-in-out infinite; }
+          .bg-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0 !important; pointer-events: none; z-index: 0; animation: orbFloat 20s ease-in-out infinite; }
           @keyframes orbFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -30px) scale(1.05); } 66% { transform: translate(-20px, 20px) scale(0.98); } }
           
           /* ✅ 动画效果 */

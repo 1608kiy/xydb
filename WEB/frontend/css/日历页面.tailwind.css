@@ -457,7 +457,7 @@
             position: fixed; 
             border-radius: 50%; 
             filter: blur(160px); 
-            opacity: 0.1; 
+            opacity: 0 !important; 
             pointer-events: none; 
             z-index: 0; 
             animation: orbFloat 24s ease-in-out infinite; 

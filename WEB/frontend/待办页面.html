@@ -11,9 +11,10 @@
   <script defer src="./common.js?v=20260401_liquid_modal1"></script>
   <script src='./js/pages/待办页面.inline-01.js?v=20260327_jssplit'></script>
   <link rel='stylesheet' href='./css/待办页面.css?v=20260327_csssplit' />
+  <link rel='stylesheet' href='./css/saas-theme-overrides.css?v=20260423_ui_saas1' />
 </head>
 
-<body>
+<body class="bg-[#F1EEEA]">
   <!-- ===== 背景装饰光斑 ===== -->
   <div class="bg-orb" style="width: 500px; height: 500px; background: #4F46E5; top: 0; left: 0;"></div>
   <div class="bg-orb"
@@ -47,8 +48,8 @@
         <span class="font-medium" id="current-date"></span>
       </div>
       <div class="relative hidden md:block flex-1 max-w-md mx-8">
-        <input class="input-glass pl-12 pr-10" id="search-input" placeholder="搜索任务..." type="text" />
-        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" id="search-icon"></i>
+        <input class="input-glass pl-14 pr-12" id="search-input" placeholder="搜索任务..." type="text" />
+        <i class="fas fa-search absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" id="search-icon"></i>
         <button
           class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-primary opacity-0 transition-all"
           id="clear-search" title="清除搜索">

@@ -7,7 +7,7 @@
 
     body {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: linear-gradient(135deg, #EFF6FF 0%, #F5F3FF 50%, #FDF4FF 100%);
+      background: #F1EEEA;
       color: #1F2937;
       min-height: 100vh;
       display: flex;
@@ -65,7 +65,7 @@
       position: fixed;
       border-radius: 50%;
       filter: blur(100px);
-      opacity: 0.1;
+      opacity: 0 !important;
       pointer-events: none;
       z-index: 0;
       animation: orbFloat 20s ease-in-out infinite;
@@ -455,9 +455,10 @@
       backdrop-filter: blur(8px);
       z-index: 999;
       display: none;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
-      padding: 16px;
+      padding: calc(84px + env(safe-area-inset-top, 0px)) 16px calc(120px + env(safe-area-inset-bottom, 0px));
+      overflow: hidden;
     }
 
     .modal-overlay:not(.hidden) {
@@ -474,11 +475,61 @@
       padding: 24px;
       width: 100%;
       max-width: 512px;
-      max-height: 90vh;
+      max-height: calc(100vh - 204px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
       overflow-y: auto;
       animation: taskDetailModalIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
       scrollbar-width: none;
       -ms-overflow-style: none;
+    }
+
+    body:not(.software-app) #new-task-modal .modal-content,
+    body:not(.software-app) #task-detail-panel .modal-content,
+    body:not(.software-app) #new-tag-modal .modal-content {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.48), rgba(255, 255, 255, 0.3)) !important;
+      border: 1px solid rgba(255, 255, 255, 0.62) !important;
+      box-shadow: 0 22px 48px rgba(15, 23, 42, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+      backdrop-filter: blur(20px) saturate(140%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
+      contain: paint;
+    }
+
+    body:not(.software-app) #new-task-modal .modal-content::before,
+    body:not(.software-app) #new-task-modal .modal-content::after,
+    body:not(.software-app) #task-detail-panel .modal-content::before,
+    body:not(.software-app) #task-detail-panel .modal-content::after,
+    body:not(.software-app) #new-tag-modal .modal-content::before,
+    body:not(.software-app) #new-tag-modal .modal-content::after {
+      content: none !important;
+      display: none !important;
+    }
+
+    #search-input {
+      padding-left: 46px !important;
+      padding-right: 44px !important;
+    }
+
+    #search-icon {
+      left: 16px !important;
+      font-size: 14px;
+    }
+
+    #clear-search {
+      right: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .modal-overlay {
+        padding: calc(72px + env(safe-area-inset-top, 0px)) 12px calc(108px + env(safe-area-inset-bottom, 0px));
+      }
+
+      .modal-content {
+        max-height: calc(100vh - 180px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+      }
     }
 
     .modal-content::-webkit-scrollbar {

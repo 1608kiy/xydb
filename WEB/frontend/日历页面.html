@@ -11,67 +11,103 @@
       href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
-    <script src="./js/pages/日历页面.inline-01.js?v=20260327_jssplit"></script>
-    <script src="./js/tailwind-style-loader.js?v=20260327_csssplit"></script>
-    <script src="./js/pages/日历页面.inline-02.js?v=20260327_jssplit"></script>
-  </head>
-  <body
-    class="calendar-page font-inter text-gray-800 h-screen flex flex-col text-[13px] md:text-[14px] relative overflow-hidden"
-  >
-    <div class="bg-orb bg-orb-primary w-[520px] h-[520px] -top-44 -left-40"></div>
-    <div class="bg-orb bg-orb-secondary w-[430px] h-[430px] -bottom-8 -right-10"></div>
-
+    <script src='./js/pages/日历页面.inline-01.js?v=20260327_jssplit'></script>
+    <script src='./js/tailwind-style-loader.js?v=20260327_csssplit'></script>
+    <link rel='stylesheet' href='./css/saas-theme-overrides.css?v=20260423_ui_saas1' />
+  <script src='./js/pages/日历页面.inline-02.js?v=20260327_jssplit'></script>
+</head>
+  <body class="font-inter bg-[#F1EEEA] text-gray-800 min-h-screen flex flex-col text-[13px] md:text-[14px] relative overflow-x-hidden">
+    
+    <!-- ✅ 背景光斑装饰 -->
+    <div class="bg-orb bg-orb-primary w-[500px] h-[500px] -top-40 -left-40"></div>
+    <div class="bg-orb bg-orb-secondary w-[400px] h-[400px] bottom-0 right-0"></div>
+    
+    <!-- [MODULE] a1b_顶部导航 -->
     <header class="glass-header sticky top-0 z-50">
-      <div class="calendar-topbar">
-        <div class="calendar-topbar__brand">
-          <a class="calendar-back-btn" href="javascript:void(0);" onclick="history.back()">
-            <i class="fas fa-arrow-left text-base"></i>
+      <div
+        class="container mx-auto px-4 py-3 flex items-center justify-between"
+      >
+        <!-- 返回首页/应用名称 -->
+        <div class="flex items-center space-x-4">
+          <a
+            class="text-gray-600 hover:text-primary transition-all duration-300 transform hover:scale-110"
+            href="javascript:void(0);"
+          >
+            <i class="fas fa-arrow-left text-lg"> </i>
           </a>
-          <div class="calendar-brand-copy">
-            <h1 class="calendar-page-title">日历视图</h1>
-            <p class="text-sm text-gray-500">把任务、日期和优先级放在同一屏里查看</p>
-          </div>
+          <h1 class="text-lg md:text-xl font-bold text-gray-800">日历视图</h1>
         </div>
-
-        <div class="calendar-topbar__center">
-          <div class="calendar-view-switch">
-            <button type="button" class="view-btn btn-glass" data-view="day">日视图</button>
-            <button type="button" class="view-btn btn-glass" data-view="week">周视图</button>
-            <button type="button" class="view-btn active btn-primary" data-view="month">
+        <!-- 日期显示和视图切换 -->
+        <div class="flex items-center space-x-4">
+          <button id="today-btn" type="button"
+            class="btn-primary glow-effect"
+          >
+            今天
+          </button>
+          <div class="glass-card px-4 py-2 rounded-2xl">
+            <span class="font-medium text-gray-700" id="current-date"> </span>
+          </div>
+          <div class="flex space-x-2">
+            <button
+              type="button"
+              class="view-btn active btn-primary"
+              data-view="month"
+            >
               月视图
+            </button>
+            <button
+              type="button"
+              class="view-btn btn-glass"
+              data-view="week"
+            >
+              周视图
+            </button>
+            <button
+              type="button"
+              class="view-btn btn-glass"
+              data-view="day"
+            >
+              日视图
             </button>
           </div>
         </div>
-
-        <div class="calendar-topbar__actions">
+        <!-- 右侧操作区 -->
+        <div class="flex items-center space-x-4">
           <a
             href="待办页面.html"
             id="add-task-btn"
-            class="btn-primary glow-effect calendar-add-btn"
+            class="btn-primary glow-effect"
             data-open-modal="new-task"
           >
-            <i class="fas fa-plus mr-1.5"></i>
+            <i class="fas fa-plus mr-1.5"> </i>
             添加任务
           </a>
           <div class="relative" id="user-menu-container">
-            <button class="calendar-user-trigger" id="user-menu-btn">
+            <button class="flex items-center space-x-2 focus:outline-none outline-none transition-colors duration-300" id="user-menu-btn">
               <img
                 alt="用户头像"
-                class="header-user-avatar w-9 h-9 rounded-full object-cover border-2 border-white shadow-md ring-2 ring-primary/20"
+                class="header-user-avatar w-8 h-8 rounded-full object-cover border-2 border-white shadow-md ring-2 ring-primary/30"
                 src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
               />
-              <span class="header-user-name hidden md:inline-block font-medium text-gray-700">
-                我的账号
-              </span>
-              <i class="fas fa-chevron-down text-xs text-gray-500"></i>
+              <span class="header-user-name hidden md:inline-block font-medium text-gray-700"> 张明 </span>
+              <i class="fas fa-chevron-down text-xs text-gray-500"> </i>
             </button>
+            <!-- 下拉菜单 -->
             <div class="dropdown-menu" id="user-dropdown" style="pointer-events: none;">
-              <a class="dropdown-item" href="个人中心页面.html" style="pointer-events: auto;">
-                <i class="fas fa-user mr-2 text-gray-500"></i>
+              <a
+                class="dropdown-item"
+                href="个人中心页面.html"
+                style="pointer-events: auto;"
+              >
+                <i class="fas fa-user mr-2 text-gray-500"> </i>
                 个人中心
               </a>
-              <a class="dropdown-item" href="javascript:void(0);" style="pointer-events: auto;">
-                <i class="fas fa-cog mr-2 text-gray-500"></i>
+              <a
+                class="dropdown-item"
+                href="javascript:void(0);"
+                style="pointer-events: auto;"
+              >
+                <i class="fas fa-cog mr-2 text-gray-500"> </i>
                 设置
               </a>
               <div class="border-t border-gray-200 my-1"></div>
@@ -81,7 +117,7 @@
                 id="logout-btn-top"
                 style="pointer-events: auto;"
               >
-                <i class="fas fa-sign-out-alt mr-2"></i>
+                <i class="fas fa-sign-out-alt mr-2"> </i>
                 退出登录
               </a>
             </div>
@@ -89,211 +125,228 @@
         </div>
       </div>
     </header>
-
-    <div class="calendar-shell relative z-10">
-      <main class="calendar-workspace calendar-reference-layout">
-        <aside class="calendar-column calendar-column-right fade-in calendar-reference-sidebar">
-          <section class="glass-card calendar-panel calendar-reference-focus">
-            <div class="calendar-panel-head">
-              <div>
-                <p class="calendar-panel-kicker">今日聚焦</p>
-                <h2 class="calendar-panel-title">待排任务</h2>
-                <p class="calendar-panel-subtitle">优先处理今天真正需要推进的项目。</p>
-              </div>
+    <!-- [/MODULE] a1b_顶部导航 -->
+    
+    <div class="flex flex-1 overflow-hidden relative z-10">
+      <!-- [MODULE] e3f_主内容区域 -->
+      <main class="flex-1 overflow-y-auto p-4 md:p-6 scrollbar-thin">
+        <!-- [MODULE] g4h_快捷操作栏 -->
+        <div class="glass-card rounded-2xl p-4 mb-6 fade-in relative z-30">
+          <div
+            class="flex flex-col md:flex-row md:items-center justify-between gap-4"
+          >
+            <!-- 移动端搜索框 -->
+            <div class="relative md:hidden w-full">
+              <input
+                class="glass-input w-full pl-10 pr-4 py-2.5 rounded-xl focus:outline-none transition-all"
+                placeholder="搜索任务..."
+                type="text"
+              />
+              <i
+                class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              >
+              </i>
             </div>
-            <div class="calendar-task-scroll">
-              <div id="task-pool"></div>
-            </div>
-          </section>
-
-          <section class="glass-card calendar-panel calendar-reference-upcoming">
-            <div class="calendar-panel-head">
-              <div>
-                <p class="calendar-panel-kicker">时间线</p>
-                <h2 class="calendar-panel-title">即将到来的事件</h2>
-                <p class="calendar-panel-subtitle">点击可快速定位到对应日期。</p>
-              </div>
-              <button id="refresh-scheduled-btn" class="calendar-refresh-link" type="button">
-                <i class="fas fa-sync-alt mr-1"></i>
-                刷新
-              </button>
-            </div>
-            <div
-              id="scheduled-task-list"
-              class="calendar-upcoming-list space-y-3 scrollbar-thin"
-            ></div>
-          </section>
-        </aside>
-
-        <section class="calendar-column calendar-column-main fade-in">
-          <section class="glass-card calendar-panel calendar-main-panel calendar-reference-board">
-            <div class="calendar-reference-board-head">
-              <div>
-                <p class="calendar-panel-kicker">本月安排</p>
-                <h2 class="calendar-panel-title">月历总览</h2>
-              </div>
-              <div class="calendar-reference-board-note">
-                左侧筛选任务，右侧查看今日与近期安排
-              </div>
-            </div>
-
-            <div class="calendar-view active" id="month-view">
-              <div class="calendar-view-toolbar calendar-reference-month-toolbar">
-                <button id="month-prev-btn" class="calendar-nav-btn">
-                  <i class="fas fa-chevron-left text-base"></i>
-                </button>
-                <h2 id="month-title" class="calendar-title"></h2>
-                <button id="month-next-btn" class="calendar-nav-btn">
-                  <i class="fas fa-chevron-right text-base"></i>
-                </button>
-              </div>
-              <div class="calendar-weekdays">
-                <div class="calendar-weekday">周一</div>
-                <div class="calendar-weekday">周二</div>
-                <div class="calendar-weekday">周三</div>
-                <div class="calendar-weekday">周四</div>
-                <div class="calendar-weekday">周五</div>
-                <div class="calendar-weekday is-weekend">周六</div>
-                <div class="calendar-weekday is-weekend">周日</div>
-              </div>
-              <div class="calendar-month-grid" id="month-grid"></div>
-            </div>
-
-            <div class="calendar-view hidden" id="week-view">
-              <div class="calendar-view-toolbar">
-                <button id="week-prev-btn" class="calendar-nav-btn">
-                  <i class="fas fa-chevron-left text-base"></i>
-                </button>
-                <h2 class="calendar-title">本周安排</h2>
-                <button id="week-next-btn" class="calendar-nav-btn">
-                  <i class="fas fa-chevron-right text-base"></i>
-                </button>
-              </div>
-              <div class="grid grid-cols-7 gap-3 min-h-0 flex-1" id="week-grid"></div>
-            </div>
-
-            <div class="calendar-view hidden" id="day-view">
-              <div class="calendar-view-toolbar">
-                <button id="day-prev-btn" class="calendar-nav-btn">
-                  <i class="fas fa-chevron-left text-base"></i>
-                </button>
-                <h2 class="calendar-title">当日安排</h2>
-                <button id="day-next-btn" class="calendar-nav-btn">
-                  <i class="fas fa-chevron-right text-base"></i>
-                </button>
-              </div>
-              <div class="grid grid-cols-12 gap-3 min-h-0 flex-1" id="day-grid"></div>
-            </div>
-          </section>
-        </section>
-
-        <aside class="calendar-column calendar-column-left fade-in">
-          <section class="glass-card calendar-panel calendar-panel-compact calendar-reference-categories">
-            <div class="calendar-panel-head">
-              <div>
-                <p class="calendar-panel-kicker">任务分类</p>
-                <h2 class="calendar-panel-title">按领域聚焦</h2>
-              </div>
-            </div>
-            <div class="calendar-reference-category-list">
-              <button type="button" class="category-chip active category-chip-all" data-category="all">
-                <span class="category-chip-icon"><i class="fas fa-border-all"></i></span>
-                <span class="category-chip-label">全部任务</span>
-              </button>
-              <button type="button" class="category-chip category-chip-work" data-category="work">
-                <span class="category-chip-icon"><i class="fas fa-briefcase"></i></span>
-                <span class="category-chip-label">工作</span>
-              </button>
-              <button type="button" class="category-chip category-chip-study" data-category="study">
-                <span class="category-chip-icon"><i class="fas fa-graduation-cap"></i></span>
-                <span class="category-chip-label">学习</span>
-              </button>
-              <button type="button" class="category-chip category-chip-life" data-category="life">
-                <span class="category-chip-icon"><i class="fas fa-heart"></i></span>
-                <span class="category-chip-label">生活</span>
-              </button>
-              <button type="button" class="category-chip category-chip-health" data-category="health">
-                <span class="category-chip-icon"><i class="fas fa-heartbeat"></i></span>
-                <span class="category-chip-label">健康</span>
-              </button>
-            </div>
-          </section>
-
-          <section class="glass-card calendar-panel calendar-reference-tools">
-            <div class="calendar-panel-head calendar-panel-head--stack">
-              <div>
-                <p class="calendar-panel-kicker">快捷操作</p>
-                <h2 class="calendar-panel-title">首屏控制区</h2>
-                <p class="calendar-panel-subtitle">
-                  保留必要操作，但不抢月历主体的视觉重心。
-                </p>
-              </div>
-            </div>
-
-            <div class="calendar-reference-today">
-              <div class="calendar-reference-today-label">今天</div>
-              <div class="calendar-reference-today-date" id="current-date"></div>
-              <button id="today-btn" type="button" class="btn-soft w-full justify-center">
-                回到今天
-              </button>
-            </div>
-
-            <div class="calendar-batch-actions calendar-batch-actions-compact">
-              <button id="batch-complete-btn" class="calendar-batch-btn calendar-batch-btn--complete">
-                <i class="fas fa-check-square mr-2"></i>
+            <!-- 批量操作按钮 -->
+            <div class="flex flex-wrap gap-2">
+              <button id="batch-complete-btn"
+                class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 bg-gradient-to-r from-success/90 to-success/85 text-white border border-success/60 shadow-md hover:shadow-lg"
+              >
+                <i class="fas fa-check-square mr-2"> </i>
                 批量完成
               </button>
-              <button id="batch-delete-btn" class="calendar-batch-btn calendar-batch-btn--delete">
-                <i class="fas fa-trash-alt mr-2"></i>
+              <button id="batch-delete-btn"
+                class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 bg-gradient-to-r from-warning/90 to-warning/85 text-white border border-warning/60 shadow-md hover:shadow-lg"
+              >
+                <i class="fas fa-trash-alt mr-2"> </i>
                 批量删除
               </button>
             </div>
 
-            <div class="calendar-reference-sort-shell">
-              <button class="btn-glass calendar-sort-btn w-full justify-between" id="sort-filter-btn">
-                <span class="inline-flex items-center">
-                  <i class="fas fa-sort mr-2 text-primary"></i>
-                  排序方式
-                </span>
-                <i
-                  class="fas fa-chevron-down text-xs transition-transform duration-300"
-                  id="sort-filter-arrow"
-                ></i>
-              </button>
-              <div class="dropdown-menu" id="sort-filter-menu">
-                <a class="dropdown-item" href="javascript:void(0);" data-sort="time">
-                  <i class="fas fa-clock mr-2 text-primary"></i>
-                  按时间
-                </a>
-                <a class="dropdown-item" href="javascript:void(0);" data-sort="priority">
-                  <i class="fas fa-flag mr-2 text-primary"></i>
-                  按优先级
-                </a>
-                <a class="dropdown-item" href="javascript:void(0);" data-sort="label">
-                  <i class="fas fa-tags mr-2 text-primary"></i>
-                  按标签
-                </a>
+            <!-- 排序/筛选和视图切换 -->
+            <div class="flex items-center gap-3">
+              <!-- 排序/筛选下拉菜单 -->
+              <div class="relative" style="position: relative;">
+                <button
+                  class="btn-glass"
+                  id="sort-filter-btn"
+                >
+                  <i class="fas fa-sort mr-2 text-primary"> </i>
+                  排序
+                  <i class="fas fa-chevron-down ml-2 text-xs transition-transform duration-300" id="sort-filter-arrow"> </i>
+                </button>
+                <!-- 下拉菜单 -->
+                <div
+                  class="dropdown-menu"
+                  id="sort-filter-menu"
+                  style="position: absolute; right: 0; top: 100%; margin-top: 0.5rem;"
+                >
+                  <a
+                    class="dropdown-item"
+                    href="javascript:void(0);"
+                    data-sort="time"
+                  >
+                    <i class="fas fa-clock mr-2 text-primary"> </i>
+                    按时间
+                  </a>
+                  <a
+                    class="dropdown-item"
+                    href="javascript:void(0);"
+                    data-sort="priority"
+                  >
+                    <i class="fas fa-flag mr-2 text-primary"> </i>
+                    按优先级
+                  </a>
+                  <a
+                    class="dropdown-item"
+                    href="javascript:void(0);"
+                    data-sort="label"
+                  >
+                    <i class="fas fa-tags mr-2 text-primary"> </i>
+                    按标签
+                  </a>
+                </div>
               </div>
+              
             </div>
-
-            <div class="calendar-ai-box">
-              <button
-                type="button"
-                id="ai-schedule-btn"
-                class="btn-primary w-full justify-center glow-effect"
-              >
-                <i class="fas fa-magic mr-2"></i>
-                智能排程
+          </div>
+        </div>
+        <!-- [/MODULE] g4h_快捷操作栏 -->
+        
+        <!-- 日历主区域 -->
+        <div class="calendar-container fade-in">
+          <div class="glass-card rounded-2xl p-4 mb-4">
+            <div class="flex items-center justify-between mb-2">
+              <div>
+                <h2 class="text-lg font-semibold text-gray-800">已排任务</h2>
+                <p class="text-xs text-gray-500">点击任务可快速定位到对应日期</p>
+              </div>
+              <button id="refresh-scheduled-btn" class="text-xs text-primary hover:text-secondary transition-colors duration-300">
+                <i class="fas fa-sync-alt mr-1"></i>刷新
               </button>
-              <p id="ai-schedule-status" class="calendar-ai-status">
-                优先为未排程任务分配日期时间
-              </p>
             </div>
-          </section>
-        </aside>
+            <div id="scheduled-task-list" class="space-y-2 max-h-44 overflow-auto scrollbar-thin"></div>
+          </div>
+          
+          <!-- 月视图 -->
+          <div class="calendar-view active" id="month-view">
+            <div class="flex justify-between items-center mb-4">
+              <button id="month-prev-btn"
+                class="calendar-nav-btn"
+              >
+                <i class="fas fa-chevron-left text-xl"> </i>
+              </button>
+              <h2 id="month-title" class="text-xl font-bold text-gray-800"></h2>
+              <button id="month-next-btn"
+                class="calendar-nav-btn"
+              >
+                <i class="fas fa-chevron-right text-xl"> </i>
+              </button>
+            </div>
+            <!-- 星期行 -->
+            <div class="grid grid-cols-7 gap-2 mb-2">
+              <div class="text-center text-sm font-medium text-gray-500">周一</div>
+              <div class="text-center text-sm font-medium text-gray-500">周二</div>
+              <div class="text-center text-sm font-medium text-gray-500">周三</div>
+              <div class="text-center text-sm font-medium text-gray-500">周四</div>
+              <div class="text-center text-sm font-medium text-gray-500">周五</div>
+              <div class="text-center text-sm font-medium text-primary">周六</div>
+              <div class="text-center text-sm font-medium text-primary">周日</div>
+            </div>
+            <!-- 日期格子 -->
+            <div class="grid grid-cols-7 gap-2" id="month-grid">
+              <!-- 动态渲染每日格子 -->
+            </div>
+          </div>
+          
+          <!-- 周视图 -->
+          <div class="calendar-view hidden" id="week-view">
+            <div class="flex justify-between items-center mb-4">
+              <button id="week-prev-btn"
+                class="calendar-nav-btn"
+              >
+                <i class="fas fa-chevron-left text-xl"> </i>
+              </button>
+              <h2 class="text-xl font-bold text-gray-800"></h2>
+              <button id="week-next-btn"
+                class="calendar-nav-btn"
+              >
+                <i class="fas fa-chevron-right text-xl"> </i>
+              </button>
+            </div>
+            <!-- 周视图内容 -->
+            <div class="grid grid-cols-7 gap-2" id="week-grid"></div>
+          </div>
+          
+          <!-- 日视图 -->
+          <div class="calendar-view hidden" id="day-view">
+            <div class="flex justify-between items-center mb-4">
+              <button id="day-prev-btn"
+                class="calendar-nav-btn"
+              >
+                <i class="fas fa-chevron-left text-xl"> </i>
+              </button>
+              <h2 class="text-xl font-bold text-gray-800"></h2>
+              <button id="day-next-btn"
+                class="calendar-nav-btn"
+              >
+                <i class="fas fa-chevron-right text-xl"> </i>
+              </button>
+            </div>
+            <!-- 日视图内容 -->
+            <div class="grid grid-cols-12 gap-2" id="day-grid"></div>
+          </div>
+        </div>
+        
+        <!-- 日历颜色标签 -->
+        <div class="glass-card rounded-2xl p-6 mt-6 fade-in">
+          <h2 class="text-lg font-semibold text-gray-800 mb-4">任务分类</h2>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <button type="button" class="category-chip active" data-category="all">
+              <div class="category-chip-dot bg-primary"></div>
+              <span class="category-chip-label">全部</span>
+            </button>
+            <button type="button" class="category-chip" data-category="work">
+              <div class="category-chip-dot bg-task-work"></div>
+              <span class="category-chip-label">工作</span>
+            </button>
+            <button type="button" class="category-chip" data-category="study">
+              <div class="category-chip-dot bg-task-study"></div>
+              <span class="category-chip-label">学习</span>
+            </button>
+            <button type="button" class="category-chip" data-category="life">
+              <div class="category-chip-dot bg-task-life"></div>
+              <span class="category-chip-label">生活</span>
+            </button>
+            <button type="button" class="category-chip" data-category="health">
+              <div class="category-chip-dot bg-task-health"></div>
+              <span class="category-chip-label">健康</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 任务侧边栏 -->
+        <div class="glass-card rounded-2xl p-6 mt-6 fade-in">
+          <h2 class="text-lg font-semibold text-gray-800 mb-4">待办任务池</h2>
+          <div class="space-y-3" id="task-pool">
+            <!-- 动态渲染任务 -->
+          </div>
+          <button
+            type="button"
+            id="ai-schedule-btn"
+            class="mt-4 btn-primary w-full justify-center glow-effect"
+          >
+            <i class="fas fa-magic mr-2"> </i>
+            AI 智能排程
+          </button>
+          <p id="ai-schedule-status" class="mt-2 text-xs text-gray-500">可接入 AI 自动为未排程任务分配日期时间</p>
+        </div>
       </main>
+      <!-- [/MODULE] e3f_主内容区域 -->
+      
     </div>
 
+    <!-- [MODULE] k6l_任务详情/编辑区 -->
     <div id="task-detail-panel" class="modal-overlay hidden">
       <div class="modal-content task-detail-scrollbar-hide">
         <div class="flex justify-between items-center mb-5">
@@ -308,21 +361,12 @@
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1.5">任务标题</label>
-            <input
-              id="detail-title"
-              class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none transition-all"
-              type="text"
-            />
+            <input id="detail-title" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none transition-all" type="text" />
           </div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1.5">描述</label>
-            <textarea
-              id="detail-description"
-              class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none transition-all resize-none"
-              placeholder="添加描述..."
-              rows="3"
-            ></textarea>
+            <textarea id="detail-description" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none transition-all resize-none" placeholder="添加描述..." rows="3"></textarea>
           </div>
 
           <div class="task-detail-section">
@@ -352,19 +396,9 @@
                   </div>
                 </div>
                 <div class="datetime-quick-actions">
-                  <button type="button" class="datetime-quick-btn" id="detail-datetime-today">
-                    今天
-                  </button>
-                  <button
-                    type="button"
-                    class="datetime-quick-btn"
-                    id="detail-datetime-tomorrow"
-                  >
-                    明天
-                  </button>
-                  <button type="button" class="datetime-quick-btn" id="detail-datetime-clear">
-                    清空
-                  </button>
+                  <button type="button" class="datetime-quick-btn" id="detail-datetime-today">今天</button>
+                  <button type="button" class="datetime-quick-btn" id="detail-datetime-tomorrow">明天</button>
+                  <button type="button" class="datetime-quick-btn" id="detail-datetime-clear">清空</button>
                 </div>
               </div>
             </div>
@@ -375,38 +409,20 @@
             <div class="flex justify-between items-center mb-2.5">
               <label class="block text-sm font-medium text-gray-700">子任务</label>
               <div class="flex items-center gap-2">
-                <button
-                  class="text-xs text-primary hover:text-secondary transition-colors"
-                  id="copy-subtasks-btn"
-                >
+                <button class="text-xs text-primary hover:text-secondary transition-colors" id="copy-subtasks-btn">
                   <i class="fas fa-copy mr-1"></i>复制
                 </button>
-                <button
-                  class="text-xs text-primary hover:text-secondary transition-colors"
-                  id="share-subtasks-btn"
-                >
+                <button class="text-xs text-primary hover:text-secondary transition-colors" id="share-subtasks-btn">
                   <i class="fas fa-share-alt mr-1"></i>分享
                 </button>
-                <button
-                  class="text-xs text-primary hover:text-secondary transition-colors"
-                  id="complete-all-subtasks"
-                >
+                <button class="text-xs text-primary hover:text-secondary transition-colors" id="complete-all-subtasks">
                   <i class="fas fa-check-square mr-1"></i>全部完成
                 </button>
               </div>
             </div>
-            <div
-              class="space-y-2 mb-3 max-h-40 overflow-y-auto task-detail-scrollbar-hide"
-              id="subtask-list"
-            ></div>
+            <div class="space-y-2 mb-3 max-h-40 overflow-y-auto task-detail-scrollbar-hide" id="subtask-list"></div>
             <div class="subtask-compose">
-              <input
-                id="new-subtask-input"
-                class="subtask-compose-input"
-                placeholder="添加子任务..."
-                type="text"
-                maxlength="60"
-              />
+              <input id="new-subtask-input" class="subtask-compose-input" placeholder="添加子任务..." type="text" maxlength="60" />
               <button id="add-subtask-btn" class="subtask-compose-btn" type="button">
                 <i class="fas fa-plus"></i>
               </button>
@@ -417,47 +433,34 @@
             <label class="block text-sm font-medium text-gray-700 mb-2">标签</label>
             <div class="flex flex-wrap gap-2 mb-2.5" id="tag-list"></div>
           </div>
-          <button
-            class="w-full py-2.5 btn-glass text-primary inline-flex items-center justify-center gap-2 text-sm"
-            id="auto-plan-task-btn"
-            type="button"
-          >
+          <button class="w-full py-2.5 btn-glass text-primary inline-flex items-center justify-center gap-2 text-sm" id="auto-plan-task-btn" type="button">
             <i class="fas fa-sitemap"></i><span>智能分类并拆解并行子任务</span>
           </button>
 
           <div class="flex space-x-3 pt-4 border-t border-gray-200">
-            <button class="flex-1 py-2.5 btn-soft-danger rounded-xl text-sm font-medium" id="cancel-btn">
-              取消
-            </button>
-            <button class="flex-1 py-2.5 btn-primary rounded-xl text-sm font-medium" id="save-btn">
-              保存任务
-            </button>
+            <button class="flex-1 py-2.5 btn-soft-danger rounded-xl text-sm font-medium" id="cancel-btn">取消</button>
+            <button class="flex-1 py-2.5 btn-primary rounded-xl text-sm font-medium" id="save-btn">保存任务</button>
           </div>
           <div class="grid grid-cols-3 gap-2 pt-1">
-            <button
-              class="min-w-[80px] py-2.5 btn-glass text-primary inline-flex items-center justify-center gap-1.5 text-xs"
-              id="share-task-btn"
-            >
+            <button class="min-w-[80px] py-2.5 btn-glass text-primary inline-flex items-center justify-center gap-1.5 text-xs" id="share-task-btn">
               <i class="fas fa-share-alt text-sm"></i><span>分享</span>
             </button>
-            <button
-              class="min-w-[80px] py-2.5 btn-glass inline-flex items-center justify-center gap-1.5 text-xs"
-              id="copy-task-btn"
-            >
+            <button class="min-w-[80px] py-2.5 btn-glass inline-flex items-center justify-center gap-1.5 text-xs" id="copy-task-btn">
               <i class="fas fa-copy text-sm"></i><span>复制</span>
             </button>
-            <button
-              class="min-w-[80px] py-2.5 btn-glass text-danger inline-flex items-center justify-center gap-1.5 text-xs"
-              id="delete-task-btn"
-            >
+            <button class="min-w-[80px] py-2.5 btn-glass text-danger inline-flex items-center justify-center gap-1.5 text-xs" id="delete-task-btn">
               <i class="fas fa-trash-alt text-sm"></i><span>删除</span>
             </button>
           </div>
         </div>
       </div>
     </div>
-
-    <footer class="glass-tab lg:hidden py-3 px-4 sticky bottom-0 z-40">
+    <!-- [/MODULE] k6l_任务详情/编辑区 -->
+    
+    <!-- [MODULE] m7n_底部 Tab 栏 -->
+    <footer
+      class="glass-tab py-3 px-4 sticky bottom-0 z-40"
+    >
       <div class="container mx-auto flex justify-around items-center">
         <a
           class="tab-item flex flex-col items-center text-gray-500 hover:text-primary px-2 py-1.5 rounded-2xl transition-all duration-300"
@@ -522,10 +525,20 @@
         </a>
       </div>
     </footer>
-
+    <!-- [/MODULE] m7n_底部 Tab 栏 -->
+    
+    <!-- ✅ Toast 提示容器 -->
     <div id="toast-container"></div>
 
-    <script id="calendar-script" src="./js/pages/日历页面.calendar-script.js?v=20260327_jssplit"></script>
-    <script src="./js/pages/日历页面.inline-04.js?v=20260327_jssplit"></script>
+    <!-- [JSMOD] p9q_日历视图交互功能 -->
+    <script id="calendar-script" src='./js/pages/日历页面.calendar-script.js?v=20260327_jssplit'></script>
+    <!-- [/JSMOD] p9q_日历视图交互功能 -->
+    
+    <script src='./js/pages/日历页面.inline-04.js?v=20260327_jssplit'></script>
   </body>
 </html>
+
+
+
+
+

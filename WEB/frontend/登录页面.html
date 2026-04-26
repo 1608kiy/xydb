@@ -636,6 +636,17 @@
       margin-bottom: 16px;
     }
 
+    .test-account-tip {
+      margin: -6px 0 14px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px dashed rgba(15, 23, 42, 0.22);
+      background: rgba(241, 245, 249, 0.7);
+      color: #334155;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
     .form-group input.error {
       border-bottom-color: #dc2626;
     }
@@ -945,6 +956,7 @@
           </div>
 
           <div class="error-msg" id="error-msg"></div>
+          <div class="test-account-tip">离线测试账号：test@ringnote.local / test123456（后端未启动时可直接登录）</div>
 
           <button type="submit" class="btn-login" id="btn-login">
             <span class="btn-text">登录</span>
@@ -1562,6 +1574,23 @@
       return "Ring_" + Date.now().toString(36) + "_A1!";
     }
 
+    const OFFLINE_TEST_ACCOUNT = "test@ringnote.local";
+    const OFFLINE_TEST_PASSWORD = "test123456";
+
+    function isOfflineTestAccount(rawAccount, password) {
+      const account = String(rawAccount || "").trim().toLowerCase();
+      const normalized = normalizeLoginIdentifier(account).toLowerCase();
+      return (account === OFFLINE_TEST_ACCOUNT || account === "test" || normalized === OFFLINE_TEST_ACCOUNT)
+        && String(password || "") === OFFLINE_TEST_PASSWORD;
+    }
+
+    function loginWithOfflineTestAccount(accountInput) {
+      const account = normalizeLoginIdentifier(accountInput) || OFFLINE_TEST_ACCOUNT;
+      const token = "dev-test-" + Date.now().toString(36);
+      showToast("已使用离线测试账号登录", "success");
+      return syncProfileAndGo(token, account, false);
+    }
+
     function authErrorMessage(resp, fallback) {
       const status = Number(resp && resp.status || 0);
       const msg = String(resp && resp.body && resp.body.message || "").trim();
@@ -1798,6 +1827,18 @@
       const btn = document.getElementById("btn-login");
       btn.querySelector(".btn-text").textContent = "\u767b\u5f55\u4e2d...";
       btn.disabled = true;
+
+      if (isOfflineTestAccount(account, pwd)) {
+        loginWithOfflineTestAccount(account).catch(() => {
+          errEl.textContent = "离线测试登录失败，请重试";
+          errEl.style.display = "block";
+          triggerLoginError();
+        }).finally(() => {
+          btn.querySelector(".btn-text").textContent = "\u767b\u5f55";
+          btn.disabled = false;
+        });
+        return;
+      }
 
       apiRequest("/api/auth/login", {
         method: "POST",
