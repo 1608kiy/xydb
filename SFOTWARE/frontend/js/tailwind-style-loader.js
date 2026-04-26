@@ -1,4 +1,4 @@
-﻿(function (global) {
+(function (global) {
   function loadTailwindStyle(path, id) {
     try {
       var xhr = new XMLHttpRequest();

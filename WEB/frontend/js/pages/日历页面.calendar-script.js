@@ -57,7 +57,7 @@
         var aiScheduleBtn = document.getElementById('ai-schedule-btn');
         var aiScheduleStatus = document.getElementById('ai-schedule-status');
         var categoryChips = Array.prototype.slice.call(document.querySelectorAll('.category-chip[data-category]'));
-        var taskPoolView = 'grid';
+        var taskPoolView = 'list';
         var activeCategory = 'all';
         var viewSwitchTimer = null;
         var isSwitchingView = false;

@@ -30,7 +30,7 @@
           const option = document.createElement('div');
           option.className = 'custom-select-option' + (i === selectElement.selectedIndex ? ' selected' : '');
           option.textContent = selectElement.options[i].text;
-          option.onclick = (function(idx) {
+          option.addEventListener('click', (function(idx) {
             return function() {
               selectElement.selectedIndex = idx;
               trigger.querySelector('span').textContent = selectElement.options[idx].text;
@@ -39,11 +39,11 @@
               trigger.querySelector('.custom-select-arrow').classList.remove('rotate');
               selectElement.dispatchEvent(new Event('change'));
             };
-          })(i);
+          })(i));
           dropdown.appendChild(option);
         }
         
-        trigger.onclick = function(e) {
+        trigger.addEventListener('click', function(e) {
           e.stopPropagation();
           const isActive = dropdown.classList.contains('show');
           document.querySelectorAll('.custom-select-dropdown').forEach(d => d.classList.remove('show'));
@@ -54,7 +54,7 @@
             trigger.classList.add('active');
             trigger.querySelector('.custom-select-arrow').classList.add('rotate');
           }
-        };
+        });
         
         wrapper.appendChild(trigger);
         wrapper.appendChild(dropdown);
@@ -169,25 +169,17 @@
         showToast(mode === 'all' ? '已显示全部徽章' : '已切换为仅显示4个');
       }
 
-      // ✅ 勿扰模式模态框函数
-      function openDndModal() {
-        const modal = document.getElementById('dnd-modal');
-        if (modal) {
-          modal.classList.remove('hidden');
-        }
+      // ✅ 勿扰模式内联设置
+      function syncDndTimeFields(startTime, endTime) {
+        const display = document.getElementById('dnd-display-time');
+        const inlineStart = document.getElementById('dnd-start-time-inline');
+        const inlineEnd = document.getElementById('dnd-end-time-inline');
+        if (display) display.textContent = startTime + ' - ' + endTime;
+        if (inlineStart) inlineStart.value = startTime;
+        if (inlineEnd) inlineEnd.value = endTime;
       }
 
-      function closeDndModal() {
-        const modal = document.getElementById('dnd-modal');
-        if (modal) {
-          modal.classList.add('hidden');
-        }
-      }
-
-      function saveDndSettings() {
-        const startTime = document.getElementById('dnd-start-time').value;
-        const endTime = document.getElementById('dnd-end-time').value;
-        
+      function persistDndSettings(startTime, endTime) {
         if (!startTime || !endTime) {
           showToast('⚠️ 请选择完整的时间范围', 'error');
           return;
@@ -196,19 +188,58 @@
         localStorage.setItem('dndStartTime', startTime);
         localStorage.setItem('dndEndTime', endTime);
         
-        document.getElementById('dnd-display-time').textContent = startTime + ' - ' + endTime;
+        syncDndTimeFields(startTime, endTime);
         
-        closeDndModal();
         showToast('✅ 勿扰时间已设置：' + startTime + ' - ' + endTime);
+      }
+
+      function saveInlineDndSettings() {
+        const startInput = document.getElementById('dnd-start-time-inline');
+        const endInput = document.getElementById('dnd-end-time-inline');
+        persistDndSettings(startInput && startInput.value, endInput && endInput.value);
       }
 
       function loadDndSettings() {
         const savedStart = localStorage.getItem('dndStartTime') || '22:00';
         const savedEnd = localStorage.getItem('dndEndTime') || '08:00';
         
-        document.getElementById('dnd-display-time').textContent = savedStart + ' - ' + savedEnd;
-        document.getElementById('dnd-start-time').value = savedStart;
-        document.getElementById('dnd-end-time').value = savedEnd;
+        syncDndTimeFields(savedStart, savedEnd);
+      }
+
+      function initProfileFoldAccessibility() {
+        var folds = document.querySelectorAll('.profile-stats-fold, .profile-pref-fold, .profile-more-tools, .profile-panel--danger');
+        Array.prototype.forEach.call(folds, function (fold, index) {
+          var summary = null;
+          Array.prototype.some.call(fold.children, function (child) {
+            if (child.tagName && child.tagName.toLowerCase() === 'summary') {
+              summary = child;
+              return true;
+            }
+            return false;
+          });
+          if (!summary) return;
+          if (!fold.id) fold.id = 'profile-fold-' + index;
+          if (!summary.id) summary.id = fold.id + '-summary';
+
+          var hint = summary.querySelector('.profile-fold-hint, .profile-danger-summary-chip');
+          var syncFoldState = function () {
+            summary.setAttribute('aria-expanded', fold.open ? 'true' : 'false');
+            if (hint) hint.textContent = fold.open ? '收起' : '展开';
+          };
+
+          if (!summary.getAttribute('aria-controls')) {
+            var controlledIds = [];
+            Array.prototype.forEach.call(fold.children, function (child, childIndex) {
+              if (!child.tagName || child.tagName.toLowerCase() === 'summary') return;
+              if (!child.id) child.id = fold.id + '-panel-' + childIndex;
+              controlledIds.push(child.id);
+            });
+            if (controlledIds.length) summary.setAttribute('aria-controls', controlledIds.join(' '));
+          }
+
+          syncFoldState();
+          fold.addEventListener('toggle', syncFoldState);
+        });
       }
 
       // ✅ 手机号模态框函数
@@ -221,6 +252,7 @@
           currentPhoneInput.value = AppState.user?.phone || '';
           newPhoneInput.value = '';
           modal.classList.remove('hidden');
+          modal.setAttribute('aria-hidden', 'false');
           newPhoneInput.focus();
         }
       }
@@ -229,6 +261,7 @@
         const modal = document.getElementById('phone-modal');
         if (modal) {
           modal.classList.add('hidden');
+          modal.setAttribute('aria-hidden', 'true');
         }
       }
 
@@ -307,10 +340,15 @@
         var userEmail = document.getElementById('user-email');
         var editEmailBtn = document.getElementById('edit-email-btn');
         var userPhone = document.getElementById('user-phone');
+        var phoneModal = document.getElementById('phone-modal');
+        var phoneModalCloseBtn = document.getElementById('phone-modal-close-btn');
+        var phoneModalCancelBtn = document.getElementById('phone-modal-cancel-btn');
+        var phoneModalSaveBtn = document.getElementById('phone-modal-save-btn');
         var profileAvatar = document.getElementById('profile-avatar');
         var changeAvatarBtn = document.getElementById('change-avatar-btn');
         var avatarFileInput = document.getElementById('avatar-file-input');
         var editPhoneBtn = document.getElementById('edit-phone-btn');
+        var saveDndInlineBtn = document.getElementById('save-dnd-inline-btn');
         var changePasswordBtn = document.getElementById('change-password-btn');
         var bindPhoneBtn = document.getElementById('bind-phone-btn');
         var twoStepBtn = document.getElementById('two-step-btn');
@@ -328,6 +366,7 @@
         var passwordUpdatedTip = document.getElementById('password-updated-tip');
         var securityPhoneTip = document.getElementById('security-phone-tip');
         var twoStepStatus = document.getElementById('two-step-status');
+        var twoStepStateBadge = document.getElementById('two-step-state-badge');
         var bindWechatBtn = document.getElementById('bind-wechat-btn');
         var bindAppleBtn = document.getElementById('bind-apple-btn');
         var bindGoogleBtn = document.getElementById('bind-google-btn');
@@ -365,11 +404,20 @@
           dangerConfirmModal.setAttribute('aria-hidden', 'false');
         }
 
+        function getProfileAvatarSrc(src) {
+          var value = String(src || '').trim();
+          if (!value || value.indexOf('design.gemcoder.com/staticResource/echoAiSystemImages/') !== -1) return './assets/default-avatar.svg';
+          return value;
+        }
+
         function syncProfileIdentityUi() {
           var displayName = (AppState.user && AppState.user.name) || '轻悦用户';
           var displayEmail = (AppState.user && AppState.user.email) || 'demo@ringnote.com';
           var displayPhone = (AppState.user && AppState.user.phone) || '';
-          if (profileAvatar) profileAvatar.src = (AppState.user && AppState.user.avatar) || profileAvatar.src;
+          if (profileAvatar) {
+            profileAvatar.src = getProfileAvatarSrc(AppState.user && AppState.user.avatar);
+            profileAvatar.onerror = function () { this.onerror = null; this.src = './assets/default-avatar.svg'; };
+          }
           if (userName) userName.value = displayName;
           if (userEmail) userEmail.textContent = displayEmail;
           if (userPhone) userPhone.textContent = displayPhone ? maskPhoneNumber(displayPhone) : '未绑定';
@@ -402,11 +450,17 @@
           if (twoStepStatus) {
             twoStepStatus.textContent = u.twoStepEnabled ? '状态：已开启（登录需二次验证）' : '状态：未开启，建议开启';
           }
+          if (twoStepStateBadge) {
+            twoStepStateBadge.textContent = u.twoStepEnabled ? '已开启' : '未开启';
+            twoStepStateBadge.className = u.twoStepEnabled
+              ? 'profile-security-state profile-security-state--safe'
+              : 'profile-security-state profile-security-state--warning';
+          }
           if (twoStepBtn) {
-            twoStepBtn.textContent = u.twoStepEnabled ? '已开启' : '去开启';
+            twoStepBtn.textContent = u.twoStepEnabled ? '已开启' : '立即开启';
             twoStepBtn.className = u.twoStepEnabled
-              ? 'px-3 py-1.5 rounded-lg border border-green-200 text-xs text-green-600 bg-green-50'
-              : 'px-3 py-1.5 rounded-lg border border-gray-200 text-xs text-gray-600 hover:border-primary hover:bg-gray-50 transition-all duration-200';
+              ? 'profile-inline-action profile-two-step-btn is-enabled'
+              : 'profile-inline-action profile-two-step-btn';
           }
 
           function syncProviderBtn(btn, bound, titleBound, titleUnbound) {
@@ -414,9 +468,9 @@
             btn.classList.toggle('opacity-60', !bound);
             btn.title = bound ? titleBound : titleUnbound;
           }
-          syncProviderBtn(bindWechatBtn, !!u.wechatBound, '微信已绑定', '点击绑定微信');
-          syncProviderBtn(bindAppleBtn, !!u.appleBound, '苹果已绑定', '点击绑定苹果');
-          syncProviderBtn(bindGoogleBtn, !!u.googleBound, '谷歌已绑定', '点击绑定谷歌');
+          syncProviderBtn(bindWechatBtn, !!u.wechatBound, '微信（已绑定）', '微信');
+          syncProviderBtn(bindAppleBtn, !!u.appleBound, 'Apple（已绑定）', 'Apple');
+          syncProviderBtn(bindGoogleBtn, !!u.googleBound, 'Google（已绑定）', 'Google');
         }
 
         function openSecurityBindForm(mode, provider) {
@@ -569,9 +623,10 @@
           var remainExp = Math.max(0, maxExp - exp);
           if (expText) expText.textContent = exp + ' / ' + maxExp;
           if (expBar) expBar.style.width = expPct + '%';
-          if (expNextText) expNextText.textContent = '当前 LV.' + level + '，距离 LV.' + (level + 1) + ' 还需 ' + remainExp + ' 经验值';
-          if (userLevelTag) userLevelTag.innerHTML = '<i class="fas fa-crown mr-1"></i>LV.' + level;
+          if (expNextText) expNextText.textContent = '当前 LV' + level + '，还需 ' + remainExp + ' 经验升级到 LV' + (level + 1);
+          if (userLevelTag) userLevelTag.innerHTML = '<i class="fas fa-crown mr-1"></i>LV' + level;
         }
+        window.renderExpProfile = renderExpProfile;
         renderExpProfile();
 
         authSyncPromise.then(function () {
@@ -624,6 +679,14 @@
         if (editPhoneBtn) {
           editPhoneBtn.addEventListener('click', function () {
             openPhoneModal();
+          });
+        }
+        if (phoneModalCloseBtn) phoneModalCloseBtn.addEventListener('click', closePhoneModal);
+        if (phoneModalCancelBtn) phoneModalCancelBtn.addEventListener('click', closePhoneModal);
+        if (phoneModalSaveBtn) phoneModalSaveBtn.addEventListener('click', savePhoneNumber);
+        if (phoneModal) {
+          phoneModal.addEventListener('click', function (e) {
+            if (e.target === phoneModal) closePhoneModal();
           });
         }
 
@@ -1028,6 +1091,9 @@
           if (e.key === 'Escape' && dangerConfirmModal && dangerConfirmModal.classList.contains('show')) {
             closeDangerConfirmModal();
           }
+          if (e.key === 'Escape' && phoneModal && !phoneModal.classList.contains('hidden')) {
+            closePhoneModal();
+          }
         });
         
         // ✅ 初始化自定义下拉列表
@@ -1040,6 +1106,8 @@
         
         // ✅ 加载勿扰设置
         loadDndSettings();
+        if (saveDndInlineBtn) saveDndInlineBtn.addEventListener('click', saveInlineDndSettings);
+        initProfileFoldAccessibility();
       });
 
       function initializeSettings() {
@@ -1144,7 +1212,7 @@
         if (maxStreakEl) animateNumber(maxStreakEl, maxStreak, ' 天');
         if (totalPomodorosEl) animateNumber(totalPomodorosEl, totalPomodoros);
 
-        if (typeof renderExpProfile === 'function') renderExpProfile();
+        if (typeof window.renderExpProfile === 'function') window.renderExpProfile();
         if (typeof window.refreshUnifiedUserIdentityUi === 'function') window.refreshUnifiedUserIdentityUi();
       }
     

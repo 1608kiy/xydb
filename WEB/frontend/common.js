@@ -2159,10 +2159,10 @@ function initUnifiedBottomTabs() {
   document.querySelectorAll('.unified-bottom-tab-dock').forEach(function (el) { el.remove(); });
 
   footers.forEach(function (footer) {
-    footer.classList.add('unified-bottom-tab-source');
-
-    var row = footer.querySelector('.container');
+    var row = footer.querySelector('.container') || footer.firstElementChild;
     if (!row) return;
+
+    footer.classList.add('unified-bottom-tab-source');
 
     var rowClone = row.cloneNode(true);
     rowClone.classList.add('unified-tab-row');
@@ -4097,6 +4097,14 @@ if (document.readyState === 'loading') {
 
 var UNIFIED_APP_STATE_KEY = 'ringnote_app_state_v1';
 var UNIFIED_IDENTITY_SYNC_KEY = 'ringnote_identity_sync_tick';
+var UNIFIED_DEFAULT_AVATAR = './assets/default-avatar.svg';
+var UNIFIED_REMOTE_DEFAULT_AVATAR = 'design.gemcoder.com/staticResource/echoAiSystemImages/';
+
+function normalizeUnifiedAvatar(src) {
+  var value = String(src || '').trim();
+  if (!value || value.indexOf(UNIFIED_REMOTE_DEFAULT_AVATAR) !== -1) return UNIFIED_DEFAULT_AVATAR;
+  return value;
+}
 
 function getUnifiedStateSnapshot() {
   var parsed = null;
@@ -4112,7 +4120,7 @@ function getUnifiedStateSnapshot() {
 function getUnifiedUserProfile() {
   var fallback = {
     name: '轻悦用户',
-    avatar: 'https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png'
+    avatar: UNIFIED_DEFAULT_AVATAR
   };
   var user = null;
   try {
@@ -4126,7 +4134,7 @@ function getUnifiedUserProfile() {
   }
   return {
     name: (user && user.name) || fallback.name,
-    avatar: (user && user.avatar) || fallback.avatar,
+    avatar: normalizeUnifiedAvatar(user && user.avatar),
     email: (user && user.email) || '',
     phone: (user && user.phone) || ''
   };
@@ -4144,6 +4152,7 @@ function refreshUnifiedUserIdentityUi() {
   headerAvatars.forEach(function (img) {
     if (img && user.avatar) {
       img.src = user.avatar;
+      img.onerror = function () { this.onerror = null; this.src = UNIFIED_DEFAULT_AVATAR; };
     }
   });
 
@@ -4160,6 +4169,7 @@ function refreshUnifiedUserIdentityUi() {
       var avatar = trigger.querySelector('img');
       if (avatar && user.avatar) {
         avatar.src = user.avatar;
+        avatar.onerror = function () { this.onerror = null; this.src = UNIFIED_DEFAULT_AVATAR; };
       }
 
       var nameSpan = null;

@@ -1,4 +1,6 @@
 {
   "java.compile.nullAnalysis.mode": "automatic",
-  "task.allowAutomaticTasks": "on"
+  "task.allowAutomaticTasks": "on",
+  "claudeCode.disableLoginPrompt": true,
+  "claudeCode.useTerminal": true
 }

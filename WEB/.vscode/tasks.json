@@ -10,7 +10,7 @@
         "-ExecutionPolicy",
         "Bypass",
         "-Command",
-        "Set-Location \"${workspaceFolder}\\backend\"; $conn = Get-NetTCPConnection -LocalPort 8082 -State Listen -ErrorAction SilentlyContinue; if ($conn) { ($conn | Select-Object -ExpandProperty OwningProcess -Unique) | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue } }; .\\mvnw.cmd -f .\\pom.xml spring-boot:run \"-Dspring-boot.run.profiles=local\" \"-Dspring-boot.run.arguments=--server.port=8082\""
+        "Set-Location -Path '${workspaceFolder}\\backend'; $conn = Get-NetTCPConnection -LocalPort 8082 -State Listen -ErrorAction SilentlyContinue; if ($conn) { ($conn | Select-Object -ExpandProperty OwningProcess -Unique) | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue } }; & .\\mvnw.cmd -f .\\pom.xml spring-boot:run '-Dspring-boot.run.profiles=local' '-Dspring-boot.run.arguments=--server.port=8082'"
       ],
       "isBackground": true,
       "runOptions": {

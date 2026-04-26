@@ -2,5 +2,7 @@
   "java.configuration.updateBuildConfiguration": "interactive",
   "java.compile.nullAnalysis.mode": "automatic",
   "liveServer.settings.port": 5501,
-  "task.allowAutomaticTasks": "on"
+  "task.allowAutomaticTasks": "on",
+  "claudeCode.disableLoginPrompt": true,
+  "claudeCode.useTerminal": true
 }

@@ -12,7 +12,7 @@ const defaultState = {
     phone: '13800000000',
     level: 1,
     exp: 0,
-    avatar: 'https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png'
+    avatar: './assets/default-avatar.svg'
   },
   tasks: [
     { id: 't1', title: '完成项目提案PPT', description: '准备市场与预算', dueAt: null, status: 'pending', priority: 'high', labels: ['工作'], estimate: 2, createdAt: new Date().toISOString(), subTasks: [
