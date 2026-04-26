@@ -955,8 +955,7 @@
             <a href="javascript:void(0);" class="forgot-link" id="forgot-link">忘记密码？</a>
           </div>
 
-          <div class="error-msg" id="error-msg"></div>
-          <div class="test-account-tip">离线测试账号：test@ringnote.local / test123456（后端未启动时可直接登录）</div>
+              <div class="error-msg" id="error-msg"></div>
 
           <button type="submit" class="btn-login" id="btn-login">
             <span class="btn-text">登录</span>
@@ -970,27 +969,28 @@
             </div>
           </button>
 
-          <button type="button" class="btn-quick-experience" id="btn-quick-experience" data-quick-login="quick-experience">
-            <i class="fa-solid fa-bolt"></i>
-            <span>快速体验</span>
-          </button>
+              <button type="button" class="btn-quick-experience" id="btn-quick-experience" data-quick-login="quick-experience">
+                <i class="fa-solid fa-bolt"></i>
+                <span>快速体验</span>
+              </button>
 
-          <div class="quick-divider"><span>快捷方式登录</span></div>
+              <div class="quick-divider"><span>快捷方式登录</span></div>
 
-          <div class="quick-grid">
-            <button type="button" class="quick-btn" data-quick-login="wechat" aria-label="微信扫码登录">
-              <i class="fab fa-weixin" style="color:#16a34a;"></i>
-              <span>微信扫码</span>
-            </button>
-            <button type="button" class="quick-btn" data-quick-login="qq" aria-label="QQ 登录">
-              <i class="fab fa-qq" style="color:#2563eb;"></i>
-              <span>QQ扫码</span>
-            </button>
-            <button type="button" class="quick-btn" data-quick-login="quick" aria-label="快速登录">
-              <i class="fas fa-mobile-screen-button" style="color:#0ea5e9;"></i>
-              <span>快速登录</span>
-            </button>
-          </div>
+              <div class="quick-grid">
+                <button type="button" class="quick-btn" data-quick-login="wechat" aria-label="微信扫码登录">
+                  <i class="fab fa-weixin" style="color:#16a34a;"></i>
+                  <span>微信扫码</span>
+                </button>
+                <button type="button" class="quick-btn" data-quick-login="qq" aria-label="QQ 登录">
+                  <i class="fab fa-qq" style="color:#2563eb;"></i>
+                  <span>QQ扫码</span>
+                </button>
+                <button type="button" class="quick-btn" data-quick-login="quick" aria-label="快速登录">
+                  <i class="fas fa-mobile-screen-button" style="color:#0ea5e9;"></i>
+                  <span>快速登录</span>
+                </button>
+              </div>
+
         </form>
 
         <div class="signup-link">
@@ -1574,23 +1574,6 @@
       return "Ring_" + Date.now().toString(36) + "_A1!";
     }
 
-    const OFFLINE_TEST_ACCOUNT = "test@ringnote.local";
-    const OFFLINE_TEST_PASSWORD = "test123456";
-
-    function isOfflineTestAccount(rawAccount, password) {
-      const account = String(rawAccount || "").trim().toLowerCase();
-      const normalized = normalizeLoginIdentifier(account).toLowerCase();
-      return (account === OFFLINE_TEST_ACCOUNT || account === "test" || normalized === OFFLINE_TEST_ACCOUNT)
-        && String(password || "") === OFFLINE_TEST_PASSWORD;
-    }
-
-    function loginWithOfflineTestAccount(accountInput) {
-      const account = normalizeLoginIdentifier(accountInput) || OFFLINE_TEST_ACCOUNT;
-      const token = "dev-test-" + Date.now().toString(36);
-      showToast("已使用离线测试账号登录", "success");
-      return syncProfileAndGo(token, account, false);
-    }
-
     function authErrorMessage(resp, fallback) {
       const status = Number(resp && resp.status || 0);
       const msg = String(resp && resp.body && resp.body.message || "").trim();
@@ -1642,49 +1625,49 @@
     }
 
         function runQuickLogin(source) {
-      const phone = randomMobile();
-      const email = phone + "@mobile.local";
-      const password = randomPassword();
-      const nickname = "\u7528\u6237" + phone.slice(-4);
-      const sourceLabel = source === "wechat"
-        ? "微信快捷登录中..."
-        : source === "qq"
-          ? "QQ快捷登录中..."
-          : source === "quick-experience"
-            ? "正在创建快速体验账号..."
-            : "快速登录中...";
+          const phone = randomMobile();
+          const email = phone + "@mobile.local";
+          const password = randomPassword();
+          const nickname = "用户" + phone.slice(-4);
+          const sourceLabel = source === "wechat"
+            ? "微信快捷登录中..."
+            : source === "qq"
+              ? "QQ快捷登录中..."
+              : source === "quick-experience"
+                ? "正在创建快速体验账号..."
+                : "快速登录中...";
 
-      showToast(sourceLabel);
-      apiRequest("/api/auth/register", {
-        method: "POST",
-        timeoutMs: 8000,
-        body: JSON.stringify({ nickname, email, phone, password })
-      }).then((resp) => {
-        if (resp && resp.status === 200 && resp.body && resp.body.code === 200 && resp.body.data && resp.body.data.token) {
-          return syncProfileAndGo(resp.body.data.token, email, false);
+          showToast(sourceLabel);
+          apiRequest("/api/auth/register", {
+            method: "POST",
+            timeoutMs: 8000,
+            body: JSON.stringify({ nickname, email, phone, password })
+          }).then((resp) => {
+            if (resp && resp.status === 200 && resp.body && resp.body.code === 200 && resp.body.data && resp.body.data.token) {
+              return syncProfileAndGo(resp.body.data.token, email, false);
+            }
+            return apiRequest("/api/auth/login", {
+              method: "POST",
+              timeoutMs: 8000,
+              body: JSON.stringify({ email, password })
+            }).then((loginResp) => {
+              if (loginResp && loginResp.status === 200 && loginResp.body && loginResp.body.code === 200 && loginResp.body.data && loginResp.body.data.token) {
+                return syncProfileAndGo(loginResp.body.data.token, email, false);
+              }
+              throw new Error(authErrorMessage(loginResp, "快捷登录失败"));
+            });
+          }).catch((error) => {
+            document.getElementById("error-msg").textContent = error.message || "快捷登录失败";
+            document.getElementById("error-msg").style.display = "block";
+            triggerLoginError();
+          });
         }
-        return apiRequest("/api/auth/login", {
-          method: "POST",
-          timeoutMs: 8000,
-          body: JSON.stringify({ email, password })
-        }).then((loginResp) => {
-          if (loginResp && loginResp.status === 200 && loginResp.body && loginResp.body.code === 200 && loginResp.body.data && loginResp.body.data.token) {
-            return syncProfileAndGo(loginResp.body.data.token, email, false);
-          }
-          throw new Error(authErrorMessage(loginResp, "\u5feb\u6377\u767b\u5f55\u5931\u8d25"));
-        });
-      }).catch((error) => {
-        document.getElementById("error-msg").textContent = error.message || "\u5feb\u6377\u767b\u5f55\u5931\u8d25";
-        document.getElementById("error-msg").style.display = "block";
-        triggerLoginError();
-      });
-    }
 
-    document.querySelectorAll("[data-quick-login]").forEach((button) => {
-      button.addEventListener("click", () => {
-        runQuickLogin(button.getAttribute("data-quick-login") || "quick");
-      });
-    });
+        document.querySelectorAll("[data-quick-login]").forEach((button) => {
+          button.addEventListener("click", () => {
+            runQuickLogin(button.getAttribute("data-quick-login") || "quick");
+          });
+        });
 
     function showForgotError(message) {
       forgotError.textContent = message || "";
@@ -1827,18 +1810,6 @@
       const btn = document.getElementById("btn-login");
       btn.querySelector(".btn-text").textContent = "\u767b\u5f55\u4e2d...";
       btn.disabled = true;
-
-      if (isOfflineTestAccount(account, pwd)) {
-        loginWithOfflineTestAccount(account).catch(() => {
-          errEl.textContent = "离线测试登录失败，请重试";
-          errEl.style.display = "block";
-          triggerLoginError();
-        }).finally(() => {
-          btn.querySelector(".btn-text").textContent = "\u767b\u5f55";
-          btn.disabled = false;
-        });
-        return;
-      }
 
       apiRequest("/api/auth/login", {
         method: "POST",
