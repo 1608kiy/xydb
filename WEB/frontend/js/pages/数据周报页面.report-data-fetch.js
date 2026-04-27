@@ -176,68 +176,10 @@
       }
 
       function updateChartsAndStats() {
-        var stats = getWeeklyStats();
-        // update overview cards
-        document.getElementById('completed-tasks').textContent = (stats.completedTasks || 0) + ' 项';
-        document.getElementById('focus-hours').textContent = Math.round((stats.totalFocusMinutes || 0) / 60) + ' 小时';
-        document.getElementById('pomodoro-count').textContent = (stats.totalPomodoros || 0) + ' 个';
-        document.getElementById('max-continuous-pomodoros').textContent = (stats.maxContinuousPomodoros || 0) + ' 个番茄';
-        document.getElementById('effectiveness-score').textContent = (stats.effectivenessScore || 0) + ' 分';
-
-        // taskTrendChart: 每日完成任务数（周一..周日）
-        if (window.taskTrendChart) {
-          var weekStart = getWeekStart();
-          var counts = [];
-          for (var i = 0; i < 7; i++) {
-            var d = new Date(weekStart);
-            d.setDate(weekStart.getDate() + i);
-            var key = d.toISOString().slice(0,10);
-            var c = (AppState.tasks || []).filter(function(t){
-              if (!t.updatedAt && !t.dueAt) return false;
-              // treat tasks with status 'completed' and updatedAt in that day
-              var d1 = t.updatedAt || t.completedAt || t.dueAt;
-              if (!d1) return false;
-              return d1.slice(0,10) === key && (t.status === 'completed' || (t.status && String(t.status).toLowerCase()==='completed'));
-            }).length;
-            counts.push(c);
-          }
-          window.taskTrendChart.setOption({ series:[{ data: counts }] });
+        if (typeof updateWeeklyStats === 'function') {
+          return updateWeeklyStats({ sync: false });
         }
-
-        // categoryPieChart: 本周各类任务数
-        if (window.categoryPieChart) {
-          var categories = {};
-          (AppState.tasks || []).forEach(function(t){
-            var labels = t.labels && t.labels.length ? t.labels : ['工作'];
-            var label = labels[0];
-            if (!categories[label]) categories[label] = 0;
-            // 仅统计本周的任务
-            var weekStart = getWeekStart();
-            var weekEnd = getWeekEnd();
-            var d = t.dueAt ? new Date(t.dueAt) : (t.updatedAt ? new Date(t.updatedAt) : null);
-            if (!d) return;
-            if (isDateInRange(d, weekStart, weekEnd)) categories[label]++;
-          });
-          var pieData = Object.keys(categories).map(function(k){ return { name: k, value: categories[k] }; });
-          if (pieData.length === 0) pieData = [ { name: '工作', value: 0 } ];
-          window.categoryPieChart.setOption({ series:[{ data: pieData }] });
-        }
-
-        // focusBarChart: 番茄数按周分布
-        if (window.focusBarChart) {
-          var weekPomos = (AppState.pomodoroSessions || []).filter(function(s){
-            if (!s.startedAt) return false;
-            var sd = new Date(s.startedAt);
-            return isDateInRange(sd, getWeekStart(), getWeekEnd());
-          });
-          var dayCounts = [0,0,0,0,0,0,0];
-          weekPomos.forEach(function(s){
-            var sd = new Date(s.startedAt);
-            var idx = (sd.getDay() + 6) % 7; // convert Sun..Sat to Mon..Sun index 0..6
-            dayCounts[idx]++;
-          });
-          window.focusBarChart.setOption({ series:[{ data: dayCounts }] });
-        }
+        return Promise.resolve();
       }
 
       function syncReportStateFromServer() {

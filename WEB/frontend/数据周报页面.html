@@ -17,7 +17,7 @@
     <link rel='stylesheet' href='./css/saas-theme-overrides.css?v=20260423_ui_saas1' />
   <script src='./js/pages/数据周报页面.inline-03.js?v=20260327_jssplit'></script>
 </head>
-  <body class="font-inter bg-[#F1EEEA] text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden fade-in scroll-smooth">
+  <body class="report-page font-inter text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden fade-in scroll-smooth">
     <!-- ✅ 背景装饰光斑 -->
     <div class="bg-orb w-[500px] h-[500px] bg-primary top-0 left-0"></div>
     <div class="bg-orb w-[400px] h-[400px] bg-secondary bottom-0 right-0" style="animation-delay: -5s;"></div>
@@ -76,7 +76,7 @@
               <img
                 alt="用户头像"
                 class="header-user-avatar w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300"
-                src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
+                src="./assets/default-avatar.svg"
               />
               <span class="header-user-name hidden md:inline-block font-medium text-sm"> 张明 </span>
               <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform duration-300"> </i>
@@ -118,121 +118,193 @@
     <div class="flex flex-1 overflow-hidden">
       <!-- [MODULE] e3f_主内容区域 -->
       <main class="flex-1 overflow-y-auto content-auto bg-transparent p-4 md:p-6 scrollbar-thin fade-in">
+        <section class="report-insight-hero mb-6 fade-in" aria-labelledby="report-insight-title">
+          <div class="report-insight-main">
+            <p class="report-insight-kicker" id="report-range-label">本周复盘</p>
+            <h2 id="report-insight-title" class="report-insight-title">先看结论，再看数据</h2>
+            <p id="report-summary-text" class="report-insight-summary">正在根据你的任务、番茄和打卡数据生成本期总结。</p>
+            <div class="report-insight-actions">
+              <a href="待办页面.html" class="report-action-link report-action-link--primary">
+                <i class="fas fa-plus"></i>
+                添加任务
+              </a>
+              <a href="番茄钟页面.html" class="report-action-link">
+                <i class="fas fa-clock"></i>
+                开始专注
+              </a>
+            </div>
+          </div>
+          <div class="report-insight-side">
+            <div class="report-diagnosis-card">
+              <span class="report-diagnosis-label"><i class="fas fa-stethoscope"></i> 诊断</span>
+              <strong id="report-diagnosis-title">等待数据更新</strong>
+              <p id="report-diagnosis-text">完成任务或番茄专注后，这里会告诉你主要问题在哪里。</p>
+            </div>
+            <div class="report-next-step-card">
+              <span class="report-diagnosis-label"><i class="fas fa-route"></i> 下一步</span>
+              <p id="report-next-step-text">先完成 1 个任务或 1 次番茄钟，周报就会更有参考价值。</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="report-empty-guide mb-6 hidden" id="report-empty-guide">
+          <div>
+            <p class="report-insight-kicker">暂无有效数据</p>
+            <h2 class="report-empty-title">完成 3 个任务或 2 次番茄后，周报会更准确。</h2>
+            <p class="report-empty-copy">现在先去添加任务、开始专注，后续这里会自动生成趋势、分类和效率时段分析。</p>
+          </div>
+          <div class="report-insight-actions">
+            <a href="待办页面.html" class="report-action-link report-action-link--primary">添加任务</a>
+            <a href="番茄钟页面.html" class="report-action-link">开始番茄钟</a>
+          </div>
+        </section>
+
         <!-- 概览卡片 -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-          <div class="stat-card group">
-            <div class="flex items-start justify-between mb-3">
-              <h3 class="text-sm font-medium text-gray-500 flex items-center">
-                <div class="icon-wrapper mr-3">
-                  <i class="fas fa-check-circle text-success text-xl"></i>
-                </div>
-                本周完成任务总数
-              </h3>
+        <section class="report-metric-board mb-6">
+          <article class="report-score-card">
+            <div class="report-score-card__head">
+              <div>
+                <p class="report-insight-kicker">核心指标</p>
+                <h2>综合效率评分</h2>
+              </div>
+              <span id="effectiveness-level" class="report-score-level">A 级</span>
             </div>
-            <div class="stat-value bg-gradient-to-r from-success to-emerald-500 bg-clip-text text-transparent" id="completed-tasks">28 项</div>
-            <div class="trend-indicator text-green-600 mt-2 flex items-center">
-              <i class="fas fa-arrow-up mr-1"> </i>
-              12% 较上周
+            <div class="report-score-value" id="effectiveness-score">85 分</div>
+            <p id="score-helper-text" class="report-score-helper">综合任务完成、专注投入和连续性得出。</p>
+          </article>
+
+          <div class="report-metric-grid">
+            <div class="stat-card report-mini-metric group">
+              <div class="report-mini-icon report-mini-icon--success"><i class="fas fa-check-circle"></i></div>
+              <span class="report-mini-label">完成任务</span>
+              <strong class="stat-value" id="completed-tasks">28 项</strong>
+            </div>
+            <div class="stat-card report-mini-metric group">
+              <div class="report-mini-icon report-mini-icon--primary"><i class="fas fa-clock"></i></div>
+              <span class="report-mini-label">专注时长</span>
+              <strong class="stat-value" id="focus-hours">14 小时</strong>
+            </div>
+            <div class="stat-card report-mini-metric group">
+              <div class="report-mini-icon report-mini-icon--danger"><i class="fas fa-fire"></i></div>
+              <span class="report-mini-label">番茄数量</span>
+              <strong class="stat-value" id="pomodoro-count">32 个</strong>
+            </div>
+            <div class="stat-card report-mini-metric group">
+              <div class="report-mini-icon report-mini-icon--warning"><i class="fas fa-bolt"></i></div>
+              <span class="report-mini-label">最长连续</span>
+              <strong class="stat-value" id="max-continuous-pomodoros">4 个番茄</strong>
             </div>
           </div>
-          <div class="stat-card group">
-            <div class="flex items-start justify-between mb-3">
-              <h3 class="text-sm font-medium text-gray-500 flex items-center">
-                <div class="icon-wrapper mr-3">
-                  <i class="fas fa-clock text-primary text-xl"></i>
-                </div>
-                本周专注总时长
-              </h3>
-            </div>
-            <div class="stat-value bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent" id="focus-hours">14 小时</div>
-          </div>
-          <div class="stat-card group">
-            <div class="flex items-start justify-between mb-3">
-              <h3 class="text-sm font-medium text-gray-500 flex items-center">
-                <div class="icon-wrapper mr-3">
-                  <i class="fas fa-fire text-danger text-xl"></i>
-                </div>
-                本周完成番茄总数
-              </h3>
-            </div>
-            <div class="stat-value bg-gradient-to-r from-danger to-red-500 bg-clip-text text-transparent" id="pomodoro-count">32 个</div>
-          </div>
-          <div class="stat-card group">
-            <div class="flex items-start justify-between mb-3">
-              <h3 class="text-sm font-medium text-gray-500 flex items-center">
-                <div class="icon-wrapper mr-3">
-                  <i class="fas fa-bolt text-warning text-xl"></i>
-                </div>
-                本周最长连续专注
-              </h3>
-            </div>
-            <div class="stat-value bg-gradient-to-r from-warning to-orange-500 bg-clip-text text-transparent" id="max-continuous-pomodoros">4 个番茄</div>
-          </div>
-          <div class="stat-card group">
-            <div class="flex items-start justify-between mb-3">
-              <h3 class="text-sm font-medium text-gray-500 flex items-center">
-                <div class="icon-wrapper mr-3">
-                  <i class="fas fa-star text-secondary text-xl"></i>
-                </div>
-                综合效率评分
-              </h3>
-            </div>
-            <div class="stat-value bg-gradient-to-r from-secondary to-purple-500 bg-clip-text text-transparent" id="effectiveness-score">85 分</div>
-            <div class="text-xs text-gray-500 mt-2 font-medium">A 级</div>
-          </div>
-        </div>
+        </section>
         
-        <!-- 任务完成趋势图 -->
-        <div class="chart-container mb-6 fade-in">
-          <div class="chart-header">
-            <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-              <i class="fas fa-chart-line text-primary mr-2"></i>
-              任务完成趋势
-            </h2>
-          </div>
-          <div class="w-full h-64" id="task-trend-chart"></div>
-        </div>
-        
-        <!-- 任务分类统计和番茄专注分析 -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div class="chart-container focus-chart fade-in">
-            <div class="chart-header">
-              <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <i class="fas fa-tags text-secondary mr-2"></i>
-                任务分类统计
+        <section class="report-suggestion-compact card-shadow glass-strong rounded-2xl p-5 mb-6 fade-in">
+          <div class="report-analysis-headline">
+            <div>
+              <p class="report-insight-kicker">行动建议</p>
+              <h2 class="text-lg font-semibold text-gray-800 flex items-center">
+                <i class="fas fa-lightbulb text-yellow-500 mr-2 float"></i>
+                先做这几件事
               </h2>
             </div>
-            <div class="w-full h-64" id="category-pie-chart"></div>
+            <button id="ai-suggestions-refresh" class="text-xs px-2.5 py-1 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all">
+              刷新建议
+            </button>
           </div>
-          <div class="chart-container focus-chart fade-in">
-            <div class="chart-header">
-              <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <i class="fas fa-chart-bar text-info mr-2"></i>
-                番茄专注分析
-              </h2>
+          <div class="report-suggestion-list" id="smart-suggestions-list">
+            <div class="suggestion-card flex items-start">
+              <i class="fas fa-lightbulb text-yellow-500 mt-1 mr-3 flex-shrink-0"></i>
+              <p class="text-gray-700 text-sm leading-relaxed">正在生成个性化建议...</p>
             </div>
-            <div class="w-full h-64" id="focus-bar-chart"></div>
           </div>
-        </div>
-        
-        <!-- 专注时间段分布热力图 -->
-        <div class="chart-container focus-chart mb-6 fade-in">
-          <div class="chart-header">
-            <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-              <i class="fas fa-th text-warning mr-2"></i>
-              专注时间段分布
-            </h2>
-          </div>
-          <div class="w-full h-64" id="focus-heatmap"></div>
-        </div>
-        
-        <!-- 效率时段分析 -->
-        <div class="card-shadow card-hover glass-strong rounded-2xl p-6 mb-6 fade-in">
-          <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-            <i class="fas fa-clock text-primary mr-2"></i>
-            效率时段分析
-          </h2>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="time-slots-container">
+        </section>
+
+        <section class="report-analysis-stack mb-6">
+          <details class="report-analysis-fold" open>
+            <summary class="report-analysis-summary" aria-expanded="true" aria-controls="report-execution-panel">
+              <span class="report-analysis-icon"><i class="fas fa-chart-line"></i></span>
+              <span class="report-analysis-copy">
+                <strong>执行趋势</strong>
+                <span id="execution-fold-summary">默认展开，先看最近是否稳定变好。</span>
+              </span>
+              <span class="report-fold-state">收起</span>
+            </summary>
+            <div id="report-execution-panel" class="report-analysis-body">
+              <div class="chart-container fade-in">
+                <div class="chart-header">
+                  <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-chart-line text-primary mr-2"></i>
+                    任务完成趋势
+                  </h2>
+                  <p id="task-trend-reading" class="report-chart-reading">用于判断哪几天执行更稳定。</p>
+                </div>
+                <div class="w-full h-64" id="task-trend-chart"></div>
+              </div>
+            </div>
+          </details>
+
+          <details class="report-analysis-fold">
+            <summary class="report-analysis-summary" aria-expanded="false" aria-controls="report-invest-panel">
+              <span class="report-analysis-icon"><i class="fas fa-layer-group"></i></span>
+              <span class="report-analysis-copy">
+                <strong>投入结构</strong>
+                <span id="invest-fold-summary">查看任务分类和番茄投入是否均衡。</span>
+              </span>
+              <span class="report-fold-state">展开</span>
+            </summary>
+            <div id="report-invest-panel" class="report-analysis-body">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="chart-container focus-chart fade-in">
+                  <div class="chart-header">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                      <i class="fas fa-tags text-secondary mr-2"></i>
+                      任务分类统计
+                    </h2>
+                    <p id="category-reading" class="report-chart-reading">用于判断时间主要花在哪类任务上。</p>
+                  </div>
+                  <div class="w-full h-64" id="category-pie-chart"></div>
+                </div>
+                <div class="chart-container focus-chart fade-in">
+                  <div class="chart-header">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                      <i class="fas fa-chart-bar text-info mr-2"></i>
+                      番茄专注分析
+                    </h2>
+                    <p id="focus-reading" class="report-chart-reading">用于判断专注投入是否足够连续。</p>
+                  </div>
+                  <div class="w-full h-64" id="focus-bar-chart"></div>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="report-analysis-fold">
+            <summary class="report-analysis-summary" aria-expanded="false" aria-controls="report-time-panel">
+              <span class="report-analysis-icon"><i class="fas fa-clock"></i></span>
+              <span class="report-analysis-copy">
+                <strong>高效时段</strong>
+                <span id="time-fold-summary">找到适合安排深度工作的时间段。</span>
+              </span>
+              <span class="report-fold-state">展开</span>
+            </summary>
+            <div id="report-time-panel" class="report-analysis-body">
+              <div class="chart-container focus-chart mb-6 fade-in">
+                <div class="chart-header">
+                  <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-th text-warning mr-2"></i>
+                    专注时间段分布
+                  </h2>
+                  <p id="heatmap-reading" class="report-chart-reading">用于找到更适合安排深度工作的时间段。</p>
+                </div>
+                <div class="w-full h-64" id="focus-heatmap"></div>
+              </div>
+
+              <div class="card-shadow glass-strong rounded-2xl p-6 fade-in">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                  <i class="fas fa-clock text-primary mr-2"></i>
+                  效率时段分析
+                </h2>
+                <p id="time-slot-reading" class="report-chart-reading">帮你识别最适合处理高优先级任务的时段。</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="time-slots-container">
             <div class="time-slot-card" data-slot="early_morning">
               <div class="flex items-center mb-3">
                 <i class="fas fa-sunrise slot-icon text-yellow-500 text-2xl mr-3"></i>
@@ -279,27 +351,11 @@
               </div>
               <div class="slot-count">2 项</div>
             </div>
-          </div>
-        </div>
-        
-        <!-- 智能建议栏 -->
-        <div class="card-shadow card-hover glass-strong rounded-2xl p-6 mb-6 fade-in">
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold text-gray-800 flex items-center">
-              <i class="fas fa-lightbulb text-yellow-500 mr-2 float"></i>
-              智能建议
-            </h2>
-            <button id="ai-suggestions-refresh" class="text-xs px-2.5 py-1 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all">
-              刷新建议
-            </button>
-          </div>
-          <div class="space-y-3" id="smart-suggestions-list">
-            <div class="suggestion-card flex items-start">
-              <i class="fas fa-lightbulb text-yellow-500 mt-1 mr-3 flex-shrink-0"></i>
-              <p class="text-gray-700 text-sm leading-relaxed">正在生成个性化建议...</p>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </details>
+        </section>
       </main>
       <!-- [/MODULE] e3f_主内容区域 -->
     </div>

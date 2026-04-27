@@ -82,16 +82,24 @@
         return String(status || '').trim().toLowerCase();
       }
 
+      function shouldUseReportServerState() {
+        var state = window.__reportServerState;
+        if (!state || state.error) return false;
+        var serverTasks = Array.isArray(state.tasks) ? state.tasks : [];
+        var serverSessions = Array.isArray(state.pomodoroSessions) ? state.pomodoroSessions : [];
+        return serverTasks.length > 0 || serverSessions.length > 0;
+      }
+
       function getReportSourceTasks() {
-        if (window.__reportServerState && Array.isArray(window.__reportServerState.tasks)) {
-          return window.__reportServerState.tasks;
+        if (shouldUseReportServerState()) {
+          return window.__reportServerState.tasks || [];
         }
         return AppState.tasks || [];
       }
 
       function getReportSourcePomodoros() {
-        if (window.__reportServerState && Array.isArray(window.__reportServerState.pomodoroSessions)) {
-          return window.__reportServerState.pomodoroSessions;
+        if (shouldUseReportServerState()) {
+          return window.__reportServerState.pomodoroSessions || [];
         }
         return AppState.pomodoroSessions || [];
       }
@@ -190,11 +198,119 @@
       }
 
       function updateOverviewCards(stats) {
+        var score = Number(stats.effectivenessScore || 0);
         animateValue(document.getElementById('completed-tasks'), Number(stats.completedTasks || 0), ' 项');
         animateValue(document.getElementById('focus-hours'), Number(((stats.totalFocusMinutes || 0) / 60).toFixed(1)), ' 小时');
         animateValue(document.getElementById('pomodoro-count'), Number(stats.totalPomodoros || 0), ' 个');
         animateValue(document.getElementById('max-continuous-pomodoros'), Number(stats.maxContinuousPomodoros || 0), ' 个番茄');
-        animateValue(document.getElementById('effectiveness-score'), Number(stats.effectivenessScore || 0), ' 分');
+        animateValue(document.getElementById('effectiveness-score'), score, ' 分');
+        var scoreMeta = getScoreMeta(score, stats);
+        setReportText('effectiveness-level', scoreMeta.level);
+        setReportText('score-helper-text', scoreMeta.helper);
+      }
+
+      function setReportText(id, text) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = text;
+      }
+
+      function getScoreMeta(score, stats) {
+        var completed = Number(stats.completedTasks || 0);
+        var pomodoros = Number(stats.totalPomodoros || 0);
+        var streak = Number(stats.maxContinuousPomodoros || 0);
+        if (score >= 80) return { level: 'A 级', helper: '任务完成、专注投入和连续性都比较稳，可以继续沿用当前节奏。' };
+        if (score >= 60) return { level: 'B 级', helper: '已经形成推进感，下一步重点是提高番茄连续性和任务收尾率。' };
+        if (score >= 35) return { level: 'C 级', helper: '本期有记录但还不稳定，建议先固定每天 1 个任务和 1 个番茄。' };
+        if (completed || pomodoros || streak) return { level: 'D 级', helper: '数据刚开始积累，先恢复连续性，比追求数量更重要。' };
+        return { level: '待积累', helper: '完成任务或番茄后，这里会自动生成综合评分。' };
+      }
+
+      function getTopTaskCategory(tasks) {
+        var categoryMap = {};
+        (tasks || []).forEach(function (task) {
+          var labels = Array.isArray(task.labels) ? task.labels : [];
+          var name = labels.length ? labels[0] : '未分类';
+          categoryMap[name] = (categoryMap[name] || 0) + 1;
+        });
+        return Object.keys(categoryMap).reduce(function (best, name) {
+          if (!best || categoryMap[name] > best.count) return { name: name, count: categoryMap[name] };
+          return best;
+        }, null);
+      }
+
+      function getBestTaskSlot(tasks) {
+        return calculateTimeSlotsData(tasks).reduce(function (best, slot) {
+          if (!best || slot.tasksCompleted > best.tasksCompleted) return slot;
+          return best;
+        }, null);
+      }
+
+      function updateReportInsight(range, tasks, sessions, overview) {
+        var completed = tasks.length;
+        var pomodoros = sessions.length;
+        var focusHours = Number(((overview.totalFocusMinutes || 0) / 60).toFixed(1));
+        var score = Number(overview.effectivenessScore || 0);
+        var hasData = completed > 0 || pomodoros > 0;
+        var emptyGuide = document.getElementById('report-empty-guide');
+        if (emptyGuide) emptyGuide.classList.toggle('hidden', hasData);
+
+        setReportText('report-range-label', (range.label || '本周') + '复盘');
+
+        if (!hasData) {
+          setReportText('report-insight-title', '先积累一点数据，再看周报');
+          setReportText('report-summary-text', '当前时间范围内还没有完成任务或专注记录。先完成 3 个任务或 2 次番茄钟，页面会自动生成趋势、诊断和建议。');
+          setReportText('report-diagnosis-title', '数据不足');
+          setReportText('report-diagnosis-text', '图表暂时只能作为占位参考，还不能判断效率问题。');
+          setReportText('report-next-step-text', '建议先添加今天最重要的 1 个任务，并用番茄钟完成一次 25 分钟专注。');
+          setReportText('task-trend-reading', '暂无完成记录，完成任务后会显示每天的执行变化。');
+          setReportText('category-reading', '暂无分类数据，给任务打标签后会看到时间分布。');
+          setReportText('focus-reading', '暂无番茄记录，开始专注后会显示每天投入。');
+          setReportText('heatmap-reading', '暂无专注时间段，完成番茄后会识别高效时段。');
+          setReportText('time-slot-reading', '暂无可分析时段，完成任务后会标出最佳效率时段。');
+          setReportText('execution-fold-summary', '暂无任务完成记录，先完成 1 个任务再观察趋势。');
+          setReportText('invest-fold-summary', '暂无分类和番茄数据，先补充任务标签并开始专注。');
+          setReportText('time-fold-summary', '暂无高效时段，完成任务后会自动识别。');
+          return;
+        }
+
+        var summaryLevel = score >= 80 ? '表现很稳' : (score >= 50 || (completed >= 3 && pomodoros >= 3) ? '有推进，但节奏还可以更稳' : '本期执行偏弱，需要先恢复连续性');
+        setReportText('report-insight-title', summaryLevel);
+        setReportText('report-summary-text', '这个时间范围内完成了 ' + completed + ' 个任务，累计专注 ' + focusHours + ' 小时，完成 ' + pomodoros + ' 个番茄，综合效率评分 ' + score + ' 分。');
+
+        var diagnosisTitle = '连续性不足';
+        var diagnosisText = '专注记录偏少，建议先固定一个每天都能执行的时间段。';
+        if (completed >= 8 && pomodoros < 4) {
+          diagnosisTitle = '完成多，但深度专注偏少';
+          diagnosisText = '任务推进不错，但番茄数量偏少，可能存在碎片化处理问题。';
+        } else if (completed < 3 && pomodoros >= 4) {
+          diagnosisTitle = '有专注，但产出转化不足';
+          diagnosisText = '专注投入已有积累，可以把大任务拆成可完成的小步骤。';
+        } else if (score >= 80) {
+          diagnosisTitle = '节奏健康';
+          diagnosisText = '任务完成和专注投入比较均衡，可以继续保持当前安排。';
+        } else if (completed >= 3 && pomodoros >= 3) {
+          diagnosisTitle = '节奏基本成型';
+          diagnosisText = '已经有稳定记录，下一步重点是减少低效时间段的任务堆积。';
+        }
+        setReportText('report-diagnosis-title', diagnosisTitle);
+        setReportText('report-diagnosis-text', diagnosisText);
+
+        var nextStep = '明天先安排 1 个高优先级任务，并用 1 个番茄钟完成第一步。';
+        if (completed >= 8 && pomodoros < 4) nextStep = '给高认知任务预留 2 个连续番茄，减少边做边切换。';
+        else if (completed < 3 && pomodoros >= 4) nextStep = '把正在专注的任务拆成 30 分钟内能完成的小清单。';
+        else if (score >= 80) nextStep = '保留当前节奏，把最难任务继续放在你的高效时段。';
+        setReportText('report-next-step-text', nextStep);
+
+        var topCategory = getTopTaskCategory(tasks);
+        var bestSlot = getBestTaskSlot(tasks);
+        var bestSlotText = bestSlot && bestSlot.tasksCompleted > 0 ? bestSlot.label : '';
+        setReportText('task-trend-reading', completed >= 5 ? '任务完成已有明显轨迹，可以观察哪几天最稳定。' : '完成记录还偏少，先保证每天至少收尾 1 个任务。');
+        setReportText('category-reading', topCategory && topCategory.count > 0 ? (topCategory.name + '类任务最多，共 ' + topCategory.count + ' 项，可留意精力是否过度集中。') : '给任务补充标签后，分类占比会更有参考价值。');
+        setReportText('focus-reading', pomodoros >= 4 ? '番茄记录已能反映专注投入，建议关注是否连续。' : '番茄数量偏少，先用固定时间建立专注习惯。');
+        setReportText('heatmap-reading', pomodoros >= 4 ? '颜色更深的时间段适合安排深度工作。' : '专注数据不足，热力图暂时只适合做参考。');
+        setReportText('execution-fold-summary', completed >= 5 ? ('本期完成 ' + completed + ' 个任务，执行趋势已值得重点观察。') : ('本期完成 ' + completed + ' 个任务，先看最近是否开始连续。'));
+        setReportText('invest-fold-summary', topCategory && topCategory.count > 0 ? (topCategory.name + '类占比最高，另有 ' + pomodoros + ' 个番茄投入。') : ('已完成 ' + completed + ' 个任务，完成 ' + pomodoros + ' 个番茄。'));
+        setReportText('time-fold-summary', bestSlotText ? (bestSlotText + '目前产出最高，可优先安排难任务。') : (pomodoros >= 4 ? '可展开查看适合深度工作的时间段。' : '专注数据偏少，展开后可作为参考。'));
       }
 
       function buildDateList(start, end) {
@@ -355,14 +471,18 @@
         if (!container || !timeSlotsData) return;
 
         var bestSlot = null;
+        var bestSlotLabel = '';
         var maxTasks = 0;
 
         timeSlotsData.forEach(function (slot) {
           if (slot.tasksCompleted > maxTasks) {
             maxTasks = slot.tasksCompleted;
             bestSlot = slot.slot;
+            bestSlotLabel = slot.label;
           }
         });
+
+        setReportText('time-slot-reading', maxTasks > 0 ? ('当前最高效时段是 ' + bestSlotLabel + '，适合安排优先级最高的任务。') : '暂无可分析时段，完成任务后会标出最佳效率时段。');
 
         timeSlotsData.forEach(function (slot) {
           var slotElement = container.querySelector('[data-slot="' + slot.slot + '"]');
@@ -383,10 +503,10 @@
 
       function getDefaultSuggestions() {
         return [
-          '您周二周三效率较高，建议将高优先级任务集中在这两天。',
-          '下午 3-5 点容易分心，建议安排低认知负荷任务。',
-          '对延期任务可拆解为 30 分钟以内的小步骤，执行成功率更高。',
-          '连续完成 4 个番茄后建议休息 15 分钟，避免效率衰减。'
+          '先固定每天一个高效时段，减少临时安排。',
+          '把大任务拆成 30 分钟内能完成的小步骤。',
+          '任务少时先追求连续性，不急着追求数量。',
+          '连续完成 4 个番茄后安排一次长休息。'
         ];
       }
 
@@ -394,6 +514,7 @@
         var list = document.getElementById('smart-suggestions-list');
         if (!list) return;
         var values = Array.isArray(items) && items.length ? items : getDefaultSuggestions();
+        values = values.slice(0, 4);
         list.innerHTML = values.map(function (text) {
           return '<div class="suggestion-card flex items-start">' +
             '<i class="fas fa-lightbulb text-yellow-500 mt-1 mr-3 flex-shrink-0"></i>' +
@@ -425,7 +546,7 @@
         }
         var context = buildReportAiContext();
         var prompt = [
-          '你是效率分析助手，请基于用户周报数据生成4条可执行建议。',
+          '你是效率分析助手，请基于用户周报数据生成4条可执行建议，不要只复述数据，要告诉用户下一步怎么做。',
           '要求：每条建议不超过30字，中文。返回纯JSON。',
           '格式：{"suggestions":["建议1","建议2","建议3","建议4"]}',
           '数据：' + JSON.stringify(context)
@@ -463,6 +584,29 @@
         }
       }
 
+      function initReportAnalysisFolds() {
+        document.querySelectorAll('.report-analysis-fold').forEach(function (fold) {
+          var summary = fold.querySelector('summary');
+          var state = fold.querySelector('.report-fold-state');
+          if (!summary) return;
+          var sync = function () {
+            summary.setAttribute('aria-expanded', fold.open ? 'true' : 'false');
+            if (state) state.textContent = fold.open ? '收起' : '展开';
+          };
+          sync();
+          fold.addEventListener('toggle', function () {
+            sync();
+            if (fold.open && window.echarts) {
+              setTimeout(function () {
+                [window.taskTrendChart, window.categoryPieChart, window.focusBarChart, window.focusHeatmap].forEach(function (chart) {
+                  if (chart && typeof chart.resize === 'function') chart.resize();
+                });
+              }, 80);
+            }
+          });
+        });
+      }
+
       function applyTimeRangeSelection(value) {
         var validValues = ['本周', '上周', '本月', '自定义'];
         var selected = validValues.indexOf(value) >= 0 ? value : '本周';
@@ -486,14 +630,24 @@
         var range = getDateRangeByLabel(selectedLabel);
 
         function render() {
-          var completedTasks = getCompletedTasksInRange(range.start, range.end);
-          var focusSessions = getFocusSessionsInRange(range.start, range.end);
+          var localTasks = getCompletedTasksInRange(range.start, range.end);
+          var localSessions = getFocusSessionsInRange(range.start, range.end);
+          var serverState = window.__reportServerState || null;
+          var serverTasks = serverState && Array.isArray(serverState.tasks) ? serverState.tasks : [];
+          var serverSessions = serverState && Array.isArray(serverState.pomodoroSessions) ? serverState.pomodoroSessions : [];
+          var hasLocalData = localTasks.length > 0 || localSessions.length > 0;
+          var hasServerData = !serverState || serverState.error ? false : (serverTasks.length > 0 || serverSessions.length > 0);
+          var completedTasks = hasServerData ? serverTasks : localTasks;
+          var focusSessions = hasServerData ? serverSessions : localSessions;
           var overview = calculateOverview(completedTasks, focusSessions);
-          if (window.__reportServerState && window.__reportServerState.overview) {
-            overview = Object.assign({}, overview, window.__reportServerState.overview);
+          if (hasServerData && serverState.overview) {
+            overview = Object.assign({}, overview, serverState.overview);
+          } else if (!hasLocalData && serverState && serverState.overview && !serverState.error) {
+            overview = Object.assign({}, overview, serverState.overview);
           }
 
           updateOverviewCards(overview);
+          updateReportInsight(range, completedTasks, focusSessions, overview);
           updateTrendCharts(range, completedTasks, focusSessions);
           updateCategoryChart(completedTasks);
           updateHeatmap(focusSessions);
@@ -538,6 +692,7 @@
         var savedRange = null;
         try { savedRange = localStorage.getItem('report-time-range'); } catch (e) { savedRange = null; }
         applyTimeRangeSelection(savedRange || '本周');
+        initReportAnalysisFolds();
 
         Promise.resolve()
           .then(function () { return updateWeeklyStats({ sync: false }); })
