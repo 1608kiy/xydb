@@ -16,15 +16,11 @@
 
 <body class="bg-[#F1EEEA]">
   <!-- ===== 背景装饰光斑 ===== -->
-  <div class="bg-orb" style="width: 500px; height: 500px; background: #4F46E5; top: 0; left: 0;"></div>
-  <div class="bg-orb"
-    style="width: 400px; height: 400px; background: #7C3AED; bottom: 0; right: 0; animation-delay: -5s;"></div>
-  <div class="bg-orb"
-    style="width: 350px; height: 350px; background: #3B82F6; top: 50%; left: 50%; animation-delay: -10s;"></div>
-  <div class="bg-orb"
-    style="width: 300px; height: 300px; background: #F59E0B; top: 0; right: 0; animation-delay: -15s;"></div>
-  <div class="bg-orb"
-    style="width: 250px; height: 250px; background: #10B981; bottom: 0; left: 0; animation-delay: -20s;"></div>
+  <div class="bg-orb" style="width: 500px; height: 500px; top: 0; left: 0;"></div>
+  <div class="bg-orb" style="width: 400px; height: 400px; bottom: 0; right: 0; animation-delay: -5s;"></div>
+  <div class="bg-orb" style="width: 350px; height: 350px; top: 50%; left: 50%; animation-delay: -10s;"></div>
+  <div class="bg-orb" style="width: 300px; height: 300px; top: 0; right: 0; animation-delay: -15s;"></div>
+  <div class="bg-orb" style="width: 250px; height: 250px; bottom: 0; left: 0; animation-delay: -20s;"></div>
 
   <!-- 顶部导航 -->
   <header class="glass-max shadow-lg sticky top-0 z-40 transition-all duration-300" id="main-header">
@@ -73,12 +69,12 @@
           <i class="fas fa-plus mr-2"></i>
           新建任务
         </button>
-        <div class="relative" id="user-menu-container">
-          <button class="flex items-center space-x-2 p-1.5 rounded-xl hover:bg-primary/10" id="user-menu-btn" type="button">
-            <img alt="用户头像" class="header-user-avatar w-10 h-10 rounded-full object-cover border-2 border-primary/40"
+            <div class="relative group" id="user-menu-container">
+                <button class="flex items-center space-x-2 p-1.5 rounded-xl" id="user-menu-btn" type="button">
+                <img alt="用户头像" class="header-user-avatar w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300"
               src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png" />
-            <span class="header-user-name hidden lg:inline-block font-medium text-gray-700">张明</span>
-            <i class="fas fa-chevron-down text-xs text-gray-500 transition-transform" id="user-menu-arrow"></i>
+                <span class="header-user-name hidden md:inline-block font-medium">张明</span>
+                <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform duration-300" id="user-menu-arrow"></i>
           </button>
           <div class="dropdown-menu" id="user-dropdown" style="pointer-events: none;">
             <a href="个人中心页面.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors" style="pointer-events: auto;">
@@ -110,7 +106,7 @@
               <a class="sidebar-item-active sidebar-item" href="javascript:void(0);" data-main="all">
                 <div class="flex items-center">
                   <i class="fas fa-tasks w-5 h-5 mr-3 text-primary"></i>
-                  <span>所有任务</span>
+                  <span class="text-primary">所有任务</span>
                 </div>
                 <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-all">0</span>
               </a>
@@ -119,7 +115,7 @@
               <a class="sidebar-item" href="javascript:void(0);" data-main="myday">
                 <div class="flex items-center">
                   <i class="fas fa-sun w-5 h-5 mr-3 text-warning"></i>
-                  <span>我的一天</span>
+                  <span class="text-warning">我的一天</span>
                 </div>
                 <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-today">0</span>
               </a>
@@ -127,8 +123,8 @@
             <li>
               <a class="sidebar-item" href="javascript:void(0);" data-main="important">
                 <div class="flex items-center">
-                  <i class="fas fa-star w-5 h-5 mr-3 text-warning"></i>
-                  <span>重要任务</span>
+                  <i class="fas fa-star w-5 h-5 mr-3 text-danger"></i>
+                  <span class="text-danger">重要任务</span>
                 </div>
                 <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-important">0</span>
               </a>
@@ -137,7 +133,7 @@
               <a class="sidebar-item" href="javascript:void(0);" data-main="planned">
                 <div class="flex items-center">
                   <i class="fas fa-calendar w-5 h-5 mr-3 text-info"></i>
-                  <span>已计划</span>
+                  <span class="text-info">已计划</span>
                 </div>
                 <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-planned">0</span>
               </a>
@@ -146,7 +142,7 @@
               <a class="sidebar-item" href="javascript:void(0);" data-main="assigned">
                 <div class="flex items-center">
                   <i class="fas fa-user w-5 h-5 mr-3 text-secondary"></i>
-                  <span>已分配给我</span>
+                  <span class="text-secondary">已分配给我</span>
                 </div>
                 <span class="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full" id="count-assigned">0</span>
               </a>

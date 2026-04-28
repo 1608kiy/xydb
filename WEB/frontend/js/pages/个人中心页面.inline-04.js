@@ -242,6 +242,71 @@
         });
       }
 
+      // ✅ 邮箱修改模态框函数
+      function openEmailModal() {
+        const modal = document.getElementById('email-modal');
+        const currentEmailDisplay = document.getElementById('current-email-display');
+        const newEmailInput = document.getElementById('new-email-input');
+        
+        if (modal && currentEmailDisplay && newEmailInput) {
+          currentEmailDisplay.value = AppState.user?.email || '';
+          newEmailInput.value = '';
+          modal.classList.remove('hidden');
+          modal.setAttribute('aria-hidden', 'false');
+          newEmailInput.focus();
+        }
+      }
+
+      function closeEmailModal() {
+        const modal = document.getElementById('email-modal');
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.setAttribute('aria-hidden', 'true');
+        }
+      }
+
+      function saveEmailAddress() {
+        const newEmailInput = document.getElementById('new-email-input');
+        const newEmail = newEmailInput.value.trim();
+        
+        if (!newEmail) {
+          showToast('⚠️ 邮箱不能为空', 'error');
+          newEmailInput.focus();
+          return;
+        }
+        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(newEmail)) {
+          showToast('⚠️ 请输入有效的邮箱地址', 'error');
+          newEmailInput.focus();
+          return;
+        }
+        
+        if (newEmail === AppState.user?.email) {
+          showToast('新邮箱与当前相同，无需修改');
+          return;
+        }
+        
+        var applyPatch = window.__profileApplyUserPatch;
+        if (typeof applyPatch === 'function') {
+          applyPatch({
+            email: newEmail
+          }, {
+            successMessage: '邮箱已更新',
+            reason: 'email-update'
+          }).then(function () {
+            closeEmailModal();
+          });
+          return;
+        }
+
+        AppState.user = AppState.user || {};
+        AppState.user.email = newEmail;
+        AppState.save && AppState.save();
+        closeEmailModal();
+        showToast('邮箱已更新', 'success');
+      }
+
       // ✅ 手机号模态框函数
       function openPhoneModal() {
         const modal = document.getElementById('phone-modal');
@@ -659,20 +724,15 @@
 
         if (editEmailBtn) {
           editEmailBtn.addEventListener('click', function () {
-            var currentEmail = (AppState.user && AppState.user.email) || '';
-            var nextEmail = window.prompt('请输入新的邮箱地址', currentEmail);
-            if (nextEmail === null) return;
-            nextEmail = String(nextEmail || '').trim();
-            if (!nextEmail) {
-              showToast('邮箱不能为空', 'error');
-              return;
-            }
-            applyUserPatch({
-              email: nextEmail
-            }, {
-              successMessage: '邮箱已更新',
-              reason: 'email-update'
-            });
+            openEmailModal();
+          });
+        }
+
+        // 邮箱模态框点击背景关闭
+        const emailModal = document.getElementById('email-modal');
+        if (emailModal) {
+          emailModal.addEventListener('click', function (e) {
+            if (e.target === emailModal) closeEmailModal();
           });
         }
 

@@ -1953,7 +1953,7 @@ function ensureUnifiedBottomTabStyle() {
     min-height: 58px;
     padding: 7px 7px !important;
     border-radius: 16px !important;
-    color: rgb(71, 85, 105) !important;
+    color: #111827 !important;
     text-decoration: none !important;
     transition: transform 220ms ease, color 220ms ease, filter 220ms ease;
     overflow: hidden;
@@ -1981,6 +1981,7 @@ function ensureUnifiedBottomTabStyle() {
   .unified-bottom-tab-dock .unified-tab-label {
     position: relative;
     z-index: 1;
+    color: inherit !important;
   }
   .unified-bottom-tab-dock .unified-tab-icon {
     width: 32px;
@@ -2017,6 +2018,13 @@ function ensureUnifiedBottomTabStyle() {
   }
   .unified-bottom-tab-dock .unified-tab-item:not(.active):hover .unified-tab-label {
     text-shadow: 0 0 6px rgba(255, 255, 255, 0.36);
+  }
+  .unified-bottom-tab-dock .unified-tab-item:not(.active) .unified-tab-icon,
+  .unified-bottom-tab-dock .unified-tab-item:not(.active) .unified-tab-label {
+    color: inherit !important;
+  }
+  .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-label {
+    color: rgb(37, 99, 235) !important;
   }
   .unified-bottom-tab-dock .tab-indicator {
     display: none !important;
@@ -2534,6 +2542,10 @@ function ensureUnifiedWebLiquidStyle() {
 
   body:not(.software-app) .unified-bottom-tab-dock .unified-tab-item.active .unified-tab-icon {
     background: rgba(255, 255, 255, 0.1) !important;
+  }
+  body:not(.software-app) .unified-bottom-tab-dock .unified-tab-icon,
+  body:not(.software-app) .unified-bottom-tab-dock .unified-tab-label {
+    color: inherit !important;
   }
   `;
   document.head.appendChild(style);

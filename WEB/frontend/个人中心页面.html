@@ -18,11 +18,11 @@
 </head>
   <body class="font-inter bg-[#F1EEEA] text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden fade-in scroll-smooth">
     <!-- ✅ 背景装饰光斑 -->
-    <div class="bg-orb w-[500px] h-[500px] bg-primary top-0 left-0"></div>
-    <div class="bg-orb w-[400px] h-[400px] bg-secondary bottom-0 right-0" style="animation-delay: -5s;"></div>
-    <div class="bg-orb w-[350px] h-[350px] bg-info top-1/2 left-1/2" style="animation-delay: -10s;"></div>
-    <div class="bg-orb w-[300px] h-[300px] bg-warning top-0 right-0" style="animation-delay: -15s;"></div>
-    <div class="bg-orb w-[250px] h-[250px] bg-success bottom-0 left-0" style="animation-delay: -20s;"></div>
+    <div class="bg-orb w-[500px] h-[500px] top-0 left-0" style="animation-delay: 0s;"></div>
+    <div class="bg-orb w-[400px] h-[400px] bottom-0 right-0" style="animation-delay: -5s;"></div>
+    <div class="bg-orb w-[350px] h-[350px] top-1/2 left-1/2" style="animation-delay: -10s;"></div>
+    <div class="bg-orb w-[300px] h-[300px] top-0 right-0" style="animation-delay: -15s;"></div>
+    <div class="bg-orb w-[250px] h-[250px] bottom-0 left-0" style="animation-delay: -20s;"></div>
     
     <!-- 顶部导航 -->
     <header class="glass-header sticky top-0 z-30">
@@ -236,7 +236,7 @@
                   <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
                 <div class="stat-card group">
                   <div
-                    class="text-xs text-gray-500 flex items-center justify-center mb-2"
+                    class="text-xs text-success flex items-center justify-center mb-2"
                   >
                     <i class="fas fa-check-circle text-success mr-1.5 transition-all duration-300 group-hover:text-green-600"></i>
                     累计完成任务
@@ -245,7 +245,7 @@
                 </div>
                 <div class="stat-card group">
                   <div
-                    class="text-xs text-gray-500 flex items-center justify-center mb-2"
+                    class="text-xs text-primary flex items-center justify-center mb-2"
                   >
                     <i class="fas fa-clock text-primary mr-1.5 transition-all duration-300 group-hover:text-blue-600"></i>
                     累计专注时长
@@ -254,7 +254,7 @@
                 </div>
                 <div class="stat-card group">
                   <div
-                    class="text-xs text-gray-500 flex items-center justify-center mb-2"
+                    class="text-xs text-warning flex items-center justify-center mb-2"
                   >
                     <i class="fas fa-calendar-check text-warning mr-1.5 transition-all duration-300 group-hover:text-orange-600"></i>
                     最长连续打卡
@@ -263,7 +263,7 @@
                 </div>
                 <div class="stat-card group">
                   <div
-                    class="text-xs text-gray-500 flex items-center justify-center mb-2"
+                    class="text-xs text-danger flex items-center justify-center mb-2"
                   >
                     <i class="fas fa-fire text-danger mr-1.5 transition-all duration-300 group-hover:text-red-600"></i>
                     累计番茄数
@@ -903,6 +903,44 @@
             </button>
             <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200" type="button" onclick="saveDndSettings()">
               <i class="fas fa-save mr-2"></i>保存设置
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ 邮箱修改模态框 -->
+    <div id="email-modal" class="phone-modal-overlay hidden">
+      <div class="modal-content">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-xl font-bold text-gray-800">
+            <i class="fas fa-envelope text-primary mr-2"></i>修改邮箱地址
+          </h2>
+          <button class="text-gray-500 hover:text-gray-700 p-2.5 rounded-xl hover:bg-gray-100" type="button" onclick="closeEmailModal()">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+        <div class="space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">当前邮箱地址</label>
+            <input class="modal-input" id="current-email-display" type="email" readonly disabled />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">新邮箱地址</label>
+            <input class="modal-input" id="new-email-input" type="email" placeholder="请输入新的邮箱地址" />
+          </div>
+          <div class="bg-primary/5 rounded-xl p-4 border border-primary/20">
+            <p class="text-xs text-gray-600">
+              <i class="fas fa-info-circle text-primary mr-1.5"></i>
+              请确保输入的邮箱地址真实有效，后续可用于账号找回和安全验证。
+            </p>
+          </div>
+          <div class="flex space-x-3 pt-2">
+            <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200" type="button" onclick="closeEmailModal()">
+              取消
+            </button>
+            <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200" type="button" onclick="saveEmailAddress()">
+              确认修改
             </button>
           </div>
         </div>

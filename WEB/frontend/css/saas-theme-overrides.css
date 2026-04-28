@@ -1,28 +1,34 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
 
 :root {
-  --saas-bg-start: #f6f2eb;
-  --saas-bg-end: #eef3ff;
-  --saas-surface: rgba(255, 255, 255, 0.86);
-  --saas-surface-strong: rgba(255, 255, 255, 0.93);
-  --saas-border: rgba(255, 255, 255, 0.72);
-  --saas-text: #1f2937;
-  --saas-subtext: #667085;
-  --saas-primary: #6678ff;
-  --saas-primary-deep: #5564e8;
-  --saas-accent: #f2a661;
-  --saas-success: #2fbf8a;
+  --saas-bg-start: #fbf7ef;
+  --saas-bg-end: #f4eedf;
+  --saas-surface: rgba(255, 252, 246, 0.94);
+  --saas-surface-strong: rgba(255, 255, 252, 0.99);
+  --saas-border: rgba(232, 219, 191, 0.9);
+  --saas-text: #0f172a;
+  --saas-subtext: #6f6658;
+  --saas-primary: #e2c36f;
+  --saas-primary-deep: #cfac54;
+  --saas-accent: #f1a83c;
+  --saas-info: #4f8fd8;
+  --saas-secondary: #8b5cf6;
+  --saas-success: #6da86d;
   --saas-radius-lg: 18px;
   --saas-radius-md: 16px;
-  --saas-shadow-soft: 0 10px 26px rgba(54, 65, 104, 0.08);
-  --saas-shadow-hover: 0 16px 34px rgba(54, 65, 104, 0.14);
+  --saas-shadow-soft: 0 12px 28px rgba(112, 89, 40, 0.10);
+  --saas-shadow-hover: 0 18px 38px rgba(112, 89, 40, 0.16);
 }
 
 html,
 body {
   font-family: "Manrope", "PingFang SC", "Microsoft YaHei", sans-serif !important;
   color: var(--saas-text);
-  background: linear-gradient(145deg, var(--saas-bg-start), var(--saas-bg-end)) !important;
+  background:
+    radial-gradient(circle at 16% 14%, rgba(226, 195, 111, 0.14), transparent 30%),
+    radial-gradient(circle at 84% 12%, rgba(236, 208, 138, 0.10), transparent 26%),
+    radial-gradient(circle at 8% 88%, rgba(245, 230, 195, 0.16), transparent 22%),
+    linear-gradient(145deg, var(--saas-bg-start), var(--saas-bg-end)) !important;
 }
 
 h1,
@@ -40,11 +46,34 @@ h6,
   letter-spacing: 0.01em;
 }
 
+/* ===== 统一背景光斑颜色定义 ===== */
 .bg-orb,
 .bg-orb-primary,
 .bg-orb-secondary {
-  opacity: 0.06 !important;
-  filter: blur(130px) !important;
+  opacity: 0.10 !important;
+  filter: blur(120px) saturate(102%) !important;
+  background: #F4E7C8 !important;
+}
+
+/* 按顺序定义5个背景光斑的颜色，使用:nth-child确保正确选择 */
+body > .bg-orb:nth-child(1) {
+  background: #F4E7C8 !important;
+}
+
+body > .bg-orb:nth-child(2) {
+  background: #FAEFDB !important;
+}
+
+body > .bg-orb:nth-child(3) {
+  background: #FFF6E9 !important;
+}
+
+body > .bg-orb:nth-child(4) {
+  background: #E8D4A8 !important;
+}
+
+body > .bg-orb:nth-child(5) {
+  background: #F7EED8 !important;
 }
 
 .glass,
@@ -70,9 +99,9 @@ h6,
 }
 
 .glass-header {
-  background: rgba(255, 255, 255, 0.74) !important;
-  backdrop-filter: blur(20px) saturate(130%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(130%) !important;
+  background: rgba(255, 253, 248, 0.88) !important;
+  backdrop-filter: blur(20px) saturate(145%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(145%) !important;
 }
 
 .card-hover:hover,
@@ -93,8 +122,8 @@ h6,
 #start-btn {
   background: linear-gradient(135deg, var(--saas-primary), var(--saas-primary-deep)) !important;
   color: #ffffff !important;
-  border: 1px solid rgba(88, 100, 224, 0.36) !important;
-  box-shadow: 0 10px 24px rgba(98, 114, 248, 0.26) !important;
+  border: 1px solid rgba(226, 195, 111, 0.40) !important;
+  box-shadow: 0 12px 26px rgba(226, 195, 111, 0.18) !important;
 }
 
 .btn-secondary-glass,
@@ -103,8 +132,8 @@ h6,
 .view-btn,
 .task-select-dropdown {
   background: var(--saas-surface-strong) !important;
-  border: 1px solid rgba(197, 206, 248, 0.72) !important;
-  color: #3f4b64 !important;
+  border: 1px solid rgba(230, 214, 184, 0.95) !important;
+  color: #334155 !important;
   border-radius: var(--saas-radius-md) !important;
 }
 
@@ -114,8 +143,8 @@ h6,
 }
 
 .sidebar-item-active {
-  background: linear-gradient(135deg, rgba(102, 120, 255, 0.15), rgba(102, 120, 255, 0.08)) !important;
-  border-color: rgba(102, 120, 255, 0.3) !important;
+  background: linear-gradient(135deg, rgba(226, 195, 111, 0.18), rgba(236, 208, 138, 0.10)) !important;
+  border-color: rgba(226, 195, 111, 0.30) !important;
 }
 
 .priority-high,
@@ -182,29 +211,89 @@ h6,
   color: var(--saas-success) !important;
 }
 
-.unified-bottom-tab-dock .text-success,
-.unified-bottom-tab-dock .text-warning,
-.unified-bottom-tab-dock .text-danger,
-.unified-bottom-tab-dock .text-primary,
-.unified-bottom-tab-dock .fa-check-circle,
-.unified-bottom-tab-dock .fa-heart,
-.unified-bottom-tab-dock .fa-fire,
-.unified-bottom-tab-dock .fa-star {
-  color: inherit !important;
+.fa-fire {
+  color: #db5b56 !important;
 }
 
 .text-warning,
 .fa-bolt,
-.fa-fire,
 .tag-life,
 .sidebar-tag-life {
   color: var(--saas-accent) !important;
 }
 
+.text-info,
+.fa-calendar,
+.fa-database,
+.fa-link,
+.fa-chart-bar,
+.fa-chart-pie,
+.sidebar-tag-study {
+  color: var(--saas-info) !important;
+}
+
+.text-secondary,
+.fa-user,
+.fa-mobile-alt,
+.sidebar-tag-work {
+  color: var(--saas-secondary) !important;
+}
+
+.sidebar-tag-life {
+  color: var(--saas-secondary) !important;
+}
+
+.sidebar-tag-health,
+.fa-heart {
+  color: var(--saas-success) !important;
+}
+
+.sidebar-tag-work {
+  color: var(--saas-primary-deep) !important;
+}
+
 .text-primary,
 .sidebar-tag-work,
-.sidebar-tag-study {
+.fa-tasks,
+.fa-clock,
+.fa-sort,
+.fa-flag,
+.fa-tags,
+.fa-clipboard-list,
+.fa-trophy,
+.fa-key,
+.fa-cog,
+.fa-question-circle,
+.fa-download,
+.fa-cloud-upload-alt {
   color: var(--saas-primary-deep) !important;
+}
+
+footer.glass-tab .tab-item {
+  color: #111827 !important;
+}
+
+footer.glass-tab .tab-item:hover {
+  color: #3b82f6 !important;
+}
+
+footer.glass-tab .tab-item.active {
+  color: #3b82f6 !important;
+}
+
+footer.glass-tab .tab-item i,
+footer.glass-tab .tab-item span:not(.tab-indicator) {
+  color: inherit !important;
+}
+
+footer.glass-tab .tab-item.active i,
+footer.glass-tab .tab-item.active span:not(.tab-indicator) {
+  color: #3b82f6 !important;
+}
+
+footer.glass-tab .tab-item:not(.active):hover i,
+footer.glass-tab .tab-item:not(.active):hover span:not(.tab-indicator) {
+  color: #3b82f6 !important;
 }
 
 @media (max-width: 768px) {

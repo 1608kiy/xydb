@@ -19,8 +19,11 @@
   <body class="font-inter bg-[#F1EEEA] text-gray-800 min-h-screen flex flex-col text-[13px] md:text-[14px] relative overflow-x-hidden">
     
     <!-- ✅ 背景光斑装饰 -->
-    <div class="bg-orb bg-orb-primary w-[500px] h-[500px] -top-40 -left-40"></div>
-    <div class="bg-orb bg-orb-secondary w-[400px] h-[400px] bottom-0 right-0"></div>
+    <div class="bg-orb w-[500px] h-[500px] -top-40 -left-40" style="animation-delay: 0s;"></div>
+    <div class="bg-orb w-[400px] h-[400px] bottom-0 right-0" style="animation-delay: -5s;"></div>
+    <div class="bg-orb w-[350px] h-[350px] top-1/2 left-1/2" style="animation-delay: -10s;"></div>
+    <div class="bg-orb w-[300px] h-[300px] top-0 right-0" style="animation-delay: -15s;"></div>
+    <div class="bg-orb w-[250px] h-[250px] bottom-0 left-0" style="animation-delay: -20s;"></div>
     
     <!-- [MODULE] a1b_顶部导航 -->
     <header class="glass-header sticky top-0 z-50">
@@ -82,15 +85,15 @@
             <i class="fas fa-plus mr-1.5"> </i>
             添加任务
           </a>
-          <div class="relative" id="user-menu-container">
+                <div class="relative group" id="user-menu-container">
             <button class="flex items-center space-x-2 focus:outline-none outline-none transition-colors duration-300" id="user-menu-btn">
               <img
                 alt="用户头像"
-                class="header-user-avatar w-8 h-8 rounded-full object-cover border-2 border-white shadow-md ring-2 ring-primary/30"
+                      class="header-user-avatar w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300"
                 src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
               />
-              <span class="header-user-name hidden md:inline-block font-medium text-gray-700"> 张明 </span>
-              <i class="fas fa-chevron-down text-xs text-gray-500"> </i>
+                    <span class="header-user-name hidden md:inline-block font-medium"> 张明 </span>
+                    <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform duration-300"> </i>
             </button>
             <!-- 下拉菜单 -->
             <div class="dropdown-menu" id="user-dropdown" style="pointer-events: none;">
