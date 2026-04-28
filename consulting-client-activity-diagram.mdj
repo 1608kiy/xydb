@@ -1,0 +1,3041 @@
+{
+	"_type": "Project",
+	"_id": "PRJ_0001",
+	"name": "咨询公司会见客户活动图",
+	"ownedElements": [
+		{
+			"_type": "UMLModel",
+			"_id": "MOD_0002",
+			"_parent": {
+				"$ref": "PRJ_0001"
+			},
+			"name": "咨询公司会见客户",
+			"ownedElements": [
+				{
+					"_type": "UMLActivity",
+					"_id": "ACTY_0003",
+					"_parent": {
+						"$ref": "MOD_0002"
+					},
+					"name": "咨询公司会见客户",
+					"ownedElements": [
+						{
+							"_type": "UMLActivityDiagram",
+							"_id": "DG_0004",
+							"_parent": {
+								"$ref": "ACTY_0003"
+							},
+							"name": "咨询公司会见客户活动图",
+							"ownedViews": [
+								{
+									"_type": "UMLSwimlaneView",
+									"_id": "LANEV_0006",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "LANE_0005"
+									},
+									"subViews": [
+										{
+											"_type": "LabelView",
+											"_id": "LBL_0007",
+											"_parent": {
+												"$ref": "LANEV_0006"
+											},
+											"font": "Arial;13;0",
+											"left": 24,
+											"top": 20,
+											"width": 170,
+											"height": 13,
+											"text": "业务员",
+											"verticalAlignment": 3
+										}
+									],
+									"containedViews": [
+										{
+											"$ref": "CTLV_0018"
+										},
+										{
+											"$ref": "ACTV_0020"
+										},
+										{
+											"$ref": "ACTV_0059"
+										}
+									],
+									"font": "Arial;13;0",
+									"left": 24,
+									"top": 16,
+									"width": 170,
+									"height": 980,
+									"nameLabel": {
+										"$ref": "LBL_0007"
+									}
+								},
+								{
+									"_type": "UMLSwimlaneView",
+									"_id": "LANEV_0009",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "LANE_0008"
+									},
+									"subViews": [
+										{
+											"_type": "LabelView",
+											"_id": "LBL_0010",
+											"_parent": {
+												"$ref": "LANEV_0009"
+											},
+											"font": "Arial;13;0",
+											"left": 194,
+											"top": 20,
+											"width": 170,
+											"height": 13,
+											"text": "客户",
+											"verticalAlignment": 3
+										}
+									],
+									"containedViews": [
+										{
+											"$ref": "ACTV_0027"
+										},
+										{
+											"$ref": "CTLV_0034"
+										},
+										{
+											"$ref": "CTLV_0050"
+										},
+										{
+											"$ref": "ACTV_0052"
+										},
+										{
+											"$ref": "CTLV_0066"
+										},
+										{
+											"$ref": "ACTV_0082"
+										},
+										{
+											"$ref": "CTLV_0089"
+										}
+									],
+									"font": "Arial;13;0",
+									"left": 194,
+									"top": 16,
+									"width": 170,
+									"height": 980,
+									"nameLabel": {
+										"$ref": "LBL_0010"
+									}
+								},
+								{
+									"_type": "UMLSwimlaneView",
+									"_id": "LANEV_0012",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "LANE_0011"
+									},
+									"subViews": [
+										{
+											"_type": "LabelView",
+											"_id": "LBL_0013",
+											"_parent": {
+												"$ref": "LANEV_0012"
+											},
+											"font": "Arial;13;0",
+											"left": 364,
+											"top": 20,
+											"width": 190,
+											"height": 13,
+											"text": "咨询顾问",
+											"verticalAlignment": 3
+										}
+									],
+									"containedViews": [
+										{
+											"$ref": "ACTV_0036"
+										},
+										{
+											"$ref": "ACTV_0068"
+										},
+										{
+											"$ref": "ACTV_0075"
+										}
+									],
+									"font": "Arial;13;0",
+									"left": 364,
+									"top": 16,
+									"width": 190,
+									"height": 980,
+									"nameLabel": {
+										"$ref": "LBL_0013"
+									}
+								},
+								{
+									"_type": "UMLSwimlaneView",
+									"_id": "LANEV_0015",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "LANE_0014"
+									},
+									"subViews": [
+										{
+											"_type": "LabelView",
+											"_id": "LBL_0016",
+											"_parent": {
+												"$ref": "LANEV_0015"
+											},
+											"font": "Arial;13;0",
+											"left": 554,
+											"top": 20,
+											"width": 170,
+											"height": 13,
+											"text": "技术人员",
+											"verticalAlignment": 3
+										}
+									],
+									"containedViews": [
+										{
+											"$ref": "ACTV_0043"
+										}
+									],
+									"font": "Arial;13;0",
+									"left": 554,
+									"top": 16,
+									"width": 170,
+									"height": 980,
+									"nameLabel": {
+										"$ref": "LBL_0016"
+									}
+								},
+								{
+									"_type": "UMLControlNodeView",
+									"_id": "CTLV_0018",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "CTL_0017"
+									},
+									"containerView": {
+										"$ref": "LANEV_0006"
+									},
+									"font": "Arial;13;0",
+									"containerChangeable": true,
+									"left": 99,
+									"top": 56,
+									"width": 20,
+									"height": 20
+								},
+								{
+									"_type": "UMLActionView",
+									"_id": "ACTV_0020",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "ACT_0019"
+									},
+									"subViews": [
+										{
+											"_type": "UMLNameCompartmentView",
+											"_id": "NC_0021",
+											"_parent": {
+												"$ref": "ACTV_0020"
+											},
+											"model": {
+												"$ref": "ACT_0019"
+											},
+											"subViews": [
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0022",
+													"_parent": {
+														"$ref": "NC_0021"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 100,
+													"height": 13
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0023",
+													"_parent": {
+														"$ref": "NC_0021"
+													},
+													"font": "Arial;13;1",
+													"left": 52,
+													"top": 105,
+													"width": 114,
+													"height": 50,
+													"text": "致电客户，确立约定",
+													"horizontalAlignment": 1,
+													"verticalAlignment": 2,
+													"wordWrap": true
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0024",
+													"_parent": {
+														"$ref": "NC_0021"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 100,
+													"width": 242,
+													"height": 13,
+													"text": "(from 咨询公司会见客户)"
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0025",
+													"_parent": {
+														"$ref": "NC_0021"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 100,
+													"horizontalAlignment": 1,
+													"wordWrap": true
+												}
+											],
+											"font": "Arial;13;0",
+											"left": 48,
+											"top": 96,
+											"width": 122,
+											"height": 52,
+											"stereotypeLabel": {
+												"$ref": "LBL_0022"
+											},
+											"nameLabel": {
+												"$ref": "LBL_0023"
+											},
+											"namespaceLabel": {
+												"$ref": "LBL_0024"
+											},
+											"propertyLabel": {
+												"$ref": "LBL_0025"
+											}
+										}
+									],
+									"containerView": {
+										"$ref": "LANEV_0006"
+									},
+									"font": "Arial;13;0",
+									"containerChangeable": true,
+									"left": 48,
+									"top": 96,
+									"width": 122,
+									"height": 68,
+									"nameCompartment": {
+										"$ref": "NC_0021"
+									},
+									"wordWrap": true
+								},
+								{
+									"_type": "UMLActionView",
+									"_id": "ACTV_0027",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "ACT_0026"
+									},
+									"subViews": [
+										{
+											"_type": "UMLNameCompartmentView",
+											"_id": "NC_0028",
+											"_parent": {
+												"$ref": "ACTV_0027"
+											},
+											"model": {
+												"$ref": "ACT_0026"
+											},
+											"subViews": [
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0029",
+													"_parent": {
+														"$ref": "NC_0028"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 100,
+													"height": 13
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0030",
+													"_parent": {
+														"$ref": "NC_0028"
+													},
+													"font": "Arial;13;1",
+													"left": 222,
+													"top": 105,
+													"width": 114,
+													"height": 50,
+													"text": "确认约定",
+													"horizontalAlignment": 1,
+													"verticalAlignment": 2,
+													"wordWrap": true
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0031",
+													"_parent": {
+														"$ref": "NC_0028"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 100,
+													"width": 242,
+													"height": 13,
+													"text": "(from 咨询公司会见客户)"
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0032",
+													"_parent": {
+														"$ref": "NC_0028"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 100,
+													"horizontalAlignment": 1,
+													"wordWrap": true
+												}
+											],
+											"font": "Arial;13;0",
+											"left": 218,
+											"top": 96,
+											"width": 122,
+											"height": 52,
+											"stereotypeLabel": {
+												"$ref": "LBL_0029"
+											},
+											"nameLabel": {
+												"$ref": "LBL_0030"
+											},
+											"namespaceLabel": {
+												"$ref": "LBL_0031"
+											},
+											"propertyLabel": {
+												"$ref": "LBL_0032"
+											}
+										}
+									],
+									"containerView": {
+										"$ref": "LANEV_0009"
+									},
+									"font": "Arial;13;0",
+									"containerChangeable": true,
+									"left": 218,
+									"top": 96,
+									"width": 122,
+									"height": 68,
+									"nameCompartment": {
+										"$ref": "NC_0028"
+									},
+									"wordWrap": true
+								},
+								{
+									"_type": "UMLControlNodeView",
+									"_id": "CTLV_0034",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "CTL_0033"
+									},
+									"containerView": {
+										"$ref": "LANEV_0009"
+									},
+									"font": "Arial;13;0",
+									"containerChangeable": true,
+									"left": 264,
+									"top": 228,
+									"width": 31,
+									"height": 19
+								},
+								{
+									"_type": "UMLActionView",
+									"_id": "ACTV_0036",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "ACT_0035"
+									},
+									"subViews": [
+										{
+											"_type": "UMLNameCompartmentView",
+											"_id": "NC_0037",
+											"_parent": {
+												"$ref": "ACTV_0036"
+											},
+											"model": {
+												"$ref": "ACT_0035"
+											},
+											"subViews": [
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0038",
+													"_parent": {
+														"$ref": "NC_0037"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 212,
+													"height": 13
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0039",
+													"_parent": {
+														"$ref": "NC_0037"
+													},
+													"font": "Arial;13;1",
+													"left": 391,
+													"top": 217,
+													"width": 137,
+													"height": 50,
+													"text": "用电脑准备陈述报告",
+													"horizontalAlignment": 1,
+													"verticalAlignment": 2,
+													"wordWrap": true
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0040",
+													"_parent": {
+														"$ref": "NC_0037"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 212,
+													"width": 265,
+													"height": 13,
+													"text": "(from 咨询公司会见客户)"
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0041",
+													"_parent": {
+														"$ref": "NC_0037"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 212,
+													"horizontalAlignment": 1,
+													"wordWrap": true
+												}
+											],
+											"font": "Arial;13;0",
+											"left": 387,
+											"top": 208,
+											"width": 145,
+											"height": 52,
+											"stereotypeLabel": {
+												"$ref": "LBL_0038"
+											},
+											"nameLabel": {
+												"$ref": "LBL_0039"
+											},
+											"namespaceLabel": {
+												"$ref": "LBL_0040"
+											},
+											"propertyLabel": {
+												"$ref": "LBL_0041"
+											}
+										}
+									],
+									"containerView": {
+										"$ref": "LANEV_0012"
+									},
+									"font": "Arial;13;0",
+									"containerChangeable": true,
+									"left": 387,
+									"top": 208,
+									"width": 145,
+									"height": 68,
+									"nameCompartment": {
+										"$ref": "NC_0037"
+									},
+									"wordWrap": true
+								},
+								{
+									"_type": "UMLActionView",
+									"_id": "ACTV_0043",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "ACT_0042"
+									},
+									"subViews": [
+										{
+											"_type": "UMLNameCompartmentView",
+											"_id": "NC_0044",
+											"_parent": {
+												"$ref": "ACTV_0043"
+											},
+											"model": {
+												"$ref": "ACT_0042"
+											},
+											"subViews": [
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0045",
+													"_parent": {
+														"$ref": "NC_0044"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 212,
+													"height": 13
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0046",
+													"_parent": {
+														"$ref": "NC_0044"
+													},
+													"font": "Arial;13;1",
+													"left": 580,
+													"top": 217,
+													"width": 118,
+													"height": 50,
+													"text": "准备会议室",
+													"horizontalAlignment": 1,
+													"verticalAlignment": 2,
+													"wordWrap": true
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0047",
+													"_parent": {
+														"$ref": "NC_0044"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 212,
+													"width": 246,
+													"height": 13,
+													"text": "(from 咨询公司会见客户)"
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0048",
+													"_parent": {
+														"$ref": "NC_0044"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 212,
+													"horizontalAlignment": 1,
+													"wordWrap": true
+												}
+											],
+											"font": "Arial;13;0",
+											"left": 576,
+											"top": 208,
+											"width": 126,
+											"height": 52,
+											"stereotypeLabel": {
+												"$ref": "LBL_0045"
+											},
+											"nameLabel": {
+												"$ref": "LBL_0046"
+											},
+											"namespaceLabel": {
+												"$ref": "LBL_0047"
+											},
+											"propertyLabel": {
+												"$ref": "LBL_0048"
+											}
+										}
+									],
+									"containerView": {
+										"$ref": "LANEV_0015"
+									},
+									"font": "Arial;13;0",
+									"containerChangeable": true,
+									"left": 576,
+									"top": 208,
+									"width": 126,
+									"height": 68,
+									"nameCompartment": {
+										"$ref": "NC_0044"
+									},
+									"wordWrap": true
+								},
+								{
+									"_type": "UMLControlNodeView",
+									"_id": "CTLV_0050",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "CTL_0049"
+									},
+									"containerView": {
+										"$ref": "LANEV_0009"
+									},
+									"font": "Arial;13;0",
+									"containerChangeable": true,
+									"left": 264,
+									"top": 340,
+									"width": 31,
+									"height": 19
+								},
+								{
+									"_type": "UMLActionView",
+									"_id": "ACTV_0052",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "ACT_0051"
+									},
+									"subViews": [
+										{
+											"_type": "UMLNameCompartmentView",
+											"_id": "NC_0053",
+											"_parent": {
+												"$ref": "ACTV_0052"
+											},
+											"model": {
+												"$ref": "ACT_0051"
+											},
+											"subViews": [
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0054",
+													"_parent": {
+														"$ref": "NC_0053"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 424,
+													"height": 13
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0055",
+													"_parent": {
+														"$ref": "NC_0053"
+													},
+													"font": "Arial;13;1",
+													"left": 214,
+													"top": 429,
+													"width": 130,
+													"height": 50,
+													"text": "在约定时间和地点与业务员、咨询顾问会见",
+													"horizontalAlignment": 1,
+													"verticalAlignment": 2,
+													"wordWrap": true
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0056",
+													"_parent": {
+														"$ref": "NC_0053"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 424,
+													"width": 258,
+													"height": 13,
+													"text": "(from 咨询公司会见客户)"
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0057",
+													"_parent": {
+														"$ref": "NC_0053"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 424,
+													"horizontalAlignment": 1,
+													"wordWrap": true
+												}
+											],
+											"font": "Arial;13;0",
+											"left": 210,
+											"top": 420,
+											"width": 138,
+											"height": 52,
+											"stereotypeLabel": {
+												"$ref": "LBL_0054"
+											},
+											"nameLabel": {
+												"$ref": "LBL_0055"
+											},
+											"namespaceLabel": {
+												"$ref": "LBL_0056"
+											},
+											"propertyLabel": {
+												"$ref": "LBL_0057"
+											}
+										}
+									],
+									"containerView": {
+										"$ref": "LANEV_0009"
+									},
+									"font": "Arial;13;0",
+									"containerChangeable": true,
+									"left": 210,
+									"top": 420,
+									"width": 138,
+									"height": 68,
+									"nameCompartment": {
+										"$ref": "NC_0053"
+									},
+									"wordWrap": true
+								},
+								{
+									"_type": "UMLActionView",
+									"_id": "ACTV_0059",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "ACT_0058"
+									},
+									"subViews": [
+										{
+											"_type": "UMLNameCompartmentView",
+											"_id": "NC_0060",
+											"_parent": {
+												"$ref": "ACTV_0059"
+											},
+											"model": {
+												"$ref": "ACT_0058"
+											},
+											"subViews": [
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0061",
+													"_parent": {
+														"$ref": "NC_0060"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 524,
+													"height": 13
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0062",
+													"_parent": {
+														"$ref": "NC_0060"
+													},
+													"font": "Arial;13;1",
+													"left": 52,
+													"top": 529,
+													"width": 114,
+													"height": 50,
+													"text": "准备会议用纸",
+													"horizontalAlignment": 1,
+													"verticalAlignment": 2,
+													"wordWrap": true
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0063",
+													"_parent": {
+														"$ref": "NC_0060"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 524,
+													"width": 242,
+													"height": 13,
+													"text": "(from 咨询公司会见客户)"
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0064",
+													"_parent": {
+														"$ref": "NC_0060"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 524,
+													"horizontalAlignment": 1,
+													"wordWrap": true
+												}
+											],
+											"font": "Arial;13;0",
+											"left": 48,
+											"top": 520,
+											"width": 122,
+											"height": 52,
+											"stereotypeLabel": {
+												"$ref": "LBL_0061"
+											},
+											"nameLabel": {
+												"$ref": "LBL_0062"
+											},
+											"namespaceLabel": {
+												"$ref": "LBL_0063"
+											},
+											"propertyLabel": {
+												"$ref": "LBL_0064"
+											}
+										}
+									],
+									"containerView": {
+										"$ref": "LANEV_0006"
+									},
+									"font": "Arial;13;0",
+									"containerChangeable": true,
+									"left": 48,
+									"top": 520,
+									"width": 122,
+									"height": 68,
+									"nameCompartment": {
+										"$ref": "NC_0060"
+									},
+									"wordWrap": true
+								},
+								{
+									"_type": "UMLControlNodeView",
+									"_id": "CTLV_0066",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "CTL_0065"
+									},
+									"containerView": {
+										"$ref": "LANEV_0009"
+									},
+									"font": "Arial;13;0",
+									"containerChangeable": true,
+									"left": 264,
+									"top": 636,
+									"width": 31,
+									"height": 19
+								},
+								{
+									"_type": "UMLActionView",
+									"_id": "ACTV_0068",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "ACT_0067"
+									},
+									"subViews": [
+										{
+											"_type": "UMLNameCompartmentView",
+											"_id": "NC_0069",
+											"_parent": {
+												"$ref": "ACTV_0068"
+											},
+											"model": {
+												"$ref": "ACT_0067"
+											},
+											"subViews": [
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0070",
+													"_parent": {
+														"$ref": "NC_0069"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 704,
+													"height": 13
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0071",
+													"_parent": {
+														"$ref": "NC_0069"
+													},
+													"font": "Arial;13;1",
+													"left": 391,
+													"top": 709,
+													"width": 137,
+													"height": 50,
+													"text": "根据问题陈述编写提案",
+													"horizontalAlignment": 1,
+													"verticalAlignment": 2,
+													"wordWrap": true
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0072",
+													"_parent": {
+														"$ref": "NC_0069"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 704,
+													"width": 265,
+													"height": 13,
+													"text": "(from 咨询公司会见客户)"
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0073",
+													"_parent": {
+														"$ref": "NC_0069"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 704,
+													"horizontalAlignment": 1,
+													"wordWrap": true
+												}
+											],
+											"font": "Arial;13;0",
+											"left": 387,
+											"top": 700,
+											"width": 145,
+											"height": 52,
+											"stereotypeLabel": {
+												"$ref": "LBL_0070"
+											},
+											"nameLabel": {
+												"$ref": "LBL_0071"
+											},
+											"namespaceLabel": {
+												"$ref": "LBL_0072"
+											},
+											"propertyLabel": {
+												"$ref": "LBL_0073"
+											}
+										}
+									],
+									"containerView": {
+										"$ref": "LANEV_0012"
+									},
+									"font": "Arial;13;0",
+									"containerChangeable": true,
+									"left": 387,
+									"top": 700,
+									"width": 145,
+									"height": 68,
+									"nameCompartment": {
+										"$ref": "NC_0069"
+									},
+									"wordWrap": true
+								},
+								{
+									"_type": "UMLActionView",
+									"_id": "ACTV_0075",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "ACT_0074"
+									},
+									"subViews": [
+										{
+											"_type": "UMLNameCompartmentView",
+											"_id": "NC_0076",
+											"_parent": {
+												"$ref": "ACTV_0075"
+											},
+											"model": {
+												"$ref": "ACT_0074"
+											},
+											"subViews": [
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0077",
+													"_parent": {
+														"$ref": "NC_0076"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 824,
+													"height": 13
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0078",
+													"_parent": {
+														"$ref": "NC_0076"
+													},
+													"font": "Arial;13;1",
+													"left": 391,
+													"top": 829,
+													"width": 137,
+													"height": 50,
+													"text": "把提案发给客户",
+													"horizontalAlignment": 1,
+													"verticalAlignment": 2,
+													"wordWrap": true
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0079",
+													"_parent": {
+														"$ref": "NC_0076"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 824,
+													"width": 265,
+													"height": 13,
+													"text": "(from 咨询公司会见客户)"
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0080",
+													"_parent": {
+														"$ref": "NC_0076"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 824,
+													"horizontalAlignment": 1,
+													"wordWrap": true
+												}
+											],
+											"font": "Arial;13;0",
+											"left": 387,
+											"top": 820,
+											"width": 145,
+											"height": 52,
+											"stereotypeLabel": {
+												"$ref": "LBL_0077"
+											},
+											"nameLabel": {
+												"$ref": "LBL_0078"
+											},
+											"namespaceLabel": {
+												"$ref": "LBL_0079"
+											},
+											"propertyLabel": {
+												"$ref": "LBL_0080"
+											}
+										}
+									],
+									"containerView": {
+										"$ref": "LANEV_0012"
+									},
+									"font": "Arial;13;0",
+									"containerChangeable": true,
+									"left": 387,
+									"top": 820,
+									"width": 145,
+									"height": 68,
+									"nameCompartment": {
+										"$ref": "NC_0076"
+									},
+									"wordWrap": true
+								},
+								{
+									"_type": "UMLActionView",
+									"_id": "ACTV_0082",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "ACT_0081"
+									},
+									"subViews": [
+										{
+											"_type": "UMLNameCompartmentView",
+											"_id": "NC_0083",
+											"_parent": {
+												"$ref": "ACTV_0082"
+											},
+											"model": {
+												"$ref": "ACT_0081"
+											},
+											"subViews": [
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0084",
+													"_parent": {
+														"$ref": "NC_0083"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 824,
+													"height": 13
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0085",
+													"_parent": {
+														"$ref": "NC_0083"
+													},
+													"font": "Arial;13;1",
+													"left": 222,
+													"top": 829,
+													"width": 114,
+													"height": 50,
+													"text": "接收提案",
+													"horizontalAlignment": 1,
+													"verticalAlignment": 2,
+													"wordWrap": true
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0086",
+													"_parent": {
+														"$ref": "NC_0083"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 824,
+													"width": 242,
+													"height": 13,
+													"text": "(from 咨询公司会见客户)"
+												},
+												{
+													"_type": "LabelView",
+													"_id": "LBL_0087",
+													"_parent": {
+														"$ref": "NC_0083"
+													},
+													"visible": false,
+													"font": "Arial;13;0",
+													"top": 824,
+													"horizontalAlignment": 1,
+													"wordWrap": true
+												}
+											],
+											"font": "Arial;13;0",
+											"left": 218,
+											"top": 820,
+											"width": 122,
+											"height": 52,
+											"stereotypeLabel": {
+												"$ref": "LBL_0084"
+											},
+											"nameLabel": {
+												"$ref": "LBL_0085"
+											},
+											"namespaceLabel": {
+												"$ref": "LBL_0086"
+											},
+											"propertyLabel": {
+												"$ref": "LBL_0087"
+											}
+										}
+									],
+									"containerView": {
+										"$ref": "LANEV_0009"
+									},
+									"font": "Arial;13;0",
+									"containerChangeable": true,
+									"left": 218,
+									"top": 820,
+									"width": 122,
+									"height": 68,
+									"nameCompartment": {
+										"$ref": "NC_0083"
+									},
+									"wordWrap": true
+								},
+								{
+									"_type": "UMLControlNodeView",
+									"_id": "CTLV_0089",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "CTL_0088"
+									},
+									"containerView": {
+										"$ref": "LANEV_0009"
+									},
+									"font": "Arial;13;0",
+									"containerChangeable": true,
+									"left": 267,
+									"top": 930,
+									"width": 26,
+									"height": 26
+								},
+								{
+									"_type": "UMLControlFlowView",
+									"_id": "FLOWV_0091",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "FLOW_0090"
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0092",
+											"_parent": {
+												"$ref": "FLOWV_0091"
+											},
+											"model": {
+												"$ref": "FLOW_0090"
+											},
+											"font": "Arial;13;0",
+											"left": 116,
+											"top": 82,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 18,
+											"hostEdge": {
+												"$ref": "FLOWV_0091"
+											},
+											"edgePosition": 1,
+											"visible": false
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0093",
+											"_parent": {
+												"$ref": "FLOWV_0091"
+											},
+											"model": {
+												"$ref": "FLOW_0090"
+											},
+											"font": "Arial;13;0",
+											"left": 132,
+											"top": 82,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 30,
+											"hostEdge": {
+												"$ref": "FLOWV_0091"
+											},
+											"edgePosition": 1,
+											"visible": null
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0094",
+											"_parent": {
+												"$ref": "FLOWV_0091"
+											},
+											"model": {
+												"$ref": "FLOW_0090"
+											},
+											"font": "Arial;13;0",
+											"left": 96,
+											"top": 83,
+											"height": 13,
+											"alpha": -1.5707963267948966,
+											"distance": 15,
+											"hostEdge": {
+												"$ref": "FLOWV_0091"
+											},
+											"edgePosition": 1,
+											"visible": false
+										}
+									],
+									"font": "Arial;13;0",
+									"head": {
+										"$ref": "ACTV_0020"
+									},
+									"tail": {
+										"$ref": "CTLV_0018"
+									},
+									"lineStyle": 2,
+									"points": "109:76;109:96",
+									"showVisibility": true,
+									"nameLabel": {
+										"$ref": "ELBL_0092"
+									},
+									"stereotypeLabel": {
+										"$ref": "ELBL_0093"
+									},
+									"propertyLabel": {
+										"$ref": "ELBL_0094"
+									}
+								},
+								{
+									"_type": "UMLControlFlowView",
+									"_id": "FLOWV_0096",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "FLOW_0095"
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0097",
+											"_parent": {
+												"$ref": "FLOWV_0096"
+											},
+											"model": {
+												"$ref": "FLOW_0095"
+											},
+											"font": "Arial;13;0",
+											"left": 184,
+											"top": 116,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 18,
+											"hostEdge": {
+												"$ref": "FLOWV_0096"
+											},
+											"edgePosition": 1,
+											"visible": false
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0098",
+											"_parent": {
+												"$ref": "FLOWV_0096"
+											},
+											"model": {
+												"$ref": "FLOW_0095"
+											},
+											"font": "Arial;13;0",
+											"left": 200,
+											"top": 116,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 30,
+											"hostEdge": {
+												"$ref": "FLOWV_0096"
+											},
+											"edgePosition": 1,
+											"visible": null
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0099",
+											"_parent": {
+												"$ref": "FLOWV_0096"
+											},
+											"model": {
+												"$ref": "FLOW_0095"
+											},
+											"font": "Arial;13;0",
+											"left": 164,
+											"top": 117,
+											"height": 13,
+											"alpha": -1.5707963267948966,
+											"distance": 15,
+											"hostEdge": {
+												"$ref": "FLOWV_0096"
+											},
+											"edgePosition": 1,
+											"visible": false
+										}
+									],
+									"font": "Arial;13;0",
+									"head": {
+										"$ref": "ACTV_0027"
+									},
+									"tail": {
+										"$ref": "ACTV_0020"
+									},
+									"lineStyle": 2,
+									"points": "170:130;218:130",
+									"showVisibility": true,
+									"nameLabel": {
+										"$ref": "ELBL_0097"
+									},
+									"stereotypeLabel": {
+										"$ref": "ELBL_0098"
+									},
+									"propertyLabel": {
+										"$ref": "ELBL_0099"
+									}
+								},
+								{
+									"_type": "UMLControlFlowView",
+									"_id": "FLOWV_0101",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "FLOW_0100"
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0102",
+											"_parent": {
+												"$ref": "FLOWV_0101"
+											},
+											"model": {
+												"$ref": "FLOW_0100"
+											},
+											"font": "Arial;13;0",
+											"left": 286,
+											"top": 190,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 18,
+											"hostEdge": {
+												"$ref": "FLOWV_0101"
+											},
+											"edgePosition": 1,
+											"visible": false
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0103",
+											"_parent": {
+												"$ref": "FLOWV_0101"
+											},
+											"model": {
+												"$ref": "FLOW_0100"
+											},
+											"font": "Arial;13;0",
+											"left": 302,
+											"top": 190,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 30,
+											"hostEdge": {
+												"$ref": "FLOWV_0101"
+											},
+											"edgePosition": 1,
+											"visible": null
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0104",
+											"_parent": {
+												"$ref": "FLOWV_0101"
+											},
+											"model": {
+												"$ref": "FLOW_0100"
+											},
+											"font": "Arial;13;0",
+											"left": 266,
+											"top": 191,
+											"height": 13,
+											"alpha": -1.5707963267948966,
+											"distance": 15,
+											"hostEdge": {
+												"$ref": "FLOWV_0101"
+											},
+											"edgePosition": 1,
+											"visible": false
+										}
+									],
+									"font": "Arial;13;0",
+									"head": {
+										"$ref": "CTLV_0034"
+									},
+									"tail": {
+										"$ref": "ACTV_0027"
+									},
+									"lineStyle": 2,
+									"points": "279:164;279:228",
+									"showVisibility": true,
+									"nameLabel": {
+										"$ref": "ELBL_0102"
+									},
+									"stereotypeLabel": {
+										"$ref": "ELBL_0103"
+									},
+									"propertyLabel": {
+										"$ref": "ELBL_0104"
+									}
+								},
+								{
+									"_type": "UMLControlFlowView",
+									"_id": "FLOWV_0106",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "FLOW_0105"
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0107",
+											"_parent": {
+												"$ref": "FLOWV_0106"
+											},
+											"model": {
+												"$ref": "FLOW_0105"
+											},
+											"font": "Arial;13;0",
+											"left": 336,
+											"top": 220,
+											"height": 13,
+											"alpha": -2.2,
+											"distance": 22,
+											"hostEdge": {
+												"$ref": "FLOWV_0106"
+											},
+											"edgePosition": 1,
+											"width": 72,
+											"text": " [约定在公司外]"
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0108",
+											"_parent": {
+												"$ref": "FLOWV_0106"
+											},
+											"model": {
+												"$ref": "FLOW_0105"
+											},
+											"font": "Arial;13;0",
+											"left": 352,
+											"top": 220,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 30,
+											"hostEdge": {
+												"$ref": "FLOWV_0106"
+											},
+											"edgePosition": 1,
+											"visible": null
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0109",
+											"_parent": {
+												"$ref": "FLOWV_0106"
+											},
+											"model": {
+												"$ref": "FLOW_0105"
+											},
+											"font": "Arial;13;0",
+											"left": 316,
+											"top": 221,
+											"height": 13,
+											"alpha": -1.5707963267948966,
+											"distance": 15,
+											"hostEdge": {
+												"$ref": "FLOWV_0106"
+											},
+											"edgePosition": 1,
+											"visible": false
+										}
+									],
+									"font": "Arial;13;0",
+									"head": {
+										"$ref": "ACTV_0036"
+									},
+									"tail": {
+										"$ref": "CTLV_0034"
+									},
+									"lineStyle": 2,
+									"points": "295:238;459:238;459:208",
+									"showVisibility": true,
+									"nameLabel": {
+										"$ref": "ELBL_0107"
+									},
+									"stereotypeLabel": {
+										"$ref": "ELBL_0108"
+									},
+									"propertyLabel": {
+										"$ref": "ELBL_0109"
+									}
+								},
+								{
+									"_type": "UMLControlFlowView",
+									"_id": "FLOWV_0111",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "FLOW_0110"
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0112",
+											"_parent": {
+												"$ref": "FLOWV_0111"
+											},
+											"model": {
+												"$ref": "FLOW_0110"
+											},
+											"font": "Arial;13;0",
+											"left": 488,
+											"top": 220,
+											"height": 13,
+											"alpha": -2.2,
+											"distance": 22,
+											"hostEdge": {
+												"$ref": "FLOWV_0111"
+											},
+											"edgePosition": 1,
+											"width": 72,
+											"text": " [约定在公司内]"
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0113",
+											"_parent": {
+												"$ref": "FLOWV_0111"
+											},
+											"model": {
+												"$ref": "FLOW_0110"
+											},
+											"font": "Arial;13;0",
+											"left": 504,
+											"top": 220,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 30,
+											"hostEdge": {
+												"$ref": "FLOWV_0111"
+											},
+											"edgePosition": 1,
+											"visible": null
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0114",
+											"_parent": {
+												"$ref": "FLOWV_0111"
+											},
+											"model": {
+												"$ref": "FLOW_0110"
+											},
+											"font": "Arial;13;0",
+											"left": 468,
+											"top": 221,
+											"height": 13,
+											"alpha": -1.5707963267948966,
+											"distance": 15,
+											"hostEdge": {
+												"$ref": "FLOWV_0111"
+											},
+											"edgePosition": 1,
+											"visible": false
+										}
+									],
+									"font": "Arial;13;0",
+									"head": {
+										"$ref": "ACTV_0043"
+									},
+									"tail": {
+										"$ref": "CTLV_0034"
+									},
+									"lineStyle": 2,
+									"points": "295:238;639:238;639:208",
+									"showVisibility": true,
+									"nameLabel": {
+										"$ref": "ELBL_0112"
+									},
+									"stereotypeLabel": {
+										"$ref": "ELBL_0113"
+									},
+									"propertyLabel": {
+										"$ref": "ELBL_0114"
+									}
+								},
+								{
+									"_type": "UMLControlFlowView",
+									"_id": "FLOWV_0116",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "FLOW_0115"
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0117",
+											"_parent": {
+												"$ref": "FLOWV_0116"
+											},
+											"model": {
+												"$ref": "FLOW_0115"
+											},
+											"font": "Arial;13;0",
+											"left": 422,
+											"top": 292,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 18,
+											"hostEdge": {
+												"$ref": "FLOWV_0116"
+											},
+											"edgePosition": 1,
+											"visible": false
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0118",
+											"_parent": {
+												"$ref": "FLOWV_0116"
+											},
+											"model": {
+												"$ref": "FLOW_0115"
+											},
+											"font": "Arial;13;0",
+											"left": 438,
+											"top": 292,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 30,
+											"hostEdge": {
+												"$ref": "FLOWV_0116"
+											},
+											"edgePosition": 1,
+											"visible": null
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0119",
+											"_parent": {
+												"$ref": "FLOWV_0116"
+											},
+											"model": {
+												"$ref": "FLOW_0115"
+											},
+											"font": "Arial;13;0",
+											"left": 402,
+											"top": 293,
+											"height": 13,
+											"alpha": -1.5707963267948966,
+											"distance": 15,
+											"hostEdge": {
+												"$ref": "FLOWV_0116"
+											},
+											"edgePosition": 1,
+											"visible": false
+										}
+									],
+									"font": "Arial;13;0",
+									"head": {
+										"$ref": "CTLV_0050"
+									},
+									"tail": {
+										"$ref": "ACTV_0036"
+									},
+									"lineStyle": 2,
+									"points": "459:276;459:310;279:310;279:340",
+									"showVisibility": true,
+									"nameLabel": {
+										"$ref": "ELBL_0117"
+									},
+									"stereotypeLabel": {
+										"$ref": "ELBL_0118"
+									},
+									"propertyLabel": {
+										"$ref": "ELBL_0119"
+									}
+								},
+								{
+									"_type": "UMLControlFlowView",
+									"_id": "FLOWV_0121",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "FLOW_0120"
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0122",
+											"_parent": {
+												"$ref": "FLOWV_0121"
+											},
+											"model": {
+												"$ref": "FLOW_0120"
+											},
+											"font": "Arial;13;0",
+											"left": 506,
+											"top": 308,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 18,
+											"hostEdge": {
+												"$ref": "FLOWV_0121"
+											},
+											"edgePosition": 1,
+											"visible": false
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0123",
+											"_parent": {
+												"$ref": "FLOWV_0121"
+											},
+											"model": {
+												"$ref": "FLOW_0120"
+											},
+											"font": "Arial;13;0",
+											"left": 522,
+											"top": 308,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 30,
+											"hostEdge": {
+												"$ref": "FLOWV_0121"
+											},
+											"edgePosition": 1,
+											"visible": null
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0124",
+											"_parent": {
+												"$ref": "FLOWV_0121"
+											},
+											"model": {
+												"$ref": "FLOW_0120"
+											},
+											"font": "Arial;13;0",
+											"left": 486,
+											"top": 309,
+											"height": 13,
+											"alpha": -1.5707963267948966,
+											"distance": 15,
+											"hostEdge": {
+												"$ref": "FLOWV_0121"
+											},
+											"edgePosition": 1,
+											"visible": false
+										}
+									],
+									"font": "Arial;13;0",
+									"head": {
+										"$ref": "CTLV_0050"
+									},
+									"tail": {
+										"$ref": "ACTV_0043"
+									},
+									"lineStyle": 2,
+									"points": "639:276;639:326;279:326;279:340",
+									"showVisibility": true,
+									"nameLabel": {
+										"$ref": "ELBL_0122"
+									},
+									"stereotypeLabel": {
+										"$ref": "ELBL_0123"
+									},
+									"propertyLabel": {
+										"$ref": "ELBL_0124"
+									}
+								},
+								{
+									"_type": "UMLControlFlowView",
+									"_id": "FLOWV_0126",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "FLOW_0125"
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0127",
+											"_parent": {
+												"$ref": "FLOWV_0126"
+											},
+											"model": {
+												"$ref": "FLOW_0125"
+											},
+											"font": "Arial;13;0",
+											"left": 286,
+											"top": 388,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 18,
+											"hostEdge": {
+												"$ref": "FLOWV_0126"
+											},
+											"edgePosition": 1,
+											"visible": false
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0128",
+											"_parent": {
+												"$ref": "FLOWV_0126"
+											},
+											"model": {
+												"$ref": "FLOW_0125"
+											},
+											"font": "Arial;13;0",
+											"left": 302,
+											"top": 388,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 30,
+											"hostEdge": {
+												"$ref": "FLOWV_0126"
+											},
+											"edgePosition": 1,
+											"visible": null
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0129",
+											"_parent": {
+												"$ref": "FLOWV_0126"
+											},
+											"model": {
+												"$ref": "FLOW_0125"
+											},
+											"font": "Arial;13;0",
+											"left": 266,
+											"top": 389,
+											"height": 13,
+											"alpha": -1.5707963267948966,
+											"distance": 15,
+											"hostEdge": {
+												"$ref": "FLOWV_0126"
+											},
+											"edgePosition": 1,
+											"visible": false
+										}
+									],
+									"font": "Arial;13;0",
+									"head": {
+										"$ref": "ACTV_0052"
+									},
+									"tail": {
+										"$ref": "CTLV_0050"
+									},
+									"lineStyle": 2,
+									"points": "279:359;279:420",
+									"showVisibility": true,
+									"nameLabel": {
+										"$ref": "ELBL_0127"
+									},
+									"stereotypeLabel": {
+										"$ref": "ELBL_0128"
+									},
+									"propertyLabel": {
+										"$ref": "ELBL_0129"
+									}
+								},
+								{
+									"_type": "UMLControlFlowView",
+									"_id": "FLOWV_0131",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "FLOW_0130"
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0132",
+											"_parent": {
+												"$ref": "FLOWV_0131"
+											},
+											"model": {
+												"$ref": "FLOW_0130"
+											},
+											"font": "Arial;13;0",
+											"left": 158,
+											"top": 466,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 18,
+											"hostEdge": {
+												"$ref": "FLOWV_0131"
+											},
+											"edgePosition": 1,
+											"visible": false
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0133",
+											"_parent": {
+												"$ref": "FLOWV_0131"
+											},
+											"model": {
+												"$ref": "FLOW_0130"
+											},
+											"font": "Arial;13;0",
+											"left": 174,
+											"top": 466,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 30,
+											"hostEdge": {
+												"$ref": "FLOWV_0131"
+											},
+											"edgePosition": 1,
+											"visible": null
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0134",
+											"_parent": {
+												"$ref": "FLOWV_0131"
+											},
+											"model": {
+												"$ref": "FLOW_0130"
+											},
+											"font": "Arial;13;0",
+											"left": 138,
+											"top": 467,
+											"height": 13,
+											"alpha": -1.5707963267948966,
+											"distance": 15,
+											"hostEdge": {
+												"$ref": "FLOWV_0131"
+											},
+											"edgePosition": 1,
+											"visible": false
+										}
+									],
+									"font": "Arial;13;0",
+									"head": {
+										"$ref": "ACTV_0059"
+									},
+									"tail": {
+										"$ref": "ACTV_0052"
+									},
+									"lineStyle": 2,
+									"points": "210:454;109:454;109:520",
+									"showVisibility": true,
+									"nameLabel": {
+										"$ref": "ELBL_0132"
+									},
+									"stereotypeLabel": {
+										"$ref": "ELBL_0133"
+									},
+									"propertyLabel": {
+										"$ref": "ELBL_0134"
+									}
+								},
+								{
+									"_type": "UMLControlFlowView",
+									"_id": "FLOWV_0136",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "FLOW_0135"
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0137",
+											"_parent": {
+												"$ref": "FLOWV_0136"
+											},
+											"model": {
+												"$ref": "FLOW_0135"
+											},
+											"font": "Arial;13;0",
+											"left": 214,
+											"top": 566,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 18,
+											"hostEdge": {
+												"$ref": "FLOWV_0136"
+											},
+											"edgePosition": 1,
+											"visible": false
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0138",
+											"_parent": {
+												"$ref": "FLOWV_0136"
+											},
+											"model": {
+												"$ref": "FLOW_0135"
+											},
+											"font": "Arial;13;0",
+											"left": 230,
+											"top": 566,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 30,
+											"hostEdge": {
+												"$ref": "FLOWV_0136"
+											},
+											"edgePosition": 1,
+											"visible": null
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0139",
+											"_parent": {
+												"$ref": "FLOWV_0136"
+											},
+											"model": {
+												"$ref": "FLOW_0135"
+											},
+											"font": "Arial;13;0",
+											"left": 194,
+											"top": 567,
+											"height": 13,
+											"alpha": -1.5707963267948966,
+											"distance": 15,
+											"hostEdge": {
+												"$ref": "FLOWV_0136"
+											},
+											"edgePosition": 1,
+											"visible": false
+										}
+									],
+									"font": "Arial;13;0",
+									"head": {
+										"$ref": "CTLV_0066"
+									},
+									"tail": {
+										"$ref": "ACTV_0059"
+									},
+									"lineStyle": 2,
+									"points": "170:554;279:554;279:636",
+									"showVisibility": true,
+									"nameLabel": {
+										"$ref": "ELBL_0137"
+									},
+									"stereotypeLabel": {
+										"$ref": "ELBL_0138"
+									},
+									"propertyLabel": {
+										"$ref": "ELBL_0139"
+									}
+								},
+								{
+									"_type": "UMLControlFlowView",
+									"_id": "FLOWV_0141",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "FLOW_0140"
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0142",
+											"_parent": {
+												"$ref": "FLOWV_0141"
+											},
+											"model": {
+												"$ref": "FLOW_0140"
+											},
+											"font": "Arial;13;0",
+											"left": 336,
+											"top": 628,
+											"height": 13,
+											"alpha": -2.1,
+											"distance": 20,
+											"hostEdge": {
+												"$ref": "FLOWV_0141"
+											},
+											"edgePosition": 1,
+											"width": 72,
+											"text": " [产生问题陈述]"
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0143",
+											"_parent": {
+												"$ref": "FLOWV_0141"
+											},
+											"model": {
+												"$ref": "FLOW_0140"
+											},
+											"font": "Arial;13;0",
+											"left": 352,
+											"top": 628,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 30,
+											"hostEdge": {
+												"$ref": "FLOWV_0141"
+											},
+											"edgePosition": 1,
+											"visible": null
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0144",
+											"_parent": {
+												"$ref": "FLOWV_0141"
+											},
+											"model": {
+												"$ref": "FLOW_0140"
+											},
+											"font": "Arial;13;0",
+											"left": 316,
+											"top": 629,
+											"height": 13,
+											"alpha": -1.5707963267948966,
+											"distance": 15,
+											"hostEdge": {
+												"$ref": "FLOWV_0141"
+											},
+											"edgePosition": 1,
+											"visible": false
+										}
+									],
+									"font": "Arial;13;0",
+									"head": {
+										"$ref": "ACTV_0068"
+									},
+									"tail": {
+										"$ref": "CTLV_0066"
+									},
+									"lineStyle": 2,
+									"points": "295:645;459:645;459:700",
+									"showVisibility": true,
+									"nameLabel": {
+										"$ref": "ELBL_0142"
+									},
+									"stereotypeLabel": {
+										"$ref": "ELBL_0143"
+									},
+									"propertyLabel": {
+										"$ref": "ELBL_0144"
+									}
+								},
+								{
+									"_type": "UMLControlFlowView",
+									"_id": "FLOWV_0146",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "FLOW_0145"
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0147",
+											"_parent": {
+												"$ref": "FLOWV_0146"
+											},
+											"model": {
+												"$ref": "FLOW_0145"
+											},
+											"font": "Arial;13;0",
+											"left": 114,
+											"top": 720,
+											"height": 13,
+											"alpha": -1.57,
+											"distance": 18,
+											"hostEdge": {
+												"$ref": "FLOWV_0146"
+											},
+											"edgePosition": 1,
+											"width": 84,
+											"text": " [未产生问题陈述]"
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0148",
+											"_parent": {
+												"$ref": "FLOWV_0146"
+											},
+											"model": {
+												"$ref": "FLOW_0145"
+											},
+											"font": "Arial;13;0",
+											"left": 130,
+											"top": 720,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 30,
+											"hostEdge": {
+												"$ref": "FLOWV_0146"
+											},
+											"edgePosition": 1,
+											"visible": null
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0149",
+											"_parent": {
+												"$ref": "FLOWV_0146"
+											},
+											"model": {
+												"$ref": "FLOW_0145"
+											},
+											"font": "Arial;13;0",
+											"left": 94,
+											"top": 721,
+											"height": 13,
+											"alpha": -1.5707963267948966,
+											"distance": 15,
+											"hostEdge": {
+												"$ref": "FLOWV_0146"
+											},
+											"edgePosition": 1,
+											"visible": false
+										}
+									],
+									"font": "Arial;13;0",
+									"head": {
+										"$ref": "CTLV_0089"
+									},
+									"tail": {
+										"$ref": "CTLV_0066"
+									},
+									"lineStyle": 2,
+									"points": "264:645;180:645;180:943;267:943",
+									"showVisibility": true,
+									"nameLabel": {
+										"$ref": "ELBL_0147"
+									},
+									"stereotypeLabel": {
+										"$ref": "ELBL_0148"
+									},
+									"propertyLabel": {
+										"$ref": "ELBL_0149"
+									}
+								},
+								{
+									"_type": "UMLControlFlowView",
+									"_id": "FLOWV_0151",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "FLOW_0150"
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0152",
+											"_parent": {
+												"$ref": "FLOWV_0151"
+											},
+											"model": {
+												"$ref": "FLOW_0150"
+											},
+											"font": "Arial;13;0",
+											"left": 466,
+											"top": 790,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 18,
+											"hostEdge": {
+												"$ref": "FLOWV_0151"
+											},
+											"edgePosition": 1,
+											"visible": false
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0153",
+											"_parent": {
+												"$ref": "FLOWV_0151"
+											},
+											"model": {
+												"$ref": "FLOW_0150"
+											},
+											"font": "Arial;13;0",
+											"left": 482,
+											"top": 790,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 30,
+											"hostEdge": {
+												"$ref": "FLOWV_0151"
+											},
+											"edgePosition": 1,
+											"visible": null
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0154",
+											"_parent": {
+												"$ref": "FLOWV_0151"
+											},
+											"model": {
+												"$ref": "FLOW_0150"
+											},
+											"font": "Arial;13;0",
+											"left": 446,
+											"top": 791,
+											"height": 13,
+											"alpha": -1.5707963267948966,
+											"distance": 15,
+											"hostEdge": {
+												"$ref": "FLOWV_0151"
+											},
+											"edgePosition": 1,
+											"visible": false
+										}
+									],
+									"font": "Arial;13;0",
+									"head": {
+										"$ref": "ACTV_0075"
+									},
+									"tail": {
+										"$ref": "ACTV_0068"
+									},
+									"lineStyle": 2,
+									"points": "459:768;459:820",
+									"showVisibility": true,
+									"nameLabel": {
+										"$ref": "ELBL_0152"
+									},
+									"stereotypeLabel": {
+										"$ref": "ELBL_0153"
+									},
+									"propertyLabel": {
+										"$ref": "ELBL_0154"
+									}
+								},
+								{
+									"_type": "UMLControlFlowView",
+									"_id": "FLOWV_0156",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "FLOW_0155"
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0157",
+											"_parent": {
+												"$ref": "FLOWV_0156"
+											},
+											"model": {
+												"$ref": "FLOW_0155"
+											},
+											"font": "Arial;13;0",
+											"left": 352,
+											"top": 840,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 18,
+											"hostEdge": {
+												"$ref": "FLOWV_0156"
+											},
+											"edgePosition": 1,
+											"visible": false
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0158",
+											"_parent": {
+												"$ref": "FLOWV_0156"
+											},
+											"model": {
+												"$ref": "FLOW_0155"
+											},
+											"font": "Arial;13;0",
+											"left": 368,
+											"top": 840,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 30,
+											"hostEdge": {
+												"$ref": "FLOWV_0156"
+											},
+											"edgePosition": 1,
+											"visible": null
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0159",
+											"_parent": {
+												"$ref": "FLOWV_0156"
+											},
+											"model": {
+												"$ref": "FLOW_0155"
+											},
+											"font": "Arial;13;0",
+											"left": 332,
+											"top": 841,
+											"height": 13,
+											"alpha": -1.5707963267948966,
+											"distance": 15,
+											"hostEdge": {
+												"$ref": "FLOWV_0156"
+											},
+											"edgePosition": 1,
+											"visible": false
+										}
+									],
+									"font": "Arial;13;0",
+									"head": {
+										"$ref": "ACTV_0082"
+									},
+									"tail": {
+										"$ref": "ACTV_0075"
+									},
+									"lineStyle": 2,
+									"points": "387:854;340:854",
+									"showVisibility": true,
+									"nameLabel": {
+										"$ref": "ELBL_0157"
+									},
+									"stereotypeLabel": {
+										"$ref": "ELBL_0158"
+									},
+									"propertyLabel": {
+										"$ref": "ELBL_0159"
+									}
+								},
+								{
+									"_type": "UMLControlFlowView",
+									"_id": "FLOWV_0161",
+									"_parent": {
+										"$ref": "DG_0004"
+									},
+									"model": {
+										"$ref": "FLOW_0160"
+									},
+									"subViews": [
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0162",
+											"_parent": {
+												"$ref": "FLOWV_0161"
+											},
+											"model": {
+												"$ref": "FLOW_0160"
+											},
+											"font": "Arial;13;0",
+											"left": 286,
+											"top": 904,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 18,
+											"hostEdge": {
+												"$ref": "FLOWV_0161"
+											},
+											"edgePosition": 1,
+											"visible": false
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0163",
+											"_parent": {
+												"$ref": "FLOWV_0161"
+											},
+											"model": {
+												"$ref": "FLOW_0160"
+											},
+											"font": "Arial;13;0",
+											"left": 302,
+											"top": 904,
+											"height": 13,
+											"alpha": 1.5707963267948966,
+											"distance": 30,
+											"hostEdge": {
+												"$ref": "FLOWV_0161"
+											},
+											"edgePosition": 1,
+											"visible": null
+										},
+										{
+											"_type": "EdgeLabelView",
+											"_id": "ELBL_0164",
+											"_parent": {
+												"$ref": "FLOWV_0161"
+											},
+											"model": {
+												"$ref": "FLOW_0160"
+											},
+											"font": "Arial;13;0",
+											"left": 266,
+											"top": 905,
+											"height": 13,
+											"alpha": -1.5707963267948966,
+											"distance": 15,
+											"hostEdge": {
+												"$ref": "FLOWV_0161"
+											},
+											"edgePosition": 1,
+											"visible": false
+										}
+									],
+									"font": "Arial;13;0",
+									"head": {
+										"$ref": "CTLV_0089"
+									},
+									"tail": {
+										"$ref": "ACTV_0082"
+									},
+									"lineStyle": 2,
+									"points": "279:888;279:930",
+									"showVisibility": true,
+									"nameLabel": {
+										"$ref": "ELBL_0162"
+									},
+									"stereotypeLabel": {
+										"$ref": "ELBL_0163"
+									},
+									"propertyLabel": {
+										"$ref": "ELBL_0164"
+									}
+								}
+							]
+						}
+					],
+					"edges": [
+						{
+							"_type": "UMLControlFlow",
+							"_id": "FLOW_0090",
+							"_parent": {
+								"$ref": "ACTY_0003"
+							},
+							"source": {
+								"$ref": "CTL_0017"
+							},
+							"target": {
+								"$ref": "ACT_0019"
+							}
+						},
+						{
+							"_type": "UMLControlFlow",
+							"_id": "FLOW_0095",
+							"_parent": {
+								"$ref": "ACTY_0003"
+							},
+							"source": {
+								"$ref": "ACT_0019"
+							},
+							"target": {
+								"$ref": "ACT_0026"
+							}
+						},
+						{
+							"_type": "UMLControlFlow",
+							"_id": "FLOW_0100",
+							"_parent": {
+								"$ref": "ACTY_0003"
+							},
+							"source": {
+								"$ref": "ACT_0026"
+							},
+							"target": {
+								"$ref": "CTL_0033"
+							}
+						},
+						{
+							"_type": "UMLControlFlow",
+							"_id": "FLOW_0105",
+							"_parent": {
+								"$ref": "ACTY_0003"
+							},
+							"source": {
+								"$ref": "CTL_0033"
+							},
+							"target": {
+								"$ref": "ACT_0035"
+							},
+							"guard": "约定在公司外"
+						},
+						{
+							"_type": "UMLControlFlow",
+							"_id": "FLOW_0110",
+							"_parent": {
+								"$ref": "ACTY_0003"
+							},
+							"source": {
+								"$ref": "CTL_0033"
+							},
+							"target": {
+								"$ref": "ACT_0042"
+							},
+							"guard": "约定在公司内"
+						},
+						{
+							"_type": "UMLControlFlow",
+							"_id": "FLOW_0115",
+							"_parent": {
+								"$ref": "ACTY_0003"
+							},
+							"source": {
+								"$ref": "ACT_0035"
+							},
+							"target": {
+								"$ref": "CTL_0049"
+							}
+						},
+						{
+							"_type": "UMLControlFlow",
+							"_id": "FLOW_0120",
+							"_parent": {
+								"$ref": "ACTY_0003"
+							},
+							"source": {
+								"$ref": "ACT_0042"
+							},
+							"target": {
+								"$ref": "CTL_0049"
+							}
+						},
+						{
+							"_type": "UMLControlFlow",
+							"_id": "FLOW_0125",
+							"_parent": {
+								"$ref": "ACTY_0003"
+							},
+							"source": {
+								"$ref": "CTL_0049"
+							},
+							"target": {
+								"$ref": "ACT_0051"
+							}
+						},
+						{
+							"_type": "UMLControlFlow",
+							"_id": "FLOW_0130",
+							"_parent": {
+								"$ref": "ACTY_0003"
+							},
+							"source": {
+								"$ref": "ACT_0051"
+							},
+							"target": {
+								"$ref": "ACT_0058"
+							}
+						},
+						{
+							"_type": "UMLControlFlow",
+							"_id": "FLOW_0135",
+							"_parent": {
+								"$ref": "ACTY_0003"
+							},
+							"source": {
+								"$ref": "ACT_0058"
+							},
+							"target": {
+								"$ref": "CTL_0065"
+							}
+						},
+						{
+							"_type": "UMLControlFlow",
+							"_id": "FLOW_0140",
+							"_parent": {
+								"$ref": "ACTY_0003"
+							},
+							"source": {
+								"$ref": "CTL_0065"
+							},
+							"target": {
+								"$ref": "ACT_0067"
+							},
+							"guard": "产生问题陈述"
+						},
+						{
+							"_type": "UMLControlFlow",
+							"_id": "FLOW_0145",
+							"_parent": {
+								"$ref": "ACTY_0003"
+							},
+							"source": {
+								"$ref": "CTL_0065"
+							},
+							"target": {
+								"$ref": "CTL_0088"
+							},
+							"guard": "未产生问题陈述"
+						},
+						{
+							"_type": "UMLControlFlow",
+							"_id": "FLOW_0150",
+							"_parent": {
+								"$ref": "ACTY_0003"
+							},
+							"source": {
+								"$ref": "ACT_0067"
+							},
+							"target": {
+								"$ref": "ACT_0074"
+							}
+						},
+						{
+							"_type": "UMLControlFlow",
+							"_id": "FLOW_0155",
+							"_parent": {
+								"$ref": "ACTY_0003"
+							},
+							"source": {
+								"$ref": "ACT_0074"
+							},
+							"target": {
+								"$ref": "ACT_0081"
+							}
+						},
+						{
+							"_type": "UMLControlFlow",
+							"_id": "FLOW_0160",
+							"_parent": {
+								"$ref": "ACTY_0003"
+							},
+							"source": {
+								"$ref": "ACT_0081"
+							},
+							"target": {
+								"$ref": "CTL_0088"
+							}
+						}
+					],
+					"groups": [
+						{
+							"_type": "UMLActivityPartition",
+							"_id": "LANE_0005",
+							"_parent": {
+								"$ref": "ACTY_0003"
+							},
+							"name": "业务员",
+							"nodes": [
+								{
+									"_type": "UMLInitialNode",
+									"_id": "CTL_0017",
+									"_parent": {
+										"$ref": "LANE_0005"
+									},
+									"name": "InitialNode1"
+								},
+								{
+									"_type": "UMLAction",
+									"_id": "ACT_0019",
+									"_parent": {
+										"$ref": "LANE_0005"
+									},
+									"name": "致电客户，确立约定"
+								},
+								{
+									"_type": "UMLAction",
+									"_id": "ACT_0058",
+									"_parent": {
+										"$ref": "LANE_0005"
+									},
+									"name": "准备会议用纸"
+								}
+							]
+						},
+						{
+							"_type": "UMLActivityPartition",
+							"_id": "LANE_0008",
+							"_parent": {
+								"$ref": "ACTY_0003"
+							},
+							"name": "客户",
+							"nodes": [
+								{
+									"_type": "UMLAction",
+									"_id": "ACT_0026",
+									"_parent": {
+										"$ref": "LANE_0008"
+									},
+									"name": "确认约定"
+								},
+								{
+									"_type": "UMLDecisionNode",
+									"_id": "CTL_0033",
+									"_parent": {
+										"$ref": "LANE_0008"
+									},
+									"name": "DecisionNode1"
+								},
+								{
+									"_type": "UMLMergeNode",
+									"_id": "CTL_0049",
+									"_parent": {
+										"$ref": "LANE_0008"
+									},
+									"name": "MergeNode1"
+								},
+								{
+									"_type": "UMLAction",
+									"_id": "ACT_0051",
+									"_parent": {
+										"$ref": "LANE_0008"
+									},
+									"name": "在约定时间和地点与业务员、咨询顾问会见"
+								},
+								{
+									"_type": "UMLDecisionNode",
+									"_id": "CTL_0065",
+									"_parent": {
+										"$ref": "LANE_0008"
+									},
+									"name": "DecisionNode2"
+								},
+								{
+									"_type": "UMLAction",
+									"_id": "ACT_0081",
+									"_parent": {
+										"$ref": "LANE_0008"
+									},
+									"name": "接收提案"
+								},
+								{
+									"_type": "UMLActivityFinalNode",
+									"_id": "CTL_0088",
+									"_parent": {
+										"$ref": "LANE_0008"
+									},
+									"name": "ActivityFinalNode1"
+								}
+							]
+						},
+						{
+							"_type": "UMLActivityPartition",
+							"_id": "LANE_0011",
+							"_parent": {
+								"$ref": "ACTY_0003"
+							},
+							"name": "咨询顾问",
+							"nodes": [
+								{
+									"_type": "UMLAction",
+									"_id": "ACT_0035",
+									"_parent": {
+										"$ref": "LANE_0011"
+									},
+									"name": "用电脑准备陈述报告"
+								},
+								{
+									"_type": "UMLAction",
+									"_id": "ACT_0067",
+									"_parent": {
+										"$ref": "LANE_0011"
+									},
+									"name": "根据问题陈述编写提案"
+								},
+								{
+									"_type": "UMLAction",
+									"_id": "ACT_0074",
+									"_parent": {
+										"$ref": "LANE_0011"
+									},
+									"name": "把提案发给客户"
+								}
+							]
+						},
+						{
+							"_type": "UMLActivityPartition",
+							"_id": "LANE_0014",
+							"_parent": {
+								"$ref": "ACTY_0003"
+							},
+							"name": "技术人员",
+							"nodes": [
+								{
+									"_type": "UMLAction",
+									"_id": "ACT_0042",
+									"_parent": {
+										"$ref": "LANE_0014"
+									},
+									"name": "准备会议室"
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

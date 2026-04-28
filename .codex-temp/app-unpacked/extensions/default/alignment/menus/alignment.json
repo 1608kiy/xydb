@@ -1,0 +1,66 @@
+{
+  "menu": [
+    {
+      "id": "format",
+      "submenu": [
+        { "type": "separator" },
+        {
+          "label": "对齐",
+          "id": "format.alignment",
+          "submenu": [
+            { "label": "置于底层", "id": "format.alignment.send-to-back", "command": "alignment:send-to-back" },
+            { "label": "置于顶层", "id": "format.alignment.bring-to-front", "command": "alignment:bring-to-front" },
+            { "type": "separator" },
+            { "label": "左对齐", "id": "format.alignment.align-left", "command": "alignment:align-left" },
+            { "label": "右对齐", "id": "format.alignment.align-right", "command": "alignment:align-right" },
+            { "label": "居中", "id": "format.alignment.align-center", "command": "alignment:align-center" },
+            { "type": "separator" },
+            { "label": "顶对齐", "id": "format.alignment.align-top", "command": "alignment:align-top" },
+            { "label": "底对齐", "id": "format.alignment.align-bottom", "command": "alignment:align-bottom" },
+            { "label": "垂直居中", "id": "format.alignment.align-middle", "command": "alignment:align-middle" },
+            { "type": "separator" },
+            { "label": "水平等距分布", "id": "format.alignment.space-equally-horizontally", "command": "alignment:space-equally-horizontally" },
+            { "label": "垂直等距分布", "id": "format.alignment.space-equally-vertically", "command": "alignment:space-equally-vertically" },
+            { "type": "separator" },
+            { "label": "设置相同宽度", "id": "format.alignment.set-width-equally", "command": "alignment:set-width-equally" },
+            { "label": "设置相同高度", "id": "format.alignment.set-height-equally", "command": "alignment:set-height-equally" },
+            { "label": "设置相同大小", "id": "format.alignment.set-size-equally", "command": "alignment:set-size-equally" }
+          ]
+        }
+      ]
+    }
+  ],
+  "context-menu": {
+    "diagram-canvas": [
+      {
+        "id": "format",
+        "submenu": [
+          { "type": "separator" },
+          {
+            "label": "对齐",
+            "id": "format.alignment",
+            "submenu": [
+              { "label": "置于底层", "id": "format.alignment.send-to-back", "command": "alignment:send-to-back" },
+              { "label": "置于顶层", "id": "format.alignment.bring-to-front", "command": "alignment:bring-to-front" },
+              { "type": "separator" },
+              { "label": "左对齐", "id": "format.alignment.align-left", "command": "alignment:align-left" },
+              { "label": "右对齐", "id": "format.alignment.align-right", "command": "alignment:align-right" },
+              { "label": "居中", "id": "format.alignment.align-center", "command": "alignment:align-center" },
+              { "type": "separator" },
+              { "label": "顶对齐", "id": "format.alignment.align-top", "command": "alignment:align-top" },
+              { "label": "底对齐", "id": "format.alignment.align-bottom", "command": "alignment:align-bottom" },
+              { "label": "垂直居中", "id": "format.alignment.align-middle", "command": "alignment:align-middle" },
+              { "type": "separator" },
+              { "label": "水平等距分布", "id": "format.alignment.space-equally-horizontally", "command": "alignment:space-equally-horizontally" },
+              { "label": "垂直等距分布", "id": "format.alignment.space-equally-vertically", "command": "alignment:space-equally-vertically" },
+              { "type": "separator" },
+              { "label": "设置相同宽度", "id": "format.alignment.set-width-equally", "command": "alignment:set-width-equally" },
+              { "label": "设置相同高度", "id": "format.alignment.set-height-equally", "command": "alignment:set-height-equally" },
+              { "label": "设置相同大小", "id": "format.alignment.set-size-equally", "command": "alignment:set-size-equally" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

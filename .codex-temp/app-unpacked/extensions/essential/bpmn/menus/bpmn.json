@@ -1,0 +1,112 @@
+{
+  "menu": [
+    {
+      "id": "file.new-from-template",
+      "submenu": [
+        { "label": "BPMN 业务流程建模", "command": "bpmn:new-from-template", "command-arg": "templates/BusinessProcessModel.mdj" }
+      ]
+    },
+    {
+      "id": "model.add-diagram",
+      "submenu": [
+        { "label": "BPMN 图", "id": "bpmn.diagram", "command": "factory:create-diagram", "command-arg": {"id": "BPMNDiagram"} }
+      ]
+    },
+    {
+      "id": "model.add",
+      "submenu": [
+        { "label": "业务流程", "id": "bpmn.process", "command": "factory:create-model", "command-arg": {"id":"BPMNProcess"} },
+        { "label": "协作", "id": "bpmn.collaboration", "command": "factory:create-model", "command-arg": {"id":"BPMNCollaboration"} },
+        { "label": "协作", "id": "bpmn.choreography", "command": "factory:create-model", "command-arg": {"id":"BPMNChoreography"} },
+        { "label": "全局会话", "id": "bpmn.global-conversation", "command": "factory:create-model", "command-arg": {"id":"BPMNGlobalConversation"} },
+        { "label": "任务", "id": "bpmn.task", "command": "factory:create-model", "command-arg": {"id":"BPMNTask"} },
+        { "label": "子流程", "id": "bpmn.subprocess", "command": "factory:create-model", "command-arg": {"id":"BPMNSubProcess"} },
+        { "label": "网关", "id": "bpmn.gateway", "command": "factory:create-model", "command-arg": {"id":"BPMNGateway"} },
+        { "label": "开始事件", "id": "bpmn.start-event", "command": "factory:create-model", "command-arg": {"id":"BPMNStartEvent"} },
+        { "label": "中间事件 (抛出)", "id": "bpmn.intermediate-throw-event", "command": "factory:create-model", "command-arg": {"id":"BPMNIntermediateThrowEvent"} },
+        { "label": "中间事件 (捕获)", "id": "bpmn.intermediate-catch-event", "command": "factory:create-model", "command-arg": {"id":"BPMNIntermediateCatchEvent"} },
+        { "label": "结束事件", "id": "bpmn.end-event", "command": "factory:create-model", "command-arg": {"id":"BPMNEndEvent"} },
+        { "label": "补偿事件定义", "id": "bpmn.compensate-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNCompensateEventDefinition", "field": "eventDefinitions"} },
+        { "label": "取消事件定义", "id": "bpmn.cancel-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNCancelEventDefinition", "field": "eventDefinitions"} },
+        { "label": "错误事件定义", "id": "bpmn.error-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNErrorEventDefinition", "field": "eventDefinitions"} },
+        { "label": "链接事件定义", "id": "bpmn.link-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNLinkEventDefinition", "field": "eventDefinitions"} },
+        { "label": "信号事件定义", "id": "bpmn.signal-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNSignalEventDefinition", "field": "eventDefinitions"} },
+        { "label": "定时器事件定义", "id": "bpmn.timer-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNTimerEventDefinition", "field": "eventDefinitions"} },
+        { "label": "扩大事件定义", "id": "bpmn.escalation-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNEscalationEventDefinition", "field": "eventDefinitions"} },
+        { "label": "消息事件定义", "id": "bpmn.message-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNMessageEventDefinition", "field": "eventDefinitions"} },
+        { "label": "终止事件定义", "id": "bpmn.terminate-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNTerminateEventDefinition", "field": "eventDefinitions"} },
+        { "label": "条件事件定义", "id": "bpmn.conditional-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNConditionalEventDefinition", "field": "eventDefinitions"} }
+      ]
+    }
+  ],
+  "context-menu": {
+    "diagram-canvas": [
+      {
+        "id": "model.add-diagram",
+        "submenu": [
+          { "label": "BPMN 图", "id": "bpmn.diagram", "command": "factory:create-diagram", "command-arg": {"id": "BPMNDiagram"} }
+        ]
+      },
+      {
+        "id": "model.add",
+        "submenu": [
+          { "label": "业务流程", "id": "bpmn.process", "command": "factory:create-model", "command-arg": {"id":"BPMNProcess"} },
+          { "label": "协作", "id": "bpmn.collaboration", "command": "factory:create-model", "command-arg": {"id":"BPMNCollaboration"} },
+          { "label": "协作", "id": "bpmn.choreography", "command": "factory:create-model", "command-arg": {"id":"BPMNChoreography"} },
+          { "label": "全局会话", "id": "bpmn.global-conversation", "command": "factory:create-model", "command-arg": {"id":"BPMNGlobalConversation"} },  
+          { "label": "任务", "id": "bpmn.task", "command": "factory:create-model", "command-arg": {"id":"BPMNTask"} },
+          { "label": "子流程", "id": "bpmn.subprocess", "command": "factory:create-model", "command-arg": {"id":"BPMNSubProcess"} },
+          { "label": "网关", "id": "bpmn.gateway", "command": "factory:create-model", "command-arg": {"id":"BPMNGateway"} },  
+          { "label": "开始事件", "id": "bpmn.start-event", "command": "factory:create-model", "command-arg": {"id":"BPMNStartEvent"} },
+          { "label": "中间事件 (抛出)", "id": "bpmn.intermediate-throw-event", "command": "factory:create-model", "command-arg": {"id":"BPMNIntermediateThrowEvent"} },
+          { "label": "中间事件 (捕获)", "id": "bpmn.intermediate-catch-event", "command": "factory:create-model", "command-arg": {"id":"BPMNIntermediateCatchEvent"} },
+          { "label": "结束事件", "id": "bpmn.end-event", "command": "factory:create-model", "command-arg": {"id":"BPMNEndEvent"} },
+          { "label": "补偿事件定义", "id": "bpmn.compensate-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNCompensateEventDefinition", "field": "eventDefinitions"} },
+          { "label": "取消事件定义", "id": "bpmn.cancel-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNCancelEventDefinition", "field": "eventDefinitions"} },
+          { "label": "错误事件定义", "id": "bpmn.error-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNErrorEventDefinition", "field": "eventDefinitions"} },
+          { "label": "链接事件定义", "id": "bpmn.link-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNLinkEventDefinition", "field": "eventDefinitions"} },
+          { "label": "信号事件定义", "id": "bpmn.signal-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNSignalEventDefinition", "field": "eventDefinitions"} },
+          { "label": "定时器事件定义", "id": "bpmn.timer-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNTimerEventDefinition", "field": "eventDefinitions"} },
+          { "label": "扩大事件定义", "id": "bpmn.escalation-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNEscalationEventDefinition", "field": "eventDefinitions"} },
+          { "label": "消息事件定义", "id": "bpmn.message-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNMessageEventDefinition", "field": "eventDefinitions"} },
+          { "label": "终止事件定义", "id": "bpmn.terminate-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNTerminateEventDefinition", "field": "eventDefinitions"} },
+          { "label": "条件事件定义", "id": "bpmn.conditional-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNConditionalEventDefinition", "field": "eventDefinitions"} }
+        ]
+      }
+    ],
+    "model-explorer": [
+      {
+        "id": "model.add-diagram",
+        "submenu": [
+          { "label": "BPMN 图", "id": "bpmn.diagram", "command": "factory:create-diagram", "command-arg": {"id": "BPMNDiagram"} }
+        ]
+      },
+      {
+        "id": "model.add",
+        "submenu": [
+          { "label": "业务流程", "id": "bpmn.process", "command": "factory:create-model", "command-arg": {"id":"BPMNProcess"} },
+          { "label": "协作", "id": "bpmn.collaboration", "command": "factory:create-model", "command-arg": {"id":"BPMNCollaboration"} },
+          { "label": "协作", "id": "bpmn.choreography", "command": "factory:create-model", "command-arg": {"id":"BPMNChoreography"} },
+          { "label": "全局会话", "id": "bpmn.global-conversation", "command": "factory:create-model", "command-arg": {"id":"BPMNGlobalConversation"} },  
+          { "label": "任务", "id": "bpmn.task", "command": "factory:create-model", "command-arg": {"id":"BPMNTask"} },
+          { "label": "子流程", "id": "bpmn.subprocess", "command": "factory:create-model", "command-arg": {"id":"BPMNSubProcess"} },
+          { "label": "网关", "id": "bpmn.gateway", "command": "factory:create-model", "command-arg": {"id":"BPMNGateway"} },  
+          { "label": "开始事件", "id": "bpmn.start-event", "command": "factory:create-model", "command-arg": {"id":"BPMNStartEvent"} },
+          { "label": "中间事件 (抛出)", "id": "bpmn.intermediate-throw-event", "command": "factory:create-model", "command-arg": {"id":"BPMNIntermediateThrowEvent"} },
+          { "label": "中间事件 (捕获)", "id": "bpmn.intermediate-catch-event", "command": "factory:create-model", "command-arg": {"id":"BPMNIntermediateCatchEvent"} },
+          { "label": "结束事件", "id": "bpmn.end-event", "command": "factory:create-model", "command-arg": {"id":"BPMNEndEvent"} },
+          { "label": "补偿事件定义", "id": "bpmn.compensate-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNCompensateEventDefinition", "field": "eventDefinitions"} },
+          { "label": "取消事件定义", "id": "bpmn.cancel-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNCancelEventDefinition", "field": "eventDefinitions"} },
+          { "label": "错误事件定义", "id": "bpmn.error-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNErrorEventDefinition", "field": "eventDefinitions"} },
+          { "label": "链接事件定义", "id": "bpmn.link-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNLinkEventDefinition", "field": "eventDefinitions"} },
+          { "label": "信号事件定义", "id": "bpmn.signal-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNSignalEventDefinition", "field": "eventDefinitions"} },
+          { "label": "定时器事件定义", "id": "bpmn.timer-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNTimerEventDefinition", "field": "eventDefinitions"} },
+          { "label": "扩大事件定义", "id": "bpmn.escalation-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNEscalationEventDefinition", "field": "eventDefinitions"} },
+          { "label": "消息事件定义", "id": "bpmn.message-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNMessageEventDefinition", "field": "eventDefinitions"} },
+          { "label": "终止事件定义", "id": "bpmn.terminate-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNTerminateEventDefinition", "field": "eventDefinitions"} },
+          { "label": "条件事件定义", "id": "bpmn.conditional-event-definition", "command": "factory:create-model", "command-arg": {"id":"BPMNConditionalEventDefinition", "field": "eventDefinitions"} }
+        ]
+      }
+    ]
+  }
+}

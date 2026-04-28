@@ -1,0 +1,12 @@
+[
+  {
+    "label": "思维导图",
+    "id": "mindmap",
+    "diagram-types": [ "MMMindmapDiagram" ],
+    "auto-expands": [ "MMMindmapDiagram" ],
+    "items": [
+      { "label": "节点", "id": "MMNode", "icon": "icon-MMNode", "rubberband": "rect" },
+      { "label": "边", "id": "MMEdge", "icon": "icon-MMEdge", "rubberband": "line" }
+    ]
+  }
+]

@@ -1,0 +1,409 @@
+[
+  {
+    "label": "BPMN 基础",
+    "id": "bpmn.basic",
+    "diagram-types": [ "BPMNDiagram" ],
+    "auto-expands": [ "BPMNDiagram" ],
+    "items": [
+      {
+        "label": "任务",
+        "id": "BPMNTask",
+        "icon": "icon-BPMNTask",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "网关",
+        "id": "BPMNExclusiveGateway",
+        "icon": "icon-BPMNExclusiveGateway",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "开始事件",
+        "id": "BPMNStartEvent",
+        "icon": "icon-BPMNStartEvent",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "结束事件",
+        "id": "BPMNEndEvent",
+        "icon": "icon-BPMNEndEvent",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "顺序流",
+        "id": "BPMNSequenceFlow",
+        "icon": "icon-BPMNSequenceFlow",
+        "rubberband": "line"
+      }
+    ]
+  },
+  {
+    "label": "BPMN 部件",
+    "id": "bpmn.artifact",
+    "diagram-types": [ "BPMNDiagram" ],
+    "auto-expands": [ "BPMNDiagram" ],
+    "items": [
+      {
+        "label": "文本注解",
+        "id": "BPMNTextAnnotation",
+        "icon": "icon-BPMNTextAnnotation",
+        "rubberband": "rect"
+      },
+      {
+        "label": "分组",
+        "id": "BPMNGroup",
+        "icon": "icon-BPMNGroup",
+        "rubberband": "rect"
+      },
+      {
+        "label": "关联",
+        "id": "BPMNAssociation",
+        "icon": "icon-BPMNAssociation",
+        "rubberband": "line"
+      }
+    ]
+  },
+  {
+    "label": "BPMN 水平分支",
+    "id": "bpmn.swimlanes",
+    "diagram-types": [ "BPMNDiagram" ],
+    "auto-expands": [ "BPMNDiagram" ],
+    "items": [
+      {
+        "label": "池",
+        "id": "BPMNParticipant",
+        "icon": "icon-BPMNParticipant",
+        "rubberband": "rect"
+      },
+      {
+        "label": "池 (垂直)",
+        "id": "BPMNParticipantVert",
+        "icon": "icon-BPMNParticipantVert",
+        "rubberband": "rect",
+        "command-arg": {
+          "id": "BPMNParticipant",
+          "view-init": {
+            "isVertical": true
+          }
+        }
+      },
+      {
+        "label": "道",
+        "id": "BPMNLane",
+        "icon": "icon-BPMNLane",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNPoolView"] }
+      },
+      {
+        "label": "道 (垂直)",
+        "id": "BPMNLaneVert",
+        "icon": "icon-BPMNLaneVert",
+        "rubberband": "rect",
+        "command-arg": {
+          "id": "BPMNLane",
+          "view-init": {
+            "isVertical": true
+          },
+          "container-views": ["BPMNPoolView"]
+        }
+      }
+    ]
+  },
+  {
+    "label": "BPMN 活动",
+    "id": "bpmn.activities",
+    "diagram-types": [ "BPMNDiagram" ],
+    "items": [
+      {
+        "label": "任务",
+        "id": "BPMNTask",
+        "icon": "icon-BPMNTask",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "发送任务",
+        "id": "BPMNSendTask",
+        "icon": "icon-BPMNSendTask",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "接收任务",
+        "id": "BPMNReceiveTask",
+        "icon": "icon-BPMNReceiveTask",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "服务任务",
+        "id": "BPMNServiceTask",
+        "icon": "icon-BPMNServiceTask",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "用户任务",
+        "id": "BPMNUserTask",
+        "icon": "icon-BPMNUserTask",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "手动任务",
+        "id": "BPMNManualTask",
+        "icon": "icon-BPMNManualTask",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "业务规则任务",
+        "id": "BPMNBusinessRuleTask",
+        "icon": "icon-BPMNBusinessRuleTask",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "脚本任务",
+        "id": "BPMNScriptTask",
+        "icon": "icon-BPMNScriptTask",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "调用活动",
+        "id": "BPMNCallActivity",
+        "icon": "icon-BPMNCallActivity",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "子过程",
+        "id": "BPMNSubProcess",
+        "icon": "icon-BPMNSubProcess",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "自定义子过程",
+        "id": "BPMNAdHocSubProcess",
+        "icon": "icon-BPMNAdHocSubProcess",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "事务",
+        "id": "BPMNTransaction",
+        "icon": "icon-BPMNTransaction",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      }
+    ]
+  },
+  {
+    "label": "BPMN 网关",
+    "id": "bpmn.gateways",
+    "diagram-types": [ "BPMNDiagram" ],
+    "items": [
+      {
+        "label": "互斥网关",
+        "id": "BPMNExclusiveGateway",
+        "icon": "icon-BPMNExclusiveGateway",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "事件网关",
+        "id": "BPMNEventBasedGateway",
+        "icon": "icon-BPMNEventBasedGateway",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "包容网关",
+        "id": "BPMNInclusiveGateway",
+        "icon": "icon-BPMNInclusiveGateway",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "复杂网关",
+        "id": "BPMNComplexGateway",
+        "icon": "icon-BPMNComplexGateway",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "并行网关",
+        "id": "BPMNParallelGateway",
+        "icon": "icon-BPMNParallelGateway",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      }
+    ]
+  },
+  {
+    "label": "BPMN 事件",
+    "id": "bpmn.events",
+    "diagram-types": [ "BPMNDiagram" ],
+    "items": [
+      {
+        "label": "开始事件",
+        "id": "BPMNStartEvent",
+        "icon": "icon-BPMNStartEvent",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "中间事件 (抛出)",
+        "id": "BPMNIntermediateThrowEvent",
+        "icon": "icon-BPMNIntermediateEvent",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "中间事件 (捕获)",
+        "id": "BPMNIntermediateCatchEvent",
+        "icon": "icon-BPMNIntermediateEvent",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "边界事件",
+        "id": "BPMNBoundaryEvent",
+        "icon": "icon-BPMNBoundaryEvent",
+        "rubberband": "rect",
+        "command-arg": { "parasitic": true }
+      },
+      {
+        "label": "结束事件",
+        "id": "BPMNEndEvent",
+        "icon": "icon-BPMNEndEvent",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      }
+    ]
+  },
+  {
+    "label": "BPMN 数据",
+    "id": "bpmn.data",
+    "diagram-types": [ "BPMNDiagram" ],
+    "items": [
+      {
+        "label": "数据对象",
+        "id": "BPMNDataObject",
+        "icon": "icon-BPMNDataObject",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "数据存储",
+        "id": "BPMNDataStore",
+        "icon": "icon-BPMNDataStore",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "数据输入",
+        "id": "BPMNDataInput",
+        "icon": "icon-BPMNDataInput",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "数据输出",
+        "id": "BPMNDataOutput",
+        "icon": "icon-BPMNDataOutput",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "数据关联",
+        "id": "BPMNDataAssociation",
+        "icon": "icon-BPMNDataAssociation",
+        "rubberband": "line",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      }
+    ]
+  },
+  {
+    "label": "BPMN 消息",
+    "id": "bpmn.message",
+    "diagram-types": [ "BPMNDiagram" ],
+    "items": [
+      {
+        "label": "消息",
+        "id": "BPMNMessage",
+        "icon": "icon-BPMNMessage",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["BPMNLaneView", "BPMNPoolView"] }
+      },
+      {
+        "label": "消息流",
+        "id": "BPMNMessageFlow",
+        "icon": "icon-BPMNMessageFlow",
+        "rubberband": "line"
+      }
+    ]
+  },
+  {
+    "label": "BPMN 通信",
+    "id": "bpmn.choreography",
+    "diagram-types": [ "BPMNDiagram" ],
+    "items": [
+      {
+        "label": "通信任务",
+        "id": "BPMNChoreographyTask",
+        "icon": "icon-BPMNChoreographyTask",
+        "rubberband": "rect"
+      },
+      {
+        "label": "子通信",
+        "id": "BPMNSubChoreography",
+        "icon": "icon-BPMNSubChoreography",
+        "rubberband": "rect"
+      },
+      {
+        "label": "消息链接",
+        "id": "BPMNMessageLink",
+        "icon": "icon-BPMNMessageLink",
+        "rubberband": "line"
+      }
+    ]
+  },
+  {
+    "label": "BPMN 对话",
+    "id": "bpmn.conversation",
+    "diagram-types": [ "BPMNDiagram" ],
+    "items": [
+      {
+        "label": "对话",
+        "id": "BPMNConversation",
+        "icon": "icon-BPMNConversation",
+        "rubberband": "rect"
+      },
+      {
+        "label": "子对话",
+        "id": "BPMNSubConversation",
+        "icon": "icon-BPMNSubConversation",
+        "rubberband": "rect"
+      },
+      {
+        "label": "调用对话",
+        "id": "BPMNCallConversation",
+        "icon": "icon-BPMNCallConversation",
+        "rubberband": "rect"
+      },
+      {
+        "label": "对话链接",
+        "id": "BPMNConversationLink",
+        "icon": "icon-BPMNConversationLink",
+        "rubberband": "line"
+      }
+    ]
+  }
+]

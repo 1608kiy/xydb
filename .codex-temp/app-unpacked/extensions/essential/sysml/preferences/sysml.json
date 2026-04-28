@@ -1,0 +1,159 @@
+{
+  "id": "sysml",
+  "name": "SysML",
+  "schema": {
+    "sysml.requirement": {
+      "text": "需求",
+      "type": "section"
+    },
+    "sysml.requirement.fillColor": {
+      "text": "填充颜色",
+      "description": "需求的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "sysml.block": {
+      "text": "块",
+      "type": "section"
+    },
+    "sysml.block.fillColor": {
+      "text": "填充颜色",
+      "description": "块的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "sysml.block.suppressConstraints": {
+      "text": "隐藏约束",
+      "description": "隐藏块的约束部件",
+      "type": "check",
+      "default": true
+    },
+    "sysml.block.suppressParts": {
+      "text": "隐藏部件",
+      "description": "隐藏块的部分部件",
+      "type": "check",
+      "default": true
+    },
+    "sysml.block.suppressPorts": {
+      "text": "隐藏端口",
+      "description": "隐藏块的端口部件",
+      "type": "check",
+      "default": true
+    },
+    "sysml.block.suppressReferences": {
+      "text": "隐藏参考",
+      "description": "隐藏块的参考部件",
+      "type": "check",
+      "default": true
+    },
+    "sysml.block.suppressValues": {
+      "text": "隐藏值",
+      "description": "隐藏块的值部件",
+      "type": "check",
+      "default": true
+    },
+    "sysml.block.suppressFlowProperties": {
+      "text": "隐藏流属性",
+      "description": "隐藏块的流属性部件",
+      "type": "check",
+      "default": true
+    },
+    "sysml.interface-block": {
+      "text": "接口块",
+      "type": "section"
+    },
+    "sysml.interface-block.fillColor": {
+      "text": "填充颜色",
+      "description": "接口块的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "sysml.constraint-block": {
+      "text": "约束块",
+      "type": "section"
+    },
+    "sysml.constraint-block.fillColor": {
+      "text": "填充颜色",
+      "description": "约束块的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "sysml.value-type": {
+      "text": "值类型",
+      "type": "section"
+    },
+    "sysml.value-type.fillColor": {
+      "text": "填充颜色",
+      "description": "值类型的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "sysml.part": {
+      "text": "部件",
+      "type": "section"
+    },
+    "sysml.part.fillColor": {
+      "text": "填充颜色",
+      "description": "部件的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "sysml.port": {
+      "text": "端口",
+      "type": "section"
+    },
+    "sysml.port.fillColor": {
+      "text": "填充颜色",
+      "description": "端口的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "sysml.constraint-property": {
+      "text": "约束属性",
+      "type": "section"
+    },
+    "sysml.constraint-property.fillColor": {
+      "text": "填充颜色",
+      "description": "约束属性的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "sysml.constraint-parameter": {
+      "text": "约束参数",
+      "type": "section"
+    },
+    "sysml.constraint-parameter.fillColor": {
+      "text": "填充颜色",
+      "description": "约束参数的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    }
+  }
+}

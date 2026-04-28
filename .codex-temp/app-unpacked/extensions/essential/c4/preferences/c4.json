@@ -1,0 +1,74 @@
+{
+  "id": "c4",
+  "name": "C4 模型",
+  "schema": {
+    "c4.person": {
+      "text": "角色",
+      "type": "section"
+    },
+    "c4.person.fillColor": {
+      "text": "填充颜色",
+      "description": "角色的填充颜色",
+      "type": "color",
+      "default": "#38bcff",
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "c4.software-system": {
+      "text": "软件系统",
+      "type": "section"
+    },
+    "c4.software-system.fillColor": {
+      "text": "填充颜色",
+      "description": "软件系统的填充颜色",
+      "type": "color",
+      "default": "#6dceff",
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "c4.container": {
+      "text": "容器",
+      "type": "section"
+    },
+    "c4.container.fillColor": {
+      "text": "填充颜色",
+      "description": "容器的填充颜色",
+      "type": "color",
+      "default": "#a3e0ff",
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "c4.component": {
+      "text": "组件",
+      "type": "section"
+    },
+    "c4.component.fillColor": {
+      "text": "填充颜色",
+      "description": "组件的填充颜色",
+      "type": "color",
+      "default": "#d8f2ff",
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "c4.relationship": {
+      "text": "关系",
+      "type": "section"
+    },
+    "c4.relationship.lineStyle": {
+      "text": "线条样式",
+      "description": "关系的默认线条样式",
+      "type": "dropdown",
+      "options": [
+        { "value": 0, "text": "直线" },
+        { "value": 1, "text": "斜线" },
+        { "value": 2, "text": "圆角直线" },
+        { "value": 3, "text": "曲线" }
+      ],
+      "default": 1
+    }
+  }
+}

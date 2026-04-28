@@ -1,0 +1,6 @@
+[35368:0418/205115.362:ERROR:cache_util_win.cc(20)] Unable to move the cache: 拒绝访问。 (0x5)
+[35368:0418/205115.363:ERROR:cache_util_win.cc(20)] Unable to move the cache: 拒绝访问。 (0x5)
+[35368:0418/205115.385:ERROR:disk_cache.cc(208)] Unable to create cache
+[35368:0418/205115.387:ERROR:gpu_disk_cache.cc(708)] Gpu Cache Creation failed: -2
+[35368:0418/205115.389:ERROR:disk_cache.cc(208)] Unable to create cache
+[35368:0418/205115.390:ERROR:gpu_disk_cache.cc(708)] Gpu Cache Creation failed: -2

@@ -1,0 +1,22 @@
+{
+  "id": "gcp",
+  "name": "GCP",
+  "schema": {
+    "gcp.path": {
+      "text": "路径",
+      "type": "section"
+    },
+    "gcp.path.lineStyle": {
+      "text": "线条样式",
+      "description": "路径的默认线条样式",
+      "type": "dropdown",
+      "options": [
+        { "value": 0, "text": "直线" },
+        { "value": 1, "text": "斜线" },
+        { "value": 2, "text": "圆角直线" },
+        { "value": 3, "text": "曲线" }
+      ],
+      "default": 0
+    }
+  }
+}

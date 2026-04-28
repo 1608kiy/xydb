@@ -1,0 +1,23 @@
+[32528:0418/205421.947:VERBOSE1:device_event_log_impl.cc(194)] [20:54:21.944] Display: EVENT: screen_win.cc:833 Displays updated, count: 1
+[32528:0418/205421.948:VERBOSE1:device_event_log_impl.cc(194)] [20:54:21.947] Display: EVENT: screen_win.cc:835 Display[2528732444] bounds=[0,0 1920x1080], workarea=[0,0 1920x1080], scale=1, rotation=0, panel_rotation=0 external detected
+[32528:0418/205421.950:VERBOSE1:pref_proxy_config_tracker_impl.cc(191)] 0000255400448580: set chrome proxy config service to 00002554000F1860
+[32528:0418/205421.963:VERBOSE1:media_stream_manager.cc(1490)] MSM::InitializeMaybeAsync([this=00002554000B3600])
+[32528:0418/205421.966:VERBOSE1:media_stream_manager.cc(1490)] MDM::MediaDevicesManager()
+[32528:0418/205421.966:VERBOSE1:media_stream_manager.cc(1490)] MSM::MediaStreamManager([this=00002554000B3600]))
+[32528:0418/205422.223:VERBOSE1:pref_proxy_config_tracker_impl.cc(191)] 0000255400449E40: set chrome proxy config service to 00002554000F38E0
+[32528:0418/205422.224:VERBOSE1:device_event_log_impl.cc(194)] [20:54:22.224] Bluetooth: EVENT: bluetooth_api.cc:82 BluetoothAPI: 0000255400080C60
+[32528:0418/205422.251:VERBOSE1:device_event_log_impl.cc(194)] [20:54:22.250] Display: EVENT: screen_win.cc:833 Displays updated, count: 1
+[32528:0418/205422.252:VERBOSE1:device_event_log_impl.cc(194)] [20:54:22.251] Display: EVENT: screen_win.cc:835 Display[2528732444] bounds=[0,0 1920x1080], workarea=[0,0 1920x1080], scale=1, rotation=0, panel_rotation=0 external detected
+[32528:0418/205422.285:VERBOSE1:first_party_sets_handler_impl_instance.cc(277)] Empty path. Failed initializing First-Party Sets database.
+[32528:0418/205422.324:ERROR:cache_util_win.cc(20)] Unable to move the cache: 拒绝访问。 (0x5)
+[32528:0418/205422.324:ERROR:cache_util_win.cc(20)] Unable to move the cache: 拒绝访问。 (0x5)
+[32528:0418/205422.332:VERBOSE1:device_event_log_impl.cc(194)] [20:54:22.331] Display: EVENT: screen_win.cc:833 Displays updated, count: 1
+[32528:0418/205422.332:VERBOSE1:device_event_log_impl.cc(194)] [20:54:22.331] Display: EVENT: screen_win.cc:835 Display[2528732444] bounds=[0,0 1920x1080], workarea=[0,0 1920x1080], scale=1, rotation=0, panel_rotation=0 external detected
+[32528:0418/205422.337:ERROR:disk_cache.cc(208)] Unable to create cache
+[32528:0418/205422.338:ERROR:gpu_disk_cache.cc(708)] Gpu Cache Creation failed: -2
+[32528:0418/205422.342:ERROR:disk_cache.cc(208)] Unable to create cache
+[32528:0418/205422.343:ERROR:gpu_disk_cache.cc(708)] Gpu Cache Creation failed: -2
+[32528:0418/205428.289:INFO:CONSOLE(3)] "Slow network is detected. See https://www.chromestatus.com/feature/5636954674692096 for more details. Fallback font will be used while loading: file:///C:/Program%20Files/StarUML/resources/app.asar/resources/fonts/SourceSansPro/SourceSansPro-Regular.ttf", source: C:\Program Files\StarUML\resources\app.asar\src\static\thirdparty\jquery-2.1.0.min.js (3)
+[32528:0418/205428.296:INFO:CONSOLE(45)] "Slow network is detected. See https://www.chromestatus.com/feature/5636954674692096 for more details. Fallback font will be used while loading: file:///C:/Program%20Files/StarUML/resources/app.asar/src/static/icon-font/icons.woff?a1f2bbb147349aa22c3b7297009869a7", source: C:\Program Files\StarUML\resources\app.asar\src\utils\view-utils.js (45)
+[32528:0418/205428.440:VERBOSE1:device_event_log_impl.cc(194)] [20:54:28.439] Display: EVENT: screen_win.cc:833 Displays updated, count: 1
+[32528:0418/205428.440:VERBOSE1:device_event_log_impl.cc(194)] [20:54:28.439] Display: EVENT: screen_win.cc:835 Display[2528732444] bounds=[0,0 1920x1080], workarea=[0,0 1920x1080], scale=1, rotation=0, panel_rotation=0 external detected

@@ -1,0 +1,86 @@
+{
+  "menu": [
+    {
+      "id": "file.new-from-template",
+      "submenu": [
+        {
+          "label": "GCP 架构",
+          "command": "gcp:new-from-template",
+          "command-arg": "templates/GCPArchitecture.mdj"
+        }
+      ]
+    },
+    {
+      "id": "model.add-diagram",
+      "submenu": [
+        {
+          "label": "GCP 架构图",
+          "id": "gcp.diagram",
+          "command": "factory:create-diagram",
+          "command-arg": { "id": "GCPDiagram" }
+        }
+      ]
+    },
+    {
+      "id": "model.add",
+      "submenu": [
+        {
+          "label": "GCP 模型",
+          "id": "gcp.model",
+          "command": "factory:create-model",
+          "command-arg": { "id": "GCPModel" }
+        }
+      ]
+    }
+  ],
+  "context-menu": {
+    "diagram-canvas": [
+      {
+        "id": "model.add-diagram",
+        "submenu": [
+          {
+            "label": "GCP 架构图",
+            "id": "gcp.diagram",
+            "command": "factory:create-diagram",
+            "command-arg": { "id": "GCPDiagram" }
+          }
+        ]
+      },
+      {
+        "id": "model.add",
+        "submenu": [
+          {
+            "label": "GCP 模型",
+            "id": "gcp.model",
+            "command": "factory:create-model",
+            "command-arg": { "id": "GCPModel" }
+          }
+        ]
+      }
+    ],
+    "model-explorer": [
+      {
+        "id": "model.add-diagram",
+        "submenu": [
+          {
+            "label": "GCP 架构图",
+            "id": "gcp.diagram",
+            "command": "factory:create-diagram",
+            "command-arg": { "id": "GCPDiagram" }
+          }
+        ]
+      },
+      {
+        "id": "model.add",
+        "submenu": [
+          {
+            "label": "GCP 模型",
+            "id": "gcp.model",
+            "command": "factory:create-model",
+            "command-arg": { "id": "GCPModel" }
+          }
+        ]
+      }
+    ]
+  }
+}

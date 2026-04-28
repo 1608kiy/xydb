@@ -1,0 +1,147 @@
+[
+  {
+    "label": "线框框架类",
+    "id": "wireframe.frames",
+    "diagram-types": [ "WFWireframeDiagram" ],
+    "auto-expands": [ "WFWireframeDiagram" ],
+    "items": [
+      {
+        "label": "框架", 
+        "id": "WFFrame", 
+        "icon": "icon-WFFrame",
+        "rubberband": "rect" 
+      },
+      {
+        "label": "框架（移动端）",
+        "id": "WFMobileFrame", 
+        "icon": "icon-WFMobileFrame",
+        "rubberband": "rect" 
+      },
+      {
+        "label": "框架（Web端）",
+        "id": "WFWebFrame", 
+        "icon": "icon-WFWebFrame",
+        "rubberband": "rect" 
+      },
+      {
+        "label": "框架（桌面端）",
+        "id": "WFDesktopFrame", 
+        "icon": "icon-WFDesktopFrame",
+        "rubberband": "rect" 
+      }
+    ]
+  },
+  {
+    "label": "线框组件类",
+    "id": "wireframe.components",
+    "diagram-types": [ "WFWireframeDiagram" ],
+    "auto-expands": [ "WFWireframeDiagram" ],
+    "items": [
+      {
+        "label": "按钮", 
+        "id": "WFButton", 
+        "icon": "icon-WFButton",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["WFFrameView", "WFPanelView"] }
+      },
+      {
+        "label": "文本", 
+        "id": "WFText", 
+        "icon": "icon-WFText",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["WFFrameView", "WFPanelView"] }
+      },
+      {
+        "label": "单选按钮", 
+        "id": "WFRadio", 
+        "icon": "icon-WFRadio",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["WFFrameView", "WFPanelView"] }
+      },
+      {
+        "label": "复选框", 
+        "id": "WFCheckbox", 
+        "icon": "icon-WFCheckbox",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["WFFrameView", "WFPanelView"] }
+      },
+      {
+        "label": "开关", 
+        "id": "WFSwitch", 
+        "icon": "icon-WFSwitch",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["WFFrameView", "WFPanelView"] }
+      },
+      {
+        "label": "链接", 
+        "id": "WFLink", 
+        "icon": "icon-WFLink",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["WFFrameView", "WFPanelView"] }
+      },
+      {
+        "label": "选项卡列表", 
+        "id": "WFTabList", 
+        "icon": "icon-WFTabList",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["WFFrameView", "WFPanelView"] }
+      },
+      {
+        "label": "选项卡", 
+        "id": "WFTab", 
+        "icon": "icon-WFTab",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["WFFrameView", "WFPanelView", "WFTabListView"] }
+      },
+      {
+        "label": "输入框", 
+        "id": "WFInput", 
+        "icon": "icon-WFInput",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["WFFrameView", "WFPanelView"] }
+      },
+      {
+        "label": "下拉框", 
+        "id": "WFDropdown", 
+        "icon": "icon-WFDropdown",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["WFFrameView", "WFPanelView"] }
+      },
+      {
+        "label": "面板", 
+        "id": "WFPanel", 
+        "icon": "icon-WFPanel",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["WFFrameView", "WFPanelView"] }
+      },
+      {
+        "label": "图像", 
+        "id": "WFImage", 
+        "icon": "icon-WFImage",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["WFFrameView", "WFPanelView"] }
+      },
+      {
+        "label": "分隔符", 
+        "id": "WFSeparator", 
+        "icon": "icon-WFSeparator",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["WFFrameView", "WFPanelView"] }
+      },
+      {
+        "label": "头像", 
+        "id": "WFAvatar", 
+        "icon": "icon-WFAvatar",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["WFFrameView", "WFPanelView"] }
+      },
+      {
+        "label": "滑块", 
+        "id": "WFSlider", 
+        "icon": "icon-WFSlider",
+        "rubberband": "rect",
+        "command-arg": { "container-views": ["WFFrameView", "WFPanelView"] }
+      }
+    ]
+  }
+]

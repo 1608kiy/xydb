@@ -1,0 +1,61 @@
+{
+  "id": "dfd",
+  "name": "数据流图",
+  "schema": {
+    "dfd.dataflow": {
+      "text": "数据流",
+      "type": "section"
+    },
+    "dfd.dataflow.lineStyle": {
+      "text": "线条样式",
+      "description": "数据流的默认线条样式",
+      "type": "dropdown",
+      "options": [
+        { "value": 0, "text": "直线" },
+        { "value": 1, "text": "斜线" },
+        { "value": 2, "text": "圆角直线" },
+        { "value": 3, "text": "曲线" }
+      ],
+      "default": 2
+    },
+    "dfd.external-entity": {
+      "text": "外部实体",
+      "type": "section"
+    },
+    "dfd.external-entity.fillColor": {
+      "text": "填充颜色",
+      "description": "外部实体的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "dfd.process": {
+      "text": "过程",
+      "type": "section"
+    },
+    "dfd.process.fillColor": {
+      "text": "填充颜色",
+      "description": "过程的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "dfd.datastore": {
+      "text": "数据存储",
+      "type": "section"
+    },
+    "dfd.datastore.fillColor": {
+      "text": "填充颜色",
+      "description": "数据存储的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    }
+  }
+}

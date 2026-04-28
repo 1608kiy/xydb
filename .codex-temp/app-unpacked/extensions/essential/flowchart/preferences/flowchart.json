@@ -1,0 +1,373 @@
+{
+  "id": "flowchart",
+  "name": "流程图",
+  "schema": {
+    "flowchart.flow": {
+      "text": "流",
+      "type": "section"
+    },
+    "flowchart.flow.lineStyle": {
+      "text": "线条样式",
+      "description": "流的默认线条样式",
+      "type": "dropdown",
+      "options": [
+        { "value": 0, "text": "直线" },
+        { "value": 1, "text": "斜线" },
+        { "value": 2, "text": "圆角直线" },
+        { "value": 3, "text": "曲线" }
+      ],
+      "default": 2
+    },
+    "flowchart.process": {
+      "text": "过程",
+      "type": "section"
+    },
+    "flowchart.process.fillColor": {
+      "text": "填充颜色",
+      "description": "过程的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.terminator": {
+      "text": "终止器",
+      "type": "section"
+    },
+    "flowchart.terminator.fillColor": {
+      "text": "填充颜色",
+      "description": "终止器的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.decision": {
+      "text": "决策",
+      "type": "section"
+    },
+    "flowchart.decision.fillColor": {
+      "text": "填充颜色",
+      "description": "决策的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.delay": {
+      "text": "延迟",
+      "type": "section"
+    },
+    "flowchart.delay.fillColor": {
+      "text": "填充颜色",
+      "description": "延迟的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.predefined-process": {
+      "text": "预定义过程",
+      "type": "section"
+    },
+    "flowchart.predefined-process.fillColor": {
+      "text": "填充颜色",
+      "description": "预定义过程的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.alternate-process": {
+      "text": "交替过程",
+      "type": "section"
+    },
+    "flowchart.alternate-process.fillColor": {
+      "text": "填充颜色",
+      "description": "备选过程的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.data": {
+      "text": "数据",
+      "type": "section"
+    },
+    "flowchart.data.fillColor": {
+      "text": "填充颜色",
+      "description": "数据的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.document": {
+      "text": "文档",
+      "type": "section"
+    },
+    "flowchart.document.fillColor": {
+      "text": "填充颜色",
+      "description": "文档的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.multidocument": {
+      "text": "多文档",
+      "type": "section"
+    },
+    "flowchart.multidocument.fillColor": {
+      "text": "填充颜色",
+      "description": "多文档的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.preparation": {
+      "text": "准备",
+      "type": "section"
+    },
+    "flowchart.preparation.fillColor": {
+      "text": "填充颜色",
+      "description": "准备的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.display": {
+      "text": "显示",
+      "type": "section"
+    },
+    "flowchart.display.fillColor": {
+      "text": "填充颜色",
+      "description": "显示的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.manual-input": {
+      "text": "手工输入",
+      "type": "section"
+    },
+    "flowchart.manual-input.fillColor": {
+      "text": "填充颜色",
+      "description": "手动输入的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.manual-operation": {
+      "text": "手工操作",
+      "type": "section"
+    },
+    "flowchart.manual-operation.fillColor": {
+      "text": "填充颜色",
+      "description": "手动操作的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.card": {
+      "text": "卡片",
+      "type": "section"
+    },
+    "flowchart.card.fillColor": {
+      "text": "填充颜色",
+      "description": "卡片的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.punched-tape": {
+      "text": "打孔带",
+      "type": "section"
+    },
+    "flowchart.punched-tape.fillColor": {
+      "text": "填充颜色",
+      "description": "打孔带的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.connector": {
+      "text": "连接器",
+      "type": "section"
+    },
+    "flowchart.connector.fillColor": {
+      "text": "填充颜色",
+      "description": "连接器的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.off-page-connector": {
+      "text": "离页连接器",
+      "type": "section"
+    },
+    "flowchart.off-page-connector.fillColor": {
+      "text": "填充颜色",
+      "description": "离页连接器的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.or": {
+      "text": "或",
+      "type": "section"
+    },
+    "flowchart.or.fillColor": {
+      "text": "填充颜色",
+      "description": "或的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.summing-junction": {
+      "text": "求和连接器",
+      "type": "section"
+    },
+    "flowchart.summing-junction.fillColor": {
+      "text": "填充颜色",
+      "description": "总和连接器的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.collate": {
+      "text": "汇总",
+      "type": "section"
+    },
+    "flowchart.collate.fillColor": {
+      "text": "填充颜色",
+      "description": "汇总的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.sort": {
+      "text": "排序",
+      "type": "section"
+    },
+    "flowchart.sort.fillColor": {
+      "text": "填充颜色",
+      "description": "排序的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.merge": {
+      "text": "合并",
+      "type": "section"
+    },
+    "flowchart.merge.fillColor": {
+      "text": "填充颜色",
+      "description": "合并的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.extract": {
+      "text": "提取",
+      "type": "section"
+    },
+    "flowchart.extract.fillColor": {
+      "text": "填充颜色",
+      "description": "提取的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.stored-data": {
+      "text": "存储数据",
+      "type": "section"
+    },
+    "flowchart.stored-data.fillColor": {
+      "text": "填充颜色",
+      "description": "存储数据的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.database": {
+      "text": "数据库",
+      "type": "section"
+    },
+    "flowchart.database.fillColor": {
+      "text": "填充颜色",
+      "description": "数据库的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.direct-access-storage": {
+      "text": "直接访问存储",
+      "type": "section"
+    },
+    "flowchart.direct-access-storage.fillColor": {
+      "text": "填充颜色",
+      "description": "直接访问存储的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "flowchart.internal-storage": {
+      "text": "内部存储",
+      "type": "section"
+    },
+    "flowchart.internal-storage.fillColor": {
+      "text": "填充颜色",
+      "description": "内部存储的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    }
+  }
+}

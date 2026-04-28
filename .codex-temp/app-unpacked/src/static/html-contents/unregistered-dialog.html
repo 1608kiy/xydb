@@ -1,0 +1,23 @@
+<div class="unregistered-dialog dialog modal"
+    data-title="{{#isExpired}}评估时长已过期{{/isExpired}}{{^isExpired}}评估模式{{/isExpired}}">
+    <div class="dialog-body">
+        <div class="ad"></div>
+        {{#isExpired}}
+        <div class="eval-msg">您的评估时长已结束。购买后继续使用。
+        </div>
+        {{/isExpired}}
+        {{^isExpired}}
+        <div class="eval-msg">感谢您对StarUML的评估使用。购买后继续使用。</div>
+        {{/isExpired}}
+    </div>
+    <div class="dialog-footer">
+        <button class="k-button dialog-button left buy-now primary">购买</button>
+        {{#isExpired}}
+        <button class="k-button outline enter-license-key">输入许可密钥</button>
+        <button class="k-button dialog-button outline exit-app" data-button-id="cancel">退出</button>
+        {{/isExpired}}
+        {{^isExpired}}
+        <button class="k-button dialog-button outline" data-button-id="cancel">{{remains}} 天评估时长剩余</button>
+        {{/isExpired}}
+    </div>
+</div>

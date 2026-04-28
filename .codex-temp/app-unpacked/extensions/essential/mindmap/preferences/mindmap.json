@@ -1,0 +1,44 @@
+{
+  "id": "mindmap",
+  "name": "思维导图",
+  "schema": {
+    "mindmap.edge": {
+      "text": "边",
+      "type": "section"
+    },
+    "mindmap.edge.lineStyle": {
+      "text": "线条样式",
+      "description": "边的默认线条样式",
+      "type": "dropdown",
+      "options": [
+        { "value": 0, "text": "直线" },
+        { "value": 1, "text": "斜线" },
+        { "value": 2, "text": "圆角直线" },
+        { "value": 3, "text": "曲线" }
+      ],
+      "default": 1
+    },
+    "mindmap.node": {
+      "text": "节点",
+      "type": "section"
+    },
+    "mindmap.node.fillColor": {
+      "text": "填充颜色",
+      "description": "节点的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "mindmap.node.lineColor": {
+      "text": "线条颜色",
+      "description": "节点的线条颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    }
+  }
+}

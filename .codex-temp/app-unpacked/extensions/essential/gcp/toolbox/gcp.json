@@ -1,0 +1,40 @@
+[
+  {
+    "label": "GCP",
+    "id": "gcp.elements",
+    "diagram-types": ["GCPDiagram"],
+    "auto-expands": ["GCPDiagram"],
+    "items": [
+      {
+        "label": "区域",
+        "id": "GCPZone",
+        "icon": "icon-GCPZone",
+        "rubberband": "rect"
+      },
+      {
+        "label": "用户",
+        "id": "GCPUser",
+        "icon": "icon-GCPUser",
+        "rubberband": "rect"
+      },
+      {
+        "label": "产品",
+        "id": "GCPProduct",
+        "icon": "icon-GCPProduct",
+        "rubberband": "rect"
+      },
+      {
+        "label": "服务",
+        "id": "GCPService",
+        "icon": "icon-GCPService",
+        "rubberband": "rect"
+      },
+      {
+        "label": "路径",
+        "id": "GCPPath",
+        "icon": "icon-GCPPath",
+        "rubberband": "line"
+      }
+    ]
+  }
+]

@@ -1,0 +1,13 @@
+﻿{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "file://",
+      "localStorage": [
+        { "name": "token", "value": "dev-local-preview" },
+        { "name": "devSkipAuth", "value": "1" },
+        { "name": "allowDevLocalAuth", "value": "1" }
+      ]
+    }
+  ]
+}

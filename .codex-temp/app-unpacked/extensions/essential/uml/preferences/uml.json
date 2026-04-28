@@ -1,0 +1,597 @@
+{
+  "id": "uml",
+  "name": "UML",
+  "schema": {
+    "uml.package": {
+      "text": "包",
+      "type": "section"
+    },
+    "uml.package.fillColor": {
+      "text": "填充颜色",
+      "description": "包的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.model": {
+      "text": "模型",
+      "type": "section"
+    },
+    "uml.model.fillColor": {
+      "text": "填充颜色",
+      "description": "模型的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.subsystem": {
+      "text": "子系统",
+      "type": "section"
+    },
+    "uml.subsystem.fillColor": {
+      "text": "填充颜色",
+      "description": "子系统的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.class": {
+      "text": "类",
+      "type": "section"
+    },
+    "uml.class.fillColor": {
+      "text": "填充颜色",
+      "description": "类的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.class.stereotypeDisplay": {
+      "text": "类型显示",
+      "description": "类的默认显示类型",
+      "type": "dropdown",
+      "options": [
+        { "value": "none", "text": "无" },
+        { "value": "label", "text": "标签" },
+        { "value": "decoration", "text": "修饰" },
+        { "value": "decoration-label", "text": "带标签的修饰" },
+        { "value": "icon", "text": "图标" },
+        { "value": "icon-label", "text": "图标带标签" }
+      ],
+      "default": "label"
+    },
+    "uml.class.suppressAttributes": {
+      "text": "隐藏属性",
+      "description": "隐藏类的属性",
+      "type": "check",
+      "default": false
+    },
+    "uml.class.suppressOperations": {
+      "text": "隐藏操作",
+      "description": "隐藏类的操作",
+      "type": "check",
+      "default": false
+    },
+    "uml.interface": {
+      "text": "接口",
+      "type": "section"
+    },
+    "uml.interface.fillColor": {
+      "text": "填充颜色",
+      "description": "接口的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.interface.stereotypeDisplay": {
+      "text": "类型显示",
+      "description": "接口的默认显示类型",
+      "type": "dropdown",
+      "options": [
+        { "value": "none", "text": "无" },
+        { "value": "label", "text": "标签" },
+        { "value": "decoration", "text": "修饰" },
+        { "value": "decoration-label", "text": "带标签的修饰" },
+        { "value": "icon", "text": "图标" },
+        { "value": "icon-label", "text": "图标带标签" }
+      ],
+      "default": "icon"
+    },
+    "uml.interface.suppressAttributes": {
+      "text": "隐藏属性",
+      "description": "隐藏接口的属性",
+      "type": "check",
+      "default": true
+    },
+    "uml.interface.suppressOperations": {
+      "text": "隐藏操作",
+      "description": "隐藏接口的操作",
+      "type": "check",
+      "default": true
+    },
+    "uml.signal": {
+      "text": "信号",
+      "type": "section"
+    },
+    "uml.signal.fillColor": {
+      "text": "填充颜色",
+      "description": "信号的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.datatype": {
+      "text": "数据类型",
+      "type": "section"
+    },
+    "uml.datatype.fillColor": {
+      "text": "填充颜色",
+      "description": "数据类型的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.primitivetype": {
+      "text": "原始类型",
+      "type": "section"
+    },
+    "uml.primitivetype.fillColor": {
+      "text": "填充颜色",
+      "description": "原始类型的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.enumeration": {
+      "text": "枚举",
+      "type": "section"
+    },
+    "uml.enumeration.fillColor": {
+      "text": "填充颜色",
+      "description": "枚举的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.enumeration.stereotypeDisplay": {
+      "text": "类型显示",
+      "description": "枚举的默认显示类型",
+      "type": "dropdown",
+      "options": [
+        { "value": "none", "text": "无" },
+        { "value": "label", "text": "标签" },
+        { "value": "decoration", "text": "修饰" },
+        { "value": "decoration-label", "text": "带标签的修饰" },
+        { "value": "icon", "text": "图标" },
+        { "value": "icon-label", "text": "图标带标签" }
+      ],
+      "default": "label"
+    },
+    "uml.enumeration.suppressAttributes": {
+      "text": "隐藏属性",
+      "description": "隐藏枚举的属性",
+      "type": "check",
+      "default": true
+    },
+    "uml.enumeration.suppressOperations": {
+      "text": "隐藏操作",
+      "description": "隐藏枚举的操作",
+      "type": "check",
+      "default": true
+    },
+    "uml.enumeration.suppressLiterals": {
+      "text": "隐藏字面量",
+      "description": "隐藏枚举的文字",
+      "type": "check",
+      "default": false
+    },
+    "uml.port": {
+      "text": "端口",
+      "type": "section"
+    },
+    "uml.port.fillColor": {
+      "text": "填充颜色",
+      "description": "端口的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.part": {
+      "text": "部件",
+      "type": "section"
+    },
+    "uml.part.fillColor": {
+      "text": "填充颜色",
+      "description": "部件的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.collaboration": {
+      "text": "协作",
+      "type": "section"
+    },
+    "uml.collaboration.fillColor": {
+      "text": "填充颜色",
+      "description": "协作的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.collaborationuse": {
+      "text": "协作使用",
+      "type": "section"
+    },
+    "uml.collaborationuse.fillColor": {
+      "text": "填充颜色",
+      "description": "协作使用的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.artifact": {
+      "text": "工件",
+      "type": "section"
+    },
+    "uml.artifact.fillColor": {
+      "text": "填充颜色",
+      "description": "物件的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.artifact.stereotypeDisplay": {
+      "text": "类型显示",
+      "description": "物件的默认显示类型",
+      "type": "dropdown",
+      "options": [
+        { "value": "none", "text": "无" },
+        { "value": "label", "text": "标签" },
+        { "value": "decoration", "text": "修饰" },
+        { "value": "decoration-label", "text": "带标签的修饰" },
+        { "value": "icon", "text": "图标" },
+        { "value": "icon-label", "text": "图标带标签" }
+      ],
+      "default": "icon"
+    },
+    "uml.artifact.suppressAttributes": {
+      "text": "隐藏属性",
+      "description": "隐藏物件的属性",
+      "type": "check",
+      "default": true
+    },
+    "uml.artifact.suppressOperations": {
+      "text": "隐藏操作",
+      "description": "隐藏物件的操作",
+      "type": "check",
+      "default": true
+    },
+    "uml.component": {
+      "text": "组件",
+      "type": "section"
+    },
+    "uml.component.fillColor": {
+      "text": "填充颜色",
+      "description": "组件的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.component.stereotypeDisplay": {
+      "text": "类型显示",
+      "description": "组件的默认显示类型",
+      "type": "dropdown",
+      "options": [
+        { "value": "none", "text": "无" },
+        { "value": "label", "text": "标签" },
+        { "value": "decoration", "text": "修饰" },
+        { "value": "decoration-label", "text": "带标签的修饰" },
+        { "value": "icon", "text": "图标" },
+        { "value": "icon-label", "text": "图标带标签" }
+      ],
+      "default": "label"
+    },
+    "uml.component.suppressAttributes": {
+      "text": "隐藏属性",
+      "description": "隐藏组件的属性",
+      "type": "check",
+      "default": true
+    },
+    "uml.component.suppressOperations": {
+      "text": "隐藏操作",
+      "description": "隐藏组件的操作",
+      "type": "check",
+      "default": true
+    },
+    "uml.node": {
+      "text": "节点",
+      "type": "section"
+    },
+    "uml.node.fillColor": {
+      "text": "填充颜色",
+      "description": "节点的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.node.stereotypeDisplay": {
+      "text": "类型显示",
+      "description": "节点的默认显示类型",
+      "type": "dropdown",
+      "options": [
+        { "value": "none", "text": "无" },
+        { "value": "label", "text": "标签" },
+        { "value": "decoration", "text": "修饰" },
+        { "value": "decoration-label", "text": "带标签的修饰" },
+        { "value": "icon", "text": "图标" },
+        { "value": "icon-label", "text": "图标带标签" }
+      ],
+      "default": "label"
+    },
+    "uml.node.suppressAttributes": {
+      "text": "隐藏属性",
+      "description": "隐藏节点的属性",
+      "type": "check",
+      "default": true
+    },
+    "uml.node.suppressOperations": {
+      "text": "隐藏操作",
+      "description": "隐藏节点的操作",
+      "type": "check",
+      "default": true
+    },
+    "uml.object": {
+      "text": "对象",
+      "type": "section"
+    },
+    "uml.object.fillColor": {
+      "text": "填充颜色",
+      "description": "对象的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.artifactinstance": {
+      "text": "工件实例",
+      "type": "section"
+    },
+    "uml.artifactinstance.fillColor": {
+      "text": "填充颜色",
+      "description": "物件实例的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.componentinstance": {
+      "text": "组件实例",
+      "type": "section"
+    },
+    "uml.componentinstance.fillColor": {
+      "text": "填充颜色",
+      "description": "组件实例的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.nodeinstance": {
+      "text": "节点实例",
+      "type": "section"
+    },
+    "uml.nodeinstance.fillColor": {
+      "text": "填充颜色",
+      "description": "节点实例的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.usecase": {
+      "text": "用例",
+      "type": "section"
+    },
+    "uml.usecase.fillColor": {
+      "text": "填充颜色",
+      "description": "用例的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.usecase.stereotypeDisplay": {
+      "text": "类型显示",
+      "description": "用例的默认显示类型",
+      "type": "dropdown",
+      "options": [
+        { "value": "none", "text": "无" },
+        { "value": "label", "text": "标签" },
+        { "value": "decoration", "text": "修饰" },
+        { "value": "decoration-label", "text": "带标签的修饰" },
+        { "value": "icon", "text": "图标" },
+        { "value": "icon-label", "text": "图标带标签" }
+      ],
+      "default": "label"
+    },
+    "uml.usecase.suppressAttributes": {
+      "text": "隐藏属性",
+      "description": "隐藏用例的属性",
+      "type": "check",
+      "default": true
+    },
+    "uml.usecase.suppressOperations": {
+      "text": "隐藏操作",
+      "description": "隐藏用例的操作",
+      "type": "check",
+      "default": true
+    },
+    "uml.actor": {
+      "text": "角色",
+      "type": "section"
+    },
+    "uml.actor.fillColor": {
+      "text": "填充颜色",
+      "description": "角色的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.actor.stereotypeDisplay": {
+      "text": "类型显示",
+      "description": "角色的默认显示类型",
+      "type": "dropdown",
+      "options": [
+        { "value": "none", "text": "无" },
+        { "value": "label", "text": "标签" },
+        { "value": "decoration", "text": "修饰" },
+        { "value": "decoration-label", "text": "带标签的修饰" },
+        { "value": "icon", "text": "图标" },
+        { "value": "icon-label", "text": "图标带标签" }
+      ],
+      "default": "label"
+    },
+    "uml.actor.suppressAttributes": {
+      "text": "隐藏属性",
+      "description": "隐藏角色的属性",
+      "type": "check",
+      "default": true
+    },
+    "uml.actor.suppressOperations": {
+      "text": "隐藏操作",
+      "description": "隐藏角色的操作",
+      "type": "check",
+      "default": true
+    },
+    "uml.lifeline": {
+      "text": "生命线",
+      "type": "section"
+    },
+    "uml.lifeline.fillColor": {
+      "text": "填充颜色",
+      "description": "生命线的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.state": {
+      "text": "状态",
+      "type": "section"
+    },
+    "uml.state.fillColor": {
+      "text": "填充颜色",
+      "description": "状态的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.action": {
+      "text": "动作",
+      "type": "section"
+    },
+    "uml.action.fillColor": {
+      "text": "填充颜色",
+      "description": "动作的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.objectnode": {
+      "text": "对象节点",
+      "type": "section"
+    },
+    "uml.objectnode.fillColor": {
+      "text": "填充颜色",
+      "description": "对象节点的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.metaclass": {
+      "text": "元类",
+      "type": "section"
+    },
+    "uml.metaclass.fillColor": {
+      "text": "填充颜色",
+      "description": "元类的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.stereotype": {
+      "text": "类型(Stereotype)",
+      "type": "section"
+    },
+    "uml.stereotype.fillColor": {
+      "text": "填充颜色",
+      "description": "类型的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "uml.note": {
+      "text": "注释/笔记",
+      "type": "section"
+    },
+    "uml.note.fillColor": {
+      "text": "填充颜色",
+      "description": "注释的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    }
+  }
+}

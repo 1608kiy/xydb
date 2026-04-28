@@ -1,0 +1,14 @@
+[
+  {
+    "label": "数据流",
+    "id": "dfd",
+    "diagram-types": [ "DFDDiagram" ],
+    "auto-expands": [ "DFDDiagram" ],
+    "items": [
+      { "label": "外部实体", "id": "DFDExternalEntity", "icon": "icon-DFDExternalEntity", "rubberband": "rect" },
+      { "label": "过程", "id": "DFDProcess", "icon": "icon-DFDProcess", "rubberband": "rect" },
+      { "label": "数据存储", "id": "DFDDataStore", "icon": "icon-DFDDataStore", "rubberband": "rect" },
+      { "label": "数据流", "id": "DFDDataFlow", "icon": "icon-DFDDataFlow", "rubberband": "line" }
+    ]
+  }
+]

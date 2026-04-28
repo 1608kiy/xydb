@@ -1,0 +1,35 @@
+{
+  "id": "erd",
+  "name": "ERD",
+  "schema": {
+    "erd.entity": {
+      "text": "实体",
+      "type": "section"
+    },
+    "erd.entity.fillColor": {
+      "text": "填充颜色",
+      "description": "子系统的填充颜色",
+      "type": "color",
+      "default": null,
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "erd.relationship": {
+      "text": "关系",
+      "type": "section"
+    },
+    "erd.relationship.lineStyle": {
+      "text": "线条样式",
+      "description": "实体关系的默认线条样式",
+      "type": "dropdown",
+      "options": [
+        { "value": 0, "text": "直线" },
+        { "value": 1, "text": "斜线" },
+        { "value": 2, "text": "圆角直线" },
+        { "value": 3, "text": "曲线" }
+      ],
+      "default": 2
+    }
+  }
+}

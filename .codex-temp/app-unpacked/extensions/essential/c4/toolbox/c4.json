@@ -1,0 +1,89 @@
+[
+  {
+    "label": "C4模型",
+    "id": "c4",
+    "diagram-types": [ "C4Diagram" ],
+    "auto-expands": [ "C4Diagram" ],
+    "items": [
+      {
+        "label": "角色",
+        "id": "C4Person",
+        "icon": "icon-C4Person",
+        "rubberband": "rect"
+      },
+      {
+        "label": "软件系统",
+        "id": "C4SoftwareSystem",
+        "icon": "icon-C4SoftwareSystem",
+        "rubberband": "rect"
+      },
+      {
+        "label": "容器",
+        "id": "C4Container",
+        "icon": "icon-C4Container",
+        "rubberband": "rect"
+      },
+      {
+        "label": "容器 (数据库)",
+        "id": "C4ContainerDatabase",
+        "icon": "icon-C4Container",
+        "rubberband": "rect",
+        "command-arg": {
+          "id": "C4Container",
+          "model-init": {
+            "kind": "database"
+          }
+        }
+      },
+      {
+        "label": "容器 (Web 应用)",
+        "id": "C4ContainerWebApp",
+        "icon": "icon-C4Container",
+        "rubberband": "rect",
+        "command-arg": {
+          "id": "C4Container",
+          "model-init": {
+            "kind": "client-webapp"
+          }
+        }
+      },
+      {
+        "label": "容器 (桌面应用)",
+        "id": "C4ContainerDesktopApp",
+        "icon": "icon-C4Container",
+        "rubberband": "rect",
+        "command-arg": {
+          "id": "C4Container",
+          "model-init": {
+            "kind": "desktop-app"
+          }
+        }
+      },
+      {
+        "label": "容器 (移动应用)",
+        "id": "C4ContainerMobileApp",
+        "icon": "icon-C4Container",
+        "rubberband": "rect",
+        "command-arg": {
+          "id": "C4Container",
+          "model-init": {
+            "kind": "mobile-app"
+          }
+        }
+      },
+      {
+        "label": "组件",
+        "id": "C4Component",
+        "icon": "icon-C4Component",
+        "rubberband": "rect"
+      },
+      {
+        "label": "元素",
+        "id": "C4Element",
+        "icon": "icon-C4Element",
+        "rubberband": "rect"
+      },
+      { "label": "关系", "id": "C4Relationship", "icon": "icon-C4Relationship", "rubberband": "line" }
+    ]
+  }
+]

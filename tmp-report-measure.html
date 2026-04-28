@@ -1,0 +1,51 @@
+﻿<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>report measure</title>
+    <style>
+      html, body { margin: 0; height: 100%; background: #f3f4f6; }
+      iframe { width: 1366px; height: 768px; border: 0; display: block; }
+      #stats { position: fixed; top: 8px; left: 8px; z-index: 9999; background: rgba(15,23,42,.78); color: #fff; font: 12px/1.4 monospace; padding: 8px 10px; border-radius: 8px; white-space: pre; }
+    </style>
+  </head>
+  <body>
+    <div id="stats">loading...</div>
+    <iframe id="frame" src="file:///E:/computer%20science/XYDB/WEB/frontend/%E6%95%B0%E6%8D%AE%E5%91%A8%E6%8A%A5%E9%A1%B5%E9%9D%A2.html"></iframe>
+    <script>
+      localStorage.setItem('token', 'dev-codex-preview');
+      localStorage.setItem('devSkipAuth', '1');
+      localStorage.setItem('allowDevLocalAuth', '1');
+      const frame = document.getElementById('frame');
+      const stats = document.getElementById('stats');
+      function sample() {
+        try {
+          const win = frame.contentWindow;
+          const doc = win.document;
+          const body = doc.body;
+          const html = doc.documentElement;
+          const main = doc.querySelector('.report-main');
+          const footer = doc.querySelector('footer');
+          const dash = doc.querySelector('.report-dashboard');
+          stats.textContent = [
+            'innerHeight=' + win.innerHeight,
+            'body.scrollHeight=' + body.scrollHeight,
+            'body.clientHeight=' + body.clientHeight,
+            'html.scrollHeight=' + html.scrollHeight,
+            'html.clientHeight=' + html.clientHeight,
+            'main.clientHeight=' + (main ? main.clientHeight : 'na'),
+            'dash.clientHeight=' + (dash ? dash.clientHeight : 'na'),
+            'footer.top=' + (footer ? footer.getBoundingClientRect().top : 'na'),
+            'footer.bottom=' + (footer ? footer.getBoundingClientRect().bottom : 'na')
+          ].join('\n');
+        } catch (e) {
+          stats.textContent = String(e);
+        }
+      }
+      frame.addEventListener('load', function () {
+        setTimeout(sample, 3500);
+        setTimeout(sample, 5500);
+      });
+    </script>
+  </body>
+</html>

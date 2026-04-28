@@ -1,0 +1,64 @@
+[
+  {
+    "label": "AWS",
+    "id": "aws.elements",
+    "diagram-types": ["AWSDiagram"],
+    "auto-expands": ["AWSDiagram"],
+    "items": [
+      {
+        "label": "AWS 组",
+        "id": "AWSGroup",
+        "icon": "icon-AWSGroup",
+        "rubberband": "rect"
+      },
+      {
+        "label": "AWS 通用组",
+        "id": "AWSGenericGroup",
+        "icon": "icon-AWSGenericGroup",
+        "rubberband": "rect"
+      },
+      {
+        "label": "AWS 可用区",
+        "id": "AWSAvailabilityZone",
+        "icon": "icon-AWSAvailabilityZone",
+        "rubberband": "rect"
+      },
+      {
+        "label": "AWS 安全组",
+        "id": "AWSSecurityGroup",
+        "icon": "icon-AWSSecurityGroup",
+        "rubberband": "rect"
+      },
+      {
+        "label": "AWS 服务",
+        "id": "AWSService",
+        "icon": "icon-AWSService",
+        "rubberband": "rect"
+      },
+      {
+        "label": "AWS 资源",
+        "id": "AWSResource",
+        "icon": "icon-AWSResource",
+        "rubberband": "rect"
+      },
+      {
+        "label": "AWS 通用资源",
+        "id": "AWSGeneralResource",
+        "icon": "icon-AWSGeneralResource",
+        "rubberband": "rect"
+      },
+      {
+        "label": "AWS 调用",
+        "id": "AWSCallout",
+        "icon": "icon-AWSCallout",
+        "rubberband": "rect"
+      },
+      {
+        "label": "AWS 箭头",
+        "id": "AWSArrow",
+        "icon": "icon-AWSArrow",
+        "rubberband": "line"
+      }
+    ]
+  }
+]

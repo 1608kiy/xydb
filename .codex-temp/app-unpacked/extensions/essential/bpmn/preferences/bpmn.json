@@ -1,0 +1,132 @@
+{
+  "id": "bpmn",
+  "name": "BPMN",
+  "schema": {
+    "bpmn.activity": {
+      "text": "活动",
+      "type": "section"
+    },
+    "bpmn.activity.fillColor": {
+      "text": "填充颜色",
+      "description": "活动的填充颜色",
+      "type": "color",
+      "default": "#ffffff",
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "bpmn.event": {
+      "text": "事件",
+      "type": "section"
+    },
+    "bpmn.event.fillColor": {
+      "text": "填充颜色",
+      "description": "事件的填充颜色",
+      "type": "color",
+      "default": "#ffffff",
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "bpmn.message": {
+      "text": "信息",
+      "type": "section"
+    },
+    "bpmn.message.fillColor": {
+      "text": "填充颜色",
+      "description": "信息的填充颜色",
+      "type": "color",
+      "default": "#ffffff",
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "bpmn.gateway": {
+      "text": "网关",
+      "type": "section"
+    },
+    "bpmn.gateway.fillColor": {
+      "text": "填充颜色",
+      "description": "网关的填充颜色",
+      "type": "color",
+      "default": "#ffffff",
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "bpmn.dataobject": {
+      "text": "数据对象",
+      "type": "section"
+    },
+    "bpmn.dataobject.fillColor": {
+      "text": "填充颜色",
+      "description": "数据对象的填充颜色",
+      "type": "color",
+      "default": "#ffffff",
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "bpmn.conversation": {
+      "text": "会话",
+      "type": "section"
+    },
+    "bpmn.conversation.fillColor": {
+      "text": "填充颜色",
+      "description": "会话的填充颜色",
+      "type": "color",
+      "default": "#ffffff",
+      "default-button": {
+        "text": "使用默认"
+      }
+    },
+    "bpmn.sequence-flow": {
+      "text": "顺序流",
+      "type": "section"
+    },
+    "bpmn.sequence-flow.lineStyle": {
+      "text": "线条样式",
+      "description": "顺序流的默认线条样式",
+      "type": "dropdown",
+      "options": [
+        { "value": 0, "text": "直线" },
+        { "value": 1, "text": "斜线" },
+        { "value": 2, "text": "圆角直线" },
+        { "value": 3, "text": "曲线" }
+      ],
+      "default": 2
+    },
+    "bpmn.message-flow": {
+      "text": "信息流",
+      "type": "section"
+    },
+    "bpmn.message-flow.lineStyle": {
+      "text": "线条样式",
+      "description": "信息流的默认线条样式",
+      "type": "dropdown",
+      "options": [
+        { "value": 0, "text": "直线" },
+        { "value": 1, "text": "斜线" },
+        { "value": 2, "text": "圆角直线" },
+        { "value": 3, "text": "曲线" }
+      ],
+      "default": 2
+    },
+    "bpmn.conversation-link": {
+      "text": "会话链接",
+      "type": "section"
+    },
+    "bpmn.conversation-link.lineStyle": {
+      "text": "线条样式",
+      "description": "会话链接的默认线条样式",
+      "type": "dropdown",
+      "options": [
+        { "value": 0, "text": "直线" },
+        { "value": 1, "text": "斜线" },
+        { "value": 2, "text": "圆角直线" },
+        { "value": 3, "text": "曲线" }
+      ],
+      "default": 2
+    }
+  }
+}
