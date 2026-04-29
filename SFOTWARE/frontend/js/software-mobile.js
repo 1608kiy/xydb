@@ -1,17 +1,20 @@
 ﻿(function () {
   'use strict';
 
-  // Keep local dev bypass explicit so production-like shells do not auto-create sessions.
+  // SFOTWARE mobile local runtime: allow guest session by default to avoid login bounce.
   try {
+    var pathname = '';
     var host = (window.location && window.location.hostname) || '';
     var protocol = (window.location && window.location.protocol) || '';
+    try { pathname = decodeURIComponent((window.location && window.location.pathname) || ''); } catch (ignorePath) { pathname = (window.location && window.location.pathname) || ''; }
     var isLocalRuntime = protocol === 'file:' || host === 'localhost' || host === '127.0.0.1';
-    var allowDevLocalAuth = localStorage.getItem('allowDevLocalAuth') === '1';
-    if (isLocalRuntime && allowDevLocalAuth) {
+    var isSoftwareMobilePage = pathname.indexOf('/SFOTWARE/frontend/') !== -1 || pathname.indexOf('SFOTWARE\\frontend\\') !== -1;
+    if (isLocalRuntime && isSoftwareMobilePage) {
+      localStorage.setItem('allowDevLocalAuth', '1');
+      localStorage.setItem('devSkipAuth', '1');
       var token = localStorage.getItem('token');
-      if (!token) {
+      if (!token || (typeof token === 'string' && token.trim() === '')) {
         localStorage.setItem('token', 'dev-local');
-        localStorage.setItem('devSkipAuth', '1');
       }
     }
   } catch (e) {}

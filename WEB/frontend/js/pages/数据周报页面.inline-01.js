@@ -4,18 +4,18 @@
         theme: {
           extend: {
             colors: {
-              primary: '#0F766E',
-              secondary: '#D97706',
-              success: '#16A34A',
+              primary: '#D97706',
+              secondary: '#B45309',
+              success: '#C2410C',
               warning: '#F59E0B',
               danger: '#EF4444',
-              info: '#0891B2',
+              info: '#A16207',
               light: '#F3F4F6',
               dark: '#1F2937',
-              'task-work': '#0891B2',
-              'task-study': '#0F766E',
-              'task-life': '#D97706',
-              'task-health': '#16A34A'
+              'task-work': '#F59E0B',
+              'task-study': '#D97706',
+              'task-life': '#B45309',
+              'task-health': '#C2410C'
             },
             fontFamily: {
               inter: ['Inter', 'system-ui', 'sans-serif']

@@ -4,6 +4,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>番茄专注</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src='./js/web-bg-init.js?v=20260428_bg1'></script>
     <script src="data.js?v=20260325_syncfix4"></script>
     <script src="common.js?v=20260401_liquid_modal1"></script>
     <script src="components.js?v=20260322_sync2"></script>
@@ -16,7 +17,7 @@
     <link rel='stylesheet' href='./css/saas-theme-overrides.css?v=20260423_ui_saas1' />
   <script src='./js/pages/番茄钟页面.inline-02.js?v=20260327_jssplit'></script>
 </head>
-  <body class="font-inter bg-[#F1EEEA] text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden fade-in scroll-smooth">
+  <body class="font-inter text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden fade-in scroll-smooth">
     <!-- ✅ 背景装饰光斑 -->
     <div class="bg-orb w-[500px] h-[500px] top-0 left-0" style="animation-delay: 0s;"></div>
     <div class="bg-orb w-[400px] h-[400px] bottom-0 right-0" style="animation-delay: -5s;"></div>
@@ -125,7 +126,7 @@
       >
         <!-- 模式切换 -->
         <section
-          class="w-full max-w-xl card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-4 md:p-6 mb-4 fade-in"
+          class="w-full max-w-xl glass-strong rounded-2xl p-4 md:p-6 mb-4 fade-in"
         >
           <div
             class="flex flex-col md:flex-row md:items-center md:justify-between gap-3"
@@ -162,7 +163,7 @@
 
         <!-- 计时器主体 -->
         <section
-          class="w-full max-w-xl card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-6 md:p-8 flex flex-col items-center fade-in"
+          class="w-full max-w-xl glass-strong rounded-2xl p-6 md:p-8 flex flex-col items-center fade-in"
           style="animation-delay: 0.1s;"
         >
           <div class="relative w-52 h-52 md:w-64 md:h-64 mb-6">
@@ -179,7 +180,7 @@
             
             <!-- 中心内容 -->
             <div
-              class="absolute inset-3 md:inset-4 rounded-full bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center shadow-inner"
+              class="absolute inset-3 md:inset-4 rounded-full glass-max flex flex-col items-center justify-center shadow-inner"
             >
               <div
                 id="timer-display"
@@ -230,7 +231,7 @@
           </div>
 
           <!-- 自动开始设置 -->
-          <div class="w-full mb-4 flex items-center justify-between text-xs text-gray-600 bg-white/50 rounded-xl px-4 py-3 border border-gray-100">
+          <div class="w-full mb-4 flex items-center justify-between text-xs text-gray-600 glass rounded-xl px-4 py-3">
             <label class="custom-checkbox">
               <input id="auto-start-toggle" type="checkbox" checked />
               <span class="checkmark"></span>
@@ -291,7 +292,7 @@
 
         <!-- 最近专注记录 -->
         <section
-          class="w-full max-w-xl card-shadow card-hover bg-white/60 backdrop-blur-sm rounded-2xl p-4 md:p-6 mt-4 fade-in"
+          class="w-full max-w-xl glass-strong rounded-2xl p-4 md:p-6 mt-4 fade-in"
           style="animation-delay: 0.2s;"
         >
           <div class="flex items-center justify-between mb-3">
@@ -394,7 +395,7 @@
 
     <!-- 移动端任务选择模态框 -->
     <div id="mobile-task-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-50 items-end md:hidden">
-      <div class="bg-white w-full rounded-t-2xl p-4 max-h-[70vh] overflow-y-auto scale-in">
+      <div class="glass-max w-full rounded-t-2xl p-4 max-h-[70vh] overflow-y-auto scale-in">
         <div class="flex items-center justify-between mb-3 pb-3 border-b border-gray-100">
           <div class="font-semibold text-gray-800">选择任务</div>
           <button id="mobile-task-close" class="text-gray-400 hover:text-gray-600 transition-colors">

@@ -7,6 +7,7 @@
   <title>待办清单 - 铃记</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <script src='./js/web-bg-init.js?v=20260428_bg1'></script>
   <script defer src="data.js?v=20260325_syncfix4"></script>
   <script defer src="./common.js?v=20260401_liquid_modal1"></script>
   <script src='./js/pages/待办页面.inline-01.js?v=20260327_jssplit'></script>
@@ -14,7 +15,7 @@
   <link rel='stylesheet' href='./css/saas-theme-overrides.css?v=20260423_ui_saas1' />
 </head>
 
-<body class="bg-[#F1EEEA]">
+<body class="font-inter text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden">
   <!-- ===== 背景装饰光斑 ===== -->
   <div class="bg-orb" style="width: 500px; height: 500px; top: 0; left: 0;"></div>
   <div class="bg-orb" style="width: 400px; height: 400px; bottom: 0; right: 0; animation-delay: -5s;"></div>
@@ -259,7 +260,7 @@
                 <i class="fas fa-plus-circle"></i>
               </button>
             </div>
-            <span class="text-sm text-gray-500 bg-white/70 px-3 py-1.5 rounded-full"><span
+            <span class="text-sm text-gray-500 glass px-3 py-1.5 rounded-full"><span
                 id="today-task-count">0</span> 个任务</span>
           </div>
           <div class="space-y-3" id="today-task-list"></div>
@@ -275,7 +276,7 @@
                 <i class="fas fa-plus-circle"></i>
               </button>
             </div>
-            <span class="text-sm text-gray-500 bg-white/70 px-3 py-1.5 rounded-full"><span
+            <span class="text-sm text-gray-500 glass px-3 py-1.5 rounded-full"><span
                 id="tomorrow-task-count">0</span> 个任务</span>
           </div>
           <div class="space-y-3" id="tomorrow-task-list"></div>
@@ -390,7 +391,7 @@
           智能分类并拆解并行子任务
         </button>
         <div class="flex space-x-3 pt-4 border-t border-gray-200/50">
-          <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white" id="cancel-edit-btn">取消</button>
+          <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 glass" id="cancel-edit-btn">取消</button>
           <button class="flex-1 py-2.5 btn-primary-glass" id="save-task-btn">
             <i class="fas fa-save mr-2"></i>保存任务
           </button>
@@ -517,7 +518,7 @@
           <p class="text-xs text-gray-500">创建时会自动识别任务类别，并拆成可并行推进的子任务。</p>
         </div>
         <div class="flex space-x-3 pt-4">
-          <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white" type="button"
+          <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 glass" type="button"
             onclick="window.closeModalFunc()">
             取消
           </button>
@@ -564,7 +565,7 @@
           </div>
         </div>
         <div class="flex space-x-3 pt-4">
-          <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white" type="button"
+          <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 glass" type="button"
             onclick="window.closeTagModalFunc()">
             取消
           </button>

@@ -215,7 +215,7 @@
 
             if (!this.tasks.length) {
               const empty = document.createElement('div');
-              empty.className = 'text-xs text-gray-500 bg-white/60 border border-dashed border-gray-300 rounded-xl px-3 py-4 text-center';
+              empty.className = 'text-xs text-gray-500 glass border border-dashed border-white/35 rounded-xl px-3 py-4 text-center';
               empty.textContent = '暂无待办任务，去待办页面创建后即可在这里绑定番茄钟。';
               this.dom.taskCards.appendChild(empty);
               this.renderMobileTaskList();

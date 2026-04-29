@@ -2,10 +2,10 @@
       @layer utilities {
           body.report-page {
             background:
-              radial-gradient(circle at 8% 10%, rgba(20, 184, 166, 0.22), transparent 26%),
+              radial-gradient(circle at 8% 10%, rgba(251, 191, 36, 0.2), transparent 28%),
               radial-gradient(circle at 88% 12%, rgba(217, 119, 6, 0.14), transparent 24%),
-              radial-gradient(circle at 48% 102%, rgba(8, 145, 178, 0.16), transparent 32%),
-              linear-gradient(135deg, #eefdfa 0%, #f6fbf7 46%, #fff7e8 100%);
+              radial-gradient(circle at 48% 102%, rgba(245, 158, 11, 0.16), transparent 34%),
+              linear-gradient(135deg, #fffbf4 0%, #fff7e8 48%, #fdf2dd 100%);
           }
           body.report-page::before {
             content: '';
@@ -14,8 +14,8 @@
             z-index: -1;
             pointer-events: none;
             background-image:
-              linear-gradient(rgba(15, 118, 110, 0.055) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(15, 118, 110, 0.045) 1px, transparent 1px);
+              linear-gradient(rgba(217, 119, 6, 0.048) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(217, 119, 6, 0.042) 1px, transparent 1px);
             background-size: 46px 46px;
             mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.48), transparent 78%);
           }
@@ -31,8 +31,8 @@
           }
           .scrollbar-thin::-webkit-scrollbar { width: 6px; }
           .scrollbar-thin::-webkit-scrollbar-track { background: rgba(243, 244, 246, 0.5); border-radius: 3px; }
-          .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(15, 118, 110, 0.3); border-radius: 3px; }
-          .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(15, 118, 110, 0.5); }
+          .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(217, 119, 6, 0.32); border-radius: 3px; }
+          .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(180, 83, 9, 0.56); }
           
           /* ✅ 毛玻璃效果 */
           .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.3); }
@@ -89,9 +89,9 @@
             gap: 18px;
             padding: 22px;
             border-radius: 28px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(204, 251, 241, 0.74));
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(254, 243, 199, 0.78));
             border: 1px solid rgba(255, 255, 255, 0.78);
-            box-shadow: 0 18px 42px rgba(15, 118, 110, 0.1);
+            box-shadow: 0 18px 42px rgba(217, 119, 6, 0.1);
           }
           .report-insight-main,
           .report-insight-side {
@@ -107,7 +107,7 @@
             font-weight: 700;
             letter-spacing: 0.18em;
             text-transform: uppercase;
-            color: #0f766e;
+            color: #d97706;
             margin-bottom: 8px;
           }
           .report-insight-title {
@@ -146,12 +146,12 @@
           }
           .report-action-link:hover {
             transform: translateY(-1px);
-            box-shadow: 0 12px 24px rgba(15, 118, 110, 0.14);
-            color: #0f766e;
+            box-shadow: 0 12px 24px rgba(217, 119, 6, 0.14);
+            color: #d97706;
           }
           .report-action-link--primary {
-            background: linear-gradient(135deg, #14b8a6, #d97706);
-            border-color: rgba(20, 184, 166, 0.45);
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border-color: rgba(245, 158, 11, 0.45);
             color: #ffffff;
           }
           .report-action-link--primary:hover {
@@ -242,7 +242,7 @@
             border-radius: 28px;
             background: rgba(255, 255, 255, 0.84);
             border: 1px solid rgba(226, 232, 240, 0.9);
-            box-shadow: 0 16px 34px rgba(15, 118, 110, 0.07);
+            box-shadow: 0 16px 34px rgba(217, 119, 6, 0.08);
             overflow: hidden;
           }
           .report-analysis-fold > summary::-webkit-details-marker {
@@ -259,7 +259,7 @@
             transition: all 0.25s ease;
           }
           .report-analysis-summary:hover {
-            background: rgba(204, 251, 241, 0.56);
+            background: rgba(254, 243, 199, 0.6);
           }
           .report-analysis-icon {
             width: 48px;
@@ -268,8 +268,8 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            color: #0f766e;
-            background: linear-gradient(135deg, rgba(153, 246, 228, 0.9), rgba(254, 243, 199, 0.9));
+            color: #b45309;
+            background: linear-gradient(135deg, rgba(254, 243, 199, 0.96), rgba(253, 230, 138, 0.88));
             flex: 0 0 auto;
           }
           .report-analysis-copy {
@@ -290,8 +290,8 @@
           .report-fold-state {
             padding: 6px 10px;
             border-radius: 999px;
-            background: rgba(204, 251, 241, 0.9);
-            color: #0f766e;
+            background: rgba(254, 243, 199, 0.92);
+            color: #b45309;
             font-size: 12px;
             font-weight: 800;
             flex: 0 0 auto;
@@ -399,10 +399,10 @@
             min-height: 220px;
             border-radius: 30px;
             padding: 24px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(240, 253, 250, 0.86));
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 247, 237, 0.9));
             color: #1f2937;
             border: 1px solid rgba(226, 232, 240, 0.86);
-            box-shadow: 0 18px 38px rgba(15, 118, 110, 0.1);
+            box-shadow: 0 18px 38px rgba(217, 119, 6, 0.12);
           }
           .report-score-card::before {
             content: '';
@@ -422,7 +422,7 @@
             width: 150px;
             height: 150px;
             border-radius: 999px;
-            background: rgba(15, 118, 110, 0.07);
+            background: rgba(251, 191, 36, 0.12);
           }
           .report-score-card__head {
             position: relative;
@@ -447,17 +447,17 @@
             min-width: 58px;
             padding: 7px 12px;
             border-radius: 999px;
-            background: rgba(15, 118, 110, 0.1);
-            color: #0f766e;
+            background: rgba(245, 158, 11, 0.12);
+            color: #d97706;
             font-size: 13px;
             font-weight: 900;
-            box-shadow: inset 0 0 0 1px rgba(15, 118, 110, 0.12);
+            box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.18);
           }
           .report-score-value {
             position: relative;
             z-index: 1;
             margin-top: 30px;
-            color: #0f766e;
+            color: #d97706;
             font-size: clamp(3rem, 7vw, 4.8rem);
             line-height: 0.95;
             font-weight: 900;
@@ -510,20 +510,20 @@
           .report-mini-icon--primary,
           .report-mini-icon--danger,
           .report-mini-icon--warning {
-            color: #0f766e;
-            background: linear-gradient(135deg, rgba(204, 251, 241, 0.95), rgba(153, 246, 228, 0.78));
+            color: #b45309;
+            background: linear-gradient(135deg, rgba(254, 243, 199, 0.95), rgba(253, 230, 138, 0.78));
           }
           .report-mini-metric:nth-child(2) .report-mini-icon {
-            color: #2563eb;
-            background: linear-gradient(135deg, rgba(239, 246, 255, 0.95), rgba(219, 234, 254, 0.78));
+            color: #d97706;
+            background: linear-gradient(135deg, rgba(255, 247, 237, 0.95), rgba(254, 240, 138, 0.78));
           }
           .report-mini-metric:nth-child(3) .report-mini-icon {
-            color: #d97706;
-            background: linear-gradient(135deg, rgba(240, 253, 250, 0.95), rgba(254, 243, 199, 0.78));
+            color: #b45309;
+            background: linear-gradient(135deg, rgba(254, 243, 199, 0.95), rgba(251, 191, 36, 0.72));
           }
           .report-mini-metric:nth-child(4) .report-mini-icon {
-            color: #14b8a6;
-            background: linear-gradient(135deg, rgba(204, 251, 241, 0.95), rgba(254, 215, 170, 0.72));
+            color: #92400e;
+            background: linear-gradient(135deg, rgba(254, 215, 170, 0.95), rgba(253, 230, 138, 0.72));
           }
           .report-mini-label {
             grid-area: label;
@@ -569,7 +569,7 @@
             @apply scale-110 shadow-md;
             background: rgba(255, 255, 255, 0.9);
           }
-          .social-icon.weixin { color: #10B981; }
+          .social-icon.weixin { color: #D97706; }
           .social-icon.apple { color: #1F2937; }
           .social-icon.google { color: #EF4444; }
           
@@ -588,7 +588,7 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(15,118,110,0.05) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.08) 0%, transparent 72%);
             opacity: 0;
             transition: opacity 0.5s ease;
           }
@@ -615,10 +615,10 @@
           /* ✅ 智能建议卡片（增强版） */
           .suggestion-card {
             @apply rounded-xl p-4 transition-all duration-300 relative overflow-hidden;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(250, 250, 255, 0.72));
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 247, 237, 0.8));
             backdrop-filter: blur(12px);
             border: 1px solid rgba(226, 232, 240, 0.82);
-            box-shadow: 0 4px 12px rgba(15, 118, 110, 0.05);
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.08);
           }
           .suggestion-card::after {
             content: '';
@@ -636,9 +636,9 @@
             opacity: 1;
           }
           .suggestion-card:hover {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(240, 253, 250, 0.76));
-            box-shadow: 0 8px 22px rgba(15, 118, 110, 0.09);
-            transform: translateX(4px);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(255, 239, 213, 0.82));
+            box-shadow: 0 10px 24px rgba(217, 119, 6, 0.14);
+            transform: translateX(4px) translateY(-1px);
           }
           
           /* ✅ 自定义下拉列表样式（与个人中心一致） */
@@ -652,14 +652,14 @@
           }
           .custom-select-trigger:hover {
             background: rgba(255, 255, 255, 0.95);
-            border-color: rgba(15, 118, 110, 0.4);
-            box-shadow: 0 2px 8px rgba(15, 118, 110, 0.12);
+            border-color: rgba(217, 119, 6, 0.45);
+            box-shadow: 0 2px 8px rgba(217, 119, 6, 0.16);
             transform: translateY(-1px);
           }
           .custom-select-trigger.active {
             background: rgba(255, 255, 255, 0.98);
-            border-color: rgba(15, 118, 110, 0.6);
-            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15), 0 4px 12px rgba(15, 118, 110, 0.2);
+            border-color: rgba(217, 119, 6, 0.65);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18), 0 4px 12px rgba(217, 119, 6, 0.24);
           }
           .custom-select-arrow {
             @apply ml-2 text-gray-400 transition-transform duration-300;
@@ -702,14 +702,14 @@
           /* ✅ 效率时段卡片（优化版 - 取消条纹） */
           .time-slot-card {
             @apply rounded-2xl p-5 transition-all duration-300 relative overflow-hidden;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+            background: linear-gradient(135deg, rgba(255, 247, 237, 0.95), rgba(254, 243, 199, 0.75));
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(59, 130, 246, 0.15);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.22);
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.1);
           }
           .time-slot-card:hover {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.08));
-            box-shadow: 0 12px 28px rgba(59, 130, 246, 0.2);
+            background: linear-gradient(135deg, rgba(255, 243, 224, 0.98), rgba(254, 215, 170, 0.82));
+            box-shadow: 0 12px 28px rgba(217, 119, 6, 0.2);
             transform: translateY(-6px);
           }
           .time-slot-card.best-slot {
@@ -723,7 +723,7 @@
           }
           .time-slot-card .slot-count {
             @apply text-2xl font-bold transition-all duration-300;
-            background: linear-gradient(135deg, #3B82F6, #2563EB);
+            background: linear-gradient(135deg, #D97706, #B45309);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;

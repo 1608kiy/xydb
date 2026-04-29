@@ -24,11 +24,8 @@ html,
 body {
   font-family: "Manrope", "PingFang SC", "Microsoft YaHei", sans-serif !important;
   color: var(--saas-text);
-  background:
-    radial-gradient(circle at 16% 14%, rgba(226, 195, 111, 0.14), transparent 30%),
-    radial-gradient(circle at 84% 12%, rgba(236, 208, 138, 0.10), transparent 26%),
-    radial-gradient(circle at 8% 88%, rgba(245, 230, 195, 0.16), transparent 22%),
-    linear-gradient(145deg, var(--saas-bg-start), var(--saas-bg-end)) !important;
+  background-color: #f5f0e8 !important;
+  background-attachment: fixed !important;
 }
 
 h1,
@@ -76,14 +73,46 @@ body > .bg-orb:nth-child(5) {
   background: #F7EED8 !important;
 }
 
-.glass,
+.glass {
+  background: rgba(255, 255, 255, 0.34) !important;
+  backdrop-filter: blur(26px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(26px) saturate(140%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.26) !important;
+  border-radius: var(--saas-radius-lg) !important;
+  box-shadow: 0 10px 32px rgba(15, 23, 42, 0.14) !important;
+}
+
+.glass-strong,
 .glass-input,
 .input-glass,
-.glass-card,
+.glass-card {
+  background: rgba(255, 255, 255, 0.46) !important;
+  backdrop-filter: blur(42px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(42px) saturate(150%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.34) !important;
+  border-radius: var(--saas-radius-lg) !important;
+  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.16) !important;
+}
+
+.glass-max {
+  background: rgba(255, 255, 255, 0.62) !important;
+  backdrop-filter: blur(56px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(56px) saturate(160%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.42) !important;
+  border-radius: var(--saas-radius-lg) !important;
+  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.18) !important;
+}
+
 .glass-tab,
-.glass-header,
-.glass-max,
-.glass-strong,
+.glass-header {
+  background: rgba(255, 255, 255, 0.44) !important;
+  backdrop-filter: blur(40px) saturate(145%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(145%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.34) !important;
+  border-radius: var(--saas-radius-lg) !important;
+  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.15) !important;
+}
+
 .card-shadow,
 .stat-card,
 .task-card,
@@ -92,16 +121,23 @@ body > .bg-orb:nth-child(5) {
 .time-slot-card,
 .stat-box,
 .achievement-badge {
-  background: var(--saas-surface) !important;
-  border: 1px solid var(--saas-border) !important;
+  background: rgba(255, 255, 255, 0.46) !important;
+  backdrop-filter: blur(42px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(42px) saturate(150%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.34) !important;
   border-radius: var(--saas-radius-lg) !important;
-  box-shadow: var(--saas-shadow-soft) !important;
+  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.16) !important;
 }
 
-.glass-header {
-  background: rgba(255, 253, 248, 0.88) !important;
-  backdrop-filter: blur(20px) saturate(145%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(145%) !important;
+.task-pool-item {
+  background: rgba(255, 255, 255, 0.42) !important;
+  backdrop-filter: blur(34px) saturate(145%) !important;
+  -webkit-backdrop-filter: blur(34px) saturate(145%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.32) !important;
+}
+
+.task-pool-item:hover {
+  background: rgba(255, 255, 255, 0.5) !important;
 }
 
 .card-hover:hover,
@@ -131,8 +167,10 @@ body > .bg-orb:nth-child(5) {
 .control-btn.secondary,
 .view-btn,
 .task-select-dropdown {
-  background: var(--saas-surface-strong) !important;
-  border: 1px solid rgba(230, 214, 184, 0.95) !important;
+  background: rgba(255, 255, 255, 0.4) !important;
+  backdrop-filter: blur(34px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(34px) saturate(140%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
   color: #334155 !important;
   border-radius: var(--saas-radius-md) !important;
 }

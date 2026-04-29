@@ -4,6 +4,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>个人中心 - 铃记</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src='./js/web-bg-init.js?v=20260428_bg1'></script>
     <script src="data.js?v=20260322_sync2"></script>
     <script src="common.js?v=20260401_liquid_modal1"></script>
     <script src="components.js?v=20260322_sync2"></script>
@@ -16,7 +17,7 @@
     <link rel='stylesheet' href='./css/saas-theme-overrides.css?v=20260423_ui_saas1' />
   <script src='./js/pages/个人中心页面.inline-02.js?v=20260327_jssplit'></script>
 </head>
-  <body class="font-inter bg-[#F1EEEA] text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden fade-in scroll-smooth">
+  <body class="font-inter text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden fade-in scroll-smooth">
     <!-- ✅ 背景装饰光斑 -->
     <div class="bg-orb w-[500px] h-[500px] top-0 left-0" style="animation-delay: 0s;"></div>
     <div class="bg-orb w-[400px] h-[400px] bottom-0 right-0" style="animation-delay: -5s;"></div>
@@ -200,7 +201,7 @@
                   </div>
                   
                   <!-- 经验值进度 -->
-                        <div class="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-white/40">
+                        <div class="glass-strong rounded-xl p-4">
                     <div class="flex items-center justify-between mb-2">
                       <div class="flex items-center">
                         <div class="w-8 h-8 rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 flex items-center justify-center mr-2">
@@ -302,11 +303,11 @@
                   ></div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
-                  <div class="flex justify-between bg-white/50 rounded-lg px-3 py-2 hover:bg-white/70 transition-colors">
+                  <div class="flex justify-between glass rounded-lg px-3 py-2 transition-colors">
                     <span>图片</span>
                     <span>156 张</span>
                   </div>
-                  <div class="flex justify-between bg-white/50 rounded-lg px-3 py-2 hover:bg-white/70 transition-colors">
+                  <div class="flex justify-between glass rounded-lg px-3 py-2 transition-colors">
                     <span>文档</span>
                     <span>42 份</span>
                   </div>
@@ -455,7 +456,7 @@
                     <button id="bind-google-btn" class="social-icon google" title="点击绑定谷歌" type="button"><i class="fab fa-google"></i></button>
                   </div>
                 </div>
-                <div id="security-bind-form" class="hidden mt-2 rounded-xl border border-gray-200 bg-white/70 p-3 space-y-2">
+                <div id="security-bind-form" class="hidden mt-2 rounded-xl glass-strong p-3 space-y-2">
                   <p id="security-bind-title" class="text-xs font-medium text-gray-700">账号安全绑定</p>
                   <input id="security-bind-input" class="modal-input" type="text" placeholder="请输入绑定信息" />
                   <div class="flex justify-end gap-2">
@@ -898,10 +899,10 @@
             </p>
           </div>
           <div class="flex space-x-3 pt-2">
-            <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200" type="button" onclick="closeDndModal()">
+            <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 glass hover:bg-white/35 transition-all duration-200" type="button" onclick="closeDndModal()">
               取消
             </button>
-            <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200" type="button" onclick="saveDndSettings()">
+            <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 glass hover:bg-white/35 transition-all duration-200" type="button" onclick="saveDndSettings()">
               <i class="fas fa-save mr-2"></i>保存设置
             </button>
           </div>
@@ -936,10 +937,10 @@
             </p>
           </div>
           <div class="flex space-x-3 pt-2">
-            <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200" type="button" onclick="closeEmailModal()">
+            <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 glass hover:bg-white/35 transition-all duration-200" type="button" onclick="closeEmailModal()">
               取消
             </button>
-            <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200" type="button" onclick="saveEmailAddress()">
+            <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 glass hover:bg-white/35 transition-all duration-200" type="button" onclick="saveEmailAddress()">
               确认修改
             </button>
           </div>
@@ -974,10 +975,10 @@
             </p>
           </div>
           <div class="flex space-x-3 pt-2">
-            <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200" type="button" onclick="closePhoneModal()">
+            <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 glass hover:bg-white/35 transition-all duration-200" type="button" onclick="closePhoneModal()">
               取消
             </button>
-            <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200" type="button" onclick="savePhoneNumber()">
+            <button class="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-700 glass hover:bg-white/35 transition-all duration-200" type="button" onclick="savePhoneNumber()">
               确认修改
             </button>
           </div>
@@ -998,7 +999,7 @@
           </div>
         </div>
         <div class="flex items-center justify-end gap-3">
-          <button id="danger-confirm-cancel-btn" class="px-4 py-2 rounded-xl border border-gray-200 text-gray-600 bg-white/70 hover:bg-white transition-colors">
+          <button id="danger-confirm-cancel-btn" class="px-4 py-2 rounded-xl border border-gray-200 text-gray-600 glass hover:bg-white/35 transition-colors">
             取消
           </button>
           <button id="danger-confirm-ok-btn" class="px-4 py-2 rounded-xl text-white bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 shadow-md shadow-red-500/25 transition-all">

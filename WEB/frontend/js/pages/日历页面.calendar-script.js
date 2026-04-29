@@ -898,7 +898,7 @@
             var item = document.createElement('div');
 
             if (taskPoolView === 'list') {
-              item.className = 'task-pool-item p-3 rounded-2xl border border-gray-200/90 bg-white/75 hover:bg-white/90 hover:border-primary/35 transition-all duration-300 cursor-pointer';
+              item.className = 'task-pool-item glass-card p-3 rounded-2xl border border-white/40 hover:border-primary/35 transition-all duration-300 cursor-pointer';
               item.innerHTML = '<div class="flex items-start justify-between gap-2">' +
                 '<div class="min-w-0">' +
                 '<div class="text-sm font-medium text-gray-800 truncate">' + (task.title || '未命名任务') + '</div>' +

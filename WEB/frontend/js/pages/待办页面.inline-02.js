@@ -1498,7 +1498,7 @@
       var subtaskInfo = task.subtasks && task.subtasks.length > 0 ?
         '<div class="flex items-center text-xs text-gray-500 mt-1"><i class="fas fa-check-square mr-1 text-success"></i>' + task.subtasks.length + ' 个子任务</div>' : '';
 
-      return '<div class="task-card bg-white/85 backdrop-blur-sm rounded-xl p-4 cursor-pointer ' + priorityClass + ' ' + completedClass + ' ' + selectedClass + ' card-hover" data-task-id="' + task.id + '" data-is-today="' + isToday + '">' +
+      return '<div class="task-card glass-card rounded-xl p-4 cursor-pointer border border-white/40 ' + priorityClass + ' ' + completedClass + ' ' + selectedClass + ' card-hover" data-task-id="' + task.id + '" data-is-today="' + isToday + '">' +
         '<div class="flex items-start">' +
         '<div class="flex-shrink-0 mr-4"><input class="task-checkbox custom-checkbox" type="checkbox" ' + (task.completed ? 'checked' : '') + '/></div>' +
         '<div class="flex-1">' +
