@@ -18,6 +18,18 @@
   --saas-radius-md: 16px;
   --saas-shadow-soft: 0 12px 28px rgba(112, 89, 40, 0.10);
   --saas-shadow-hover: 0 18px 38px rgba(112, 89, 40, 0.16);
+  --web-glass-bg: rgba(255, 255, 255, 0.7);
+  --web-glass-bg-card: rgba(255, 255, 255, 0.75);
+  --web-glass-bg-strong: rgba(255, 255, 255, 0.88);
+  --web-glass-bg-max: rgba(255, 255, 255, 0.92);
+  --web-glass-border: rgba(255, 255, 255, 0.42);
+  --web-glass-border-strong: rgba(255, 255, 255, 0.56);
+  --web-glass-shadow: 0 12px 34px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.52);
+  --web-glass-shadow-strong: 0 18px 42px rgba(15, 23, 42, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.58);
+  --web-glass-backdrop: blur(20px) saturate(142%);
+  --web-glass-backdrop-card: blur(32px) saturate(148%);
+  --web-glass-backdrop-strong: blur(36px) saturate(152%);
+  --web-glass-backdrop-max: blur(48px) saturate(158%);
 }
 
 html,
@@ -74,45 +86,16 @@ body > .bg-orb:nth-child(5) {
 }
 
 .glass {
-  background: rgba(255, 255, 255, 0.34) !important;
-  backdrop-filter: blur(26px) saturate(140%) !important;
-  -webkit-backdrop-filter: blur(26px) saturate(140%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.26) !important;
+  background: var(--web-glass-bg) !important;
+  backdrop-filter: var(--web-glass-backdrop) !important;
+  -webkit-backdrop-filter: var(--web-glass-backdrop) !important;
+  border: 1px solid var(--web-glass-border) !important;
   border-radius: var(--saas-radius-lg) !important;
-  box-shadow: 0 10px 32px rgba(15, 23, 42, 0.14) !important;
+  box-shadow: var(--web-glass-shadow) !important;
 }
 
-.glass-strong,
-.glass-input,
-.input-glass,
-.glass-card {
-  background: rgba(255, 255, 255, 0.46) !important;
-  backdrop-filter: blur(42px) saturate(150%) !important;
-  -webkit-backdrop-filter: blur(42px) saturate(150%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.34) !important;
-  border-radius: var(--saas-radius-lg) !important;
-  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.16) !important;
-}
-
-.glass-max {
-  background: rgba(255, 255, 255, 0.62) !important;
-  backdrop-filter: blur(56px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(56px) saturate(160%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.42) !important;
-  border-radius: var(--saas-radius-lg) !important;
-  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.18) !important;
-}
-
-.glass-tab,
-.glass-header {
-  background: rgba(255, 255, 255, 0.44) !important;
-  backdrop-filter: blur(40px) saturate(145%) !important;
-  -webkit-backdrop-filter: blur(40px) saturate(145%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.34) !important;
-  border-radius: var(--saas-radius-lg) !important;
-  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.15) !important;
-}
-
+.glass-card,
+.glass-panel,
 .card-shadow,
 .stat-card,
 .task-card,
@@ -120,24 +103,64 @@ body > .bg-orb:nth-child(5) {
 .chart-container,
 .time-slot-card,
 .stat-box,
-.achievement-badge {
-  background: rgba(255, 255, 255, 0.46) !important;
-  backdrop-filter: blur(42px) saturate(150%) !important;
-  -webkit-backdrop-filter: blur(42px) saturate(150%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.34) !important;
+.stat-tile,
+.detail-card,
+.achievement-badge,
+.suggestion-card,
+.tip-item,
+.stat-row,
+.setting-item,
+.report-diagnosis-card,
+.report-next-step-card,
+.report-insight-hero {
+  background: var(--web-glass-bg-card) !important;
+  backdrop-filter: var(--web-glass-backdrop-card) !important;
+  -webkit-backdrop-filter: var(--web-glass-backdrop-card) !important;
+  border: 1px solid var(--web-glass-border) !important;
   border-radius: var(--saas-radius-lg) !important;
-  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.16) !important;
+  box-shadow: var(--web-glass-shadow) !important;
+}
+
+.glass-strong,
+.glass-input,
+.input-glass {
+  background: var(--web-glass-bg-strong) !important;
+  backdrop-filter: var(--web-glass-backdrop-strong) !important;
+  -webkit-backdrop-filter: var(--web-glass-backdrop-strong) !important;
+  border: 1px solid var(--web-glass-border-strong) !important;
+  border-radius: var(--saas-radius-lg) !important;
+  box-shadow: var(--web-glass-shadow-strong) !important;
+}
+
+.glass-max {
+  background: var(--web-glass-bg-max) !important;
+  backdrop-filter: var(--web-glass-backdrop-max) !important;
+  -webkit-backdrop-filter: var(--web-glass-backdrop-max) !important;
+  border: 1px solid var(--web-glass-border-strong) !important;
+  border-radius: var(--saas-radius-lg) !important;
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.62) !important;
+}
+
+.glass-tab,
+.glass-header {
+  background: var(--web-glass-bg-strong) !important;
+  backdrop-filter: var(--web-glass-backdrop-strong) !important;
+  -webkit-backdrop-filter: var(--web-glass-backdrop-strong) !important;
+  border: 1px solid var(--web-glass-border-strong) !important;
+  border-radius: var(--saas-radius-lg) !important;
+  box-shadow: var(--web-glass-shadow-strong) !important;
 }
 
 .task-pool-item {
-  background: rgba(255, 255, 255, 0.42) !important;
-  backdrop-filter: blur(34px) saturate(145%) !important;
-  -webkit-backdrop-filter: blur(34px) saturate(145%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.32) !important;
+  background: var(--web-glass-bg-card) !important;
+  backdrop-filter: var(--web-glass-backdrop-card) !important;
+  -webkit-backdrop-filter: var(--web-glass-backdrop-card) !important;
+  border: 1px solid var(--web-glass-border) !important;
+  box-shadow: var(--web-glass-shadow) !important;
 }
 
 .task-pool-item:hover {
-  background: rgba(255, 255, 255, 0.5) !important;
+  background: var(--web-glass-bg-strong) !important;
 }
 
 .card-hover:hover,
@@ -167,10 +190,11 @@ body > .bg-orb:nth-child(5) {
 .control-btn.secondary,
 .view-btn,
 .task-select-dropdown {
-  background: rgba(255, 255, 255, 0.4) !important;
-  backdrop-filter: blur(34px) saturate(140%) !important;
-  -webkit-backdrop-filter: blur(34px) saturate(140%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  background: var(--web-glass-bg-card) !important;
+  backdrop-filter: var(--web-glass-backdrop-card) !important;
+  -webkit-backdrop-filter: var(--web-glass-backdrop-card) !important;
+  border: 1px solid var(--web-glass-border) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
   color: #334155 !important;
   border-radius: var(--saas-radius-md) !important;
 }
@@ -353,4 +377,1068 @@ footer.glass-tab .tab-item:not(.active):hover span:not(.tab-indicator) {
   .achievement-badge {
     border-radius: 16px !important;
   }
+}
+
+/* Glass cards: ultra-transparent frosted glass */
+body.calendar-page-liquid .glass-card,
+body.calendar-page-liquid .glass-panel,
+body.calendar-page-liquid .card-shadow,
+body.calendar-page-liquid .stat-card {
+  background: var(--liq-glass-bg) !important;
+  backdrop-filter: var(--liq-glass-backdrop) !important;
+  -webkit-backdrop-filter: var(--liq-glass-backdrop) !important;
+  border: 1px solid var(--liq-glass-border) !important;
+  box-shadow: var(--liq-glass-shadow) !important;
+}
+
+/* Header & tab bar */
+body.calendar-page-liquid .glass-header,
+body.calendar-page-liquid .glass-tab {
+  background: rgba(0, 0, 0, 0.25) !important;
+  backdrop-filter: blur(40px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(140%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Input fields */
+body.calendar-page-liquid .glass-input,
+body.calendar-page-liquid .input-glass {
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: var(--liq-glass-backdrop) !important;
+  -webkit-backdrop-filter: var(--liq-glass-backdrop) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: none !important;
+  color: var(--liq-text-main) !important;
+}
+
+/* Buttons */
+body.calendar-page-liquid .btn-glass,
+body.calendar-page-liquid .view-btn,
+body.calendar-page-liquid .calendar-nav-btn {
+  background: var(--liq-glass-bg) !important;
+  backdrop-filter: var(--liq-glass-backdrop) !important;
+  -webkit-backdrop-filter: var(--liq-glass-backdrop) !important;
+  border: 1px solid var(--liq-glass-border) !important;
+  box-shadow: var(--liq-glass-shadow) !important;
+  color: var(--liq-text-main) !important;
+}
+
+body.calendar-page-liquid .btn-primary,
+body.calendar-page-liquid .view-btn.active {
+  color: #fff6e9 !important;
+  border-color: rgba(255, 230, 184, 0.7) !important;
+  background: linear-gradient(145deg, rgba(245, 198, 132, 0.22), rgba(255, 255, 255, 0.06)) !important;
+  backdrop-filter: var(--liq-glass-backdrop) !important;
+  -webkit-backdrop-filter: var(--liq-glass-backdrop) !important;
+}
+
+/* Category chips */
+body.calendar-page-liquid .category-chip {
+  background: var(--liq-glass-bg) !important;
+  backdrop-filter: var(--liq-glass-backdrop) !important;
+  -webkit-backdrop-filter: var(--liq-glass-backdrop) !important;
+  border: 1px solid var(--liq-glass-border) !important;
+  box-shadow: var(--liq-glass-shadow) !important;
+  color: var(--liq-text-main) !important;
+}
+
+body.calendar-page-liquid .category-chip.active {
+  border-color: rgba(255, 255, 255, 0.66) !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22), var(--liq-glass-shadow) !important;
+}
+
+body.calendar-page-liquid .category-chip-label {
+  color: var(--liq-text-main) !important;
+}
+
+/* Text colors */
+body.calendar-page-liquid h1,
+body.calendar-page-liquid h2,
+body.calendar-page-liquid h3,
+body.calendar-page-liquid .text-gray-800 {
+  color: var(--liq-text-main) !important;
+}
+
+body.calendar-page-liquid .text-gray-500,
+body.calendar-page-liquid .text-gray-600,
+body.calendar-page-liquid .text-gray-700 {
+  color: var(--liq-text-sub) !important;
+}
+
+body.calendar-page-liquid .text-primary {
+  color: var(--liq-warm) !important;
+}
+
+/* Tab bar items */
+body.calendar-page-liquid footer.glass-tab .tab-item {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+body.calendar-page-liquid footer.glass-tab .tab-item.active {
+  color: var(--liq-warm) !important;
+}
+
+body.calendar-page-liquid footer.glass-tab .tab-item.active i,
+body.calendar-page-liquid footer.glass-tab .tab-item.active span:not(.tab-indicator) {
+  color: var(--liq-warm) !important;
+}
+
+body.calendar-page-liquid footer.glass-tab .tab-item:hover {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Task pool items */
+body.calendar-page-liquid .task-pool-item {
+  background: var(--liq-glass-bg) !important;
+  backdrop-filter: var(--liq-glass-backdrop) !important;
+  -webkit-backdrop-filter: var(--liq-glass-backdrop) !important;
+  border: 1px solid var(--liq-glass-border) !important;
+  box-shadow: var(--liq-glass-shadow) !important;
+  color: var(--liq-text-main) !important;
+}
+
+/* Dropdown menus */
+body.calendar-page-liquid .dropdown-menu {
+  background: rgba(30, 30, 40, 0.85) !important;
+  backdrop-filter: blur(30px) !important;
+  -webkit-backdrop-filter: blur(30px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.calendar-page-liquid .dropdown-item {
+  color: var(--liq-text-main) !important;
+}
+
+body.calendar-page-liquid .dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Modal overlay */
+body.calendar-page-liquid .modal-content {
+  background: rgba(30, 30, 40, 0.9) !important;
+  backdrop-filter: blur(40px) !important;
+  -webkit-backdrop-filter: blur(40px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: var(--liq-text-main) !important;
+}
+
+/* Calendar cell overrides */
+body.calendar-page-liquid #month-grid > div,
+body.calendar-page-liquid #week-grid > div,
+body.calendar-page-liquid #day-grid > div {
+  background: var(--liq-glass-bg) !important;
+  backdrop-filter: var(--liq-glass-backdrop) !important;
+  -webkit-backdrop-filter: var(--liq-glass-backdrop) !important;
+  border: 1px solid var(--liq-glass-border) !important;
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+body.calendar-page-liquid #month-grid > div.selected-date-cell,
+body.calendar-page-liquid .calendar-cell.selected-date-cell {
+  border-color: rgba(255, 236, 205, 0.96) !important;
+  box-shadow: 0 0 0 1px rgba(255, 236, 205, 0.52), var(--liq-glass-shadow) !important;
+  background: linear-gradient(145deg, rgba(255, 197, 106, 0.2), rgba(255, 255, 255, 0.08)) !important;
+  color: #fff1d6 !important;
+}
+
+body.calendar-page-liquid #month-grid > div.other-month,
+body.calendar-page-liquid .calendar-cell.other-month {
+  color: rgba(255, 255, 255, 0.42) !important;
+}
+
+/* User avatar border */
+body.calendar-page-liquid .header-user-avatar {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Remove hover transforms that look odd on glass */
+body.calendar-page-liquid .card-hover:hover,
+body.calendar-page-liquid .task-card:hover,
+body.calendar-page-liquid .stat-card:hover {
+  transform: none !important;
+}
+
+/* Scheduled task items */
+body.calendar-page-liquid .scheduled-task-item,
+body.calendar-page-liquid .task-item {
+  background: var(--liq-glass-bg) !important;
+  backdrop-filter: var(--liq-glass-backdrop) !important;
+  -webkit-backdrop-filter: var(--liq-glass-backdrop) !important;
+  border: 1px solid var(--liq-glass-border) !important;
+  color: var(--liq-text-main) !important;
+}
+
+/* Batch action buttons: override inline Tailwind gradient classes */
+body.calendar-page-liquid #batch-complete-btn,
+body.calendar-page-liquid #batch-delete-btn {
+  background: var(--liq-glass-bg) !important;
+  backdrop-filter: var(--liq-glass-backdrop) !important;
+  -webkit-backdrop-filter: var(--liq-glass-backdrop) !important;
+  border: 1px solid var(--liq-glass-border) !important;
+  box-shadow: var(--liq-glass-shadow) !important;
+  color: var(--liq-text-main) !important;
+}
+
+body.calendar-page-liquid #batch-complete-btn:hover,
+body.calendar-page-liquid #batch-delete-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.calendar-page-liquid #batch-delete-btn {
+  color: #f87171 !important;
+}
+
+/* Calendar view titles (month/week/day) */
+body.calendar-page-liquid #month-title,
+body.calendar-page-liquid #week-view h2,
+body.calendar-page-liquid #day-view h2 {
+  color: var(--liq-text-main) !important;
+}
+
+/* Calendar navigation arrows */
+body.calendar-page-liquid .calendar-nav-btn {
+  background: var(--liq-glass-bg) !important;
+  backdrop-filter: var(--liq-glass-backdrop) !important;
+  -webkit-backdrop-filter: var(--liq-glass-backdrop) !important;
+  border: 1px solid var(--liq-glass-border) !important;
+  box-shadow: var(--liq-glass-shadow) !important;
+  color: var(--liq-text-main) !important;
+}
+
+body.calendar-page-liquid .calendar-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Today button (header) */
+body.calendar-page-liquid #today-btn {
+  background: linear-gradient(145deg, rgba(245, 198, 132, 0.22), rgba(255, 255, 255, 0.06)) !important;
+  backdrop-filter: var(--liq-glass-backdrop) !important;
+  -webkit-backdrop-filter: var(--liq-glass-backdrop) !important;
+  border: 1px solid rgba(255, 230, 184, 0.5) !important;
+  color: #fff6e9 !important;
+  box-shadow: var(--liq-glass-shadow) !important;
+}
+
+/* Date display card in header */
+body.calendar-page-liquid .glass-card:has(#current-date) {
+  background: var(--liq-glass-bg) !important;
+  backdrop-filter: var(--liq-glass-backdrop) !important;
+  -webkit-backdrop-filter: var(--liq-glass-backdrop) !important;
+  border: 1px solid var(--liq-glass-border) !important;
+}
+
+body.calendar-page-liquid #current-date {
+  color: var(--liq-text-main) !important;
+}
+
+/* Sort/filter button */
+body.calendar-page-liquid #sort-filter-btn {
+  background: var(--liq-glass-bg) !important;
+  backdrop-filter: var(--liq-glass-backdrop) !important;
+  -webkit-backdrop-filter: var(--liq-glass-backdrop) !important;
+  border: 1px solid var(--liq-glass-border) !important;
+  box-shadow: var(--liq-glass-shadow) !important;
+  color: var(--liq-text-main) !important;
+}
+
+/* Week/Day cell title text */
+body.calendar-page-liquid #week-grid .text-sm,
+body.calendar-page-liquid #week-grid .text-xs,
+body.calendar-page-liquid #day-grid .text-sm,
+body.calendar-page-liquid #day-grid .text-xs {
+  color: var(--liq-text-sub) !important;
+}
+
+/* Weekday header row */
+body.calendar-page-liquid .grid.grid-cols-7 > div {
+  color: var(--liq-text-sub) !important;
+}
+
+/* Refresh button */
+body.calendar-page-liquid #refresh-scheduled-btn {
+  color: var(--liq-warm) !important;
+}
+
+/* Scheduled task section header */
+body.calendar-page-liquid #scheduled-task-list .text-xs,
+body.calendar-page-liquid #task-pool .text-xs {
+  color: var(--liq-text-sub) !important;
+}
+
+/* AI schedule button */
+body.calendar-page-liquid #ai-schedule-btn {
+  background: var(--liq-glass-bg) !important;
+  backdrop-filter: var(--liq-glass-backdrop) !important;
+  -webkit-backdrop-filter: var(--liq-glass-backdrop) !important;
+  border: 1px solid var(--liq-glass-border) !important;
+  color: var(--liq-text-main) !important;
+}
+
+body.calendar-page-liquid #ai-schedule-status {
+  color: var(--liq-text-sub) !important;
+}
+
+/* Modal labels and form text */
+body.calendar-page-liquid .modal-content label {
+  color: var(--liq-text-main) !important;
+}
+
+body.calendar-page-liquid .modal-content input,
+body.calendar-page-liquid .modal-content textarea {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: var(--liq-text-main) !important;
+}
+
+body.calendar-page-liquid .modal-content .border-t {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Link text inside glass cards */
+body.calendar-page-liquid .glass-card a,
+body.calendar-page-liquid .glass-card .text-gray-600 {
+  color: var(--liq-text-sub) !important;
+}
+
+
+/* ===== Task cards ===== */
+
+body.todo-page-liquid .task-card {
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(24px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(140%) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+body.todo-page-liquid .task-card:hover {
+  border-color: rgba(241, 208, 154, 0.3) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+  transform: none !important;
+}
+
+body.todo-page-liquid .task-card.selected {
+  background: rgba(102, 120, 255, 0.12) !important;
+  border-color: rgba(102, 120, 255, 0.3) !important;
+}
+
+/* ===== Text colors ===== */
+
+body.todo-page-liquid h1,
+body.todo-page-liquid h2,
+body.todo-page-liquid h3,
+body.todo-page-liquid h4 {
+  color: var(--liq-text-main) !important;
+}
+
+body.todo-page-liquid .text-gray-600,
+body.todo-page-liquid .text-gray-500,
+body.todo-page-liquid .text-gray-700 {
+  color: var(--liq-text-sub) !important;
+}
+
+body.todo-page-liquid .text-gray-400,
+body.todo-page-liquid .text-gray-300 {
+  color: var(--liq-text-muted) !important;
+}
+
+body.todo-page-liquid .text-primary {
+  color: var(--liq-warm) !important;
+}
+
+/* ===== Buttons ===== */
+
+body.todo-page-liquid .btn-primary-glass {
+  background: linear-gradient(135deg, rgba(241, 208, 154, 0.85), rgba(226, 195, 111, 0.8)) !important;
+  color: #1a1408 !important;
+  box-shadow: 0 4px 16px rgba(241, 208, 154, 0.25) !important;
+}
+
+body.todo-page-liquid .btn-primary-glass:hover {
+  background: linear-gradient(135deg, rgba(241, 208, 154, 0.95), rgba(226, 195, 111, 0.9)) !important;
+  box-shadow: 0 8px 24px rgba(241, 208, 154, 0.35) !important;
+}
+
+body.todo-page-liquid .btn-secondary-glass {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--liq-text-main) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+body.todo-page-liquid .btn-secondary-glass:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* ===== Sidebar ===== */
+
+body.todo-page-liquid .sidebar-item {
+  color: var(--liq-text-sub) !important;
+}
+
+body.todo-page-liquid .sidebar-item:hover {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+body.todo-page-liquid .sidebar-item-active {
+  background-color: rgba(241, 208, 154, 0.12) !important;
+  color: var(--liq-warm) !important;
+  border-left-color: var(--liq-warm) !important;
+}
+
+/* ===== Modals ===== */
+
+body.todo-page-liquid .modal-overlay {
+  background: rgba(15, 23, 42, 0.35) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+body.todo-page-liquid .modal-content,
+body.todo-page-liquid #new-task-modal .modal-content,
+body.todo-page-liquid #task-detail-panel .modal-content,
+body.todo-page-liquid #new-tag-modal .modal-content {
+  background: rgba(30, 30, 40, 0.85) !important;
+  backdrop-filter: blur(42px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(42px) saturate(140%) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 28px 64px rgba(0, 0, 0, 0.3) !important;
+  color: var(--liq-text-main) !important;
+}
+
+body.todo-page-liquid .modal-content label {
+  color: var(--liq-text-sub) !important;
+}
+
+body.todo-page-liquid .modal-content input,
+body.todo-page-liquid .modal-content textarea,
+body.todo-page-liquid .modal-content select {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: var(--liq-text-main) !important;
+}
+
+body.todo-page-liquid .modal-content .border-t,
+body.todo-page-liquid .modal-content hr {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* ===== Dropdown menus ===== */
+
+body.todo-page-liquid .dropdown-menu {
+  background: rgba(30, 30, 40, 0.9) !important;
+  backdrop-filter: blur(30px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(140%) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25) !important;
+}
+
+body.todo-page-liquid .dropdown-menu * {
+  color: var(--liq-text-main) !important;
+}
+
+/* ===== Tag badges — keep colored but adjust opacity ===== */
+
+body.todo-page-liquid .inline-flex.items-center.rounded-full {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* ===== Checkbox and priority indicators ===== */
+
+body.todo-page-liquid .priority-high {
+  border-left-color: #f87171 !important;
+}
+
+body.todo-page-liquid .priority-medium {
+  border-left-color: var(--liq-warm) !important;
+}
+
+body.todo-page-liquid .priority-low {
+  border-left-color: #6ee7b7 !important;
+}
+
+/* ===== Search input ===== */
+
+body.todo-page-liquid #search-input {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: var(--liq-text-main) !important;
+}
+
+body.todo-page-liquid #search-input::placeholder {
+  color: var(--liq-text-muted) !important;
+}
+
+/* ===== Completed task text ===== */
+
+body.todo-page-liquid .task-card.completed h3 {
+  color: var(--liq-text-muted) !important;
+}
+
+/* ===== Links inside glass surfaces ===== */
+
+body.todo-page-liquid .glass-card a,
+body.todo-page-liquid .glass-strong a {
+  color: var(--liq-text-sub) !important;
+}
+
+/* ===== Tab bar active items ===== */
+
+body.todo-page-liquid footer a.active,
+body.todo-page-liquid footer a[aria-current="page"] {
+  color: var(--liq-warm) !important;
+}
+
+/* ===== Count badges — keep dark text on light bg ===== */
+
+body.todo-page-liquid #count-work,
+body.todo-page-liquid #count-study,
+body.todo-page-liquid #count-life,
+body.todo-page-liquid #count-health,
+body.todo-page-liquid #count-all,
+body.todo-page-liquid #count-today,
+body.todo-page-liquid #count-important,
+body.todo-page-liquid #count-planned,
+body.todo-page-liquid #count-assigned {
+  color: #111827 !important;
+}
+
+/* ============================================================
+   共享 Liquid Glass 基础覆盖（番茄钟 / 数据周报 / 打卡 / 个人中心 / 日历 / 待办）
+   所有页面共用同一套深色毛玻璃变量和基础样式
+   ============================================================ */
+
+body.pomodoro-page-liquid,
+body.report-page-liquid,
+body.checkin-page-liquid,
+body.profile-page-liquid,
+body.calendar-page-liquid,
+body.todo-page-liquid {
+  --liq-glass-bg: rgba(255, 255, 255, 0.05);
+  --liq-glass-bg-card: rgba(255, 255, 255, 0.08);
+  --liq-glass-bg-strong: rgba(255, 255, 255, 0.12);
+  --liq-glass-bg-max: rgba(255, 255, 255, 0.15);
+  --liq-glass-border: rgba(255, 255, 255, 0.1);
+  --liq-glass-border-strong: rgba(255, 255, 255, 0.15);
+  --liq-glass-backdrop: blur(30px) saturate(140%);
+  --liq-glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --liq-text-main: rgba(255, 255, 255, 0.98);
+  --liq-text-sub: rgba(255, 255, 255, 0.82);
+  --liq-text-muted: rgba(255, 255, 255, 0.55);
+  --liq-warm: #f1d09a;
+
+  background-color: transparent !important;
+  color: var(--liq-text-main) !important;
+}
+
+/* Hide decorative orbs */
+body.pomodoro-page-liquid .bg-orb,
+body.report-page-liquid .bg-orb,
+body.checkin-page-liquid .bg-orb,
+body.profile-page-liquid .bg-orb,
+body.calendar-page-liquid .bg-orb,
+body.todo-page-liquid .bg-orb {
+  display: none !important;
+}
+
+/* ===== Glass tier overrides ===== */
+
+body.pomodoro-page-liquid .glass,
+body.report-page-liquid .glass,
+body.checkin-page-liquid .glass,
+body.profile-page-liquid .glass,
+body.calendar-page-liquid .glass,
+body.todo-page-liquid .glass {
+  background: var(--liq-glass-bg) !important;
+  backdrop-filter: var(--liq-glass-backdrop) !important;
+  -webkit-backdrop-filter: var(--liq-glass-backdrop) !important;
+  border-color: var(--liq-glass-border) !important;
+}
+
+body.pomodoro-page-liquid .glass-strong,
+body.report-page-liquid .glass-strong,
+body.checkin-page-liquid .glass-strong,
+body.profile-page-liquid .glass-strong,
+body.calendar-page-liquid .glass-strong,
+body.todo-page-liquid .glass-strong {
+  background: var(--liq-glass-bg-strong) !important;
+  backdrop-filter: blur(36px) saturate(152%) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(152%) !important;
+  border-color: var(--liq-glass-border-strong) !important;
+}
+
+body.pomodoro-page-liquid .glass-max,
+body.report-page-liquid .glass-max,
+body.checkin-page-liquid .glass-max,
+body.profile-page-liquid .glass-max,
+body.calendar-page-liquid .glass-max,
+body.todo-page-liquid .glass-max {
+  background: rgba(0, 0, 0, 0.25) !important;
+  backdrop-filter: blur(40px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(140%) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+body.pomodoro-page-liquid .glass-header,
+body.report-page-liquid .glass-header,
+body.checkin-page-liquid .glass-header,
+body.profile-page-liquid .glass-header,
+body.calendar-page-liquid .glass-header,
+body.todo-page-liquid .glass-header {
+  background: rgba(0, 0, 0, 0.25) !important;
+  backdrop-filter: blur(40px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(140%) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+body.pomodoro-page-liquid .glass-tab,
+body.report-page-liquid .glass-tab,
+body.checkin-page-liquid .glass-tab,
+body.profile-page-liquid .glass-tab,
+body.calendar-page-liquid .glass-tab,
+body.todo-page-liquid .glass-tab {
+  background: rgba(0, 0, 0, 0.2) !important;
+  backdrop-filter: blur(40px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(140%) !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  border-top-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+body.pomodoro-page-liquid .glass-input,
+body.pomodoro-page-liquid .input-glass,
+body.report-page-liquid .glass-input,
+body.report-page-liquid .input-glass,
+body.checkin-page-liquid .glass-input,
+body.checkin-page-liquid .input-glass,
+body.profile-page-liquid .glass-input,
+body.profile-page-liquid .input-glass,
+body.profile-page-liquid .modal-input,
+body.calendar-page-liquid .glass-input,
+body.calendar-page-liquid .input-glass,
+body.todo-page-liquid .glass-input,
+body.todo-page-liquid .input-glass {
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(16px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(140%) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: var(--liq-text-main) !important;
+}
+
+body.pomodoro-page-liquid .glass-input:focus,
+body.pomodoro-page-liquid .input-glass:focus,
+body.report-page-liquid .glass-input:focus,
+body.report-page-liquid .input-glass:focus,
+body.checkin-page-liquid .glass-input:focus,
+body.checkin-page-liquid .input-glass:focus,
+body.profile-page-liquid .glass-input:focus,
+body.profile-page-liquid .input-glass:focus,
+body.profile-page-liquid .modal-input:focus,
+body.calendar-page-liquid .glass-input:focus,
+body.calendar-page-liquid .input-glass:focus,
+body.todo-page-liquid .glass-input:focus,
+body.todo-page-liquid .input-glass:focus {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(241, 208, 154, 0.5) !important;
+  box-shadow: 0 0 0 3px rgba(241, 208, 154, 0.15) !important;
+}
+
+/* ===== Card-level glass ===== */
+
+body.pomodoro-page-liquid .glass-card,
+body.pomodoro-page-liquid .card-shadow,
+body.pomodoro-page-liquid .stat-card,
+body.pomodoro-page-liquid .stat-box,
+body.pomodoro-page-liquid .tip-item,
+body.pomodoro-page-liquid .stat-row,
+body.pomodoro-page-liquid .achievement-row,
+body.pomodoro-page-liquid .task-card,
+body.report-page-liquid .glass-card,
+body.report-page-liquid .card-shadow,
+body.report-page-liquid .stat-card,
+body.report-page-liquid .chart-container,
+body.report-page-liquid .focus-chart,
+body.report-page-liquid .report-insight-hero,
+body.report-page-liquid .report-diagnosis-card,
+body.report-page-liquid .report-next-step-card,
+body.report-page-liquid .report-empty-guide,
+body.report-page-liquid .suggestion-card,
+body.report-page-liquid .time-slot-card,
+body.report-page-liquid .report-action-link,
+body.report-page-liquid .custom-select-trigger,
+body.report-page-liquid .report-analysis-fold,
+body.report-page-liquid .report-analysis-summary,
+body.report-page-liquid .report-score-card,
+body.report-page-liquid .report-metric-board,
+body.report-page-liquid .report-analysis-body,
+body.checkin-page-liquid .glass-card,
+body.checkin-page-liquid .card-shadow,
+body.checkin-page-liquid .stat-card,
+body.checkin-page-liquid .suggestion-card,
+body.checkin-page-liquid .confirm-modal-card,
+body.profile-page-liquid .glass-card,
+body.profile-page-liquid .card-shadow,
+body.profile-page-liquid .stat-card,
+body.profile-page-liquid .user-card,
+body.profile-page-liquid .setting-item,
+body.profile-page-liquid .achievement-badge,
+body.profile-page-liquid .confirm-modal-card,
+body.profile-page-liquid .social-icon,
+body.profile-page-liquid .custom-select-trigger,
+body.calendar-page-liquid .glass-card,
+body.calendar-page-liquid .card-shadow,
+body.calendar-page-liquid .stat-card,
+body.calendar-page-liquid .task-card,
+body.todo-page-liquid .glass-card,
+body.todo-page-liquid .card-shadow,
+body.todo-page-liquid .stat-card,
+body.todo-page-liquid .task-card {
+  background: var(--liq-glass-bg-card) !important;
+  backdrop-filter: blur(24px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(140%) !important;
+  border-color: var(--liq-glass-border) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+body.report-page-liquid .report-analysis-summary:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.report-page-liquid .report-analysis-icon {
+  background: linear-gradient(135deg, rgba(241, 208, 154, 0.25), rgba(241, 208, 154, 0.12)) !important;
+  color: var(--liq-warm) !important;
+}
+
+body.report-page-liquid .report-fold-state {
+  color: var(--liq-text-muted) !important;
+}
+
+body.profile-page-liquid #help-guide-btn,
+body.profile-page-liquid #help-faq-btn,
+body.profile-page-liquid #feedback-btn,
+body.profile-page-liquid #contact-support-btn,
+body.profile-page-liquid #export-data-btn,
+body.profile-page-liquid #manual-backup-btn,
+body.profile-page-liquid #clear-all-data-btn,
+body.profile-page-liquid #logout-btn,
+body.profile-page-liquid #delete-account-btn {
+  background: var(--liq-glass-bg) !important;
+  backdrop-filter: var(--liq-glass-backdrop) !important;
+  -webkit-backdrop-filter: var(--liq-glass-backdrop) !important;
+  border-color: var(--liq-glass-border) !important;
+  color: var(--liq-text-main) !important;
+}
+
+body.profile-page-liquid #help-guide-btn:hover,
+body.profile-page-liquid #help-faq-btn:hover,
+body.profile-page-liquid #feedback-btn:hover,
+body.profile-page-liquid #contact-support-btn:hover,
+body.profile-page-liquid #export-data-btn:hover,
+body.profile-page-liquid #manual-backup-btn:hover,
+body.profile-page-liquid #clear-all-data-btn:hover,
+body.profile-page-liquid #logout-btn:hover,
+body.profile-page-liquid #delete-account-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ===== Text colors ===== */
+
+body.pomodoro-page-liquid h1,
+body.pomodoro-page-liquid h2,
+body.pomodoro-page-liquid h3,
+body.pomodoro-page-liquid h4,
+body.report-page-liquid h1,
+body.report-page-liquid h2,
+body.report-page-liquid h3,
+body.report-page-liquid h4,
+body.checkin-page-liquid h1,
+body.checkin-page-liquid h2,
+body.checkin-page-liquid h3,
+body.checkin-page-liquid h4,
+body.profile-page-liquid h1,
+body.profile-page-liquid h2,
+body.profile-page-liquid h3,
+body.profile-page-liquid h4,
+body.calendar-page-liquid h1,
+body.calendar-page-liquid h2,
+body.calendar-page-liquid h3,
+body.calendar-page-liquid h4,
+body.todo-page-liquid h1,
+body.todo-page-liquid h2,
+body.todo-page-liquid h3,
+body.todo-page-liquid h4 {
+  color: var(--liq-text-main) !important;
+}
+
+body.pomodoro-page-liquid .text-gray-600,
+body.pomodoro-page-liquid .text-gray-500,
+body.pomodoro-page-liquid .text-gray-700,
+body.report-page-liquid .text-gray-600,
+body.report-page-liquid .text-gray-500,
+body.report-page-liquid .text-gray-700,
+body.checkin-page-liquid .text-gray-600,
+body.checkin-page-liquid .text-gray-500,
+body.checkin-page-liquid .text-gray-700,
+body.profile-page-liquid .text-gray-600,
+body.profile-page-liquid .text-gray-500,
+body.profile-page-liquid .text-gray-700,
+body.calendar-page-liquid .text-gray-600,
+body.calendar-page-liquid .text-gray-500,
+body.calendar-page-liquid .text-gray-700,
+body.todo-page-liquid .text-gray-600,
+body.todo-page-liquid .text-gray-500,
+body.todo-page-liquid .text-gray-700 {
+  color: var(--liq-text-sub) !important;
+}
+
+body.pomodoro-page-liquid .text-gray-400,
+body.pomodoro-page-liquid .text-gray-300,
+body.report-page-liquid .text-gray-400,
+body.report-page-liquid .text-gray-300,
+body.checkin-page-liquid .text-gray-400,
+body.checkin-page-liquid .text-gray-300,
+body.profile-page-liquid .text-gray-400,
+body.profile-page-liquid .text-gray-300,
+body.calendar-page-liquid .text-gray-400,
+body.calendar-page-liquid .text-gray-300,
+body.todo-page-liquid .text-gray-400,
+body.todo-page-liquid .text-gray-300 {
+  color: var(--liq-text-muted) !important;
+}
+
+body.pomodoro-page-liquid .text-primary,
+body.report-page-liquid .text-primary,
+body.checkin-page-liquid .text-primary,
+body.profile-page-liquid .text-primary,
+body.calendar-page-liquid .text-primary,
+body.todo-page-liquid .text-primary {
+  color: var(--liq-warm) !important;
+}
+
+/* ===== Modals ===== */
+
+body.pomodoro-page-liquid .modal-overlay,
+body.report-page-liquid .modal-overlay,
+body.checkin-page-liquid .confirm-modal-overlay,
+body.profile-page-liquid .modal-overlay,
+body.profile-page-liquid .phone-modal-overlay,
+body.calendar-page-liquid .modal-overlay,
+body.todo-page-liquid .modal-overlay {
+  background: rgba(15, 23, 42, 0.35) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+body.pomodoro-page-liquid .modal-content,
+body.checkin-page-liquid .confirm-modal-card,
+body.profile-page-liquid .modal-content,
+body.profile-page-liquid .confirm-modal-card,
+body.calendar-page-liquid .modal-content,
+body.todo-page-liquid .modal-content {
+  background: rgba(30, 30, 40, 0.85) !important;
+  backdrop-filter: blur(42px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(42px) saturate(140%) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 28px 64px rgba(0, 0, 0, 0.3) !important;
+  color: var(--liq-text-main) !important;
+}
+
+body.pomodoro-page-liquid .modal-content label,
+body.checkin-page-liquid .confirm-modal-card label,
+body.profile-page-liquid .modal-content label,
+body.calendar-page-liquid .modal-content label,
+body.todo-page-liquid .modal-content label {
+  color: var(--liq-text-sub) !important;
+}
+
+body.pomodoro-page-liquid .modal-content input,
+body.pomodoro-page-liquid .modal-content textarea,
+body.pomodoro-page-liquid .modal-content select,
+body.checkin-page-liquid .confirm-modal-card input,
+body.profile-page-liquid .modal-content input,
+body.profile-page-liquid .modal-content textarea,
+body.profile-page-liquid .modal-content select,
+body.calendar-page-liquid .modal-content input,
+body.calendar-page-liquid .modal-content textarea,
+body.calendar-page-liquid .modal-content select,
+body.todo-page-liquid .modal-content input,
+body.todo-page-liquid .modal-content textarea,
+body.todo-page-liquid .modal-content select {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: var(--liq-text-main) !important;
+}
+
+body.pomodoro-page-liquid .modal-content .border-t,
+body.pomodoro-page-liquid .modal-content hr,
+body.profile-page-liquid .modal-content .border-t,
+body.profile-page-liquid .modal-content hr,
+body.calendar-page-liquid .modal-content .border-t,
+body.calendar-page-liquid .modal-content hr,
+body.todo-page-liquid .modal-content .border-t,
+body.todo-page-liquid .modal-content hr {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* ===== Dropdown menus ===== */
+
+body.pomodoro-page-liquid .dropdown-menu,
+body.report-page-liquid .dropdown-menu,
+body.checkin-page-liquid .dropdown-menu,
+body.profile-page-liquid .dropdown-menu,
+body.profile-page-liquid .custom-select-dropdown,
+body.calendar-page-liquid .dropdown-menu,
+body.todo-page-liquid .dropdown-menu {
+  background: rgba(30, 30, 40, 0.9) !important;
+  backdrop-filter: blur(30px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(140%) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25) !important;
+}
+
+body.pomodoro-page-liquid .dropdown-menu *,
+body.report-page-liquid .dropdown-menu *,
+body.checkin-page-liquid .dropdown-menu *,
+body.profile-page-liquid .dropdown-menu *,
+body.profile-page-liquid .custom-select-dropdown *,
+body.calendar-page-liquid .dropdown-menu *,
+body.todo-page-liquid .dropdown-menu * {
+  color: var(--liq-text-main) !important;
+}
+
+/* ===== Buttons ===== */
+
+body.pomodoro-page-liquid .btn-primary-glass,
+body.checkin-page-liquid .btn-primary-glass,
+body.profile-page-liquid .btn-primary-glass,
+body.calendar-page-liquid .btn-primary-glass,
+body.todo-page-liquid .btn-primary-glass {
+  background: linear-gradient(135deg, rgba(241, 208, 154, 0.85), rgba(226, 195, 111, 0.8)) !important;
+  color: #1a1408 !important;
+  box-shadow: 0 4px 16px rgba(241, 208, 154, 0.25) !important;
+}
+
+body.pomodoro-page-liquid .btn-secondary-glass,
+body.checkin-page-liquid .btn-secondary-glass,
+body.profile-page-liquid .btn-secondary-glass,
+body.calendar-page-liquid .btn-secondary-glass,
+body.todo-page-liquid .btn-secondary-glass {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--liq-text-main) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* ===== Sidebar items (profile page) ===== */
+
+body.profile-page-liquid .sidebar-item {
+  color: var(--liq-text-sub) !important;
+}
+
+body.profile-page-liquid .sidebar-item:hover {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* ===== Footer tab bar active ===== */
+
+body.pomodoro-page-liquid footer a.active,
+body.pomodoro-page-liquid footer a[aria-current="page"],
+body.report-page-liquid footer a.active,
+body.report-page-liquid footer a[aria-current="page"],
+body.checkin-page-liquid footer a.active,
+body.checkin-page-liquid footer a[aria-current="page"],
+body.profile-page-liquid footer a.active,
+body.profile-page-liquid footer a[aria-current="page"],
+body.calendar-page-liquid footer a.active,
+body.calendar-page-liquid footer a[aria-current="page"],
+body.todo-page-liquid footer a.active,
+body.todo-page-liquid footer a[aria-current="page"] {
+  color: var(--liq-warm) !important;
+}
+
+/* ===== Links inside glass surfaces ===== */
+
+body.pomodoro-page-liquid .glass-card a,
+body.pomodoro-page-liquid .glass-strong a,
+body.report-page-liquid .glass-card a,
+body.report-page-liquid .glass-strong a,
+body.checkin-page-liquid .glass-card a,
+body.checkin-page-liquid .glass-strong a,
+body.profile-page-liquid .glass-card a,
+body.profile-page-liquid .glass-strong a,
+body.calendar-page-liquid .glass-card a,
+body.calendar-page-liquid .glass-strong a,
+body.todo-page-liquid .glass-card a,
+body.todo-page-liquid .glass-strong a {
+  color: var(--liq-text-sub) !important;
+}
+
+/* ===== Hover transforms — disable for dark glass ===== */
+
+body.pomodoro-page-liquid .card-hover:hover,
+body.report-page-liquid .card-hover:hover,
+body.checkin-page-liquid .card-hover:hover,
+body.profile-page-liquid .card-hover:hover,
+body.calendar-page-liquid .card-hover:hover,
+body.todo-page-liquid .card-hover:hover,
+body.pomodoro-page-liquid .stat-card:hover,
+body.report-page-liquid .stat-card:hover,
+body.checkin-page-liquid .stat-card:hover,
+body.profile-page-liquid .stat-card:hover,
+body.calendar-page-liquid .stat-card:hover,
+body.todo-page-liquid .stat-card:hover {
+  transform: none !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* ===== 番茄钟页面特定 ===== */
+
+body.pomodoro-page-liquid .glass-max.rounded-full {
+  background: rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 0 40px rgba(241, 208, 154, 0.15) !important;
+}
+
+/* ===== 数据周报页面特定 ===== */
+
+body.report-page-liquid .report-insight-hero,
+body.report-page-liquid .report-score-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(241, 208, 154, 0.08)) !important;
+  border-color: rgba(241, 208, 154, 0.2) !important;
+}
+
+body.report-page-liquid .suggestion-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(241, 208, 154, 0.06)) !important;
+}
+
+body.report-page-liquid .time-slot-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(241, 208, 154, 0.06)) !important;
+  border-color: rgba(241, 208, 154, 0.15) !important;
+}
+
+/* ===== 打卡页面特定 ===== */
+
+body.checkin-page-liquid .checkin-btn {
+  background: linear-gradient(135deg, rgba(241, 208, 154, 0.85), rgba(226, 195, 111, 0.8)) !important;
+  color: #1a1408 !important;
+}
+
+/* ===== 个人中心页面特定 ===== */
+
+body.profile-page-liquid .user-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(241, 208, 154, 0.08)) !important;
+  border-color: rgba(241, 208, 154, 0.2) !important;
+}
+
+body.profile-page-liquid .achievement-badge.unlocked {
+  background: rgba(241, 208, 154, 0.12) !important;
+  border-color: rgba(241, 208, 154, 0.25) !important;
+}
+
+body.profile-page-liquid .achievement-badge.locked {
+  background: rgba(255, 255, 255, 0.04) !important;
+  opacity: 0.5;
 }

@@ -463,7 +463,7 @@
           }
           AppState.checkins.slice().reverse().forEach(function (item) {
             var li = document.createElement('li');
-            li.className = 'flex items-start justify-between px-3 py-2 rounded-lg bg-gray-50/50 hover:bg-gray-100/50 transition-colors';
+            li.className = 'flex items-start justify-between px-3 py-2 rounded-lg glass border border-white/35 hover:bg-white/80 transition-colors';
             li.innerHTML = '<div><div class="text-gray-800 mb-0.5 font-medium">' + item.time + '</div><div class="text-gray-600"><span class="inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] mr-2">' + item.type + '</span>' + item.note + '</div></div><span class="text-[11px] text-success mt-0.5 font-medium">' + item.status + '</span>';
             list.appendChild(li);
           });

@@ -2577,11 +2577,11 @@ function ensureUnifiedModalLiquidStyle() {
     isolation: isolate !important;
     overflow: hidden !important;
     border-radius: 22px !important;
-    border: 0 !important;
-    background: linear-gradient(140deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.12) 44%, rgba(255, 255, 255, 0.05) 100%) !important;
-    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.56), inset 0 -1px 0 rgba(255, 255, 255, 0.16) !important;
-    backdrop-filter: blur(24px) saturate(165%) contrast(106%) brightness(104%) !important;
-    -webkit-backdrop-filter: blur(24px) saturate(165%) contrast(106%) brightness(104%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.56) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 0 24px 54px rgba(15, 23, 42, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.62), inset 0 -1px 0 rgba(255, 255, 255, 0.18) !important;
+    backdrop-filter: blur(44px) saturate(158%) contrast(104%) brightness(104%) !important;
+    -webkit-backdrop-filter: blur(44px) saturate(158%) contrast(104%) brightness(104%) !important;
   }
 
   body:not(.software-app) .modal-content::before,
@@ -2594,10 +2594,10 @@ function ensureUnifiedModalLiquidStyle() {
     inset: -16px -14px;
     border-radius: inherit;
     pointer-events: none;
-    background: rgba(255, 255, 255, 0.018);
-    backdrop-filter: blur(6px) saturate(112%) contrast(108%) brightness(108%);
-    -webkit-backdrop-filter: blur(6px) saturate(112%) contrast(108%) brightness(108%);
-    opacity: 0.3;
+    background: rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(10px) saturate(118%) contrast(106%) brightness(106%);
+    -webkit-backdrop-filter: blur(10px) saturate(118%) contrast(106%) brightness(106%);
+    opacity: 0.42;
     transform: scale(1.02);
   }
 
@@ -2630,11 +2630,11 @@ function ensureUnifiedModalLiquidStyle() {
   body:not(.software-app) .modal-content .input-glass,
   body:not(.software-app) .confirm-modal-card .modal-input,
   body:not(.software-app) #forgot-password-modal input {
-    background: rgba(255, 255, 255, 0.34) !important;
-    border-color: rgba(255, 255, 255, 0.42) !important;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.46) !important;
-    backdrop-filter: blur(7px) saturate(120%) !important;
-    -webkit-backdrop-filter: blur(7px) saturate(120%) !important;
+    background: rgba(255, 255, 255, 0.72) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.52) !important;
+    backdrop-filter: blur(16px) saturate(132%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(132%) !important;
   }
   `;
   document.head.appendChild(style);

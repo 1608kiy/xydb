@@ -175,14 +175,14 @@
             padding: 18px 24px 20px;
             display: grid;
             grid-template-columns: minmax(240px, 0.92fr) minmax(0, 2.1fr) minmax(260px, 1fr);
-            gap: 20px;
+            gap: 12px;
             min-height: 0;
           }
           .calendar-column {
             min-height: 0;
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 12px;
           }
           .calendar-panel {
             border-radius: 30px;
@@ -313,9 +313,8 @@
           .calendar-view {
             display: flex;
             flex-direction: column;
-            flex: 1 1 auto;
+            flex: 0 0 auto;
             min-height: 0;
-            height: 100%;
           }
           .calendar-view.hidden {
             display: none !important;
@@ -338,8 +337,8 @@
           .calendar-weekdays {
             display: grid;
             grid-template-columns: repeat(7, minmax(0, 1fr));
-            gap: 12px;
-            margin-bottom: 12px;
+            gap: 6px !important;
+            margin-bottom: 6px !important;
           }
           .calendar-weekday {
             text-align: center;
@@ -354,9 +353,9 @@
           .calendar-month-grid {
             display: grid;
             grid-template-columns: repeat(7, minmax(0, 1fr));
-            grid-template-rows: repeat(6, minmax(0, 1fr));
-            gap: 12px;
-            flex: 1 1 auto;
+            grid-template-rows: repeat(6, minmax(48px, auto));
+            gap: 6px !important;
+            flex: 0 0 auto;
             min-height: 0;
           }
           #week-grid,
@@ -545,14 +544,14 @@
           }
           
           /* ✅ 日历格子样式 */
-          .calendar-cell { 
+          .calendar-cell {
             @apply relative text-sm transition-all duration-300 border;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             min-height: 0;
-            padding: 12px;
-            border-radius: 24px;
+            padding: 8px !important;
+            border-radius: 18px !important;
             text-align: left;
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 251, 246, 0.76));
             backdrop-filter: blur(18px) saturate(170%);
@@ -1444,7 +1443,7 @@
             }
             .calendar-workspace {
               padding: 16px 18px 18px;
-              gap: 16px;
+              gap: 10px;
               grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.8fr) minmax(240px, 0.96fr);
             }
             .calendar-panel {
@@ -1525,11 +1524,11 @@
             }
             .calendar-weekdays,
             .calendar-month-grid {
-              gap: 8px;
+              gap: 6px;
             }
             .calendar-cell {
-              padding: 10px;
-              border-radius: 20px;
+              padding: 8px;
+              border-radius: 16px;
             }
             .calendar-focus-card {
               padding: 16px;
@@ -1805,30 +1804,12 @@
 }
 
 .calendar-page {
-  background: linear-gradient(180deg, #f5f7fb 0%, #f7f9fc 100%) !important;
+  background: linear-gradient(180deg, #f5f0e8 0%, #f8f4ec 100%) !important;
 }
 
 .calendar-page .bg-orb {
-  display: none !important;
-}
-
-.glass-header,
-.glass-card,
-.glass-input,
-.glass-tab,
-.calendar-reference-categories,
-.calendar-reference-tools,
-.calendar-reference-board,
-.calendar-reference-focus,
-.calendar-reference-upcoming {
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-
-.glass-header {
-  background: rgba(248, 250, 252, 0.96) !important;
-  border-bottom: 1px solid #e8edf5 !important;
-  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.04) !important;
+  display: block !important;
+  opacity: 0.12 !important;
 }
 
 .glass-card,
@@ -1840,9 +1821,19 @@
 .calendar-focus-card,
 #task-pool .task-pool-item,
 #scheduled-task-list > div {
-  background: #ffffff !important;
-  border-color: #e8edf5 !important;
-  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.05) !important;
+  background: var(--web-glass-bg-card) !important;
+  backdrop-filter: var(--web-glass-backdrop-card) !important;
+  -webkit-backdrop-filter: var(--web-glass-backdrop-card) !important;
+  border-color: var(--web-glass-border) !important;
+  box-shadow: var(--web-glass-shadow) !important;
+}
+
+.glass-header {
+  background: var(--web-glass-bg-strong) !important;
+  backdrop-filter: var(--web-glass-backdrop-strong) !important;
+  -webkit-backdrop-filter: var(--web-glass-backdrop-strong) !important;
+  border-bottom: 1px solid var(--web-glass-border-strong) !important;
+  box-shadow: var(--web-glass-shadow-strong) !important;
 }
 
 .calendar-view-switch,
@@ -1851,33 +1842,31 @@
 .btn-glass,
 .btn-soft,
 .calendar-refresh-link {
-  box-shadow: none !important;
-}
-
-.calendar-view-switch,
-.calendar-user-trigger,
-.calendar-back-btn,
-.btn-glass,
-.btn-soft,
-.calendar-refresh-link {
-  background: #ffffff !important;
-  border-color: #e5eaf2 !important;
+  background: var(--web-glass-bg-card) !important;
+  backdrop-filter: var(--web-glass-backdrop-card) !important;
+  -webkit-backdrop-filter: var(--web-glass-backdrop-card) !important;
+  border-color: var(--web-glass-border) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
 }
 
 .calendar-reference-category-list .category-chip {
-  box-shadow: none !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.46) !important;
 }
 
 .calendar-reference-board .calendar-cell {
-  background: linear-gradient(180deg, #f8fafc, #f1f5f9) !important;
-  border-color: #e5e7eb !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82) !important;
+  background: rgba(255, 255, 255, 0.68) !important;
+  backdrop-filter: blur(18px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(140%) !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
 }
 
 .calendar-reference-board .calendar-cell.today {
-  background: linear-gradient(135deg, #ffd7ae, #ffbf7b) !important;
-  border-color: #f3b46c !important;
-  box-shadow: 0 14px 24px rgba(245, 158, 11, 0.18) !important;
+  background: linear-gradient(135deg, rgba(255, 215, 174, 0.78), rgba(255, 191, 123, 0.7)) !important;
+  backdrop-filter: blur(18px) saturate(145%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(145%) !important;
+  border-color: rgba(243, 180, 108, 0.62) !important;
+  box-shadow: 0 14px 24px rgba(245, 158, 11, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.56) !important;
 }
 
 @media (min-width: 1024px) {
@@ -1891,16 +1880,16 @@
 
   .calendar-workspace {
     padding: 12px 18px 14px !important;
-    gap: 14px !important;
+    gap: 10px !important;
   }
 
   .calendar-reference-layout {
     grid-template-columns: minmax(240px, 0.84fr) minmax(0, 2.42fr) minmax(258px, 0.92fr) !important;
-    gap: 14px !important;
+    gap: 10px !important;
   }
 
   .calendar-column {
-    gap: 14px !important;
+    gap: 10px !important;
   }
 
   .calendar-column-left {
@@ -2064,8 +2053,8 @@
   }
 
   .calendar-weekdays {
-    gap: 8px !important;
-    margin-bottom: 8px !important;
+    gap: 6px !important;
+    margin-bottom: 6px !important;
   }
 
   .calendar-weekday {
@@ -2074,12 +2063,12 @@
   }
 
   .calendar-month-grid {
-    gap: 8px !important;
+    gap: 6px !important;
   }
 
   .calendar-reference-board .calendar-cell {
-    padding: 10px 10px 8px !important;
-    border-radius: 18px !important;
+    padding: 8px 8px 6px !important;
+    border-radius: 16px !important;
   }
 
   .calendar-reference-focus,

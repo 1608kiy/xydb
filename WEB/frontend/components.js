@@ -1,7 +1,7 @@
 function renderHeader(activePage) {
   const user = AppState.user || { name: '访客', avatar: '' };
   const header = `
-  <header class="bg-white shadow-sm sticky top-0 z-30">
+  <header class="glass-header shadow-sm sticky top-0 z-30">
     <div class="container mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-2">
         <a href="待办页面.html" class="text-primary text-lg font-bold">铃记</a>
@@ -16,7 +16,7 @@ function renderHeader(activePage) {
         <a href="个人中心页面.html" class="text-sm ${activePage === 'profile' ? 'text-primary font-semibold' : 'text-gray-600 hover:text-primary'}">我的</a>
              <div class="relative group">
                <button class="flex items-center gap-2 focus:outline-none"><img src="${user.avatar || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}" alt="avatar" class="header-user-avatar w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300" /><span class="header-user-name hidden md:inline-block font-medium">${user.name}</span><i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform duration-300"></i></button>
-          <div class="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-lg p-2 hidden group-hover:block">
+          <div class="absolute right-0 mt-2 w-40 glass-max rounded-xl shadow-lg p-2 hidden group-hover:block">
             <a href="个人中心页面.html" class="block px-2 py-1 text-sm text-gray-700 hover:bg-gray-100">个人中心</a>
             <a href="登录页面.html" class="block px-2 py-1 text-sm text-gray-700 hover:bg-gray-100" id="global-logout">退出登录</a>
           </div>

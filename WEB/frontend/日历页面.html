@@ -17,7 +17,7 @@
     <link rel='stylesheet' href='./css/saas-theme-overrides.css?v=20260423_ui_saas1' />
   <script src='./js/pages/日历页面.inline-02.js?v=20260327_jssplit'></script>
 </head>
-  <body class="font-inter bg-transparent text-gray-800 min-h-screen flex flex-col text-[13px] md:text-[14px] relative overflow-x-hidden">
+  <body class="font-inter bg-transparent text-gray-800 min-h-screen flex flex-col text-[13px] md:text-[14px] relative overflow-x-hidden calendar-page-liquid">
     
     <!-- ✅ 背景光斑装饰 -->
     <div class="bg-orb w-[500px] h-[500px] -top-40 -left-40" style="animation-delay: 0s;"></div>
@@ -135,7 +135,7 @@
       <!-- [MODULE] e3f_主内容区域 -->
       <main class="flex-1 overflow-y-auto p-4 md:p-6 scrollbar-thin">
         <!-- [MODULE] g4h_快捷操作栏 -->
-        <div class="glass-card rounded-2xl p-4 mb-6 fade-in relative z-30">
+        <div class="glass-card rounded-2xl p-4 mb-3 fade-in relative z-30">
           <div
             class="flex flex-col md:flex-row md:items-center justify-between gap-4"
           >
@@ -248,7 +248,7 @@
               </button>
             </div>
             <!-- 星期行 -->
-            <div class="grid grid-cols-7 gap-2 mb-2">
+            <div class="grid grid-cols-7 gap-2 mb-2 calendar-weekdays">
               <div class="text-center text-sm font-medium text-gray-500">周一</div>
               <div class="text-center text-sm font-medium text-gray-500">周二</div>
               <div class="text-center text-sm font-medium text-gray-500">周三</div>
@@ -258,7 +258,7 @@
               <div class="text-center text-sm font-medium text-primary">周日</div>
             </div>
             <!-- 日期格子 -->
-            <div class="grid grid-cols-7 gap-2" id="month-grid">
+            <div class="grid grid-cols-7 gap-2 calendar-month-grid" id="month-grid">
               <!-- 动态渲染每日格子 -->
             </div>
           </div>
@@ -303,8 +303,8 @@
         </div>
         
         <!-- 日历颜色标签 -->
-        <div class="glass-card rounded-2xl p-6 mt-6 fade-in">
-          <h2 class="text-lg font-semibold text-gray-800 mb-4">任务分类</h2>
+        <div class="glass-card rounded-2xl p-4 mt-3 fade-in">
+          <h2 class="text-lg font-semibold text-gray-800 mb-3">任务分类</h2>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
             <button type="button" class="category-chip active" data-category="all">
               <div class="category-chip-dot bg-primary"></div>
@@ -330,8 +330,8 @@
         </div>
 
         <!-- 任务侧边栏 -->
-        <div class="glass-card rounded-2xl p-6 mt-6 fade-in">
-          <h2 class="text-lg font-semibold text-gray-800 mb-4">待办任务池</h2>
+        <div class="glass-card rounded-2xl p-4 mt-3 fade-in">
+          <h2 class="text-lg font-semibold text-gray-800 mb-3">待办任务池</h2>
           <div class="space-y-3" id="task-pool">
             <!-- 动态渲染任务 -->
           </div>

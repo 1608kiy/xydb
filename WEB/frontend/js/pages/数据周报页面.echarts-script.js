@@ -186,44 +186,46 @@
         var focusHeatmap = echarts.init(focusHeatmapEl);
         window.focusHeatmap = focusHeatmap;
         focusHeatmap.setOption({
+          backgroundColor: 'transparent',
           tooltip: {
             position: 'top',
-            backgroundColor: chartTheme.tooltipBg,
-            borderColor: chartTheme.tooltipBorder,
-            textStyle: { color: chartTheme.tooltipText },
+            backgroundColor: 'rgba(30, 30, 40, 0.92)',
+            borderColor: 'rgba(255, 255, 255, 0.15)',
+            textStyle: { color: '#fff', fontSize: 13 },
             formatter: function(params) {
               var days = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
-              return days[params.value[1]] + ' ' + params.value[0] + ':00-' + (parseInt(params.value[0]) + 2) + ':00<br/>专注强度：' + params.value[2];
+              return '<b>' + days[params.value[1]] + '</b> ' + params.value[0] + ':00-' + (parseInt(params.value[0]) + 2) + ':00<br/>专注强度：<b>' + params.value[2] + '</b>';
             }
           },
           grid: {
-            left: '3%',
-            right: '8%',
-            bottom: '15%',
-            top: '5%',
+            left: '4%',
+            right: '6%',
+            bottom: '14%',
+            top: '4%',
             containLabel: true
           },
           xAxis: {
             type: 'category',
             data: ['0-2', '2-4', '4-6', '6-8', '8-10', '10-12', '12-14', '14-16', '16-18', '18-20', '20-22', '22-24'],
-            splitArea: { show: true, areaStyle: { color: [chartTheme.heatAreaA, chartTheme.heatAreaB] } },
-            axisLine: { lineStyle: { color: chartTheme.axisLine } },
-            axisTick: { lineStyle: { color: chartTheme.axisTick } },
-            axisLabel: { 
-              color: chartTheme.axisText,
+            splitArea: { show: false },
+            splitLine: { show: false },
+            axisLine: { lineStyle: { color: 'rgba(255,255,255,0.12)' } },
+            axisTick: { show: false },
+            axisLabel: {
+              color: 'rgba(255,255,255,0.65)',
               fontWeight: 500,
-              fontSize: 12
+              fontSize: 11
             }
-
           },
           yAxis: {
             type: 'category',
             data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-            splitArea: { show: true, areaStyle: { color: [chartTheme.heatAreaA, chartTheme.heatAreaB] } },
-            axisLine: { lineStyle: { color: chartTheme.axisLine } },
-            axisTick: { lineStyle: { color: chartTheme.axisTick } },
+            splitArea: { show: false },
+            splitLine: { show: false },
+            axisLine: { lineStyle: { color: 'rgba(255,255,255,0.12)' } },
+            axisTick: { show: false },
             axisLabel: {
-              color: chartTheme.axisText,
+              color: 'rgba(255,255,255,0.65)',
               fontWeight: 500
             }
           },
@@ -234,21 +236,34 @@
             orient: 'horizontal',
             left: 'center',
             bottom: '0%',
-            itemWidth: 12,
-            itemHeight: 80,
-            bgStyle: { color: chartTheme.heatLegendBg, borderColor: chartTheme.tooltipBorder, borderWidth: 1 },
-            textStyle: { color: chartTheme.heatLegendText, fontSize: 10 },
+            itemWidth: 14,
+            itemHeight: 100,
             inRange: {
-              color: chartTheme.heatRamp
-            }
+              color: ['rgba(255,255,255,0.1)', 'rgba(253,230,138,0.6)', '#FBBF24', '#F59E0B', '#D97706', '#B45309']
+            },
+            textStyle: { color: 'rgba(255,255,255,0.6)', fontSize: 10 }
           },
           series: [{
             type: 'heatmap',
             data: [[0, 0, 1], [1, 0, 0], [2, 0, 0], [3, 0, 0], [4, 0, 0], [5, 0, 2], [6, 0, 5], [7, 0, 3], [8, 0, 1], [9, 0, 0], [10, 0, 0], [11, 0, 0], [0, 1, 0], [1, 1, 0], [2, 1, 0], [3, 1, 0], [4, 1, 0], [5, 1, 3], [6, 1, 6], [7, 1, 4], [8, 1, 2], [9, 1, 0], [10, 1, 0], [11, 1, 0], [0, 2, 0], [1, 2, 0], [2, 2, 0], [3, 2, 0], [4, 2, 0], [5, 2, 2], [6, 2, 5], [7, 2, 3], [8, 2, 1], [9, 2, 0], [10, 2, 0], [11, 2, 0], [0, 3, 0], [1, 3, 0], [2, 3, 0], [3, 3, 0], [4, 3, 0], [5, 3, 4], [6, 3, 7], [7, 3, 5], [8, 3, 2], [9, 3, 0], [10, 3, 0], [11, 3, 0], [0, 4, 0], [1, 4, 0], [2, 4, 0], [3, 4, 0], [4, 4, 0], [5, 4, 3], [6, 4, 6], [7, 4, 4], [8, 4, 1], [9, 4, 0], [10, 4, 0], [11, 4, 0], [0, 5, 1], [1, 5, 0], [2, 5, 0], [3, 5, 0], [4, 5, 0], [5, 5, 1], [6, 5, 3], [7, 5, 2], [8, 5, 0], [9, 5, 0], [10, 5, 0], [11, 5, 0], [0, 6, 0], [1, 6, 0], [2, 6, 0], [3, 6, 0], [4, 6, 0], [5, 6, 2], [6, 6, 4], [7, 6, 3], [8, 6, 1], [9, 6, 0], [10, 6, 0], [11, 6, 0]],
+            label: {
+              show: true,
+              color: 'rgba(255,255,255,0.85)',
+              fontSize: 11,
+              fontWeight: 600,
+              formatter: function(params) { return params.value[2] > 0 ? params.value[2] : ''; }
+            },
             itemStyle: {
-              emphasis: {
-                shadowBlur: 10,
-                shadowColor: 'rgba(0, 0, 0, 0.3)'
+              borderRadius: 8,
+              borderWidth: 2,
+              borderColor: 'rgba(255, 255, 255, 0.08)'
+            },
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 16,
+                shadowColor: 'rgba(245, 158, 11, 0.5)',
+                borderColor: 'rgba(255, 255, 255, 0.2)',
+                borderWidth: 2
               }
             }
           }]

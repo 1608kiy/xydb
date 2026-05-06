@@ -255,7 +255,7 @@
 
             if (!this.tasks.length) {
               const empty = document.createElement('div');
-              empty.className = 'text-xs text-gray-500 bg-gray-50 rounded-xl px-3 py-4 text-center';
+              empty.className = 'text-xs text-gray-500 glass border border-dashed border-white/35 rounded-xl px-3 py-4 text-center';
               empty.textContent = '暂无待办任务';
               this.dom.mobileTaskList.appendChild(empty);
               return;
@@ -264,7 +264,7 @@
             this.tasks.forEach((task) => {
               const btn = document.createElement('button');
               btn.type = 'button';
-              btn.className = 'w-full text-left border border-gray-200 rounded-xl p-3 mb-2 hover:border-primary hover:bg-primary/5 transition-all duration-300';
+              btn.className = 'w-full text-left glass-card border border-white/35 rounded-xl p-3 mb-2 hover:border-primary hover:bg-white/80 transition-all duration-300';
               btn.innerHTML = `
                 <div class="font-medium text-gray-800">${task.name}</div>
                 <div class="text-xs text-gray-500 mt-1">预计 ${task.estimate} 个番茄</div>
@@ -535,14 +535,14 @@
             this.dom.sessionHistory.innerHTML = '';
             if (this.state.history.length === 0) {
               const li = document.createElement('li');
-              li.className = 'text-gray-400 text-center py-4 bg-primary/5 rounded-lg';
+              li.className = 'text-gray-400 text-center py-4 glass border border-dashed border-white/35 rounded-lg';
               li.textContent = '暂无记录';
               this.dom.sessionHistory.appendChild(li);
               return;
             }
             this.state.history.forEach((record) => {
               const li = document.createElement('li');
-              li.className = 'flex items-start px-3 py-2 bg-gray-50/50 rounded-lg slide-up';
+              li.className = 'flex items-start px-3 py-2 glass border border-white/35 rounded-lg slide-up';
               li.innerHTML = `<i class="fas fa-check-circle text-success mr-2 mt-0.5"></i><span>${record}</span>`;
               this.dom.sessionHistory.appendChild(li);
             });
