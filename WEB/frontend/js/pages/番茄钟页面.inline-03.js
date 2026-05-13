@@ -157,9 +157,7 @@
               if (saved.autoStartFocus != null) this.config.autoStartFocus = saved.autoStartFocus;
               if (saved.autoStartBreak != null) this.config.autoStartBreak = saved.autoStartBreak;
               if (this.dom.autoStartToggle) this.dom.autoStartToggle.checked = this.config.autoStartFocus;
-            } catch (e) {
-              console.warn('加载本地数据失败', e);
-            }
+            } catch (e) {}
           }
 
           saveStorage() {
@@ -215,7 +213,9 @@
 
             if (!this.tasks.length) {
               const empty = document.createElement('div');
-              empty.className = 'text-xs text-gray-500 glass border border-dashed border-white/35 rounded-xl px-3 py-4 text-center';
+              empty.className = 'text-xs glass border border-dashed rounded-xl px-3 py-4 text-center';
+              empty.style.color = 'var(--liq-text-muted)';
+              empty.style.borderColor = 'rgba(255,255,255,0.15)';
               empty.textContent = '暂无待办任务，去待办页面创建后即可在这里绑定番茄钟。';
               this.dom.taskCards.appendChild(empty);
               this.renderMobileTaskList();
@@ -235,10 +235,10 @@
 
               card.innerHTML = `
                 <div class="flex justify-between items-center">
-                  <span class="text-sm font-medium text-gray-800">${task.name}</span>
+                  <span class="text-sm font-medium" style="color: var(--liq-text-main);">${task.name}</span>
                   <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${tagClass}">${task.category}</span>
                 </div>
-                <div class="text-xs text-gray-500 mt-1">预计 ${task.estimate} 个番茄</div>
+                <div class="text-xs mt-1" style="color: var(--liq-text-muted);">预计 ${task.estimate} 个番茄</div>
               `;
               if (String(this.state.selectedTaskId) === String(task.id)) {
                 card.classList.add('selected');
@@ -255,7 +255,9 @@
 
             if (!this.tasks.length) {
               const empty = document.createElement('div');
-              empty.className = 'text-xs text-gray-500 glass border border-dashed border-white/35 rounded-xl px-3 py-4 text-center';
+              empty.className = 'text-xs glass border border-dashed rounded-xl px-3 py-4 text-center';
+              empty.style.color = 'var(--liq-text-muted)';
+              empty.style.borderColor = 'rgba(255,255,255,0.15)';
               empty.textContent = '暂无待办任务';
               this.dom.mobileTaskList.appendChild(empty);
               return;
@@ -266,8 +268,8 @@
               btn.type = 'button';
               btn.className = 'w-full text-left glass-card border border-white/35 rounded-xl p-3 mb-2 hover:border-primary hover:bg-white/80 transition-all duration-300';
               btn.innerHTML = `
-                <div class="font-medium text-gray-800">${task.name}</div>
-                <div class="text-xs text-gray-500 mt-1">预计 ${task.estimate} 个番茄</div>
+                <div class="font-medium" style="color: var(--liq-text-main);">${task.name}</div>
+                <div class="text-xs mt-1" style="color: var(--liq-text-muted);">预计 ${task.estimate} 个番茄</div>
               `;
               btn.addEventListener('click', () => {
                 this.selectTask(task.id);
@@ -535,15 +537,18 @@
             this.dom.sessionHistory.innerHTML = '';
             if (this.state.history.length === 0) {
               const li = document.createElement('li');
-              li.className = 'text-gray-400 text-center py-4 glass border border-dashed border-white/35 rounded-lg';
+              li.className = 'text-center py-4 glass border border-dashed rounded-lg';
+              li.style.color = 'var(--liq-text-muted)';
+              li.style.borderColor = 'rgba(255,255,255,0.15)';
               li.textContent = '暂无记录';
               this.dom.sessionHistory.appendChild(li);
               return;
             }
             this.state.history.forEach((record) => {
               const li = document.createElement('li');
-              li.className = 'flex items-start px-3 py-2 glass border border-white/35 rounded-lg slide-up';
-              li.innerHTML = `<i class="fas fa-check-circle text-success mr-2 mt-0.5"></i><span>${record}</span>`;
+              li.className = 'flex items-start px-3 py-2 glass border rounded-lg slide-up';
+              li.style.borderColor = 'rgba(255,255,255,0.1)';
+              li.innerHTML = `<i class="fas fa-check-circle mr-2 mt-0.5" style="color: var(--liq-warm);"></i><span style="color: var(--liq-text-sub);">${record}</span>`;
               this.dom.sessionHistory.appendChild(li);
             });
           }
@@ -673,9 +678,7 @@
               try {
                 AppState.init();
                 this.syncTasksFromAppState({ skipSave: true });
-              } catch (e) {
-                console.warn('同步任务列表失败', e);
-              }
+              } catch (e) {}
             };
 
             window.addEventListener('storage', (e) => {

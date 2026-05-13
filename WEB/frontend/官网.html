@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, proxy-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>轻悦待办 | 待办、日历、番茄与周报的一体化效率工具</title>
+  <meta name="description" content="轻悦待办整合待办清单、日历视图、番茄专注和数据周报，帮助你把计划变成稳定完成。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/官网.css" />
+  <style>
+    #hero,
+    #hero .eyebrow,
+    #hero .hero-title,
+    #hero .hero-sub {
+      color: #121212 !important;
+      -webkit-text-fill-color: #121212 !important;
+      mix-blend-mode: normal !important;
+      text-shadow: none !important;
+      filter: none !important;
+      opacity: 1 !important;
+    }
+
+    #hero {
+      isolation: isolate;
+    }
+  </style>
+  <script>
+    window.__PREVIEW_MODE__ = new URLSearchParams(window.location.search).get("preview") === "1";
+  </script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const hero = document.getElementById('hero');
+      if (!hero) return;
+      const nodes = hero.querySelectorAll('.eyebrow, .hero-title, .hero-sub');
+      nodes.forEach((node) => {
+        node.style.setProperty('color', '#121212', 'important');
+        node.style.setProperty('-webkit-text-fill-color', '#121212', 'important');
+        node.style.setProperty('mix-blend-mode', 'normal', 'important');
+        node.style.setProperty('text-shadow', 'none', 'important');
+        node.style.setProperty('filter', 'none', 'important');
+        node.style.setProperty('opacity', '1', 'important');
+      });
+    });
+  </script>
+</head>
+<body>
+  <div class="page-transition" aria-hidden="true"></div>
+  <div class="cinematic-shutter" aria-hidden="true"></div>
+  <div class="cursor-fog"></div>
+  <div class="cursor"></div>
+  <div class="cursor-core"></div>
+  <div class="ambient-layer" aria-hidden="true">
+    <span class="bg-orb orb-a"></span>
+    <span class="bg-orb orb-b"></span>
+    <span class="bg-orb orb-c"></span>
+    <span class="film-grain"></span>
+  </div>
+
+  <header class="site-header">
+    <a class="brand interactive" href="#top">轻悦待办</a>
+    <div class="header-right">
+      <nav class="site-nav">
+        <a class="interactive" href="#narrative">亮点</a>
+        <a class="interactive" href="#depth">体验</a>
+        <a class="interactive" href="#portfolio">模块</a>
+        <a class="interactive" href="#contact">开始</a>
+        <span class="nav-underline" aria-hidden="true"></span>
+      </nav>
+    </div>
+    <div class="nav-progress" aria-hidden="true">
+      <span class="nav-progress-fill"></span>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero section" id="hero">
+      <p class="eyebrow js-split" style="color:#121212 !important; mix-blend-mode:normal !important;">轻悦待办</p>
+      <h1 class="hero-title js-split" style="color:#121212 !important; mix-blend-mode:normal !important;">用待办、日历和番茄专注，把今天真正执行完。</h1>
+      <p class="hero-sub js-split" style="color:#121212 !important; mix-blend-mode:normal !important;">
+        在同一套流程里完成任务整理、时间排程、专注计时和每周复盘。你能清楚知道要做什么、何时做、做得怎么样。
+      </p>
+      <div class="hero-actions">
+        <a href="./登录页面.html" class="btn magnetic interactive">立即开始</a>
+        <a href="./注册页面.html" class="btn btn-ghost magnetic interactive">免费注册</a>
+        <a href="./APP/轻悦待办.apk" class="btn btn-app magnetic interactive" download>下载APP</a>
+      </div>
+      <div class="hero-visual media-shell">
+        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1800&q=80" alt="现代办公工作空间" />
+      </div>
+    </section>
+
+    <section id="narrative" class="pinned-narrative">
+      <div class="narrative-stage">
+        <div class="narrative-depth depth-back" aria-hidden="true">
+          <span class="depth-orb depth-orb-a"></span>
+          <span class="depth-orb depth-orb-b"></span>
+        </div>
+        <article class="narrative-panel panel-a">
+          <p class="eyebrow js-split">亮点一</p>
+          <h2 class="panel-title">先理清任务，再开始执行。</h2>
+          <p class="panel-text">支持按优先级、标签和时间查看任务，今日待办与明日待办一目了然。</p>
+        </article>
+        <article class="narrative-panel panel-b">
+          <p class="eyebrow js-split">亮点二</p>
+          <h2 class="panel-title">把任务放进日历，按节奏推进。</h2>
+          <p class="panel-text">月视图、周视图、日视图灵活切换，再配合番茄专注模式稳定进入状态。</p>
+        </article>
+        <article class="narrative-panel panel-c">
+          <p class="eyebrow js-split">亮点三</p>
+          <h2 class="panel-title">用数据周报复盘，让进步可追踪。</h2>
+          <p class="panel-text">完成任务数、专注时长、趋势分析和行动建议集中呈现，下一周更容易持续提升。</p>
+        </article>
+        <div class="narrative-depth depth-front" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <section class="chapter section chapter-left" id="flow-a">
+      <div class="chapter-copy">
+        <p class="eyebrow js-split">完整流程</p>
+        <h2 class="section-title js-split">计划、执行、复盘三步联动，让效率形成闭环。</h2>
+        <p class="chapter-desc js-split">从待办拆解到日历排程，再到番茄专注与周报分析，每一步都围绕真实完成结果设计。</p>
+      </div>
+      <figure class="chapter-media media-shell tilt-surface" data-depth="18">
+        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1300&q=80" alt="团队协作讨论" />
+      </figure>
+    </section>
+
+    <section class="chapter section chapter-right" id="flow-b">
+      <figure class="chapter-media media-shell tilt-surface" data-depth="22">
+        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1300&q=80" alt="开发与编码场景" />
+      </figure>
+      <div class="chapter-copy">
+        <p class="eyebrow js-split">使用感受</p>
+        <h2 class="section-title js-split">上手快、信息清、操作顺，专注不被打断。</h2>
+        <p class="chapter-desc js-split">任务筛选、日历切换、计时控制和周报查看都在统一体验中完成，减少频繁切换带来的注意力损耗。</p>
+      </div>
+    </section>
+
+    <section id="depth" class="depth-zone">
+      <div class="depth-bg media-shell">
+        <video muted autoplay loop playsinline preload="auto" aria-label="体验模块动图">
+          <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260402_054547_9875cfc5-155a-4229-8ec8-b7ba7125cbf8.mp4" type="video/mp4" />
+        </video>
+        <span class="depth-vignette" aria-hidden="true"></span>
+      </div>
+      <div class="depth-content section">
+        <p class="eyebrow js-split">沉浸体验</p>
+        <h2 class="section-title js-split">统一视觉与交互，让效率工具也有舒适的使用体验。</h2>
+      </div>
+    </section>
+
+    <section id="portfolio" class="portfolio section">
+      <p class="eyebrow js-split">核心模块</p>
+      <h2 class="section-title js-split">围绕日常执行设计的三组核心能力。</h2>
+      <div class="portfolio-grid dynamic-grid">
+        <article class="portfolio-card media-shell tilt-surface" data-depth="16">
+          <video muted autoplay loop playsinline preload="auto" aria-label="模块动图一">
+            <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4" type="video/mp4" />
+          </video>
+          <div class="portfolio-copy">
+            <h3>待办清单</h3>
+            <p>支持今日/明日任务管理、优先级与标签分类，帮助你先做关键事项。</p>
+            
+          </div>
+        </article>
+        <article class="portfolio-card media-shell tilt-surface" data-depth="20">
+          <video muted autoplay loop playsinline preload="auto" aria-label="模块动图二">
+            <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260324_151826_c7218672-6e92-402c-9e45-f1e0f454bdc4.mp4" type="video/mp4" />
+          </video>
+          <div class="portfolio-copy">
+            <h3>日历与番茄</h3>
+            <p>月周日三种日历视图结合专注与休息模式，让执行节奏更稳定。</p>
+          </div>
+        </article>
+        <article class="portfolio-card media-shell tilt-surface" data-depth="24">
+          <video muted autoplay loop playsinline preload="auto" aria-label="模块动图三">
+            <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260405_170732_8a9ccda6-5cff-4628-b164-059c500a2b41.mp4" type="video/mp4" />
+          </video>
+          <div class="portfolio-copy">
+            <h3>数据周报</h3>
+            <p>自动汇总任务与番茄数据，给出趋势洞察与下一步行动建议。</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="contact" class="contact section">
+      <span class="contact-bg-overlay" aria-hidden="true"></span>
+
+      <div class="contact-inner">
+        <p class="eyebrow js-split">开始使用</p>
+        <h2 class="section-title js-split">从今天开始，把任务、时间和专注放进同一套执行系统</h2>
+        <div class="hero-actions">
+          <a href="./登录页面.html" class="btn btn-login magnetic interactive">登录账号</a>
+          <a href="./注册页面.html" class="btn btn-ghost magnetic interactive">创建新账号</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>轻悦待办 x XYDB 项目组</p>
+    <p>2026</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/CustomEase.min.js"></script>
+  <script src="./js/pages/官网.inline-01.js"></script>
+</body>
+</html>

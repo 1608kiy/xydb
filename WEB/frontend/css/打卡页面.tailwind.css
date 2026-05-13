@@ -14,37 +14,17 @@
           .scrollbar-thin::-webkit-scrollbar-track { background: rgba(243, 244, 246, 0.5); border-radius: 3px; }
           .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(79, 70, 229, 0.3); border-radius: 3px; }
           .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(79, 70, 229, 0.5); }
-          
-          /* 毛玻璃效果 */
-          .glass { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.15); }
-          .glass-strong { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(36px); -webkit-backdrop-filter: blur(36px); border: 1px solid rgba(255, 255, 255, 0.25); }
-          .glass-max { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(48px); -webkit-backdrop-filter: blur(48px); border: 1px solid rgba(255, 255, 255, 0.35); }
-          .glass-input { background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(209, 213, 219, 0.5); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+          .glass-input { background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(209, 213, 219, 0.5); transition: background 0.3s, border-color 0.3s, box-shadow 0.3s; }
           .glass-input:focus { background: rgba(255, 255, 255, 0.95); border-color: rgba(79, 70, 229, 0.5); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12); }
-          .glass-tab { 
-            background: rgba(255, 255, 255, 0.45); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px); 
-            border-top: 1px solid rgba(255, 255, 255, 0.2); 
-            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-          }
-          .glass-header { 
-            background: rgba(255, 255, 255, 0.4); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px); 
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s ease;
-          }
-          
-          /* 卡片阴影 */
+
           .card-shadow { box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06); }
-          .card-hover { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
-          .card-hover:hover { 
-            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12); 
+          .card-hover { transition: box-shadow 0.35s, transform 0.35s; }
+          .card-hover:hover {
+            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
             transform: translateY(-4px);
           }
-          
+
           /* 背景装饰光斑 */
           .bg-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0 !important; pointer-events: none; z-index: 0; animation: orbFloat 20s ease-in-out infinite; }
           @keyframes orbFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -30px) scale(1.05); } 66% { transform: translate(-20px, 20px) scale(0.98); } }
@@ -203,9 +183,9 @@
           /* 清空打卡记录确认弹窗 */
           .confirm-modal-overlay {
             @apply fixed inset-0 z-[120] hidden items-center justify-center px-4;
-            background: rgba(15, 23, 42, 0.35);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.14);
+            backdrop-filter: blur(14px) saturate(118%);
+            -webkit-backdrop-filter: blur(14px) saturate(118%);
           }
           .confirm-modal-overlay.show {
             @apply flex;

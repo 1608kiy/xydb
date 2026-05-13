@@ -260,7 +260,6 @@
             addLog('error', '用户列表加载失败', msg);
             usersTbody.innerHTML = '<tr><td colspan="8" class="px-4 py-6 text-center text-rose-300">' + escapeHtml(msg) + '</td></tr>';
           }).catch(function (err) {
-            console.error('load users error', err);
             showToast('网络错误，加载用户失败');
             addLog('error', '用户列表加载失败', '网络错误，请稍后重试');
             usersTbody.innerHTML = '<tr><td colspan="8" class="px-4 py-6 text-center text-rose-300">网络错误，请稍后重试</td></tr>';
@@ -340,7 +339,6 @@
             showToast(msg);
             addLog('error', '创建管理员失败', msg);
           }).catch(function (err) {
-            console.error('create admin error', err);
             showToast('网络错误，创建管理员失败');
             addLog('error', '创建管理员失败', '网络错误，请稍后重试');
           }).finally(function () {
@@ -366,7 +364,6 @@
             showToast(msg);
             addLog('error', '删除用户失败', msg);
           }).catch(function (err) {
-            console.error('delete user error', err);
             showToast('网络错误，删除失败');
             addLog('error', '删除用户失败', '网络错误，请稍后重试');
           });
@@ -398,7 +395,6 @@
             showToast(message);
             addLog('error', '批量删除失败', message);
           }).catch(function (err) {
-            console.error('batch delete users error', err);
             showToast('网络错误，批量删除失败');
             addLog('error', '批量删除失败', '网络错误，请稍后重试');
           });

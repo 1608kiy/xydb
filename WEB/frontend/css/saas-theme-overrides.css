@@ -175,19 +175,24 @@ body > .bg-orb:nth-child(5) {
 
 .btn-primary,
 .btn-primary-glass,
-.control-btn.primary,
 #today-btn,
-#add-task-btn,
-#start-btn {
+#add-task-btn {
   background: linear-gradient(135deg, var(--saas-primary), var(--saas-primary-deep)) !important;
   color: #ffffff !important;
   border: 1px solid rgba(226, 195, 111, 0.40) !important;
   box-shadow: 0 12px 26px rgba(226, 195, 111, 0.18) !important;
 }
 
+.btn-primary:hover,
+.btn-primary-glass:hover,
+#today-btn:hover,
+#add-task-btn:hover {
+  box-shadow: 0 16px 32px rgba(226, 195, 111, 0.28) !important;
+  transform: translateY(-1px);
+}
+
 .btn-secondary-glass,
 .btn-glass,
-.control-btn.secondary,
 .view-btn,
 .task-select-dropdown {
   background: var(--web-glass-bg-card) !important;
@@ -197,6 +202,16 @@ body > .bg-orb:nth-child(5) {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
   color: #334155 !important;
   border-radius: var(--saas-radius-md) !important;
+}
+
+.btn-secondary-glass:hover,
+.btn-glass:hover,
+.view-btn:hover,
+.task-select-dropdown:hover {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border-color: rgba(79, 70, 229, 0.25) !important;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+  transform: translateY(-1px);
 }
 
 .sidebar-item,
@@ -212,17 +227,51 @@ body > .bg-orb:nth-child(5) {
 .priority-high,
 .text-danger,
 .priority-btn.active[data-priority="high"] {
-  color: #db5b56 !important;
+  color: #EF4444 !important;
 }
 
 .priority-medium,
 .priority-btn.active[data-priority="medium"] {
-  color: var(--saas-accent) !important;
+  color: #F59E0B !important;
 }
 
 .priority-low,
 .priority-btn.active[data-priority="low"] {
-  color: #7f8aa1 !important;
+  color: #10B981 !important;
+}
+
+.priority-btn.active[data-priority="high"] {
+  border-color: #EF4444 !important;
+  background-color: rgba(239, 68, 68, 0.1) !important;
+}
+
+.priority-btn.active[data-priority="medium"] {
+  border-color: #F59E0B !important;
+  background-color: rgba(245, 158, 11, 0.1) !important;
+}
+
+.priority-btn.active[data-priority="low"] {
+  border-color: #10B981 !important;
+  background-color: rgba(16, 185, 129, 0.1) !important;
+}
+
+/* ── Priority flag icon colors (override the generic .fa-flag rule) ── */
+.priority-high .fa-flag,
+.priority-btn[data-priority="high"] i,
+.priority-btn.active[data-priority="high"] i {
+  color: #EF4444 !important;
+}
+
+.priority-medium .fa-flag,
+.priority-btn[data-priority="medium"] i,
+.priority-btn.active[data-priority="medium"] i {
+  color: #F59E0B !important;
+}
+
+.priority-low .fa-flag,
+.priority-btn[data-priority="low"] i,
+.priority-btn.active[data-priority="low"] i {
+  color: #10B981 !important;
 }
 
 .datetime-calendar-day.selected,
@@ -241,7 +290,7 @@ body > .bg-orb:nth-child(5) {
 }
 
 #timer-display {
-  color: #2e3b5f !important;
+  color: var(--liq-text-main) !important;
 }
 
 .stat-value,
@@ -279,8 +328,7 @@ body > .bg-orb:nth-child(5) {
 
 .text-warning,
 .fa-bolt,
-.tag-life,
-.sidebar-tag-life {
+.tag-life {
   color: var(--saas-accent) !important;
 }
 
@@ -296,8 +344,7 @@ body > .bg-orb:nth-child(5) {
 
 .text-secondary,
 .fa-user,
-.fa-mobile-alt,
-.sidebar-tag-work {
+.fa-mobile-alt {
   color: var(--saas-secondary) !important;
 }
 
@@ -315,7 +362,6 @@ body > .bg-orb:nth-child(5) {
 }
 
 .text-primary,
-.sidebar-tag-work,
 .fa-tasks,
 .fa-clock,
 .fa-sort,
@@ -332,7 +378,7 @@ body > .bg-orb:nth-child(5) {
 }
 
 footer.glass-tab .tab-item {
-  color: #111827 !important;
+  color: var(--liq-text-muted) !important;
 }
 
 footer.glass-tab .tab-item:hover {
@@ -356,6 +402,124 @@ footer.glass-tab .tab-item.active span:not(.tab-indicator) {
 footer.glass-tab .tab-item:not(.active):hover i,
 footer.glass-tab .tab-item:not(.active):hover span:not(.tab-indicator) {
   color: #3b82f6 !important;
+}
+
+/* ── 统一 Tab hover 缩放 ── */
+.tab-item:hover {
+  transform: scale(1.05) !important;
+}
+
+/* ── 统一下拉菜单 hover 颜色（金色主题） ── */
+.user-avatar-dropdown a:hover,
+#user-dropdown a:hover,
+.dropdown-item:hover {
+  background: rgba(226, 195, 111, 0.16) !important;
+  color: #cfac54 !important;
+}
+
+/* ── 统一复选框样式（金色主题） ── */
+.custom-checkbox {
+  display: inline-block !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  border: 2px solid rgba(209, 213, 219, 0.8) !important;
+  background: rgba(0,0,0,0.05) !important;
+  transition: border-color 0.3s, background 0.3s, box-shadow 0.3s !important;
+  position: relative !important;
+  flex-shrink: 0 !important;
+}
+.custom-checkbox:hover {
+  border-color: rgba(207, 172, 84, 0.6) !important;
+  box-shadow: 0 0 0 3px rgba(207, 172, 84, 0.1) !important;
+}
+.custom-checkbox:checked,
+.custom-checkbox input:checked + .checkmark {
+  display: inline-block !important;
+  background: linear-gradient(135deg, #e2c36f 0%, #cfac54 100%) !important;
+  border-color: transparent !important;
+  box-shadow: 0 2px 8px rgba(226, 195, 111, 0.3) !important;
+}
+.custom-checkbox:checked::after,
+.custom-checkbox input:checked + .checkmark::after {
+  content: '\2713' !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  color: white !important;
+  font-size: 12px !important;
+  font-weight: bold !important;
+  line-height: 1 !important;
+}
+.custom-checkbox input {
+  position: relative !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+}
+.custom-checkbox .checkmark {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 6px !important;
+  border: 2px solid rgba(209, 213, 219, 0.8) !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  transition: border-color 0.3s, box-shadow 0.3s !important;
+}
+.custom-checkbox:hover .checkmark {
+  border-color: rgba(207, 172, 84, 0.6) !important;
+  box-shadow: 0 0 0 3px rgba(207, 172, 84, 0.1) !important;
+}
+
+/* === custom-checkbox-label 全局样式 === */
+.custom-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 0;
+}
+.custom-checkbox-label input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 2px solid rgba(209, 213, 219, 0.8);
+  background: rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
+}
+.custom-checkbox-label input[type="checkbox"]:checked {
+  background: linear-gradient(135deg, #e2c36f, #cfac54);
+  border-color: transparent;
+}
+.custom-checkbox-label input[type="checkbox"]:checked::after {
+  content: '\2713';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+.custom-checkbox-label input[type="checkbox"]:hover {
+  border-color: rgba(207, 172, 84, 0.6);
+}
+.custom-checkbox-label .checkmark {
+  display: none;
 }
 
 @media (max-width: 768px) {
@@ -433,6 +597,18 @@ body.calendar-page-liquid .view-btn.active {
   -webkit-backdrop-filter: var(--liq-glass-backdrop) !important;
 }
 
+body.calendar-page-liquid .btn-primary:hover,
+body.calendar-page-liquid .view-btn.active:hover {
+  background: linear-gradient(145deg, rgba(245, 198, 132, 0.32), rgba(255, 255, 255, 0.10)) !important;
+  box-shadow: 0 4px 16px rgba(245, 198, 132, 0.18) !important;
+}
+
+body.calendar-page-liquid .btn-glass:hover,
+body.calendar-page-liquid .view-btn:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+}
+
 /* Category chips */
 body.calendar-page-liquid .category-chip {
   background: var(--liq-glass-bg) !important;
@@ -472,7 +648,7 @@ body.calendar-page-liquid .text-primary {
 
 /* Tab bar items */
 body.calendar-page-liquid footer.glass-tab .tab-item {
-  color: rgba(255, 255, 255, 0.6) !important;
+  color: var(--liq-text-muted) !important;
 }
 
 body.calendar-page-liquid footer.glass-tab .tab-item.active {
@@ -485,7 +661,7 @@ body.calendar-page-liquid footer.glass-tab .tab-item.active span:not(.tab-indica
 }
 
 body.calendar-page-liquid footer.glass-tab .tab-item:hover {
-  color: rgba(255, 255, 255, 0.9) !important;
+  color: var(--liq-text-main) !important;
 }
 
 /* Task pool items */
@@ -500,15 +676,22 @@ body.calendar-page-liquid .task-pool-item {
 
 /* Dropdown menus */
 body.calendar-page-liquid .dropdown-menu {
-  background: rgba(30, 30, 40, 0.85) !important;
-  backdrop-filter: blur(30px) !important;
-  -webkit-backdrop-filter: blur(30px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3) !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(28px) saturate(148%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(148%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.68) !important;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.62) !important;
 }
 
 body.calendar-page-liquid .dropdown-item {
   color: var(--liq-text-main) !important;
+}
+
+/* 排序下拉菜单强制黑色文字 */
+body.calendar-page-liquid #sort-filter-menu,
+body.calendar-page-liquid #sort-filter-menu a,
+body.calendar-page-liquid #sort-filter-menu a i {
+  color: #334155 !important;
 }
 
 body.calendar-page-liquid .dropdown-item:hover {
@@ -517,11 +700,12 @@ body.calendar-page-liquid .dropdown-item:hover {
 
 /* Modal overlay */
 body.calendar-page-liquid .modal-content {
-  background: rgba(30, 30, 40, 0.9) !important;
-  backdrop-filter: blur(40px) !important;
-  -webkit-backdrop-filter: blur(40px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  color: var(--liq-text-main) !important;
+  background: rgba(255, 255, 255, 0.35) !important;
+  backdrop-filter: blur(30px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(140%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.68) !important;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.62) !important;
+  color: #1e293b !important;
 }
 
 /* Calendar cell overrides */
@@ -532,7 +716,39 @@ body.calendar-page-liquid #day-grid > div {
   backdrop-filter: var(--liq-glass-backdrop) !important;
   -webkit-backdrop-filter: var(--liq-glass-backdrop) !important;
   border: 1px solid var(--liq-glass-border) !important;
-  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+/* Calendar cell date number: adaptive color */
+body.calendar-page-liquid .calendar-cell .font-medium {
+  color: var(--liq-text-main) !important;
+}
+
+/* Calendar cell today: warm background + dark text */
+body.calendar-page-liquid .calendar-cell.today .font-medium {
+  color: #78350f !important;
+}
+body.calendar-page-liquid .calendar-cell.today {
+  background: rgba(251, 191, 36, 0.88) !important;
+  border-color: rgba(217, 119, 6, 0.7) !important;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35) !important;
+}
+
+/* Datetime picker calendar (modal): adaptive color */
+body.calendar-page-liquid .datetime-calendar-day {
+  color: var(--liq-text-main) !important;
+}
+body.calendar-page-liquid .datetime-calendar-day.today {
+  background: rgba(251, 191, 36, 0.88) !important;
+  border-color: rgba(217, 119, 6, 0.7) !important;
+  color: #78350f !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35) !important;
+}
+body.calendar-page-liquid .datetime-calendar-day.selected {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(99, 102, 241, 0.2)) !important;
+  border-color: rgba(99, 102, 241, 0.6) !important;
+  color: #6366f1 !important;
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.4) !important;
 }
 
 body.calendar-page-liquid #month-grid > div.selected-date-cell,
@@ -545,7 +761,16 @@ body.calendar-page-liquid .calendar-cell.selected-date-cell {
 
 body.calendar-page-liquid #month-grid > div.other-month,
 body.calendar-page-liquid .calendar-cell.other-month {
-  color: rgba(255, 255, 255, 0.42) !important;
+  color: var(--liq-text-muted) !important;
+}
+
+/* Reference board calendar cells */
+body.calendar-page-liquid .calendar-reference-board .calendar-cell .font-medium {
+  color: var(--liq-text-main) !important;
+}
+
+body.calendar-page-liquid .calendar-reference-board .calendar-cell.today .font-medium {
+  color: #78350f !important;
 }
 
 /* User avatar border */
@@ -683,14 +908,14 @@ body.calendar-page-liquid #ai-schedule-status {
 
 /* Modal labels and form text */
 body.calendar-page-liquid .modal-content label {
-  color: var(--liq-text-main) !important;
+  color: #1e293b !important;
 }
 
 body.calendar-page-liquid .modal-content input,
 body.calendar-page-liquid .modal-content textarea {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
-  color: var(--liq-text-main) !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(209, 213, 219, 0.5) !important;
+  color: #334155 !important;
 }
 
 body.calendar-page-liquid .modal-content .border-t {
@@ -792,33 +1017,33 @@ body.todo-page-liquid .sidebar-item-active {
 /* ===== Modals ===== */
 
 body.todo-page-liquid .modal-overlay {
-  background: rgba(15, 23, 42, 0.35) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
+  background: rgba(0, 0, 0, 0.18) !important;
+  backdrop-filter: blur(40px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(140%) !important;
 }
 
 body.todo-page-liquid .modal-content,
 body.todo-page-liquid #new-task-modal .modal-content,
 body.todo-page-liquid #task-detail-panel .modal-content,
 body.todo-page-liquid #new-tag-modal .modal-content {
-  background: rgba(30, 30, 40, 0.85) !important;
-  backdrop-filter: blur(42px) saturate(140%) !important;
-  -webkit-backdrop-filter: blur(42px) saturate(140%) !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-  box-shadow: 0 28px 64px rgba(0, 0, 0, 0.3) !important;
-  color: var(--liq-text-main) !important;
+  background: rgba(255, 255, 255, 0.35) !important;
+  backdrop-filter: blur(30px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(140%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.68) !important;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.62) !important;
+  color: #1e293b !important;
 }
 
 body.todo-page-liquid .modal-content label {
-  color: var(--liq-text-sub) !important;
+  color: #1e293b !important;
 }
 
 body.todo-page-liquid .modal-content input,
 body.todo-page-liquid .modal-content textarea,
 body.todo-page-liquid .modal-content select {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
-  color: var(--liq-text-main) !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(209, 213, 219, 0.5) !important;
+  color: #334155 !important;
 }
 
 body.todo-page-liquid .modal-content .border-t,
@@ -829,15 +1054,15 @@ body.todo-page-liquid .modal-content hr {
 /* ===== Dropdown menus ===== */
 
 body.todo-page-liquid .dropdown-menu {
-  background: rgba(30, 30, 40, 0.9) !important;
-  backdrop-filter: blur(30px) saturate(140%) !important;
-  -webkit-backdrop-filter: blur(30px) saturate(140%) !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25) !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(28px) saturate(148%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(148%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.68) !important;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.62) !important;
 }
 
 body.todo-page-liquid .dropdown-menu * {
-  color: var(--liq-text-main) !important;
+  color: #334155 !important;
 }
 
 /* ===== Tag badges — keep colored but adjust opacity ===== */
@@ -903,7 +1128,7 @@ body.todo-page-liquid #count-today,
 body.todo-page-liquid #count-important,
 body.todo-page-liquid #count-planned,
 body.todo-page-liquid #count-assigned {
-  color: #111827 !important;
+  color: var(--liq-text-sub) !important;
 }
 
 /* ============================================================
@@ -934,6 +1159,67 @@ body.todo-page-liquid {
   color: var(--liq-text-main) !important;
 }
 
+/* ===== 背景亮度自适应：浅色背景 → 深色文字 ===== */
+body.bg-bright {
+  --liq-text-main: rgba(30, 30, 30, 0.95) !important;
+  --liq-text-sub: rgba(60, 60, 60, 0.85) !important;
+  --liq-text-muted: rgba(100, 100, 100, 0.65) !important;
+  --liq-warm: #b8860b !important;
+}
+
+body.bg-bright .glass-header,
+body.bg-bright .glass-tab {
+  background: rgba(255, 255, 255, 0.72) !important;
+  border-color: rgba(200, 200, 200, 0.5) !important;
+}
+
+body.bg-bright .glass-card,
+body.bg-bright .glass-panel,
+body.bg-bright .card-shadow,
+body.bg-bright .stat-card,
+body.bg-bright .task-card,
+body.bg-bright .task-pool-item {
+  background: rgba(255, 255, 255, 0.75) !important;
+  border-color: rgba(200, 200, 200, 0.5) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+body.bg-bright .glass-max {
+  background: rgba(255, 255, 255, 0.82) !important;
+  border-color: rgba(180, 180, 180, 0.5) !important;
+}
+
+body.bg-bright .glass-strong {
+  background: rgba(255, 255, 255, 0.78) !important;
+  border-color: rgba(190, 190, 190, 0.5) !important;
+}
+
+body.bg-bright .dropdown-menu {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-color: rgba(180, 180, 180, 0.5) !important;
+}
+
+body.bg-bright .user-avatar-dropdown {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-color: rgba(180, 180, 180, 0.5) !important;
+}
+
+body.bg-bright .modal-content {
+  background: rgba(255, 255, 255, 0.35) !important;
+  backdrop-filter: blur(30px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(140%) !important;
+  border-color: rgba(180, 180, 180, 0.5) !important;
+  color: #1e293b !important;
+}
+
+body.bg-bright footer.glass-tab .tab-item {
+  color: var(--liq-text-sub) !important;
+}
+
+body.bg-bright footer.glass-tab .tab-item.active {
+  color: var(--liq-warm) !important;
+}
+
 /* Hide decorative orbs */
 body.pomodoro-page-liquid .bg-orb,
 body.report-page-liquid .bg-orb,
@@ -959,7 +1245,6 @@ body.todo-page-liquid .glass {
 }
 
 body.pomodoro-page-liquid .glass-strong,
-body.report-page-liquid .glass-strong,
 body.checkin-page-liquid .glass-strong,
 body.profile-page-liquid .glass-strong,
 body.calendar-page-liquid .glass-strong,
@@ -971,7 +1256,6 @@ body.todo-page-liquid .glass-strong {
 }
 
 body.pomodoro-page-liquid .glass-max,
-body.report-page-liquid .glass-max,
 body.checkin-page-liquid .glass-max,
 body.profile-page-liquid .glass-max,
 body.calendar-page-liquid .glass-max,
@@ -984,7 +1268,6 @@ body.todo-page-liquid .glass-max {
 }
 
 body.pomodoro-page-liquid .glass-header,
-body.report-page-liquid .glass-header,
 body.checkin-page-liquid .glass-header,
 body.profile-page-liquid .glass-header,
 body.calendar-page-liquid .glass-header,
@@ -997,7 +1280,6 @@ body.todo-page-liquid .glass-header {
 }
 
 body.pomodoro-page-liquid .glass-tab,
-body.report-page-liquid .glass-tab,
 body.checkin-page-liquid .glass-tab,
 body.profile-page-liquid .glass-tab,
 body.calendar-page-liquid .glass-tab,
@@ -1028,6 +1310,22 @@ body.todo-page-liquid .input-glass {
   -webkit-backdrop-filter: blur(16px) saturate(140%) !important;
   border-color: rgba(255, 255, 255, 0.12) !important;
   color: var(--liq-text-main) !important;
+}
+
+/* ── 所有页面非模态 glass-input 的 placeholder 自适应 ── */
+body.pomodoro-page-liquid .glass-input::placeholder,
+body.pomodoro-page-liquid .input-glass::placeholder,
+body.report-page-liquid .glass-input::placeholder,
+body.report-page-liquid .input-glass::placeholder,
+body.checkin-page-liquid .glass-input::placeholder,
+body.checkin-page-liquid .input-glass::placeholder,
+body.profile-page-liquid .glass-input::placeholder,
+body.profile-page-liquid .input-glass::placeholder,
+body.calendar-page-liquid .glass-input::placeholder,
+body.calendar-page-liquid .input-glass::placeholder,
+body.todo-page-liquid .glass-input::placeholder,
+body.todo-page-liquid .input-glass::placeholder {
+  color: var(--liq-text-muted) !important;
 }
 
 body.pomodoro-page-liquid .glass-input:focus,
@@ -1229,9 +1527,9 @@ body.profile-page-liquid .modal-overlay,
 body.profile-page-liquid .phone-modal-overlay,
 body.calendar-page-liquid .modal-overlay,
 body.todo-page-liquid .modal-overlay {
-  background: rgba(15, 23, 42, 0.35) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
+  background: rgba(0, 0, 0, 0.18) !important;
+  backdrop-filter: blur(40px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(140%) !important;
 }
 
 body.pomodoro-page-liquid .modal-content,
@@ -1240,12 +1538,12 @@ body.profile-page-liquid .modal-content,
 body.profile-page-liquid .confirm-modal-card,
 body.calendar-page-liquid .modal-content,
 body.todo-page-liquid .modal-content {
-  background: rgba(30, 30, 40, 0.85) !important;
-  backdrop-filter: blur(42px) saturate(140%) !important;
-  -webkit-backdrop-filter: blur(42px) saturate(140%) !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-  box-shadow: 0 28px 64px rgba(0, 0, 0, 0.3) !important;
-  color: var(--liq-text-main) !important;
+  background: rgba(255, 255, 255, 0.35) !important;
+  backdrop-filter: blur(30px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(140%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.68) !important;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.62) !important;
+  color: #1e293b !important;
 }
 
 body.pomodoro-page-liquid .modal-content label,
@@ -1253,7 +1551,7 @@ body.checkin-page-liquid .confirm-modal-card label,
 body.profile-page-liquid .modal-content label,
 body.calendar-page-liquid .modal-content label,
 body.todo-page-liquid .modal-content label {
-  color: var(--liq-text-sub) !important;
+  color: #1e293b !important;
 }
 
 body.pomodoro-page-liquid .modal-content input,
@@ -1269,10 +1567,128 @@ body.calendar-page-liquid .modal-content select,
 body.todo-page-liquid .modal-content input,
 body.todo-page-liquid .modal-content textarea,
 body.todo-page-liquid .modal-content select {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(209, 213, 219, 0.5) !important;
+  color: #334155 !important;
+}
+
+/* ── 复选框：恢复被 modal input 规则覆盖的样式 ── */
+body.todo-page-liquid .modal-content input[type="checkbox"],
+body.calendar-page-liquid .modal-content input[type="checkbox"],
+body.pomodoro-page-liquid .modal-content input[type="checkbox"],
+body.profile-page-liquid .modal-content input[type="checkbox"] {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 6px !important;
+  border: 2px solid rgba(209, 213, 219, 0.8) !important;
+  background: rgba(0, 0, 0, 0.05) !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  position: relative !important;
+  transition: border-color 0.3s, background 0.3s, box-shadow 0.3s !important;
+}
+body.todo-page-liquid .modal-content input[type="checkbox"]:checked,
+body.calendar-page-liquid .modal-content input[type="checkbox"]:checked,
+body.pomodoro-page-liquid .modal-content input[type="checkbox"]:checked,
+body.profile-page-liquid .modal-content input[type="checkbox"]:checked {
+  background: linear-gradient(135deg, #e2c36f, #cfac54) !important;
+  border-color: transparent !important;
+}
+body.todo-page-liquid .modal-content input[type="checkbox"]:checked::after,
+body.calendar-page-liquid .modal-content input[type="checkbox"]:checked::after,
+body.pomodoro-page-liquid .modal-content input[type="checkbox"]:checked::after,
+body.profile-page-liquid .modal-content input[type="checkbox"]:checked::after {
+  content: '\2713' !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  color: white !important;
+  font-size: 12px !important;
+  font-weight: bold !important;
+  line-height: 1 !important;
+}
+
+/* ── 模态框 placeholder 文字颜色 ── */
+body.todo-page-liquid .modal-content input::placeholder,
+body.todo-page-liquid .modal-content textarea::placeholder,
+body.calendar-page-liquid .modal-content input::placeholder,
+body.calendar-page-liquid .modal-content textarea::placeholder,
+body.pomodoro-page-liquid .modal-content input::placeholder,
+body.pomodoro-page-liquid .modal-content textarea::placeholder,
+body.profile-page-liquid .modal-content input::placeholder,
+body.profile-page-liquid .modal-content textarea::placeholder,
+body.checkin-page-liquid .modal-content input::placeholder,
+body.checkin-page-liquid .modal-content textarea::placeholder {
+  color: var(--liq-text-muted) !important;
+}
+
+/* ── 数据周报：文字颜色自适应（亮底→深色，暗底→浅色） ── */
+body.report-page-liquid .report-analysis-copy strong,
+body.report-page-liquid .report-diagnosis-card strong,
+body.report-page-liquid .report-score-card strong,
+body.report-page-liquid .report-empty-title {
   color: var(--liq-text-main) !important;
 }
+body.report-page-liquid .report-analysis-copy span,
+body.report-page-liquid .report-diagnosis-card p,
+body.report-page-liquid .report-next-step-card p,
+body.report-page-liquid .report-empty-copy,
+body.report-page-liquid .report-score-helper,
+body.report-page-liquid .report-mini-label,
+body.report-page-liquid .report-mini-metric .stat-value,
+body.report-page-liquid .chart-header p,
+body.report-page-liquid .report-chart-reading,
+body.report-page-liquid .report-insight-summary,
+body.report-page-liquid .report-action-link {
+  color: var(--liq-text-sub) !important;
+}
+body.report-page-liquid .report-fold-state {
+  color: #b45309 !important;
+}
+
+/* ── 数据周报：所有统计数字自适应 ── */
+body.report-page-liquid .stat-card .stat-value,
+body.report-page-liquid .stat-value {
+  color: var(--liq-text-main) !important;
+}
+
+/* ── 打卡页面：日历格子自适应 ── */
+body.checkin-page-liquid .calendar-day {
+  color: var(--liq-text-main) !important;
+  font-size: 0.8125rem !important;
+}
+body.checkin-page-liquid .calendar-day.empty {
+  color: var(--liq-text-muted) !important;
+}
+body.checkin-page-liquid .calendar-day.today {
+  background: rgba(207, 172, 84, 0.12) !important;
+  border-color: rgba(207, 172, 84, 0.5) !important;
+  color: var(--liq-warm) !important;
+  box-shadow: 0 0 0 1px rgba(207, 172, 84, 0.2) !important;
+}
+
+/* ── 打卡页面：类型标签自适应 ── */
+body.checkin-page-liquid .type-btn:not(.selected) {
+  color: var(--liq-text-main) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+body.checkin-page-liquid .type-btn:not(.selected):hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+}
+body.checkin-page-liquid .type-btn:not(.selected) i {
+  color: var(--liq-text-main) !important;
+}
+
+/* 未点击时图标用对应颜色，点击后变白 */
+body.checkin-page-liquid .type-btn.study:not(.selected) i { color: #8B5CF6 !important; }
+body.checkin-page-liquid .type-btn.sport:not(.selected) i { color: #10B981 !important; }
+body.checkin-page-liquid .type-btn.wake:not(.selected) i  { color: #F59E0B !important; }
+body.checkin-page-liquid .type-btn.read:not(.selected) i  { color: #3B82F6 !important; }
+body.checkin-page-liquid .type-btn.selected i { color: #fff !important; }
 
 body.pomodoro-page-liquid .modal-content .border-t,
 body.pomodoro-page-liquid .modal-content hr,
@@ -1294,11 +1710,11 @@ body.profile-page-liquid .dropdown-menu,
 body.profile-page-liquid .custom-select-dropdown,
 body.calendar-page-liquid .dropdown-menu,
 body.todo-page-liquid .dropdown-menu {
-  background: rgba(30, 30, 40, 0.9) !important;
-  backdrop-filter: blur(30px) saturate(140%) !important;
-  -webkit-backdrop-filter: blur(30px) saturate(140%) !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25) !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(28px) saturate(148%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(148%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.68) !important;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.62) !important;
 }
 
 body.pomodoro-page-liquid .dropdown-menu *,
@@ -1308,7 +1724,7 @@ body.profile-page-liquid .dropdown-menu *,
 body.profile-page-liquid .custom-select-dropdown *,
 body.calendar-page-liquid .dropdown-menu *,
 body.todo-page-liquid .dropdown-menu * {
-  color: var(--liq-text-main) !important;
+  color: #334155 !important;
 }
 
 /* ===== Buttons ===== */
@@ -1331,6 +1747,11 @@ body.todo-page-liquid .btn-secondary-glass {
   background: rgba(255, 255, 255, 0.08) !important;
   color: var(--liq-text-main) !important;
   border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+body.pomodoro-page-liquid .task-select-dropdown,
+body.todo-page-liquid .task-select-dropdown {
+  color: var(--liq-text-main) !important;
 }
 
 /* ===== Sidebar items (profile page) ===== */
@@ -1424,6 +1845,14 @@ body.report-page-liquid .time-slot-card {
 body.checkin-page-liquid .checkin-btn {
   background: linear-gradient(135deg, rgba(241, 208, 154, 0.85), rgba(226, 195, 111, 0.8)) !important;
   color: #1a1408 !important;
+  border: 1px solid rgba(226, 195, 111, 0.40) !important;
+  box-shadow: 0 4px 16px rgba(241, 208, 154, 0.25) !important;
+}
+
+body.checkin-page-liquid .checkin-btn:hover {
+  background: linear-gradient(135deg, rgba(241, 208, 154, 0.95), rgba(226, 195, 111, 0.9)) !important;
+  box-shadow: 0 8px 24px rgba(241, 208, 154, 0.35) !important;
+  transform: translateY(-1px);
 }
 
 /* ===== 个人中心页面特定 ===== */
@@ -1441,4 +1870,332 @@ body.profile-page-liquid .achievement-badge.unlocked {
 body.profile-page-liquid .achievement-badge.locked {
   background: rgba(255, 255, 255, 0.04) !important;
   opacity: 0.5;
+}
+
+/* ===== Unified light glass: avatar dropdown + modal ===== */
+
+body.pomodoro-page-liquid .user-avatar-dropdown,
+body.report-page-liquid .user-avatar-dropdown,
+body.checkin-page-liquid .user-avatar-dropdown,
+body.profile-page-liquid .user-avatar-dropdown,
+body.calendar-page-liquid .user-avatar-dropdown,
+body.todo-page-liquid .user-avatar-dropdown,
+body.pomodoro-page-liquid #user-dropdown.dropdown-menu,
+body.report-page-liquid #user-dropdown.dropdown-menu,
+body.checkin-page-liquid #user-dropdown.dropdown-menu,
+body.profile-page-liquid #user-dropdown.dropdown-menu,
+body.calendar-page-liquid #user-dropdown.dropdown-menu,
+body.todo-page-liquid #user-dropdown.dropdown-menu {
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(28px) saturate(148%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(148%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.68) !important;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.62) !important;
+}
+
+body.pomodoro-page-liquid .user-avatar-dropdown a,
+body.report-page-liquid .user-avatar-dropdown a,
+body.checkin-page-liquid .user-avatar-dropdown a,
+body.profile-page-liquid .user-avatar-dropdown a,
+body.calendar-page-liquid .user-avatar-dropdown a,
+body.todo-page-liquid .user-avatar-dropdown a,
+body.pomodoro-page-liquid #user-dropdown a,
+body.report-page-liquid #user-dropdown a,
+body.checkin-page-liquid #user-dropdown a,
+body.profile-page-liquid #user-dropdown a,
+body.calendar-page-liquid #user-dropdown a,
+body.todo-page-liquid #user-dropdown a {
+  color: #374151 !important;
+}
+
+body.pomodoro-page-liquid .user-avatar-dropdown a:hover,
+body.report-page-liquid .user-avatar-dropdown a:hover,
+body.checkin-page-liquid .user-avatar-dropdown a:hover,
+body.profile-page-liquid .user-avatar-dropdown a:hover,
+body.calendar-page-liquid .user-avatar-dropdown a:hover,
+body.todo-page-liquid .user-avatar-dropdown a:hover,
+body.pomodoro-page-liquid #user-dropdown a:hover,
+body.report-page-liquid #user-dropdown a:hover,
+body.checkin-page-liquid #user-dropdown a:hover,
+body.profile-page-liquid #user-dropdown a:hover,
+body.calendar-page-liquid #user-dropdown a:hover,
+body.todo-page-liquid #user-dropdown a:hover {
+  background: rgba(226, 195, 111, 0.16) !important;
+  color: #cfac54 !important;
+}
+
+body.pomodoro-page-liquid .user-avatar-dropdown a.text-danger,
+body.report-page-liquid .user-avatar-dropdown a.text-danger,
+body.checkin-page-liquid .user-avatar-dropdown a.text-danger,
+body.profile-page-liquid .user-avatar-dropdown a.text-danger,
+body.calendar-page-liquid .user-avatar-dropdown a.text-danger,
+body.todo-page-liquid .user-avatar-dropdown a.text-danger,
+body.pomodoro-page-liquid #user-dropdown a.text-danger,
+body.report-page-liquid #user-dropdown a.text-danger,
+body.checkin-page-liquid #user-dropdown a.text-danger,
+body.profile-page-liquid #user-dropdown a.text-danger,
+body.calendar-page-liquid #user-dropdown a.text-danger,
+body.todo-page-liquid #user-dropdown a.text-danger {
+  color: #ef4444 !important;
+}
+
+body.pomodoro-page-liquid .modal-overlay,
+body.report-page-liquid .modal-overlay,
+body.checkin-page-liquid .confirm-modal-overlay,
+body.profile-page-liquid .modal-overlay,
+body.profile-page-liquid .phone-modal-overlay,
+body.calendar-page-liquid .modal-overlay,
+body.todo-page-liquid .modal-overlay,
+body.pomodoro-page-liquid #mobile-task-modal {
+  background: rgba(0, 0, 0, 0.18) !important;
+  backdrop-filter: blur(40px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(140%) !important;
+}
+
+body.pomodoro-page-liquid .modal-content,
+body.checkin-page-liquid .confirm-modal-card,
+body.profile-page-liquid .modal-content,
+body.profile-page-liquid .confirm-modal-card,
+body.calendar-page-liquid .modal-content,
+body.todo-page-liquid .modal-content,
+body.pomodoro-page-liquid #mobile-task-modal > div {
+  background: rgba(255, 255, 255, 0.35) !important;
+  backdrop-filter: blur(30px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(140%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.68) !important;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.62) !important;
+  color: #1e293b !important;
+}
+
+body.pomodoro-page-liquid .modal-content label,
+body.checkin-page-liquid .confirm-modal-card label,
+body.profile-page-liquid .modal-content label,
+body.calendar-page-liquid .modal-content label,
+body.todo-page-liquid .modal-content label,
+body.pomodoro-page-liquid #mobile-task-modal .text-gray-800 {
+  color: #1e293b !important;
+}
+
+body.pomodoro-page-liquid .modal-content input,
+body.pomodoro-page-liquid .modal-content textarea,
+body.pomodoro-page-liquid .modal-content select,
+body.checkin-page-liquid .confirm-modal-card input,
+body.profile-page-liquid .modal-content input,
+body.profile-page-liquid .modal-content textarea,
+body.profile-page-liquid .modal-content select,
+body.calendar-page-liquid .modal-content input,
+body.calendar-page-liquid .modal-content textarea,
+body.calendar-page-liquid .modal-content select,
+body.todo-page-liquid .modal-content input,
+body.todo-page-liquid .modal-content textarea,
+body.todo-page-liquid .modal-content select {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(209, 213, 219, 0.5) !important;
+  color: #334155 !important;
+}
+
+body.theme-night .user-avatar-dropdown,
+body.theme-night #user-dropdown.dropdown-menu,
+body.theme-night .modal-content,
+body.theme-night .confirm-modal-card,
+body.theme-night #mobile-task-modal > div {
+  background: rgba(0, 0, 0, 0.25) !important;
+  color: var(--liq-text-main) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.theme-night .user-avatar-dropdown a,
+body.theme-night #user-dropdown a {
+  color: var(--liq-text-main) !important;
+}
+
+/* theme-night 模态框：深色背景 → 浅色文字 */
+body.theme-night .modal-content h1,
+body.theme-night .modal-content h2,
+body.theme-night .modal-content h3,
+body.theme-night .modal-content h4,
+body.theme-night .modal-content p,
+body.theme-night .modal-content span,
+body.theme-night .modal-content label,
+body.theme-night .modal-content .text-gray-800,
+body.theme-night .modal-content .text-gray-700,
+body.theme-night .modal-content .text-gray-600,
+body.theme-night .modal-content .text-gray-500,
+body.theme-night .confirm-modal-card h1,
+body.theme-night .confirm-modal-card h2,
+body.theme-night .confirm-modal-card h3,
+body.theme-night .confirm-modal-card h4,
+body.theme-night .confirm-modal-card p,
+body.theme-night .confirm-modal-card span,
+body.theme-night .confirm-modal-card label,
+body.theme-night .confirm-modal-card .text-gray-800,
+body.theme-night .confirm-modal-card .text-gray-700,
+body.theme-night .confirm-modal-card .text-gray-600,
+body.theme-night .confirm-modal-card .text-gray-500 {
+  color: var(--liq-text-main) !important;
+}
+
+/* ===== Unified modal action buttons (cancel + submit/create/save) =====
+   Consistent border-radius, gold submit, and subtle visible cancel
+   across all modals: calendar, todo, profile, checkin, login/register. */
+
+/* Shared: consistent border-radius for all modal action buttons */
+.modal-content button,
+.confirm-modal-card button,
+#cancel-btn,
+#save-btn,
+#cancel-edit-btn,
+#save-task-btn,
+#danger-confirm-cancel-btn,
+#danger-confirm-ok-btn,
+#cancel-clear-history-btn,
+#confirm-clear-history-btn,
+#phone-modal-cancel-btn,
+.forgot-modal__btn {
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  transition: background 0.22s, color 0.22s, box-shadow 0.22s, transform 0.22s !important;
+}
+
+/* ── Cancel buttons: visible but subtle neutral style ── */
+body.checkin-page-liquid .confirm-modal-card button:first-child,
+body.profile-page-liquid .confirm-modal-card button:first-child,
+body.checkin-page-liquid #cancel-clear-history-btn,
+body.profile-page-liquid #danger-confirm-cancel-btn,
+body.calendar-page-liquid #cancel-btn,
+body.todo-page-liquid #cancel-edit-btn,
+body.calendar-page-liquid .modal-content #cancel-btn,
+body.todo-page-liquid .modal-content #cancel-edit-btn,
+#new-task-modal .modal-content button.glass,
+#cancel-edit-btn,
+#cancel-btn,
+#phone-modal-cancel-btn,
+.forgot-modal__btn--cancel,
+#forgot-cancel,
+#security-bind-cancel {
+  background: rgba(241, 245, 249, 0.88) !important;
+  border: 1px solid rgba(203, 213, 225, 0.80) !important;
+  color: #475569 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65) !important;
+}
+
+body.checkin-page-liquid .confirm-modal-card button:first-child:hover,
+body.profile-page-liquid .confirm-modal-card button:first-child:hover,
+body.checkin-page-liquid #cancel-clear-history-btn:hover,
+body.profile-page-liquid #danger-confirm-cancel-btn:hover,
+body.calendar-page-liquid #cancel-btn:hover,
+body.todo-page-liquid #cancel-edit-btn:hover,
+body.calendar-page-liquid .modal-content #cancel-btn:hover,
+body.todo-page-liquid .modal-content #cancel-edit-btn:hover,
+#new-task-modal .modal-content button.glass:hover,
+#cancel-edit-btn:hover,
+#cancel-btn:hover,
+#phone-modal-cancel-btn:hover,
+.forgot-modal__btn--cancel:hover,
+#forgot-cancel:hover,
+#security-bind-cancel:hover {
+  background: rgba(226, 232, 240, 0.95) !important;
+  border-color: rgba(148, 163, 184, 0.72) !important;
+  color: #334155 !important;
+}
+
+/* ── Submit / Create / Save buttons: gold theme ── */
+body.calendar-page-liquid #save-btn,
+body.todo-page-liquid #save-task-btn,
+#new-task-modal .modal-content button.btn-primary-glass,
+#save-btn,
+#save-task-btn,
+.forgot-modal__btn--submit,
+#forgot-submit {
+  background: linear-gradient(135deg, var(--saas-primary), var(--saas-primary-deep)) !important;
+  border: 1px solid rgba(226, 195, 111, 0.40) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  box-shadow: 0 8px 22px rgba(226, 195, 111, 0.22) !important;
+}
+
+body.calendar-page-liquid #save-btn:hover,
+body.todo-page-liquid #save-task-btn:hover,
+#new-task-modal .modal-content button.btn-primary-glass:hover,
+#save-btn:hover,
+#save-task-btn:hover,
+.forgot-modal__btn--submit:hover,
+#forgot-submit:hover {
+  background: linear-gradient(135deg, #e8cb7a, #cfac54) !important;
+  box-shadow: 0 12px 28px rgba(226, 195, 111, 0.32) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* ── Danger confirm buttons (delete/destroy actions): red theme ── */
+body.checkin-page-liquid .confirm-modal-card button:last-child,
+body.profile-page-liquid .confirm-modal-card button:last-child,
+body.checkin-page-liquid #confirm-clear-history-btn,
+body.profile-page-liquid #danger-confirm-ok-btn {
+  background: linear-gradient(135deg, #ef4444, #e11d48) !important;
+  border: 1px solid rgba(239, 68, 68, 0.45) !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 24px rgba(239, 68, 68, 0.26) !important;
+}
+
+body.checkin-page-liquid .confirm-modal-card button:last-child:hover,
+body.profile-page-liquid .confirm-modal-card button:last-child:hover,
+body.checkin-page-liquid #confirm-clear-history-btn:hover,
+body.profile-page-liquid #danger-confirm-ok-btn:hover {
+  background: linear-gradient(135deg, #dc2626, #be123c) !important;
+  box-shadow: 0 12px 28px rgba(220, 38, 38, 0.32) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* ===== Modal text: ensure ALL text inside modals is dark ===== */
+.modal-content h1,
+.modal-content h2,
+.modal-content h3,
+.modal-content h4,
+.modal-content p,
+.modal-content span,
+.modal-content label,
+.modal-content .text-gray-800,
+.modal-content .text-gray-700,
+.modal-content .text-gray-600,
+.modal-content .text-gray-500,
+.confirm-modal-card h1,
+.confirm-modal-card h2,
+.confirm-modal-card h3,
+.confirm-modal-card h4,
+.confirm-modal-card p,
+.confirm-modal-card span,
+.confirm-modal-card label,
+.confirm-modal-card .text-gray-800,
+.confirm-modal-card .text-gray-700,
+.confirm-modal-card .text-gray-600,
+.confirm-modal-card .text-gray-500 {
+  color: #1e293b !important;
+}
+
+/* ===== 新建任务模态框按钮强制覆盖 ===== */
+#new-task-modal .modal-content button.glass {
+  background: rgba(241, 245, 249, 0.88) !important;
+  border: 1px solid rgba(203, 213, 225, 0.80) !important;
+  color: #475569 !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65) !important;
+}
+#new-task-modal .modal-content button.glass:hover {
+  background: rgba(226, 232, 240, 0.95) !important;
+  border-color: rgba(148, 163, 184, 0.72) !important;
+  color: #334155 !important;
+}
+#new-task-modal .modal-content button.btn-primary-glass {
+  background: linear-gradient(135deg, #e2c36f, #cfac54) !important;
+  border: 1px solid rgba(226, 195, 111, 0.40) !important;
+  color: #ffffff !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 8px 22px rgba(226, 195, 111, 0.22) !important;
+}
+#new-task-modal .modal-content button.btn-primary-glass:hover {
+  background: linear-gradient(135deg, #e8cb7a, #cfac54) !important;
+  box-shadow: 0 12px 28px rgba(226, 195, 111, 0.32) !important;
+  transform: translateY(-1px) !important;
 }

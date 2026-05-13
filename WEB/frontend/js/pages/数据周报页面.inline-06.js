@@ -701,13 +701,13 @@
             if (!window.__reportSyncNoop) {
               Promise.resolve()
                 .then(function () { return updateWeeklyStats({ sync: true }); })
-                .catch(function (err) { console.error('updateWeeklyStats sync error:', err); });
+                .catch(function () {});
             }
 
             // AI 建议在空闲时加载，降低与首屏渲染竞争。
             scheduleAiSuggestionsLoad();
           })
-          .catch(function (err) { console.error('updateWeeklyStats init error:', err); })
+          .catch(function () {})
           .finally(revealBottomTab);
 
         var aiRefreshBtn = document.getElementById('ai-suggestions-refresh');
@@ -730,9 +730,7 @@
         window.addEventListener('appstate-updated', function (e) {
           updateWeeklyStats({ sync: false }).then(function () {
             showToast('📊 数据周报已刷新', 'info');
-          }).catch(function (err) {
-            console.error('刷新数据周报失败:', err);
-          });
+          }).catch(function () {});
         }, false);
       });
 function exportReport() {
@@ -746,8 +744,8 @@ function exportReport() {
             text: '查看我的本周效率数据',
             url: window.location.href,
           })
-          .then(() => console.log('分享成功'))
-          .catch((error) => console.log('分享失败:', error));
+          .then(() => {})
+          .catch(() => {});
         } else {
           showToast('分享功能在当前浏览器中不可用');
         }

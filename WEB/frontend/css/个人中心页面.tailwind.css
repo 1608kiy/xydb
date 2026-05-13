@@ -14,35 +14,11 @@
           .scrollbar-thin::-webkit-scrollbar-track { background: rgba(243, 244, 246, 0.5); border-radius: 3px; }
           .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(79, 70, 229, 0.3); border-radius: 3px; }
           .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(79, 70, 229, 0.5); }
-          
-          /* ✅ 毛玻璃效果增强 */
-          .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.3); }
-          .glass-strong { background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(36px); -webkit-backdrop-filter: blur(36px); border: 1px solid rgba(255, 255, 255, 0.4); }
-          .glass-max { background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(48px); -webkit-backdrop-filter: blur(48px); border: 1px solid rgba(255, 255, 255, 0.5); }
-          .glass-input { background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(209, 213, 219, 0.5); transition: all 0.3s ease; }
-          .glass-input:focus { background: rgba(255, 255, 255, 0.95); border-color: rgba(79, 70, 229, 0.5); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12); }
-          .glass-tab { 
-            background: rgba(255, 255, 255, 0.1); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px); 
-            border-top: 1px solid rgba(255, 255, 255, 0.5); 
-            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-          }
-          .glass-header { 
-            background: rgba(255, 255, 255, 0.1); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px); 
-            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s ease;
-          }
-          .glass-card { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px); border: 1px solid rgba(255, 255, 255, 0.35); }
-          
-          /* ✅ 卡片阴影样式 */
+
           .card-shadow { box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08); }
-          .card-hover { transition: all 0.3s ease; }
+          .card-hover { transition: box-shadow 0.3s, transform 0.3s; }
           .card-hover:hover { box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12); transform: translateY(-2px); }
-          
+
           /* ✅ 背景装饰光斑 */
           .bg-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0 !important; pointer-events: none; z-index: 0; animation: orbFloat 20s ease-in-out infinite; }
           @keyframes orbFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -30px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.95); } }
@@ -159,48 +135,14 @@
           html.unified-dark-mode .social-icon.apple {
             color: #e2e8f0 !important;
           }
-          
-          /* ✅ 自定义复选框样式 */
-          .custom-checkbox {
-            @apply relative w-5 h-5 cursor-pointer appearance-none;
-            background: rgba(255, 255, 255, 0.8);
-            border: 2px solid rgba(209, 213, 219, 0.8);
-            border-radius: 6px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(4px);
-          }
-          .custom-checkbox:hover {
-            border-color: rgba(79, 70, 229, 0.6);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-          }
-          .custom-checkbox:checked {
-            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
-            border-color: transparent;
-            animation: checkPop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-          }
-          .custom-checkbox:checked::after {
-            content: '✓';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
-          }
-          @keyframes checkPop {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-          }
-          
+
           /* ✅ 自定义下拉列表样式 */
           .custom-select-wrapper {
             @apply relative inline-block;
           }
           .custom-select-trigger {
             @apply flex items-center justify-between w-full px-4 py-2.5 bg-white/85 backdrop-blur-md border border-gray-200/60 rounded-xl text-xs font-medium text-gray-700 cursor-pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
           }
           .custom-select-trigger:hover {
@@ -249,7 +191,7 @@
           
           /* ✅ 模态框样式 */
           .modal-overlay { 
-            @apply fixed inset-0 bg-black/40 backdrop-blur-sm z-[999] flex items-center justify-center;
+            @apply fixed inset-0 bg-white/15 backdrop-blur-sm z-[999] flex items-center justify-center;
             display: none;
           }
           .modal-overlay.hidden { display: none !important; }
@@ -263,7 +205,7 @@
           
           /* ✅ 手机号修改模态框样式 */
           .phone-modal-overlay { 
-            @apply fixed inset-0 bg-black/40 backdrop-blur-sm z-[1000] flex items-center justify-center;
+            @apply fixed inset-0 bg-white/15 backdrop-blur-sm z-[1000] flex items-center justify-center;
             display: none;
           }
           .phone-modal-overlay.hidden { display: none !important; }
@@ -273,14 +215,14 @@
           .confirm-modal-overlay {
             position: fixed;
             inset: 0;
-            z-index: 120000;
+            z-index: 2000;
             display: none;
             align-items: center;
             justify-content: center;
             padding: 16px;
-            background: rgba(15, 23, 42, 0.35);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.14);
+            backdrop-filter: blur(14px) saturate(118%);
+            -webkit-backdrop-filter: blur(14px) saturate(118%);
           }
           .confirm-modal-overlay.show {
             display: flex !important;
@@ -289,11 +231,11 @@
             width: min(92vw, 520px);
             border-radius: 1rem;
             padding: 1.25rem;
-            background: rgba(255, 255, 255, 0.86);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 255, 255, 0.45);
-            box-shadow: 0 20px 48px rgba(15, 23, 42, 0.2);
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(48px) saturate(158%);
+            -webkit-backdrop-filter: blur(48px) saturate(158%);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 18px 42px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.62);
             animation: confirmModalIn 0.24s ease-out;
           }
 
@@ -394,5 +336,18 @@
             from { opacity: 0; transform: translateY(10px) scale(0.98); }
             to { opacity: 1; transform: translateY(0) scale(1); }
           }
+
+          /* ── 个人中心复选框布局属性 ── */
+          .custom-checkbox {
+            position: relative;
+            appearance: none;
+            -webkit-appearance: none;
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            border: 2px solid rgba(209, 213, 219, 0.8);
+            transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
+          }
       }
-    
+

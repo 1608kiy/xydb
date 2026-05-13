@@ -7,7 +7,7 @@ function ensureUnifiedToastStyle() {
     position: fixed;
     top: 14px;
     right: 12px;
-    z-index: 100000;
+    z-index: 9999;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -86,7 +86,7 @@ function ensureUnifiedToastStyle() {
     flex-shrink: 0;
   }
   .unified-toast-text {
-    color: #243042;
+    color: var(--liq-text-main, var(--saas-text, #243042));
     font-size: 12px;
     line-height: 1.4;
     font-weight: 500;
@@ -2411,6 +2411,19 @@ function ensureUnifiedWebLiquidStyle() {
   var style = document.createElement('style');
   style.id = 'unified-web-liquid-style';
   style.textContent = `
+  body:not(.software-app),
+  body:not(.software-app) * {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  body:not(.software-app)::-webkit-scrollbar,
+  body:not(.software-app) *::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+    display: none !important;
+  }
+
   body:not(.software-app) .unified-top-header-dock .unified-top-header-shell {
     border: 0 !important;
     border-bottom: 0 !important;
@@ -2563,9 +2576,9 @@ function ensureUnifiedModalLiquidStyle() {
   body:not(.software-app) #mobile-task-modal,
   body:not(.software-app) #forgot-password-modal,
   body:not(.software-app) #task-detail-panel {
-    background: rgba(15, 23, 42, 0.16) !important;
-    backdrop-filter: blur(9px) saturate(132%) contrast(104%) !important;
-    -webkit-backdrop-filter: blur(9px) saturate(132%) contrast(104%) !important;
+    background: rgba(0, 0, 0, 0.18) !important;
+    backdrop-filter: blur(40px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(140%) !important;
   }
 
   body:not(.software-app) .modal-content,
@@ -2577,11 +2590,11 @@ function ensureUnifiedModalLiquidStyle() {
     isolation: isolate !important;
     overflow: hidden !important;
     border-radius: 22px !important;
-    border: 1px solid rgba(255, 255, 255, 0.56) !important;
-    background: rgba(255, 255, 255, 0.9) !important;
-    box-shadow: 0 24px 54px rgba(15, 23, 42, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.62), inset 0 -1px 0 rgba(255, 255, 255, 0.18) !important;
-    backdrop-filter: blur(44px) saturate(158%) contrast(104%) brightness(104%) !important;
-    -webkit-backdrop-filter: blur(44px) saturate(158%) contrast(104%) brightness(104%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: rgba(0, 0, 0, 0.25) !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12) !important;
+    backdrop-filter: blur(40px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(140%) !important;
   }
 
   body:not(.software-app) .modal-content::before,
@@ -2589,16 +2602,7 @@ function ensureUnifiedModalLiquidStyle() {
   body:not(.software-app) .detail-modal::before,
   body:not(.software-app) #mobile-task-modal > div::before,
   body:not(.software-app) #forgot-password-modal > div::before {
-    content: "";
-    position: absolute;
-    inset: -16px -14px;
-    border-radius: inherit;
-    pointer-events: none;
-    background: rgba(255, 255, 255, 0.16);
-    backdrop-filter: blur(10px) saturate(118%) contrast(106%) brightness(106%);
-    -webkit-backdrop-filter: blur(10px) saturate(118%) contrast(106%) brightness(106%);
-    opacity: 0.42;
-    transform: scale(1.02);
+    content: none !important;
   }
 
   body:not(.software-app) .modal-content::after,
@@ -2606,15 +2610,7 @@ function ensureUnifiedModalLiquidStyle() {
   body:not(.software-app) .detail-modal::after,
   body:not(.software-app) #mobile-task-modal > div::after,
   body:not(.software-app) #forgot-password-modal > div::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-    background:
-      radial-gradient(130% 180% at 8% 8%, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0) 44%),
-      radial-gradient(120% 160% at 88% 88%, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 50%);
-    opacity: 0.6;
+    content: none !important;
   }
 
   body:not(.software-app) .modal-content > *,
@@ -2630,9 +2626,9 @@ function ensureUnifiedModalLiquidStyle() {
   body:not(.software-app) .modal-content .input-glass,
   body:not(.software-app) .confirm-modal-card .modal-input,
   body:not(.software-app) #forgot-password-modal input {
-    background: rgba(255, 255, 255, 0.72) !important;
-    border-color: rgba(255, 255, 255, 0.5) !important;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.52) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    box-shadow: none !important;
     backdrop-filter: blur(16px) saturate(132%) !important;
     -webkit-backdrop-filter: blur(16px) saturate(132%) !important;
   }
@@ -2881,8 +2877,8 @@ function ensureUnifiedAvatarDropdownStyle() {
   style.id = 'unified-avatar-dropdown-style';
   style.textContent = `
   :root {
-    --unified-avatar-hover-bg: rgba(255, 107, 107, 0.14);
-    --unified-avatar-hover-color: #ff6b6b;
+    --unified-avatar-hover-bg: rgba(226, 195, 111, 0.16);
+    --unified-avatar-hover-color: #cfac54;
   }
   .unified-avatar-trigger-group {
     position: relative !important;
@@ -2992,24 +2988,12 @@ function applyUnifiedAvatarDropdownTheme() {
   var isUnifiedDark = document.documentElement && document.documentElement.classList.contains('unified-dark-mode');
 
   var theme = {
-    bg: 'rgba(79, 70, 229, 0.14)',
-    color: '#4F46E5'
+    bg: 'rgba(226, 195, 111, 0.16)',
+    color: '#cfac54'
   };
 
   if (isUnifiedDark) {
-    theme = { bg: 'rgba(74, 108, 247, 0.2)', color: '#D9E2FF' };
-  } else if (path.indexOf('番茄钟页面') !== -1) {
-    theme = { bg: 'rgba(255, 107, 107, 0.16)', color: '#FF6B6B' };
-  } else if (path.indexOf('日历页面') !== -1) {
-    theme = { bg: 'rgba(245, 158, 11, 0.16)', color: '#F59E0B' };
-  } else if (path.indexOf('打卡页面') !== -1) {
-    theme = { bg: 'rgba(59, 130, 246, 0.15)', color: '#3B82F6' };
-  } else if (
-    path.indexOf('待办页面') !== -1 ||
-    path.indexOf('数据周报页面') !== -1 ||
-    path.indexOf('个人中心页面') !== -1
-  ) {
-    theme = { bg: 'rgba(79, 70, 229, 0.14)', color: '#4F46E5' };
+    theme = { bg: 'rgba(241, 208, 154, 0.2)', color: '#f1d09a' };
   }
 
   document.documentElement.style.setProperty('--unified-avatar-hover-bg', theme.bg);
@@ -3640,7 +3624,7 @@ function ensureUnifiedSettingsPanelStyle() {
     background: rgba(15, 23, 42, 0.46);
     backdrop-filter: blur(3px);
     -webkit-backdrop-filter: blur(3px);
-    z-index: 100050;
+    z-index: 10000;
     display: none;
     align-items: center;
     justify-content: center;

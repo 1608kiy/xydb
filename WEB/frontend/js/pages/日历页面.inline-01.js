@@ -4,7 +4,7 @@
         theme: {
           extend: {
             colors: {
-              primary: '#FFB347',
+              primary: '#cfac54',
               secondary: '#FFC778',
               accent: '#FF9F1A',
               success: '#F59E0B',

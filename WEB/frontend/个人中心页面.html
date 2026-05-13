@@ -1,20 +1,24 @@
+<!DOCTYPE html>
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>个人中心 - 铃记</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src='./js/web-bg-init.js?v=20260428_bg1'></script>
-    <script src="data.js?v=20260322_sync2"></script>
+    <script defer src='./js/web-bg-init.js?v=20260428_bg1'></script>
+    <script defer src="data.js?v=20260322_sync2"></script>
     <script src="common.js?v=20260401_liquid_modal1"></script>
-    <script src="components.js?v=20260322_sync2"></script>
+    <script defer src="components.js?v=20260322_sync2"></script>
     <link
       href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" /></noscript>
     <script src='./js/pages/个人中心页面.inline-01.js?v=20260327_jssplit'></script>
     <script src='./js/tailwind-style-loader.js?v=20260327_csssplit'></script>
-    <link rel='stylesheet' href='./css/saas-theme-overrides.css?v=20260423_ui_saas1' />
+    <link rel='stylesheet' href='./css/saas-theme-overrides.css?v=20260512_ui_saas2' />
   <script src='./js/pages/个人中心页面.inline-02.js?v=20260327_jssplit'></script>
 </head>
   <body class="font-inter text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden fade-in scroll-smooth profile-page-liquid">
@@ -26,7 +30,7 @@
     <div class="bg-orb w-[250px] h-[250px] bottom-0 left-0" style="animation-delay: -20s;"></div>
     
     <!-- 顶部导航 -->
-    <header class="glass-header sticky top-0 z-30">
+    <header class="glass-header sticky top-0 z-40">
       <div
         class="container mx-auto px-4 py-3 flex items-center justify-between"
       >
@@ -49,48 +53,26 @@
             <span>加入于 2023-06-01</span>
             <span>连续打卡 <span class="text-primary font-semibold">15</span> 天</span>
           </div>
-          <div class="relative group">
-            <button class="flex items-center space-x-2 focus:outline-none cursor-pointer">
-              <img
-                src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
-                alt="用户头像"
-                class="header-user-avatar w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300"
-              />
-              <span class="hidden md:inline-block font-medium header-user-name">张明</span>
-              <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform duration-300"></i>
-            </button>
-            <div
-              class="absolute right-0 mt-2 w-48 glass-max rounded-lg shadow-xl py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
-              style="pointer-events: none;"
-            >
-              <a
-                href="个人中心页面.html"
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors"
-                style="pointer-events: auto;"
-              >
-                <i class="fas fa-user mr-2 text-gray-500"></i>
-                个人中心
-              </a>
-              <a
-                href="javascript:void(0);"
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors"
-                style="pointer-events: auto;"
-              >
-                <i class="fas fa-cog mr-2 text-gray-500"></i>
-                设置
-              </a>
-              <div class="border-t border-gray-100 my-1"></div>
-              <a
-                href="javascript:void(0);"
-                id="profile-logout"
-                class="block px-4 py-2 text-sm text-danger hover:bg-danger/10 transition-colors"
-                style="pointer-events: auto;"
-              >
-                <i class="fas fa-sign-out-alt mr-2"></i>
-                退出登录
-              </a>
-            </div>
+          <div class="relative group" id="user-menu-container">
+                <button class="flex items-center space-x-2 p-1.5 rounded-xl" id="user-menu-btn" type="button">
+                <img alt="用户头像" class="header-user-avatar w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300"
+              src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png" />
+                <span class="header-user-name hidden md:inline-block font-medium">张明</span>
+                <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform duration-300" id="user-menu-arrow"></i>
+          </button>
+          <div class="dropdown-menu user-avatar-dropdown" id="user-dropdown" style="pointer-events: none;">
+            <a href="个人中心页面.html" class="block px-4 py-2 text-sm text-gray-700 transition-colors" style="pointer-events: auto;">
+              <i class="fas fa-user mr-2 text-gray-500"></i>个人中心
+            </a>
+            <a href="javascript:void(0);" class="block px-4 py-2 text-sm text-gray-700 transition-colors" style="pointer-events: auto;">
+              <i class="fas fa-cog mr-2 text-gray-500"></i>设置
+            </a>
+            <div class="border-t border-gray-200 my-1"></div>
+            <a href="javascript:void(0);" id="profile-logout" class="block px-4 py-2 text-sm text-danger transition-colors" style="pointer-events: auto;">
+              <i class="fas fa-sign-out-alt mr-2"></i>退出登录
+            </a>
           </div>
+        </div>
         </div>
       </div>
     </header>
@@ -496,6 +478,13 @@
                     >
                       深色模式
                     </button>
+                    <button
+                      id="theme-custom-bg-btn"
+                      class="px-3 py-1.5 rounded-full border border-gray-200 text-xs theme-btn transition-all duration-300 hover:bg-primary/10 hover:text-primary hover:shadow-md"
+                    >
+                      自定义背景
+                    </button>
+                    <input type="file" id="custom-bg-input" accept="image/*" class="hidden" />
                   </div>
                 </div>
 

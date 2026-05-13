@@ -330,13 +330,17 @@
         updateTypeDistribution(stats.typeDistribution, stats.totalCheckins);
       }
 
+      // 先初始化数据，再渲染日历（确保 checkins 已加载）
+      AppState.init();
+      renderHeader('checkin');
+
       // 初始化日历
       renderCalendar(currentCalendarDate);
 
       // 月份切换
       var prevBtn = document.getElementById('prev-month');
       var nextBtn = document.getElementById('next-month');
-      
+
       if (prevBtn) {
         prevBtn.addEventListener('click', function(e) {
           e.preventDefault();
@@ -345,7 +349,7 @@
           renderCalendar(currentCalendarDate, 'prev');
         });
       }
-      
+
       if (nextBtn) {
         nextBtn.addEventListener('click', function(e) {
           e.preventDefault();
@@ -354,9 +358,6 @@
           renderCalendar(currentCalendarDate, 'next');
         });
       }
-
-      AppState.init();
-      renderHeader('checkin');
       renderFooter('checkin');
       bindGlobalLogout();
 
@@ -589,7 +590,6 @@
               status.className = 'text-[11px] text-success text-center font-medium';
             }
           }).catch(function (err) {
-            console.error('保存打卡失败', err);
             upsertCheckinByDate(normalizeCheckinItem({ date: dateStr, time: timeStr, type: selectedType, note: note, status: '今日' }, dateStr, timeStr));
             AppState.save();
             showToast('网络错误，已保存本地记录', 'error');
@@ -666,7 +666,6 @@
               return Promise.reject(new Error('获取打卡数据失败'));
             }
           }).catch(function (err) {
-            console.warn('fetchCheckinsFromServer error', err);
             return Promise.reject(err);
           });
         }

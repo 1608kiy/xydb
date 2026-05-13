@@ -540,7 +540,6 @@
             renderMonthGrid();
             renderScheduledTaskList();
           }).catch(function (err) {
-            console.error(err);
             currentEditingTask.subtasks[index].completed = !currentEditingTask.subtasks[index].completed;
             renderSubtasks();
             showToast('更新子任务失败', 'error');
@@ -557,7 +556,6 @@
             renderScheduledTaskList();
             showToast('✅ 子任务已删除', 'success');
           }).catch(function (err) {
-            console.error(err);
             currentEditingTask.subtasks = backup;
             renderSubtasks();
             showToast('删除子任务失败', 'error');
@@ -1066,7 +1064,7 @@
           }).slice(0, 10);
 
           if (tasks.length === 0) {
-            list.innerHTML = '<div class="text-xs text-gray-500">暂无已排任务</div>';
+            list.innerHTML = '<div class="empty-scheduled p-2.5 rounded-xl">暂无已排任务</div>';
             return;
           }
 
@@ -1370,7 +1368,6 @@
             try {
               renderActiveCalendarView();
             } catch (err) {
-              console.error('switchToView render error:', err);
               showToast('视图渲染失败，已恢复月视图', 'warning');
               calendarState.view = 'month';
               document.querySelectorAll('.calendar-view').forEach(function (v) {
@@ -1637,25 +1634,6 @@
           });
         }
 
-        // ✅ 用户菜单下拉 - 修复黑色边框
-        var userMenuBtn = document.getElementById('user-menu-btn');
-        var userDropdown = document.getElementById('user-dropdown');
-        var userMenuContainer = document.getElementById('user-menu-container');
-
-        if (userMenuBtn && userDropdown) {
-          userMenuBtn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            e.preventDefault();
-            userDropdown.classList.toggle('show');
-          });
-
-          document.addEventListener('click', function (e) {
-            if (!userMenuContainer || !userMenuContainer.contains(e.target)) {
-              userDropdown.classList.remove('show');
-            }
-          });
-        }
-
         if (closeDetailBtn) {
           closeDetailBtn.addEventListener('click', function () {
             closeTaskDetailModal();
@@ -1721,7 +1699,6 @@
               closeTaskDetailModal();
               showToast('任务已保存', 'success');
             }).catch(function (err) {
-              console.error('save calendar task error', err);
               showToast((err && err.message) || '保存任务失败', 'error');
             });
           });
@@ -1760,7 +1737,6 @@
               saveCalendarState();
               showToast(result.message || '已完成自动分类和子任务拆解', 'success');
             }).catch(function (err) {
-              console.error('calendar autoPlanTask error', err);
               showToast((err && err.message) || '自动拆解失败', 'error');
             }).finally(function () {
               autoPlanTaskBtn.disabled = false;
@@ -1939,7 +1915,6 @@
               newSubtaskInput.value = '';
               showToast('✅ 子任务已添加', 'success');
             }).catch(function (err) {
-              console.error(err);
               currentEditingTask.subtasks.pop();
               showToast('添加子任务失败', 'error');
             }).finally(function () {
@@ -1975,7 +1950,6 @@
               renderActiveCalendarView();
               showToast('✅ 所有子任务已标记完成', 'success');
             }).catch(function (err) {
-              console.error(err);
               currentEditingTask.subtasks.forEach(function (s, idx) { s.completed = !!backup[idx]; });
               renderSubtasks();
               showToast('批量更新子任务失败', 'error');
@@ -2053,7 +2027,6 @@
               renderActiveCalendarView();
               showToast('🗑️ 任务已删除', 'success');
             }).catch(function (err) {
-              console.error('delete calendar task error', err);
               showToast((err && err.message) || '删除任务失败', 'error');
             });
           });
@@ -2131,7 +2104,6 @@
         Promise.resolve().then(function() {
           return fetchCalendarTasksFromServer();
         }).catch(function(err){
-          console.warn('fetchCalendarTasksFromServer error', err);
           showToast('任务同步失败，已展示本地缓存', 'warning');
         }).finally(function(){
           renderScheduledTaskList();

@@ -4,8 +4,8 @@
         theme: {
           extend: {
             colors: {
-              primary: '#FF6B6B',
-              secondary: '#FF8E72',
+              primary: '#cfac54',
+              secondary: '#e2c36f',
               success: '#10B981',
               warning: '#F59E0B',
               danger: '#EF4444',

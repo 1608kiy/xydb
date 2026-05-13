@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
@@ -5,19 +6,35 @@
     <title>日历视图 - 铃记</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src='./js/web-bg-init.js?v=20260428_bg1'></script>
-    <script defer src="data.js?v=20260325_syncfix4"></script>
-    <script defer src="common.js?v=20260401_liquid_modal1"></script>
-    <script defer src="components.js?v=20260322_sync2"></script>
+    <script src="data.js?v=20260325_syncfix4"></script>
+    <script src="common.js?v=20260401_liquid_modal1"></script>
+    <script src="components.js?v=20260322_sync2"></script>
     <link
       href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" /></noscript>
     <script src='./js/pages/日历页面.inline-01.js?v=20260327_jssplit'></script>
     <script src='./js/tailwind-style-loader.js?v=20260327_csssplit'></script>
-    <link rel='stylesheet' href='./css/saas-theme-overrides.css?v=20260423_ui_saas1' />
+    <link rel='stylesheet' href='./css/saas-theme-overrides.css?v=20260513_cal3' />
   <script src='./js/pages/日历页面.inline-02.js?v=20260327_jssplit'></script>
 </head>
   <body class="font-inter bg-transparent text-gray-800 min-h-screen flex flex-col text-[13px] md:text-[14px] relative overflow-x-hidden calendar-page-liquid">
+    <style>
+      /* Calendar cell colors: hardcoded for both modes */
+      body.calendar-page-liquid .calendar-cell .font-medium { color: #e2e8f0 !important; }
+      body.bg-bright.calendar-page-liquid .calendar-cell .font-medium { color: #1e293b !important; }
+      body.calendar-page-liquid .calendar-cell.today .font-medium { color: #78350f !important; }
+      body.calendar-page-liquid .calendar-cell.today { background: rgba(251,191,36,0.88) !important; border-color: rgba(217,119,6,0.7) !important; box-shadow: 0 2px 8px rgba(245,158,11,0.35) !important; }
+      body.calendar-page-liquid .calendar-cell.other-month .font-medium { color: var(--liq-text-muted) !important; }
+      /* Datetime picker calendar (modal) */
+      body.calendar-page-liquid .datetime-calendar-day { color: #e2e8f0 !important; }
+      body.bg-bright.calendar-page-liquid .datetime-calendar-day { color: #1e293b !important; }
+      body.calendar-page-liquid .datetime-calendar-day.today { background: rgba(251,191,36,0.88) !important; border-color: rgba(217,119,6,0.7) !important; color: #78350f !important; font-weight: 700 !important; box-shadow: 0 2px 8px rgba(245,158,11,0.35) !important; }
+      body.calendar-page-liquid .datetime-calendar-day.selected { background: linear-gradient(135deg,rgba(99,102,241,0.35),rgba(99,102,241,0.2)) !important; border-color: rgba(99,102,241,0.6) !important; color: #818cf8 !important; box-shadow: 0 0 0 1px rgba(99,102,241,0.4) !important; }
+    </style>
     
     <!-- ✅ 背景光斑装饰 -->
     <div class="bg-orb w-[500px] h-[500px] -top-40 -left-40" style="animation-delay: 0s;"></div>
@@ -27,7 +44,7 @@
     <div class="bg-orb w-[250px] h-[250px] bottom-0 left-0" style="animation-delay: -20s;"></div>
     
     <!-- [MODULE] a1b_顶部导航 -->
-    <header class="glass-header sticky top-0 z-50">
+    <header class="glass-header sticky top-0 z-40">
       <div
         class="container mx-auto px-4 py-3 flex items-center justify-between"
       >
@@ -35,7 +52,7 @@
         <div class="flex items-center space-x-4">
           <a
             class="text-gray-600 hover:text-primary transition-all duration-300 transform hover:scale-110"
-            href="javascript:void(0);"
+            href="待办页面.html"
           >
             <i class="fas fa-arrow-left text-lg"> </i>
           </a>
@@ -86,46 +103,26 @@
             <i class="fas fa-plus mr-1.5"> </i>
             添加任务
           </a>
-                <div class="relative group" id="user-menu-container">
-            <button class="flex items-center space-x-2 focus:outline-none outline-none transition-colors duration-300" id="user-menu-btn">
-              <img
-                alt="用户头像"
-                      class="header-user-avatar w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300"
-                src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png"
-              />
-                    <span class="header-user-name hidden md:inline-block font-medium"> 张明 </span>
-                    <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform duration-300"> </i>
-            </button>
-            <!-- 下拉菜单 -->
-            <div class="dropdown-menu" id="user-dropdown" style="pointer-events: none;">
-              <a
-                class="dropdown-item"
-                href="个人中心页面.html"
-                style="pointer-events: auto;"
-              >
-                <i class="fas fa-user mr-2 text-gray-500"> </i>
-                个人中心
-              </a>
-              <a
-                class="dropdown-item"
-                href="javascript:void(0);"
-                style="pointer-events: auto;"
-              >
-                <i class="fas fa-cog mr-2 text-gray-500"> </i>
-                设置
-              </a>
-              <div class="border-t border-gray-200 my-1"></div>
-              <a
-                class="dropdown-item text-danger"
-                href="javascript:void(0);"
-                id="logout-btn-top"
-                style="pointer-events: auto;"
-              >
-                <i class="fas fa-sign-out-alt mr-2"> </i>
-                退出登录
-              </a>
-            </div>
+            <div class="relative group" id="user-menu-container">
+                <button class="flex items-center space-x-2 p-1.5 rounded-xl" id="user-menu-btn" type="button">
+                <img alt="用户头像" class="header-user-avatar w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform duration-300"
+              src="https://design.gemcoder.com/staticResource/echoAiSystemImages/99c1d122b882a0f5d07d17e3e9038dda.png" />
+                <span class="header-user-name hidden md:inline-block font-medium">张明</span>
+                <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform duration-300" id="user-menu-arrow"></i>
+          </button>
+          <div class="dropdown-menu user-avatar-dropdown" id="user-dropdown" style="pointer-events: none;">
+            <a href="个人中心页面.html" class="block px-4 py-2 text-sm text-gray-700 transition-colors" style="pointer-events: auto;">
+              <i class="fas fa-user mr-2 text-gray-500"></i>个人中心
+            </a>
+            <a href="javascript:void(0);" class="block px-4 py-2 text-sm text-gray-700 transition-colors" style="pointer-events: auto;">
+              <i class="fas fa-cog mr-2 text-gray-500"></i>设置
+            </a>
+            <div class="border-t border-gray-200 my-1"></div>
+            <a href="javascript:void(0);" id="logout-btn-top" class="block px-4 py-2 text-sm text-danger transition-colors" style="pointer-events: auto;">
+              <i class="fas fa-sign-out-alt mr-2"></i>退出登录
+            </a>
           </div>
+        </div>
         </div>
       </div>
     </header>
@@ -181,32 +178,32 @@
                 </button>
                 <!-- 下拉菜单 -->
                 <div
-                  class="dropdown-menu"
+                  class="absolute right-0 mt-2 w-48 glass-max rounded-xl shadow-2xl py-2 dropdown-menu"
                   id="sort-filter-menu"
                   style="position: absolute; right: 0; top: 100%; margin-top: 0.5rem;"
                 >
                   <a
-                    class="dropdown-item"
+                    class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10"
                     href="javascript:void(0);"
                     data-sort="time"
                   >
-                    <i class="fas fa-clock mr-2 text-primary"> </i>
+                    <i class="fas fa-clock mr-2.5 text-gray-500"></i>
                     按时间
                   </a>
                   <a
-                    class="dropdown-item"
+                    class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10"
                     href="javascript:void(0);"
                     data-sort="priority"
                   >
-                    <i class="fas fa-flag mr-2 text-primary"> </i>
+                    <i class="fas fa-flag mr-2.5 text-gray-500"></i>
                     按优先级
                   </a>
                   <a
-                    class="dropdown-item"
+                    class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10"
                     href="javascript:void(0);"
                     data-sort="label"
                   >
-                    <i class="fas fa-tags mr-2 text-primary"> </i>
+                    <i class="fas fa-tags mr-2.5 text-gray-500"></i>
                     按标签
                   </a>
                 </div>
@@ -305,7 +302,7 @@
         <!-- 日历颜色标签 -->
         <div class="glass-card rounded-2xl p-4 mt-3 fade-in">
           <h2 class="text-lg font-semibold text-gray-800 mb-3">任务分类</h2>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
             <button type="button" class="category-chip active" data-category="all">
               <div class="category-chip-dot bg-primary"></div>
               <span class="category-chip-label">全部</span>

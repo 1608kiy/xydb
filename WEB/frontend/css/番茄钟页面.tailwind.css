@@ -12,39 +12,19 @@
           }
           .scrollbar-thin::-webkit-scrollbar { width: 6px; }
           .scrollbar-thin::-webkit-scrollbar-track { background: rgba(243, 244, 246, 0.5); border-radius: 3px; }
-          .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(255, 107, 107, 0.3); border-radius: 3px; }
-          .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(255, 107, 107, 0.5); }
-          
-          /* ✅ 毛玻璃效果 */
-          .glass { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); }
-          .glass-strong { background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(36px); -webkit-backdrop-filter: blur(36px); border: 1px solid rgba(255, 255, 255, 0.3); }
-          .glass-max { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(48px); -webkit-backdrop-filter: blur(48px); border: 1px solid rgba(255, 255, 255, 0.6); }
-          .glass-tab { 
-            background: rgba(255, 255, 255, 0.5); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px); 
-            border-top: 1px solid rgba(255, 255, 255, 0.3); 
-            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-          }
-          .glass-header { 
-            background: rgba(255, 255, 255, 0.5); 
-            backdrop-filter: blur(20p x); 
-            -webkit-backdrop-filter: blur(20px); 
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s ease;
-          }
+          .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(207, 172, 84, 0.3); border-radius: 3px; }
+          .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(207, 172, 84, 0.5); }
           
           /* ✅ 卡片阴影 */
           .card-shadow { box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06); }
-          .card-hover { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+          .card-hover { transition: box-shadow 0.35s, transform 0.35s; }
           .card-hover:hover { 
             box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12); 
             transform: translateY(-4px);
           }
           
           /* ✅ 背景装饰光斑 */
-          .bg-orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0 !important; pointer-events: none; z-index: 0; animation: orbFloat 20s ease-in-out infinite; }
+          .bg-orb { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; animation: orbFloat 20s ease-in-out infinite; }
           @keyframes orbFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -30px) scale(1.05); } 66% { transform: translate(-20px, 20px) scale(0.98); } }
           
           /* ✅ 动画效果 */
@@ -81,16 +61,22 @@
           
           /* ✅ 任务卡片 */
           .task-card {
-            @apply bg-white/50 backdrop-blur-sm rounded-xl p-3 transition-all duration-300 cursor-pointer border border-white/40;
-            box-shadow: 0 2px 6px rgba(255, 107, 107, 0.08);
+            @apply backdrop-blur-sm rounded-xl p-3 transition-all duration-300 cursor-pointer;
+            background: rgba(0,0,0,0.18);
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
           }
           .task-card:hover {
-            @apply bg-white/70 shadow-lg;
+            @apply shadow-lg;
+            background: rgba(0,0,0,0.26);
             transform: translateY(-2px);
-            border-color: rgba(255, 107, 107, 0.3);
+            border-color: rgba(207, 172, 84, 0.3);
           }
           .task-card.selected {
-            @apply border-primary border-2 bg-primary/15 shadow-md;
+            border-color: var(--liq-warm) !important;
+            border-width: 2px;
+            background: rgba(241, 208, 154, 0.12) !important;
+            box-shadow: 0 0 0 1px rgba(241, 208, 154, 0.3);
           }
           
           /* ✅ 模式按钮 */
@@ -98,66 +84,83 @@
             @apply text-xs md:text-sm font-medium px-3 py-1.5 rounded-full transition-all duration-300 select-none;
           }
           .mode-btn.active {
-            @apply bg-gradient-to-r from-primary to-secondary text-white shadow-md transform scale-105;
+            background: linear-gradient(135deg, #e2c36f, #cfac54) !important;
+            color: #1a1408 !important;
+            box-shadow: 0 4px 12px rgba(207, 172, 84, 0.3);
+            transform: scale(1.05);
           }
           .mode-btn:not(.active) {
-            @apply bg-white/60 text-gray-700 hover:bg-white/80;
+            background: rgba(0,0,0,0.18);
+            color: var(--liq-text-sub);
+            border: 1px solid rgba(255,255,255,0.06);
+          }
+          .mode-btn:not(.active):hover {
+            background: rgba(207, 172, 84, 0.15);
+            border-color: rgba(207, 172, 84, 0.3);
           }
           
           /* ✅ 统计卡片 */
           .stat-box {
-            @apply bg-gradient-to-br from-white/70 to-white/50 backdrop-blur-sm rounded-xl p-3 transition-all duration-300;
-            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            background: rgba(0,0,0,0.20);
+            backdrop-filter: blur(20px) saturate(140%);
+            -webkit-backdrop-filter: blur(20px) saturate(140%);
+            border-radius: 12px;
+            padding: 12px;
+            transition: box-shadow 0.3s, transform 0.3s;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.06);
+            color: var(--liq-text-main);
           }
           .stat-box:hover {
-            @apply shadow-lg;
+            box-shadow: 0 10px 28px rgba(0,0,0,0.10);
             transform: translateY(-2px);
           }
           
           /* ✅ 右侧面板项目 - 仿个人中心样式 */
           /* 🟡 专注小贴士 - 浅黄色外框 + 黄色图标 */
           .tip-item {
-            @apply flex items-start space-x-2 text-xs p-3 rounded-xl transition-all duration-300 cursor-default;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4));
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(251, 191, 36, 0.3);
-            box-shadow: 0 2px 6px rgba(245, 158, 11, 0.08);
+            display: flex;
+            align-items: flex-start;
+            gap: .5rem;
+            font-size: .8125rem;
+            padding: .75rem;
+            border-radius: .75rem;
+            transition: background 0.25s, box-shadow 0.25s;
+            cursor: default;
+            background: rgba(0,0,0,0.18);
+            backdrop-filter: blur(14px) saturate(140%);
+            -webkit-backdrop-filter: blur(14px) saturate(140%);
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+            color: var(--liq-text-main);
           }
           .tip-item:hover {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.65));
-            border-color: rgba(245, 158, 11, 0.5);
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
-            transform: translateX(6px);
+            background: rgba(0,0,0,0.26);
+            box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+            transform: translateX(4px);
           }
           .tip-item i {
-            color: #F59E0B !important;
+            color: var(--liq-warm) !important;
           }
           .stat-row {
-            @apply flex justify-between items-center p-3 rounded-xl transition-all duration-300 cursor-default;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4));
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(59, 130, 246, 0.15);
-            box-shadow: 0 2px 6px rgba(59, 130, 246, 0.08);
+            display:flex; justify-content:space-between; align-items:center;
+            padding:.75rem; border-radius:.75rem; transition:opacity .25s, transform .25s; cursor:default;
+            background: rgba(0,0,0,0.18); backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%);
+            border: 1px solid rgba(255,255,255,0.06); box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+            color: var(--liq-text-main);
           }
           .stat-row:hover {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.65));
-            border-color: rgba(59, 130, 246, 0.3);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
-            transform: translateX(6px);
+            background: rgba(0,0,0,0.26); box-shadow: 0 10px 22px rgba(0,0,0,0.08); transform: translateX(4px);
           }
           .achievement-row {
-            @apply flex justify-between items-center p-3 rounded-xl transition-all duration-300 cursor-default;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4));
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(16, 185, 129, 0.15);
-            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.08);
+            display:flex; justify-content:space-between; align-items:center;
+            padding:.75rem; border-radius:.75rem; transition:opacity .25s, transform .25s; cursor:default;
+            background: rgba(0,0,0,0.18); backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%);
+            border: 1px solid rgba(255,255,255,0.06); box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+            color: var(--liq-text-main);
           }
           .achievement-row:hover {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.65));
-            border-color: rgba(16, 185, 129, 0.3);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
-            transform: translateX(6px);
+            background: rgba(0,0,0,0.26); box-shadow: 0 10px 22px rgba(0,0,0,0.08); transform: translateX(4px);
           }
           
           /* ✅ 关联任务下拉列表 - 自定义样式 + 流畅过渡 */
@@ -165,33 +168,27 @@
             @apply relative w-full;
           }
           .task-select-dropdown {
-            @apply w-full px-4 py-3 rounded-xl text-sm transition-all duration-300 cursor-pointer appearance-none;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
-            backdrop-filter: blur(20px);
-            border: 2px solid rgba(209, 213, 219, 0.6);
-            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.1);
-            padding-right: 40px;
+            width:100%; padding:12px 16px; border-radius:.75rem; font-size:.875rem; transition:background .2s, color .2s, box-shadow .2s, transform .2s; cursor:pointer;
+            background: rgba(0,0,0,0.12); backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%);
+            border: 1px solid rgba(255,255,255,0.06); box-shadow: 0 6px 14px rgba(0,0,0,0.06); padding-right:40px; color:var(--liq-text-main);
           }
-          .task-select-dropdown:focus {
-            @apply outline-none;
-            border-color: rgba(255, 107, 107, 0.5);
-            box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12), 0 4px 12px rgba(255, 107, 107, 0.18);
-            transform: translateY(-2px);
-          }
+          .task-select-dropdown:focus { outline:none; border-color: rgba(255,255,255,0.12); box-shadow: 0 0 0 6px rgba(255,255,255,0.02); transform: translateY(-2px); }
           .task-select-dropdown option {
             @apply py-2;
-            background: white;
-            color: #374151;
+            background: rgba(0,0,0,0.8);
+            color: #e0e0e0;
           }
           .task-select-arrow {
             @apply absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 transition-all duration-300;
           }
           .task-select-container.open .task-select-arrow {
             transform: translate(-50%, -50%) rotate(180deg);
-            color: #FF6B6B;
+            color: #cfac54;
           }
           .task-select-options {
-            @apply absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-xl rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-50 opacity-0 invisible transition-all duration-300 ease-out;
+            @apply absolute top-full left-0 right-0 mt-2 backdrop-blur-xl rounded-xl shadow-2xl overflow-hidden z-50 opacity-0 invisible transition-all duration-300 ease-out;
+            background: rgba(0,0,0,0.85);
+            border: 1px solid rgba(255,255,255,0.1);
             max-height: 0;
             transform: translateY(-10px);
           }
@@ -201,7 +198,8 @@
             transform: translateY(0);
           }
           .task-select-option {
-            @apply px-4 py-3 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary cursor-pointer transition-all duration-200;
+            @apply px-4 py-3 text-sm hover:bg-primary/10 hover:text-primary cursor-pointer transition-all duration-200;
+            color: var(--liq-text-sub);
             opacity: 0;
             transform: translateX(-10px);
           }
@@ -223,80 +221,116 @@
           .task-select-option.selected {
             @apply bg-primary/15 text-primary font-medium;
           }
-          
-          /* ✅ 自动开始复选框 - 自定义样式 */
-          .custom-checkbox {
-            @apply relative inline-flex items-center cursor-pointer;
-          }
-          .custom-checkbox input {
-            @apply sr-only;
-          }
-          .custom-checkbox .checkmark {
-            @apply w-5 h-5 rounded-md border-2 transition-all duration-300 flex items-center justify-center;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
-            border-color: rgba(209, 213, 219, 0.8);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-          }
-          .custom-checkbox input:checked + .checkmark {
-            background: linear-gradient(135deg, #FF6B6B, #FF8E72);
-            border-color: #FF6B6B;
-            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
-          }
-          .custom-checkbox .checkmark::after {
-            content: '✓';
-            @apply text-white text-sm font-bold opacity-0 transition-opacity duration-300;
-          }
-          .custom-checkbox input:checked + .checkmark::after {
-            @apply opacity-100;
-          }
-          .custom-checkbox:hover .checkmark {
-            border-color: rgba(255, 107, 107, 0.5);
-            box-shadow: 0 2px 6px rgba(255, 107, 107, 0.15);
-          }
-          
-          /* ✅ 控制按钮 - 仿个人中心，无悬浮放大 */
+
+          /* ✅ 控制按钮 - 与专注模式按钮统一风格 */
           .control-btn {
-            @apply inline-flex items-center justify-center px-8 py-3 rounded-full text-sm font-semibold transition-all duration-300;
-            min-width: 140px;
+            @apply inline-flex items-center justify-center py-3 text-sm font-semibold select-none;
+            border-radius: 9999px;
             min-height: 48px;
+            background: linear-gradient(135deg, #e2c36f, #cfac54) !important;
+            color: #1a1408 !important;
+            border: 1px solid rgba(207, 172, 84, 0.4) !important;
+            box-shadow: 0 4px 12px rgba(207, 172, 84, 0.3) !important;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
           }
           .control-btn i {
             @apply w-5 text-center flex-shrink-0;
           }
           .control-btn.primary {
-            @apply bg-gradient-to-r from-primary to-secondary text-white shadow-lg;
-          }
-          .control-btn.primary:hover {
-            @apply shadow-xl;
-            transform: translateY(-2px);
+            padding: 0 2rem;
+            min-width: 140px;
           }
           .control-btn.secondary {
-            @apply border-2 border-gray-300 text-gray-700 bg-white shadow-sm;
+            padding: 0 1.25rem;
+            min-width: 48px;
           }
-          .control-btn.secondary:hover {
-            @apply border-primary text-primary shadow-md;
+          .control-btn:hover {
+            box-shadow: 0 6px 20px rgba(226, 195, 111, 0.4) !important;
             transform: translateY(-2px);
+          }
+          .control-btn:active {
+            transform: translateY(0);
+          }
+
+          /* ✅ 自动开始复选框行 */
+          .custom-checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            gap: 0;
+          }
+          .custom-checkbox-label input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.2);
+            cursor: pointer;
+            flex-shrink: 0;
+            position: relative;
+            transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
+          }
+          .custom-checkbox-label input[type="checkbox"]:checked {
+            background: linear-gradient(135deg, #e2c36f, #cfac54);
+            border-color: transparent;
+          }
+          .custom-checkbox-label input[type="checkbox"]:checked::after {
+            content: '\2713';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+          }
+          .custom-checkbox-label .checkmark {
+            display: none;
           }
           
           /* ✅ 消息弹窗 */
           .message-toast {
             @apply fixed top-20 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl shadow-2xl z-50 transition-all duration-300;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.95));
+            background: rgba(0,0,0,0.85);
             backdrop-filter: blur(24px);
-            border: 2px solid rgba(255, 107, 107, 0.3);
-            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.2);
+            border: 2px solid rgba(241, 208, 154, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            color: var(--liq-text-main);
           }
           .message-toast.success {
-            border-color: rgba(255, 107, 107, 0.4);
-            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.25);
+            border-color: rgba(241, 208, 154, 0.4);
+            box-shadow: 0 10px 40px rgba(241, 208, 154, 0.15);
           }
           .message-toast.warning {
             border-color: rgba(245, 158, 11, 0.4);
-            box-shadow: 0 10px 40px rgba(245, 158, 11, 0.25);
+            box-shadow: 0 10px 40px rgba(245, 158, 11, 0.15);
           }
           .message-toast.error {
             border-color: rgba(239, 68, 68, 0.4);
-            box-shadow: 0 10px 40px rgba(239, 68, 68, 0.25);
+            box-shadow: 0 10px 40px rgba(239, 68, 68, 0.15);
           }
+
+          body.pomodoro-page-liquid #timer-shell > div:first-child {
+            border-color: rgba(207, 172, 84, 0.22) !important;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 10px 24px rgba(0, 0, 0, 0.08);
+          }
+
+          body.pomodoro-page-liquid #progress-circle {
+            border-color: rgba(207, 172, 84, 0.92) !important;
+            border-top-color: transparent;
+            border-left-color: transparent;
+            box-shadow: 0 0 22px rgba(207, 172, 84, 0.16) !important;
+          }
+
+          body.pomodoro-page-liquid #timer-core {
+            background: linear-gradient(145deg, rgba(244, 248, 252, 0.14), rgba(227, 236, 245, 0.06));
+            backdrop-filter: blur(26px) saturate(150%);
+            -webkit-backdrop-filter: blur(26px) saturate(150%);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -18px 24px rgba(0, 0, 0, 0.10), 0 12px 30px rgba(0, 0, 0, 0.08);
+          }
+
       }
     

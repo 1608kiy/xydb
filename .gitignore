@@ -24,3 +24,9 @@ SFOTWARE/frontend-vue/*.apk
 SFOTWARE/frontend-vue/*.apk.idsig
 SFOTWARE/frontend-vue/*.zip
 WEB/releases/android/*.apk
+
+# Temp directories
+.codex-temp/
+tmp-edge-profile*/
+WEB/frontend/test/
+WEB/frontend/css-backup-*/

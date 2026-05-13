@@ -44,7 +44,7 @@
             -webkit-backdrop-filter: blur(20px); 
             border-bottom: 1px solid rgba(255, 255, 255, 0.4);
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s ease;
+            transition: background 0.3s, box-shadow 0.3s;
           }
           .glass-tab { 
             background: rgba(255, 255, 255, 0.1); 
@@ -144,7 +144,7 @@
             color: #4b5563;
             font-size: 13px;
             font-weight: 700;
-            transition: all 0.25s ease;
+            transition: transform 0.25s, box-shadow 0.25s, color 0.25s;
           }
           .report-action-link:hover {
             transform: translateY(-1px);
@@ -196,7 +196,7 @@
           .report-next-step-card p,
           .report-empty-copy {
             margin-top: 8px;
-            color: #64748b;
+            color: #374151;
             font-size: 13px;
             line-height: 1.65;
           }
@@ -244,9 +244,11 @@
           }
           .report-analysis-fold {
             border-radius: 28px;
-            background: rgba(255, 255, 255, 0.84);
-            border: 1px solid rgba(226, 232, 240, 0.9);
-            box-shadow: 0 16px 34px rgba(217, 119, 6, 0.08);
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(16px) saturate(140%);
+            -webkit-backdrop-filter: blur(16px) saturate(140%);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            box-shadow: 0 8px 24px rgba(217, 119, 6, 0.06);
             overflow: hidden;
           }
           .report-analysis-fold > summary::-webkit-details-marker {
@@ -260,7 +262,7 @@
             padding: 22px 24px;
             cursor: pointer;
             list-style: none;
-            transition: all 0.25s ease;
+            transition: background 0.25s;
           }
           .report-analysis-summary:hover {
             background: rgba(254, 243, 199, 0.6);
@@ -287,7 +289,7 @@
             font-size: 1.08rem;
           }
           .report-analysis-copy span {
-            color: #64748b;
+            color: #1f2937;
             font-size: 13.5px;
             line-height: 1.6;
           }
@@ -472,7 +474,7 @@
             z-index: 1;
             max-width: 320px;
             margin-top: 18px;
-            color: #64748b;
+            color: #374151;
             font-size: 13.5px;
             line-height: 1.65;
           }
@@ -532,7 +534,7 @@
           .report-mini-label {
             grid-area: label;
             align-self: end;
-            color: #64748b;
+            color: #374151;
             font-size: 13px;
             font-weight: 800;
           }
@@ -611,7 +613,7 @@
           .report-chart-reading {
             margin-top: -8px;
             margin-bottom: 12px;
-            color: #64748b;
+            color: #374151;
             font-size: 13px;
             line-height: 1.6;
           }
@@ -690,7 +692,7 @@
           }
           .custom-select-trigger {
             @apply flex items-center justify-between w-full px-4 py-2.5 bg-white/85 backdrop-blur-md border border-gray-200/60 rounded-xl text-xs font-medium text-gray-700 cursor-pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
           }
           .custom-select-trigger:hover {

@@ -11,10 +11,10 @@
     (function () {
       try {
         if (window.location.protocol === "file:") {
-          window.__API_BASE__ = localStorage.getItem("apiBase") || "http://localhost:8082";
+          window.__API_BASE__ = localStorage.getItem("apiBase") || "http://localhost:8080";
         }
       } catch (e) {
-        window.__API_BASE__ = "http://localhost:8082";
+        window.__API_BASE__ = "http://localhost:8080";
       }
     })();
   </script>
@@ -681,9 +681,9 @@
     .forgot-modal__backdrop {
       position: absolute;
       inset: 0;
-      background: rgba(15, 23, 42, 0.3);
-      backdrop-filter: blur(10px) saturate(130%);
-      -webkit-backdrop-filter: blur(10px) saturate(130%);
+      background: rgba(0, 0, 0, 0.18);
+      backdrop-filter: blur(40px) saturate(140%);
+      -webkit-backdrop-filter: blur(40px) saturate(140%);
     }
 
     .forgot-modal__panel {
@@ -691,9 +691,11 @@
       width: min(460px, 100%);
       border-radius: 22px;
       padding: 22px 20px 18px;
-      border: 1px solid rgba(255, 255, 255, 0.36);
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.42));
-      box-shadow: 0 24px 48px rgba(15, 23, 42, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(40px) saturate(140%);
+      -webkit-backdrop-filter: blur(40px) saturate(140%);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
       transform: translateY(8px) scale(0.98);
       transition: transform 0.2s ease;
     }
@@ -708,9 +710,12 @@
       right: 10px;
       width: 32px;
       height: 32px;
-      border: none;
+      border: 1px solid rgba(255, 255, 255, 0.45);
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.52);
       color: #334155;
       cursor: pointer;
       transition: background 0.2s ease, transform 0.2s ease;
@@ -996,7 +1001,7 @@
         </form>
 
         <div class="signup-link">
-          已有账号？<a href="登录2.html">立即登录</a>
+          已有账号？<a href="登录页面.html">立即登录</a>
         </div>
       </div>
     </div>

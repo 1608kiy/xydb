@@ -6,13 +6,14 @@
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <title>待办清单 - 铃记</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-  <script src='./js/web-bg-init.js?v=20260428_bg1'></script>
+  <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" /></noscript>
+  <script defer src='./js/web-bg-init.js?v=20260428_bg1'></script>
   <script defer src="data.js?v=20260325_syncfix4"></script>
-  <script defer src="./common.js?v=20260401_liquid_modal1"></script>
+  <script src="./common.js?v=20260401_liquid_modal1"></script>
   <script src='./js/pages/待办页面.inline-01.js?v=20260327_jssplit'></script>
   <link rel='stylesheet' href='./css/待办页面.css?v=20260327_csssplit' />
-  <link rel='stylesheet' href='./css/saas-theme-overrides.css?v=20260423_ui_saas1' />
+  <link rel='stylesheet' href='./css/saas-theme-overrides.css?v=20260512_ui_saas2' />
 </head>
 
 <body class="font-inter text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden todo-page-liquid">
@@ -77,15 +78,15 @@
                 <span class="header-user-name hidden md:inline-block font-medium">张明</span>
                 <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:rotate-180 transition-transform duration-300" id="user-menu-arrow"></i>
           </button>
-          <div class="dropdown-menu" id="user-dropdown" style="pointer-events: none;">
-            <a href="个人中心页面.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors" style="pointer-events: auto;">
+          <div class="dropdown-menu user-avatar-dropdown" id="user-dropdown" style="pointer-events: none;">
+            <a href="个人中心页面.html" class="block px-4 py-2 text-sm text-gray-700 transition-colors" style="pointer-events: auto;">
               <i class="fas fa-user mr-2 text-gray-500"></i>个人中心
             </a>
-            <a href="javascript:void(0);" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors" style="pointer-events: auto;">
+            <a href="javascript:void(0);" class="block px-4 py-2 text-sm text-gray-700 transition-colors" style="pointer-events: auto;">
               <i class="fas fa-cog mr-2 text-gray-500"></i>设置
             </a>
             <div class="border-t border-gray-200 my-1"></div>
-            <a href="登录页面.html" id="todo-logout-link" class="block px-4 py-2 text-sm text-danger hover:bg-danger/10 transition-colors" style="pointer-events: auto;">
+            <a href="登录页面.html" id="todo-logout-link" class="block px-4 py-2 text-sm text-danger transition-colors" style="pointer-events: auto;">
               <i class="fas fa-sign-out-alt mr-2"></i>退出登录
             </a>
           </div>
@@ -203,7 +204,7 @@
     <!-- 主内容区域 -->
     <main class="flex-1 overflow-y-auto overflow-x-visible bg-transparent p-4 md:p-6" style="overflow-y: auto; overflow-x: visible;">
       <!-- 快捷操作栏 -->
-      <div class="glass-max rounded-2xl shadow-lg p-5 mb-6 card-hover" style="position: relative; z-index: 10;">
+      <div id="quick-actions-bar" class="glass-max rounded-2xl shadow-lg p-5 mb-6 card-hover" style="position: relative; z-index: 10;">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div class="flex flex-wrap gap-2">
             <button class="btn-secondary-glass inline-flex items-center" id="batch-complete-btn">
@@ -212,7 +213,7 @@
             <button class="btn-secondary-glass inline-flex items-center text-danger" id="batch-delete-btn">
               <i class="fas fa-trash-alt mr-2"></i>批量删除
             </button>
-            <span class="inline-flex items-center text-xs px-3 py-2 rounded-xl bg-gray-100 text-gray-600" id="sync-status-badge">
+            <span class="inline-flex items-center text-xs px-3 py-2 rounded-xl" id="sync-status-badge">
               <i class="fas fa-check-circle mr-1"></i>已同步
             </span>
           </div>
@@ -487,33 +488,35 @@
           <label class="block text-sm font-medium text-gray-700 mb-2">标签</label>
           <div class="flex flex-wrap gap-2" id="modal-tag-list">
             <button
-              class="px-3 py-1.5 rounded-full text-sm font-medium bg-task-work/10 text-task-work modal-tag-btn active"
+              class="px-3 py-1.5 rounded-full text-sm font-medium bg-task-work/20 text-task-work modal-tag-btn active"
               data-tag="work" onclick="window.selectModalTag('work')">
               <i class="fas fa-briefcase mr-1"></i>工作
             </button>
-            <button class="px-3 py-1.5 rounded-full text-sm font-medium bg-task-study/10 text-task-study modal-tag-btn"
+            <button class="px-3 py-1.5 rounded-full text-sm font-medium bg-task-study/20 text-task-study modal-tag-btn"
               data-tag="study" onclick="window.selectModalTag('study')">
               <i class="fas fa-book mr-1"></i>学习
             </button>
-            <button class="px-3 py-1.5 rounded-full text-sm font-medium bg-task-life/10 text-task-life modal-tag-btn"
+            <button class="px-3 py-1.5 rounded-full text-sm font-medium bg-task-life/20 text-task-life modal-tag-btn"
               data-tag="life" onclick="window.selectModalTag('life')">
               <i class="fas fa-home mr-1"></i>生活
             </button>
             <button
-              class="px-3 py-1.5 rounded-full text-sm font-medium bg-task-health/10 text-task-health modal-tag-btn"
+              class="px-3 py-1.5 rounded-full text-sm font-medium bg-task-health/20 text-task-health modal-tag-btn"
               data-tag="health" onclick="window.selectModalTag('health')">
               <i class="fas fa-heart mr-1"></i>健康
             </button>
           </div>
         </div>
         <div class="rounded-2xl border border-primary/10 bg-primary/5 px-4 py-3 space-y-2">
-          <label class="flex items-center gap-2 text-sm text-gray-700">
-            <input id="modal-auto-classify" type="checkbox" class="rounded text-primary" checked />
-            自动分类任务
+          <label class="custom-checkbox-label">
+            <input id="modal-auto-classify" type="checkbox" checked />
+            <span class="checkmark"></span>
+            <span class="ml-3 text-sm text-gray-700">自动分类任务</span>
           </label>
-          <label class="flex items-center gap-2 text-sm text-gray-700">
-            <input id="modal-auto-breakdown" type="checkbox" class="rounded text-primary" checked />
-            自动生成并行子任务
+          <label class="custom-checkbox-label">
+            <input id="modal-auto-breakdown" type="checkbox" checked />
+            <span class="checkmark"></span>
+            <span class="ml-3 text-sm text-gray-700">自动生成并行子任务</span>
           </label>
           <p class="text-xs text-gray-500">创建时会自动识别任务类别，并拆成可并行推进的子任务。</p>
         </div>

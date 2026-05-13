@@ -3,7 +3,6 @@
         if (window.__reportChartsInited) return;
         window.__reportChartsInited = true;
         if (!window.echarts) {
-          console.warn('ECharts 加载失败，图表已降级为文本提示');
           ['task-trend-chart', 'category-pie-chart', 'focus-bar-chart', 'focus-heatmap'].forEach(function (id) {
             var el = document.getElementById(id);
             if (el) {
@@ -18,7 +17,6 @@
         var focusBarChartEl = document.getElementById('focus-bar-chart');
         var focusHeatmapEl = document.getElementById('focus-heatmap');
         if (!taskTrendChartEl || !categoryPieChartEl || !focusBarChartEl || !focusHeatmapEl) {
-          console.warn('图表容器缺失，跳过图表初始化');
           return;
         }
 

@@ -936,6 +936,95 @@
           setThemeMode('light');
         }
 
+        // 自定义背景
+        var customBgBtn = document.getElementById('theme-custom-bg-btn');
+        var customBgInput = document.getElementById('custom-bg-input');
+        var CUSTOM_BG_KEY = 'web-custom-bg-url';
+
+        function applyCustomBg(url) {
+          if (!url) return;
+          document.body.style.backgroundImage = 'url("' + url + '")';
+          document.body.style.backgroundAttachment = 'fixed';
+          document.body.style.backgroundSize = 'cover';
+          document.body.style.backgroundPosition = 'center';
+          document.body.style.backgroundRepeat = 'no-repeat';
+        }
+
+        function clearCustomBg() {
+          document.body.style.backgroundImage = '';
+          document.body.style.backgroundAttachment = '';
+          document.body.style.backgroundSize = '';
+          document.body.style.backgroundPosition = '';
+          document.body.style.backgroundRepeat = '';
+          try { localStorage.removeItem(CUSTOM_BG_KEY); } catch (e) {}
+          // 恢复随机背景
+          if (typeof window.initWebRandomBackground === 'function') {
+            window.initWebRandomBackground();
+          }
+        }
+
+        // 页面加载时应用已保存的自定义背景
+        try {
+          var savedCustomBg = localStorage.getItem(CUSTOM_BG_KEY);
+          if (savedCustomBg) {
+            applyCustomBg(savedCustomBg);
+          }
+        } catch (e) {}
+
+        function updateCustomBgBtnState(active) {
+          if (!customBgBtn) return;
+          if (active) {
+            customBgBtn.classList.add('bg-primary', 'text-white');
+            customBgBtn.classList.remove('border-gray-200');
+          } else {
+            customBgBtn.classList.remove('bg-primary', 'text-white');
+            customBgBtn.classList.add('border-gray-200');
+          }
+        }
+
+        if (customBgBtn && customBgInput) {
+          customBgBtn.addEventListener('click', function () {
+            try {
+              if (localStorage.getItem(CUSTOM_BG_KEY)) {
+                if (confirm('已设置自定义背景，是否清除？')) {
+                  clearCustomBg();
+                  updateCustomBgBtnState(false);
+                  showToast('背景已恢复默认');
+                }
+                return;
+              }
+            } catch (e) {}
+            customBgInput.click();
+          });
+
+          customBgInput.addEventListener('change', function (e) {
+            var file = e.target.files && e.target.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) {
+              showToast('请选择图片文件');
+              return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+              showToast('图片大小不能超过 5MB');
+              return;
+            }
+            var reader = new FileReader();
+            reader.onload = function (ev) {
+              var dataUrl = ev.target.result;
+              try { localStorage.setItem(CUSTOM_BG_KEY, dataUrl); } catch (err) {
+                showToast('保存失败，图片可能过大');
+                return;
+              }
+              applyCustomBg(dataUrl);
+              updateCustomBgBtnState(true);
+              showToast('背景已更新');
+            };
+            reader.readAsDataURL(file);
+            // 重置 input 允许重复选择同一文件
+            customBgInput.value = '';
+          });
+        }
+
         var notifyTaskReminder = document.getElementById('notify-task-reminder');
         var notifyPomodoroEnd = document.getElementById('notify-pomodoro-end');
         var notifyDailyReport = document.getElementById('notify-daily-report');
@@ -1184,6 +1273,12 @@
             btn.classList.add('border-gray-200');
           }
         });
+
+        // 自定义背景按钮状态
+        try {
+          var hasCustomBg = !!localStorage.getItem('web-custom-bg-url');
+          updateCustomBgBtnState(hasCustomBg);
+        } catch (e) {}
 
         var notifyTaskReminder = document.getElementById('notify-task-reminder');
         var notifyPomodoroEnd = document.getElementById('notify-pomodoro-end');
